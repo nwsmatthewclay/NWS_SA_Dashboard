@@ -10,13 +10,27 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #06090f;
-    --surface:   #0d1117;
-    --surface2:  #131920;
-    --border:    #1e2d3d;
-    --border2:   #243447;
-    --text:      #e2e8f0;
-    --muted:     #8899a6;
+    --bg:        #05060c;
+    --text:      #e8ecf4;
+    --muted:     #97a3b8;
+
+    /* Glass panel tokens — translucent dark surfaces with a blur behind
+       them so the neon glow from the background bleeds through softly
+       instead of everything sitting on flat black. */
+    --glass-bg:      rgba(18, 22, 38, 0.55);
+    --glass-bg-2:    rgba(24, 28, 46, 0.6);
+    --glass-border:  rgba(255, 255, 255, 0.10);
+    --glass-blur:    blur(16px) saturate(160%);
+
+    /* Neon accent colors — one per DSS type, kept saturated so the glow
+       reads clearly even at a distance on a TV. */
+    --neon-red:    #ff3d6a;
+    --neon-blue:   #3da9ff;
+    --neon-purple: #b26bff;
+    --neon-amber:  #ffb23d;
+    --neon-green:  #3dffb0;
+    --neon-cyan:   #3de8ff;
+    --neon-white:  #f4f9ff;
 
     /* Viewport-relative calendar text sizes. clamp(min, preferred, max)
        means these scale with actual screen width instead of staying
@@ -39,46 +53,90 @@
   }
 
   body {
+    position: relative;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
     color: var(--text);
     font-family: 'Inter', Arial, sans-serif;
     font-size: 14px;
     line-height: 1.5;
+
+    /* Moody nebula backdrop: a few soft, low-opacity color blooms over a
+       near-black base. Fixed and behind everything — the glass panels
+       let it show through their blur rather than sitting on flat black. */
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse 60% 45% at 12% 8%,  rgba(61, 169, 255, 0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 50% at 90% 12%, rgba(178, 107, 255, 0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 65% 55% at 50% 105%, rgba(61, 232, 255, 0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 95% 90%, rgba(255, 61, 106, 0.08) 0%, transparent 70%);
+    background-attachment: fixed;
   }
 
-  /* ── TOP HEADER (logo + last-updated only — no nav, no other tabs) ── */
+  /* ── TOP HEADER (glass bar with a neon underline) ── */
   .top-header {
-    background: #0f1b2de0;
-    border-bottom: 1px solid var(--border);
+    position: relative;
+    background: var(--glass-bg-2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border);
     padding: 10px 16px;
     display: flex;
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
+    z-index: 2;
+  }
+  .top-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--neon-cyan) 20%,
+      var(--neon-purple) 50%,
+      var(--neon-blue) 80%,
+      transparent 100%);
+    opacity: 0.7;
+    filter: drop-shadow(0 0 6px rgba(61, 232, 255, 0.5));
   }
   .header-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .header-brand .nws-logo { width: 160px; height: auto; display: block; object-fit: contain; }
-  .header-brand h1 { font-size: 17px; font-weight: 600; color: #fff; line-height: 1.1; white-space: nowrap; }
-  .header-sep { width: 1px; background: var(--border); align-self: stretch; margin: 0 4px; flex-shrink: 0; }
+  .header-brand .nws-logo {
+    width: 160px; height: auto; display: block; object-fit: contain;
+    filter: drop-shadow(0 0 6px rgba(61, 169, 255, 0.35));
+  }
+  .header-brand h1 {
+    font-size: 17px; font-weight: 700; color: #fff; line-height: 1.1; white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .header-sep {
+    width: 1px; align-self: stretch; margin: 0 4px; flex-shrink: 0;
+    background: linear-gradient(to bottom, transparent, var(--glass-border), transparent);
+  }
 
   .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
   .refresh-btn {
-    background: #112233; border: 1px solid #1d6fa4; color: #64b5f6;
-    width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
+    background: rgba(61, 169, 255, 0.10);
+    border: 1px solid rgba(61, 169, 255, 0.45);
+    color: var(--neon-blue);
+    width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
     font-size: 15px; display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s;
+    transition: all 0.15s;
+    box-shadow: 0 0 10px rgba(61, 169, 255, 0.18);
   }
-  .refresh-btn:hover { background: #1a3a55; }
+  .refresh-btn:hover {
+    background: rgba(61, 169, 255, 0.2);
+    box-shadow: 0 0 16px rgba(61, 169, 255, 0.4);
+  }
 
   .last-updated-box {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: #0f1b2d;
-    border: 1px solid var(--border2);
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
     padding: 5px 10px;
     min-width: 120px;
   }
@@ -91,18 +149,20 @@
   #lastUpdatedText {
     font-size: 13px;
     font-weight: 700;
-    color: #64b5f6;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(61, 232, 255, 0.5);
   }
 
   /* ── CALENDAR (fills the rest of the screen, no scrolling) ── */
   #calendarContainer {
+    position: relative;
+    z-index: 1;
     flex: 1;
     min-height: 0;
     width: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
   }
 
   .cal-legend-bar {
@@ -114,32 +174,45 @@
     padding: clamp(8px, 0.7vw, 18px) clamp(12px, 1.2vw, 24px);
     font-size: var(--cal-legend-font);
     font-weight: 800;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    background: var(--glass-bg-2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border);
   }
   .cal-legend-item { display: flex; align-items: center; gap: 10px; }
-  .cal-legend-swatch { width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0; }
+  .cal-legend-swatch {
+    width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+    box-shadow: 0 0 8px 1px var(--swatch-glow, transparent);
+  }
 
   #calendarScrollWrapper {
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    padding: 8px 12px 10px;
+    padding: 10px 12px 12px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 
-  /* One of the two stacked weeks. Weeks split the available height
-     proportionally to their own content (see the "flex vs even split"
-     note in chat) — a busier week can claim more room than a light one,
-     while each cell's own auto-fit still guarantees nothing overflows. */
+  /* One of the two stacked weeks — a glass panel with a soft neon-cyan
+     glow ring, rather than a plain white outline. Weeks split available
+     height proportionally to their own content; each cell's own
+     auto-fit still guarantees nothing overflows. */
   .cal-week-grid {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    border: 1px solid #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(61, 232, 255, 0.28);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+      0 0 24px rgba(61, 169, 255, 0.10);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
   }
 
   .cal-grid-headrow {
@@ -147,8 +220,8 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
-    background: #ffffff;
-    border-bottom: 1px solid #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(61, 232, 255, 0.25);
   }
 
   .cal-grid-bodyrow {
@@ -157,33 +230,37 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
   }
 
   .cal-day-header {
     display: block;
     padding: var(--cal-chip-pad-v) var(--cal-chip-pad-h);
     text-align: center;
-    background: var(--surface);
+    background: rgba(10, 13, 24, 0.55);
   }
   .cal-day-header .day-name {
     font-size: var(--cal-day-font);
     font-weight: 800;
-    color: white;
+    color: #e8ecf4;
     letter-spacing: 0.02em;
   }
   .cal-day-header.is-today {
-    background: #0d2a45;
-    box-shadow: inset 0 0 0 2px #3b82f6;
+    background: rgba(61, 169, 255, 0.16);
+    box-shadow: inset 0 0 0 2px var(--neon-blue), inset 0 0 18px rgba(61, 169, 255, 0.35);
   }
-  .cal-day-header.is-today .day-name { color: #93c5fd; }
+  .cal-day-header.is-today .day-name {
+    color: #cfe8ff;
+    text-shadow: 0 0 10px rgba(61, 169, 255, 0.7);
+  }
   .cal-day-header.is-today::after {
     content: 'TODAY';
     display: block;
     font-size: 9px;
     font-weight: 800;
-    letter-spacing: 0.12em;
-    color: #60a5fa;
+    letter-spacing: 0.14em;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(61, 232, 255, 0.6);
     margin-top: 2px;
   }
 
@@ -191,7 +268,7 @@
      this element per-cell, shrinking font/padding only as much as that
      specific day's event count requires. */
   .cal-grid-cell {
-    background: var(--surface);
+    background: rgba(10, 13, 24, 0.35);
     min-height: 0;
     min-width: 0;
     overflow: hidden;
@@ -213,23 +290,29 @@
 
   .cal-empty-day {
     padding: calc(var(--cal-chip-pad-v) * var(--calScale, 1)) calc(var(--cal-chip-pad-h) * var(--calScale, 1));
-    border-left: calc(var(--cal-chip-border) * var(--calScale, 1)) solid #166534;
-    border-radius: 6px;
+    border-left: calc(var(--cal-chip-border) * var(--calScale, 1)) solid var(--neon-green);
+    border-radius: 8px;
     line-height: 1.2;
-    background: #052e16;
-    color: #86efac;
+    background: rgba(61, 255, 176, 0.08);
+    color: #baffe3;
     font-size: calc(var(--cal-chip-name) * var(--calScale, 1));
     font-weight: 800;
     text-align: left;
     white-space: normal;
+    box-shadow: 0 0 14px rgba(61, 255, 176, 0.12);
   }
 
+  /* Glassy event chips with a colored neon left-edge and a matching
+     soft outer glow, instead of flat solid-color blocks. */
   .cal-event-chip {
     padding: calc(var(--cal-chip-pad-v) * var(--calScale, 1)) calc(var(--cal-chip-pad-h) * var(--calScale, 1));
     border-left-width: calc(var(--cal-chip-border) * var(--calScale, 1));
-    border-radius: 6px;
+    border-left-style: solid;
+    border-radius: 8px;
     line-height: 1.2;
     flex-shrink: 0;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   .cal-event-chip .chip-name {
     font-size: calc(var(--cal-chip-name) * var(--calScale, 1));
@@ -244,35 +327,73 @@
     opacity: 0.9;
     margin-top: calc(2px * var(--calScale, 1));
   }
-  .cal-chip-radar   { background: #3b0a0a; border-left-color: #ef4444; color: #fca5a5; }
-  .cal-chip-onsite  { background: #2e1065; border-left-color: #a855f7; color: #d8b4fe; }
-  .cal-chip-headsup { background: #172554; border-left-color: #3b82f6; color: #93c5fd; }
-  .cal-chip-call    { background: #3d2800; border-left-color: #f59e0b; color: #fcd34d; }
-  /* Recurring internal reminder — visually separated from external
-     heads-up DSS emails with a white outline instead of touching the
-     existing border-left-width/color used for type coding. */
-  .cal-chip-weeklybrief { outline: 2px solid #ffffff; outline-offset: -2px; }
+  .cal-chip-radar {
+    background: rgba(255, 61, 106, 0.12);
+    border-left-color: var(--neon-red);
+    color: #ffc2d1;
+    box-shadow: 0 0 14px rgba(255, 61, 106, 0.14);
+  }
+  .cal-chip-onsite {
+    background: rgba(178, 107, 255, 0.14);
+    border-left-color: var(--neon-purple);
+    color: #e3cfff;
+    box-shadow: 0 0 14px rgba(178, 107, 255, 0.16);
+  }
+  .cal-chip-headsup {
+    background: rgba(61, 169, 255, 0.12);
+    border-left-color: var(--neon-blue);
+    color: #c7e4ff;
+    box-shadow: 0 0 14px rgba(61, 169, 255, 0.14);
+  }
+  .cal-chip-call {
+    background: rgba(255, 178, 61, 0.12);
+    border-left-color: var(--neon-amber);
+    color: #ffe0b0;
+    box-shadow: 0 0 14px rgba(255, 178, 61, 0.14);
+  }
+  /* Recurring internal reminder — a bright neon-white ring so it reads
+     as distinct from external heads-up DSS emails at a glance. */
+  .cal-chip-weeklybrief {
+    outline: 2px solid var(--neon-white);
+    outline-offset: -2px;
+    box-shadow: 0 0 16px rgba(244, 249, 255, 0.35), 0 0 14px rgba(61, 169, 255, 0.14);
+  }
 
   /* ── MODAL (kept for click-to-detail if this page is ever opened in a
      normal browser rather than an unattended TV) ── */
   #calendarModal {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.75); z-index: 9999;
+    background: rgba(2, 3, 8, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
   }
   .modal-box {
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: 12px; width: 480px; max-width: 90%; padding: 24px;
+    background: var(--glass-bg-2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(61, 232, 255, 0.25);
+    box-shadow: 0 0 30px rgba(61, 169, 255, 0.18);
+    border-radius: 14px; width: 480px; max-width: 90%; padding: 24px;
     color: var(--text); margin: 80px auto;
   }
-  .modal-box h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .modal-box h2 {
+    font-size: 18px; font-weight: 800; margin-bottom: 16px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--glass-border);
+  }
   .modal-row { margin-bottom: 10px; font-size: 13px; }
   .modal-row strong { display: block; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
-  .modal-close { margin-top: 16px; padding: 8px 20px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 6px; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 600; }
+  .modal-close {
+    margin-top: 16px; padding: 8px 20px;
+    background: rgba(61, 169, 255, 0.12); border: 1px solid rgba(61, 169, 255, 0.4);
+    color: var(--neon-blue); border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 700;
+  }
+  .modal-close:hover { background: rgba(61, 169, 255, 0.22); }
 
   /* ── MISC ── */
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: #243447; border-radius: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(61, 232, 255, 0.35); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -538,10 +659,10 @@ function buildCalendar() {
   var legendBar = document.getElementById('calendarLegendBar');
   if (legendBar) {
     legendBar.innerHTML =
-      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#ef4444;"></span>Radar Watch</div>' +
-      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#3b82f6;"></span>Heads-Up Email</div>' +
-      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#a855f7;"></span>On-Site DSS</div>' +
-      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#f59e0b;"></span>Coordination Call</div>';
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:var(--neon-red);--swatch-glow:rgba(255,61,106,.8);"></span>Radar Watch</div>' +
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:var(--neon-blue);--swatch-glow:rgba(61,169,255,.8);"></span>Heads-Up Email</div>' +
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:var(--neon-purple);--swatch-glow:rgba(178,107,255,.8);"></span>On-Site DSS</div>' +
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:var(--neon-amber);--swatch-glow:rgba(255,178,61,.8);"></span>Coordination Call</div>';
   }
 
   var wrapper = document.getElementById('calendarScrollWrapper');
