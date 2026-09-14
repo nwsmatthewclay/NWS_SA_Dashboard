@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lake Champlain & Mountains Recreational Dashboard</title>
+  <style>
+    :root {
+      --navy: #0f2a4a;
+      --navy-dark: #0a1f38;
+      --blue: #1a56c4;
+      --purple: #6b3fa0;
+      --green: #1a7a3c;
+      --red: #c0392b;
+      --orange: #e07b1a;
+      --gray-bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --border: #e2e6ec;
+      --text-dim: #6b7684;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--gray-bg);
+      color: #1a1a1a;
+    }
+
+    /* ---------- HEADER (with embedded conditional alert row) ---------- */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 24px;
+      background: linear-gradient(90deg, #dce8f5, #eef3f8);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .nws-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+    .title h1 { margin: 0; font-size: 16px; letter-spacing: 0.3px; line-height: 1.2; color: var(--navy-dark); font-weight: 800; }
+    .title p { margin: 0; color: var(--text-dim); font-size: 11px; }
+    .header-right { text-align: right; font-size: 12px; color: var(--navy); white-space: nowrap; }
+    .header-right .refresh-row { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+
+    /* ---------- INFO BUTTON + MODAL (data source breakdown) ---------- */
+    .info-btn {
+      width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--navy);
+      background: #fff; color: var(--navy); font-weight: 800; font-size: 12px;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; line-height: 1; padding: 0;
+    }
+    .info-btn:hover { background: var(--navy); color: #fff; }
+
+    .info-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(15, 42, 74, 0.45);
+      z-index: 100; align-items: center; justify-content: center; padding: 20px;
+    }
+    .info-modal-overlay.is-visible { display: flex; }
+    .info-modal {
+      background: #fff; border-radius: 12px; max-width: 640px; width: 100%;
+      max-height: 85vh; overflow-y: auto; padding: 26px 30px; position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .info-modal h2 { margin: 0 0 4px; font-size: 18px; color: var(--navy-dark); }
+    .info-modal .info-modal-sub { margin: 0 0 20px; font-size: 12px; color: var(--text-dim); }
+    .info-modal .close-btn {
+      position: absolute; top: 18px; right: 18px; width: 28px; height: 28px;
+      border-radius: 50%; border: none; background: var(--gray-bg); color: #333;
+      font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .info-modal .close-btn:hover { background: var(--border); }
+    .info-credit {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.2px;
+}
+    .source-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .source-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .source-item h4 { margin: 0 0 5px; color: var(--navy-dark); font-size: 14px; }
+    .source-item p { margin: 0; font-size: 13px; color: #333; line-height: 1.55; }
+    .source-item a { color: var(--blue); }
+    .source-item .src-tag {
+      display: inline-block; font-size: 10px; font-weight: 700; color: var(--blue);
+      background: #eef3fb; padding: 2px 8px; border-radius: 999px; margin-top: 6px;
+    }
+
+    /* Embedded alert row — only takes up space when a hazard is active. */
+    .header-alert-row {
+      display: none; align-items: center; gap: 20px;
+      background: #fdeeee; border-bottom: 1px solid #f6cccc;
+      padding: 6px 24px; flex-wrap: wrap;
+    }
+    .header-alert-row.is-visible { display: flex; }
+    .header-alert-row .icon { color: var(--red); font-size: 14px; }
+    .header-alert-row .hazards-label { color: var(--red); font-weight: 700; font-size: 11px; white-space: nowrap; }
+    .header-alert-row .hazard-item { border-left: 1px solid #f0c4c4; padding-left: 14px; font-size: 10.5px; }
+    .header-alert-row .hazard-item b { display: block; color: #222; font-size: 11px; }
+    .header-alert-row .hazard-item span { color: var(--text-dim); }
+    .header-alert-row .view-text-btn {
+      margin-left: auto; border: 1px solid var(--red); color: var(--red);
+      background: #fff; padding: 4px 10px; border-radius: 6px; font-size: 10px;
+      font-weight: 600; cursor: pointer;
+    }
+
+    /* ---------- MAIN WRAP: header (auto) + everything else fills the rest ---------- */
+    .main-wrap { display: flex; flex-direction: column; height: 100vh; }
+    .main-content { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: row; gap: 14px; padding: 8px 20px; }
+
+    /* ---------- SECTION HEADERS ---------- */
+    .section-title {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 28px 6px; font-weight: 700; color: var(--navy-dark);
+      font-size: 13px;
+    }
+    .section-title .tag { margin-left: auto; font-weight: 400; font-size: 11px; color: var(--text-dim); }
+
+/* ---------- GAUGE LOADING SKELETON ---------- */
+
+.gauge-card.loading-card {
+  position: relative;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  border-left: 4px solid #d8dee7;
+  pointer-events: none;
+}
+
+.gauge-loading {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e7ebf0;
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: gaugeSpin 0.8s linear infinite;
+  margin-bottom: 10px;
+}
+
+.loading-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-dark);
+}
+
+.loading-text {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+@keyframes gaugeSpin {
+  to { transform: rotate(360deg); }
+}
+
+    /* ---------- LAYOUT: all 6 gauges (left, 2 cols x 3 rows) | map | wave graphs (right) ---------- */
+    .gauge-col-all {
+      flex: 0 0 520px; min-width: 0; min-height: 0;
+      display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .gauge-col-all .gauge-card { min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+    .center-map-wrap { flex: 1.6 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
+    .center-map-wrap img {
+      width: 100%; height: 100%;
+      object-fit: contain; border-radius: 10px; border: 1px solid var(--border);
+    }
+    /* Wider than before — the station-forecast panel is a roughly square
+       image (2x4 grid), so in a narrow column it hits its WIDTH limit long
+       before using the available height, leaving space unused. More width
+       here lets it grow taller too, since object-fit:contain keeps it
+       proportional either way. */
+    .wave-graphs-col { flex: 2 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
+    .wave-graphs-col img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); }
+    @media (max-width: 1300px) {
+      .main-content { flex-direction: column; }
+      .gauge-col-all { flex: 0 0 auto; grid-template-rows: none; }
+    }
+
+    .gauge-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 9px; padding: 11px; text-align: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .gauge-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(15,42,74,0.12); }
+    .gauge-card.is-stale { background: #fdf8ee; border-color: #f0dfb0; }
+    .gauge-card.is-stale .updated-row { color: var(--orange); font-weight: 600; }
+    .stale-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--red); color: #fff; font-size: 9px; font-weight: 800;
+      letter-spacing: 0.3px; padding: 2px 7px; border-radius: 999px;
+      margin: 2px 0 5px;
+    }
+    .gust-only-note { font-size: 9.5px; color: var(--text-dim); font-style: italic; margin-top: -3px; margin-bottom: 4px; }
+    /* Locked size — without this, a card with more content below it (like
+       Valcour Buoy's water+wave line) would compress this smaller than every
+       other card's barb under flexbox's default shrink-to-fit behavior,
+       since all cards share the same fixed height via the grid's 1fr rows.
+       IMPORTANT: because this can no longer shrink to make room, every other
+       size on this card has to stay within a budget that actually fits the
+       fixed row height — the previous round's sizes were too big in total,
+       which is what caused the overflow into the row below. */
+    .gauge-card svg.wind-barb-svg { flex-shrink: 0; }
+    .gauge-card h3 { margin: 0; font-size: 14px; color: #1a1a1a; }
+    .gauge-card .region { font-size: 11px; font-weight: 700; margin: 2px 0 5px; }
+    .region.blue { color: var(--blue); }
+    .region.purple { color: var(--purple); }
+    .region.green { color: var(--green); }
+
+    .metar-line { font-family: 'Courier New', Courier, monospace; font-size: 19px; font-weight: 800; color: #1a1a1a; margin-top: -2px; letter-spacing: 0.5px; }
+    .metar-gust { color: var(--red); }
+
+    .temp-row {
+      border-top: 1px solid var(--border); margin-top: 9px; padding-top: 7px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .temp-row .temp { font-size: 17px; font-weight: 700; color: var(--blue); }
+    .temp-row .feels { font-size: 10.5px; color: var(--text-dim); }
+    .water-row {
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 11px; color: var(--text-dim); margin-top: 4px;
+    }
+    .water-row .water-temp { font-weight: 700; color: #1a7ac9; }
+    .wave-row {
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 11px; color: var(--text-dim); margin-top: 2px;
+    }
+    .wave-row .wave-height { font-weight: 700; color: #1a7ac9; }
+    .updated-row { font-size: 9px; color: var(--text-dim); margin-top: 5px; }
+
+    /* ---------- RECREATIONAL TEXT FORECAST ---------- */
+    .rec-forecast {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; padding: 0 28px 28px;
+    }
+    .rec-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .rec-card h4 { margin: 0 0 8px; font-size: 13px; color: var(--navy-dark); line-height: 1.4; }
+    .rec-period { margin-bottom: 8px; }
+    .rec-period .lbl { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; }
+    .rec-period .txt { font-size: 12.5px; color: #333; line-height: 1.5; margin: 2px 0 0; }
+    .rec-notes { font-size: 11.5px; color: var(--text-dim); border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; }
+
+    /* ---------- FOOTER ---------- */
+    .footer {
+      background: var(--navy-dark); color: #cfd9e6; text-align: center;
+      font-size: 12px; padding: 12px; letter-spacing: 0.3px;
+    }
+
+    /* ---------- ERROR BANNER ---------- */
+    #errorBanner {
+      background: #fdeeee; border: 1px solid #f6cccc; color: #c0392b;
+      padding: 12px 28px; font-size: 13px; font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrap">
+    <div class="header">
+      <div class="header-left">
+  <img
+    class="nws-logo"
+    src="https://www.weather.gov/images/nws/nws_logo.png"
+    alt="National Weather Service"
+  >
+  <div class="title">
+    <h1>LAKE CHAMPLAIN &amp; MOUNTAINS RECREATIONAL DASHBOARD</h1>
+    <p>Real-time conditions for outdoor recreation</p>
+  </div>
+</div>
+      <div class="header-right">
+        <div class="refresh-row">&#8635; <span id="updatedLabel">Updated: --</span> &middot; <span id="nextUpdateLabel">Next: --</span>
+          <button class="info-btn" id="infoBtn" title="Data sources">i</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-alert-row" id="headerAlertRow">
+      <span class="icon">&#9888;</span>
+      <span class="hazards-label">ACTIVE HAZARDS</span>
+      <div id="headerAlertList" style="display:flex; gap:20px; flex-wrap:wrap;"></div>
+      <button class="view-text-btn">View RECBTV Text</button>
+    </div>
+
+    <div class="main-content">
+      <div class="gauge-col-all" id="gaugeColAll"></div>
+      <div class="center-map-wrap" id="centerMapWrap"></div>
+      <div class="wave-graphs-col" id="waveGraphsSection"></div>
+    </div>
+  </div>
+
+  <div class="info-modal-overlay" id="infoModalOverlay">
+    <div class="info-modal">
+      <button class="close-btn" id="infoModalClose">&times;</button>
+      <h2>Where this data comes from</h2>
+      <p class="info-modal-sub">A quick breakdown of the source behind each part of this dashboard.</p>
+
+      <div class="source-item">
+        <h4>Wind barb &amp; card border colors</h4>
+        <p>Lake stations: <strong style="color:#3fae4a">green</strong> under 15 mph, <strong style="color:#b8860b">yellow</strong> 15&ndash;25 mph, <strong style="color:#c0392b">red</strong> above 25 mph.
+        Mountain stations (Mt. Mansfield, Whiteface) use raised thresholds since exposed summits run windier in normal conditions: <strong style="color:#3fae4a">green</strong> under 30 mph, <strong style="color:#b8860b">yellow</strong> 30&ndash;45 mph, <strong style="color:#c0392b">red</strong> above 45 mph. Based on sustained wind speed (or gust, if sustained isn't available).</p>
+      </div>
+
+      <div class="source-item">
+        <h4>Wind &amp; temperature gauges &mdash; Colchester Reef, Diamond Island &amp; Burton Island</h4>
+        <p>NOAA/NWS station observations (<a href="https://www.weather.gov/documentation/services-web-api" target="_blank">api.weather.gov</a>) for gust and temperature, combined with sustained wind from the Iowa Environmental Mesonet's VTWAC network (<a href="https://mesonet.agron.iastate.edu" target="_blank">mesonet.agron.iastate.edu</a>) &mdash; these are all University of Vermont monitoring stations that report through both networks. Water temperature from USGS gauges.</p>
+        <span class="src-tag">NWS + IEM + USGS</span>
+      </div>
+
+      <div class="source-item">
+        <h4>Mt. Mansfield</h4>
+        <p>Sustained wind, gust, and direction from NWS's hourly "RRS" text product (SHEF-encoded, issued by NWS Burlington), which updates more frequently than the alternative COOP feed. Temperature from the IEM VT_COOP network.</p>
+        <span class="src-tag">NWS text product + IEM COOP</span>
+      </div>
+
+      <div class="source-item">
+        <h4>Whiteface</h4>
+        <p>Atmospheric Sciences Research Center (University at Albany) Whiteface Mountain Field Station API &mdash; a summit weather station independent of the NWS network.</p>
+        <span class="src-tag">ASRC / SUNY Albany</span>
+      </div>
+
+      <div class="source-item">
+        <h4>Valcour Buoy</h4>
+        <p>NOAA National Data Buoy Center, real-time station 45178 (<a href="https://www.ndbc.noaa.gov/station_page.php?station=45178" target="_blank">ndbc.noaa.gov</a>).</p>
+        <span class="src-tag">NOAA NDBC</span>
+      </div>
+
+      <div class="source-item">
+        <h4>Active hazards banner</h4>
+        <p>NWS active alerts for each station's location (<a href="https://www.weather.gov/documentation/services-web-api" target="_blank">api.weather.gov/alerts</a>), filtered to wind/winter advisories relevant to lake and mountain recreation.</p>
+        <span class="src-tag">NWS Alerts API</span>
+      </div>
+
+      <div class="source-item">
+        <h4>Center map &mdash; wave height + wind barbs</h4>
+        <p>NOAA/NCEP's <strong>operational</strong> GLWU (Great Lakes Wave) WaveWatch III model, specifically its Lake Champlain 500m grid (<code>grlr_500m_lc</code>), pulled directly from NOMADS. Rendered by a custom Python/Cartopy script we built &mdash; not GLERL's separate experimental Lake Champlain nowcast system, which uses a different (NWM+FVCOM+WaveWatch III) model and has no public data feed.</p>
+        <span class="src-tag">NOAA/NCEP NOMADS (operational GLWU)</span>
+      </div>
+
+      <div class="source-item">
+        <h4>8-station wave height forecast (right panel)</h4>
+        <p>Built from the exact same NOMADS GLWU data as the map above &mdash; wave height extracted at 8 named points (2 are exact NDBC/CDIP buoy coordinates; the rest are nearest-water-grid-point approximations of well-known lake locations) across the model's forecast hours. Forward-looking only, no historical observed data.</p>
+        <span class="src-tag">NOAA/NCEP NOMADS (operational GLWU)</span>
+      </div>
+
+            <div class="source-item">
+        <h4>Recreational text forecast</h4>
+        <p>NWS Burlington, VT (BTV) office's "REC" text product (<a href="https://www.weather.gov/documentation/services-web-api" target="_blank">api.weather.gov/products</a>).</p>
+        <span class="src-tag">NWS Burlington (BTV)</span>
+      </div>
+
+      <div class="info-credit">
+        Created by Matthew Clay &mdash; NWS BTV
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-title">&#128196; RECREATIONAL TEXT FORECAST <span class="tag" id="recIssuedLabel"></span></div>
+  <div class="rec-forecast" id="recForecast"></div>
+
+  <div class="footer">
+    Data provided by NWS &amp; NOAA GLERL &nbsp;|&nbsp; Refreshes automatically every 5 minutes
+  </div>
+
+<script>
+/* =============================================================================
+ * LAKE CHAMPLAIN & MOUNTAINS RECREATIONAL DASHBOARD
+ * =============================================================================
+ * Single, self-contained static build — no backend, no Apps Script, no build
+ * step. Every data fetch runs directly in the visitor's browser. Deploy by
+ * hosting this one file anywhere static (GitHub Pages, Netlify, S3, etc.) as
+ * index.html.
+ *
+ * CORS STATUS (checked directly against each API):
+ *   api.weather.gov            -> OK (Access-Control-Allow-Origin: *)
+ *   mesonet.agron.iastate.edu  -> OK, all three endpoints used here (current.py,
+ *                                  obhistory.json, wx/afos/p.php)
+ *   waterservices.usgs.gov     -> OK
+ *   www.ndbc.noaa.gov          -> NOT OK. No CORS header at all — the browser will
+ *                                  block this fetch regardless of network access.
+ *                                  The buoy card falls back to mock data until this
+ *                                  is fixed. Fix: deploy ndbc-cors-proxy-worker.js
+ *                                  (shipped alongside this file) as a free Cloudflare
+ *                                  Worker — see that file's header comment for the
+ *                                  3-minute setup — then set NDBC_PROXY_URL below to
+ *                                  the worker's URL.
+ *   api.asrc.albany.edu:3000   -> UNTESTED from the dev sandbox (couldn't reach this
+ *                                  port at all). Test in an actual browser: open
+ *                                  DevTools Console and look for a CORS error on
+ *                                  Whiteface's card specifically. If it fails,
+ *                                  Whiteface falls back to mock the same way as NDBC.
+ *
+ * Burton Island previously fetched wind/temp directly from UVM's VMC data logger
+ * feed (vmc.w3.uvm.edu), which has no CORS header and required a proxy. It's now
+ * on the same NOAA + IEM path as Colchester Reef and Diamond Island: Burton
+ * Island's station is registered with NWS as "UVM01" (api.weather.gov, for
+ * temperature) and with IEM's VTWAC network under the same id (for sustained
+ * wind and direction) — both confirmed to send CORS headers, so no proxy is
+ * needed for this station anymore. See the STATIONS config below.
+ *
+ * Optional: if you deploy the NDBC CORS proxy above, put its URL here (the buoy
+ * path gets appended to it). Leave blank to skip live buoy data entirely.
+ */
+// Confirmed working (repeatedly tested): a free public CORS proxy that passes
+// through real browser requests (identified via standard Origin/Referer headers,
+// which your browser sends automatically — no setup needed on your end). This
+// occasionally has a transient hiccup like any free service, but that's fine:
+// getOneStationData_'s existing fault isolation already falls back to mock for
+// just this one station on any single failed fetch, and recovers automatically
+// on the next 5-minute refresh.
+// Self-hosted Cloudflare Worker (see ndbc-cors-proxy-worker.js) — more reliable
+// than a public proxy service like corsproxy.io, since ad-blockers/privacy
+// extensions commonly flag and block known third-party proxy domains by
+// category, but have no reason to block a domain you own outright. Confirmed
+// working directly: HTTP 200, correct data, and the necessary
+// access-control-allow-origin: * header present.
+var NDBC_PROXY_URL = 'https://ndbc-proxy.jusmessinwityah1.workers.dev/';
+
+// ====== CONFIG ==============================================================
+
+var REC_ISSUEDBY = 'BTV';
+
+var STATIONS = [
+  { id: 'colchester_reef', name: 'Colchester Reef', region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM02', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294500', ndbcId: null,    lat: 44.548,  lon: -73.34 },
+  { id: 'burton_island',   name: 'Burton Island',    region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM01', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04295000', ndbcId: null,    lat: 44.77,   lon: -73.21 },
+  { id: 'diamond_island',  name: 'Diamond Island',   region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM03', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294413', ndbcId: null,    lat: 44.03,   lon: -73.43 },
+  { id: 'valcour_buoy',    name: 'Valcour Buoy',     region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: null,    iemNetwork: null,    iemCoopNetwork: null,      source: 'ndbc', gaugeMax: 50, usgsSite: null,        ndbcId: '45178', staleThresholdMin: 150, lat: 44.603,  lon: -73.394 },
+  { id: 'whiteface',       name: 'Whiteface',        region: 'Adirondacks',    regionColor: 'purple', tempLabel: 'Wind Chill', noaaId: null,    iemNetwork: null,    iemCoopNetwork: null,      source: 'wfms', gaugeMax: 80, usgsSite: null,        ndbcId: null,    lat: 44.3658, lon: -73.9028 },
+  { id: 'mt_mansfield',    name: 'Mt. Mansfield',    region: 'Green Mountains', regionColor: 'green', tempLabel: 'Wind Chill', noaaId: 'MMNV1', iemNetwork: null,    iemCoopNetwork: 'VT_COOP', source: null,   gaugeMax: 80, usgsSite: null,        ndbcId: null,    rrsPil: 'RRSBTV', lat: 44.5437, lon: -72.8092 }
+];
+
+var HAZARD_EVENT_TYPES = [
+  'Wind Advisory',
+  'High Wind Warning',
+  'Lake Wind Advisory',
+  'Winter Weather Advisory',
+  'Winter Storm Warning'
+];
+
+var STALE_OBSERVATION_MINUTES = 90;
+
+var MOCK_HAZARDS = [
+  { title: 'Lake Wind Advisory', location: 'Lake Champlain' },
+  { title: 'High Wind Warning', location: 'Whiteface Mountain' },
+  { title: 'Winter Storm Watch', location: 'Northern Adirondacks' }
+];
+
+var MOCK_STATIONS = {
+  colchester_reef: { sustained: 14, gust: 20, direction: 'SW', directionDeg: 225, temp: 74, feelsLike: 74, updated: '9:58 AM', waterTemp: 70, waterTempUpdated: '9:00 AM' },
+  burton_island:   { sustained: 12, gust: 18, direction: 'SW', directionDeg: 225, temp: 75, feelsLike: 75, updated: '9:58 AM', waterTemp: 68, waterTempUpdated: '9:00 AM' },
+  diamond_island:  { sustained: 16, gust: 22, direction: 'S',  directionDeg: 180, temp: 73, feelsLike: 73, updated: '9:58 AM', waterTemp: 66, waterTempUpdated: '9:00 AM' },
+  mt_mansfield:    { sustained: 18, gust: 27, direction: 'W',  directionDeg: 270, temp: 60, feelsLike: 55, updated: '9:57 AM' },
+  whiteface:       { sustained: 21, gust: 31, direction: 'SW', directionDeg: 225, temp: 58, feelsLike: 52, updated: '9:56 AM' },
+  valcour_buoy:    { sustained: 8,  gust: null, direction: 'N', directionDeg: 350, temp: 65, feelsLike: 65, updated: '9:40 AM', waterTemp: 68, waveHeightFt: 0.3 }
+};
+
+var MOCK_REC_FORECAST = {
+  issued: null,
+  regions: [
+    {
+      title: 'The Forecast for the Broad Waters of Lake Champlain, including Colchester Reef, Valcour Island, and Cumberland Bay',
+      periods: [{ label: 'TODAY', text: 'Mock data — live REC product unavailable.' }],
+      notes: ''
+    }
+  ]
+};
+
+// ====== TIME/DATE HELPERS ====================================================
+// Browser equivalents of Apps Script's Utilities.formatDate(date, timeZone, pattern).
+
+function tzParts_(date, timeZone) {
+  var fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: timeZone, hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+  var parts = {};
+  fmt.formatToParts(date).forEach(function (p) { parts[p.type] = p.value; });
+  return parts;
+}
+
+function formatDateYMD_(date, timeZone) {
+  var p = tzParts_(date, timeZone);
+  return p.year + '-' + p.month + '-' + p.day;
+}
+
+function formatTime12_(date, timeZone) {
+  return new Intl.DateTimeFormat('en-US', { timeZone: timeZone, hour: 'numeric', minute: '2-digit', hour12: true }).format(date);
+}
+
+function formatTimeWithDate_(date, timeZone) {
+  var p = tzParts_(date, timeZone);
+  return formatTime12_(date, timeZone) + ' ' + Number(p.month) + '/' + Number(p.day);
+}
+
+function pad2_(n) { return (n < 10 ? '0' : '') + n; }
+
+// ====== ENTRY POINT ==========================================================
+
+async function getDashboardData() {
+  // Top-level guarantee: never return something malformed. Less critical here than
+  // it was for the Apps Script version (this whole call is already wrapped in a
+  // single try/catch by refresh() below), but kept for consistency and defense in depth.
+  try {
+    // These three are fully independent — running them concurrently instead of one
+    // after another is the single biggest speed win available here (previously this
+    // waited for forecast, then hazards, then stations in sequence for no reason).
+    var stationsFallback;
+    try {
+      stationsFallback = STATIONS.map(function (s) { return Object.assign({}, s, MOCK_STATIONS[s.id] || {}); });
+    } catch (fallbackErr) {
+      console.warn('getDashboardData: building stations mock fallback itself failed:', fallbackErr);
+      stationsFallback = [];
+    }
+    var results = await Promise.all([
+      safeCall_(getRecreationalForecast_, MOCK_REC_FORECAST),
+      safeCall_(getHazards_, MOCK_HAZARDS),
+      safeCall_(getStationData_, stationsFallback)
+    ]);
+    return {
+      updated: new Date().toISOString(),
+      recreationalForecast: results[0],
+      hazards: results[1],
+      stations: results[2]
+    };
+  } catch (err) {
+    console.warn('getDashboardData: TOP-LEVEL failure (should be unreachable) — returning minimal safe object:', err);
+    return {
+      updated: new Date().toISOString(),
+      hazards: [],
+      stations: [],
+      recreationalForecast: { issued: null, regions: [] }
+    };
+  }
+}
+
+async function safeCall_(fn, fallback) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.warn('getDashboardData: ' + fn.name + ' failed:', err);
+    return fallback;
+  }
+}
+
+// Wraps fetch() with a timeout, so one slow/unreachable source (e.g. if Whiteface's
+// port is blocked on a given network) can't hold up the whole page — it fails fast
+// and falls back to mock instead of hanging for the browser's full default timeout.
+async function fetchWithTimeout_(url, options, timeoutMs) {
+  var controller = new AbortController();
+  var timer = setTimeout(function () { controller.abort(); }, timeoutMs || 8000);
+  try {
+    return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ====== HAZARDS ==============================================================
+
+async function getHazards_() {
+  var results = [];
+  var seenAlertIds = {};
+  var anySuccess = false;
+
+  var pointStations = STATIONS.filter(function (s) { return s.lat != null && s.lon != null; });
+  var alertResults = await Promise.allSettled(
+    pointStations.map(function (s) { return fetchActiveAlertsForPoint_(s.lat, s.lon); })
+  );
+
+  alertResults.forEach(function (result, i) {
+    if (result.status !== 'fulfilled') {
+      console.warn('getHazards_ point query failed for ' + pointStations[i].name + ':', result.reason);
+      return;
+    }
+    anySuccess = true;
+    result.value.forEach(function (a) {
+      if (HAZARD_EVENT_TYPES.indexOf(a.event) === -1) return;
+      if (seenAlertIds[a.id]) return;
+      seenAlertIds[a.id] = true;
+      results.push({ title: a.event, location: a.areaDesc });
+    });
+  });
+
+  if (anySuccess) return results;
+  return MOCK_HAZARDS;
+}
+
+async function fetchActiveAlertsForPoint_(lat, lon) {
+  var url = 'https://api.weather.gov/alerts/active?point=' + lat + ',' + lon;
+  var resp = await fetchWithTimeout_(url, { headers: { 'Accept': 'application/geo+json' } });
+  if (!resp.ok) throw new Error('alerts/active HTTP ' + resp.status + ' for ' + lat + ',' + lon);
+  var json = await resp.json();
+  var features = json.features || [];
+  return features.map(function (f) {
+    return { id: f.properties.id, event: f.properties.event, areaDesc: f.properties.areaDesc };
+  });
+}
+
+// ====== STATION WIND / TEMP DATA =============================================
+
+async function getStationData_() {
+  // Promise.allSettled (not Promise.all) at this level, PLUS each station's own
+  // try/catch below — previously a single station's async chain throwing would
+  // reject the whole Promise.all, falling back to mock for ALL SIX stations at
+  // once with a generic error that didn't say which station actually broke.
+  var settled = await Promise.allSettled(STATIONS.map(function (s) { return getOneStationData_(s); }));
+  return settled.map(function (result, i) {
+    if (result.status === 'fulfilled') return result.value;
+    var s = STATIONS[i];
+    console.warn('getStationData_: ' + s.id + ' threw, falling back to mock for this station only:', result.reason);
+    return Object.assign({}, s, MOCK_STATIONS[s.id] || {});
+  });
+}
+
+async function getOneStationData_(s) {
+  if (s.source === 'ndbc') return buildNdbcStation_(s);
+
+  var resolvedId = null;
+  if (s.noaaId === 'TODO') resolvedId = await discoverNearestStationId_(s.lat, s.lon, s.name);
+  else if (s.noaaId) resolvedId = s.noaaId;
+
+  // Burton Island, Colchester Reef, and Diamond Island are all UVM stations that
+  // report through both NOAA/api.weather.gov (temperature, and gust when present)
+  // and IEM's VTWAC network (sustained wind + direction, which NOAA's feed for
+  // these stations tends to omit) — same fetch path for all three, just a
+  // different noaaId/iemNetwork pair per station in the STATIONS config above.
+  var noaaP = resolvedId ? fetchNoaaObservation_(resolvedId) : Promise.resolve(null);
+  var iemP = s.iemNetwork ? fetchIemObservation_(resolvedId, s.iemNetwork) : Promise.resolve(null);
+  var coopTempP = s.iemCoopNetwork ? fetchIemCoopObservation_(resolvedId, s.iemCoopNetwork) : Promise.resolve(null);
+  var rrsWindP = s.rrsPil ? fetchRrsWindObservation_(s.rrsPil, resolvedId) : Promise.resolve(null);
+  var usgsP = s.usgsSite ? fetchUsgsWaterTemp_(s.usgsSite) : Promise.resolve(null);
+
+  var results = await Promise.allSettled([noaaP, iemP, coopTempP, rrsWindP, usgsP]);
+  var noaa = results[0].status === 'fulfilled' ? results[0].value : null;
+  var iem = results[1].status === 'fulfilled' ? results[1].value : null;
+  var coopTemp = results[2].status === 'fulfilled' ? results[2].value : null;
+  var rrsWind = results[3].status === 'fulfilled' ? results[3].value : null;
+  var usgs = results[4].status === 'fulfilled' ? results[4].value : null;
+
+  var coopWind = (coopTemp || rrsWind) ? Object.assign({}, coopTemp, rrsWind) : null;
+  if (s.source === 'wfms') {
+    try { iem = await fetchWhitefaceObservation_(); } catch (err) { console.warn('Whiteface fetch failed:', err); iem = null; }
+  }
+
+  var merged = mergeObservations_(noaa, iem, coopWind);
+  var result = Object.assign({}, s, merged || MOCK_STATIONS[s.id] || {});
+
+  if (s.usgsSite) {
+    if (usgs) {
+      result.waterTemp = usgs.waterTempF;
+      result.waterTempUpdated = formatTime12_(new Date(usgs.timestamp), 'America/New_York');
+    } else if (MOCK_STATIONS[s.id] && MOCK_STATIONS[s.id].waterTemp != null) {
+      result.waterTemp = MOCK_STATIONS[s.id].waterTemp;
+      result.waterTempUpdated = MOCK_STATIONS[s.id].waterTempUpdated || null;
+    }
+  }
+
+  return result;
+}
+
+async function discoverNearestStationId_(lat, lon, label) {
+  if (lat == null || lon == null) return null;
+  try {
+    var pointResp = await fetchWithTimeout_('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
+    if (!pointResp.ok) return null;
+    var pointJson = await pointResp.json();
+
+    var stationsResp = await fetchWithTimeout_(pointJson.properties.observationStations);
+    if (!stationsResp.ok) return null;
+    var stationsJson = await stationsResp.json();
+
+    var features = stationsJson.features || [];
+    if (!features.length) return null;
+
+    var nearestId = features[0].properties.stationIdentifier;
+    console.log('discoverNearestStationId_: ' + (label || '') + ' (' + lat + ',' + lon + ') -> ' + nearestId);
+    return nearestId;
+  } catch (err) {
+    console.warn('discoverNearestStationId_ error for ' + label + ':', err);
+    return null;
+  }
+}
+
+async function fetchNoaaObservation_(noaaId) {
+  try {
+    var resp = await fetchWithTimeout_('https://api.weather.gov/stations/' + encodeURIComponent(noaaId) + '/observations/latest');
+    if (!resp.ok) { console.warn('NOAA fetch failed for ' + noaaId + ': HTTP ' + resp.status); return null; }
+    var p = (await resp.json()).properties;
+
+    var sustainedMph = speedToMph_(p.windSpeed);
+    var gustMph = speedToMph_(p.windGust);
+    var tempF = cToF_(p.temperature && p.temperature.value);
+    var feelsC = (p.heatIndex && p.heatIndex.value != null) ? p.heatIndex.value
+               : (p.windChill && p.windChill.value != null) ? p.windChill.value
+               : (p.temperature && p.temperature.value);
+    var feelsF = cToF_(feelsC);
+    var directionDeg = (p.windDirection && p.windDirection.value != null) ? p.windDirection.value : null;
+
+    if (sustainedMph == null && gustMph == null && tempF == null) return null;
+
+    return { sustainedMph: sustainedMph, gustMph: gustMph, tempF: tempF, feelsF: feelsF, directionDeg: directionDeg, timestamp: p.timestamp };
+  } catch (err) {
+    console.warn('fetchNoaaObservation_ error for ' + noaaId + ':', err);
+    return null;
+  }
+}
+
+async function fetchIemObservation_(stationId, network) {
+  try {
+    var url = 'https://mesonet.agron.iastate.edu/json/current.py?station=' + encodeURIComponent(stationId) +
+      '&network=' + encodeURIComponent(network);
+    var resp = await fetchWithTimeout_(url);
+    if (!resp.ok) { console.warn('IEM fetch failed for ' + stationId + '/' + network + ': HTTP ' + resp.status); return null; }
+    var ob = (await resp.json()).last_ob;
+    if (!ob) return null;
+
+    var sustainedKt = ob['windspeed[kt]'];
+    var sustainedMph = sustainedKt != null ? Math.round(sustainedKt * 1.15078) : null;
+    var tempF = ob['airtemp[F]'] != null ? Math.round(ob['airtemp[F]']) : null;
+    var feelsF = ob['feelslike[F]'] != null ? Math.round(ob['feelslike[F]']) : null;
+    var directionDeg = ob['winddirection[deg]'] != null ? ob['winddirection[deg]'] : null;
+
+    if (sustainedMph == null && tempF == null) return null;
+
+    return { sustainedMph: sustainedMph, tempF: tempF, feelsF: feelsF, directionDeg: directionDeg, timestamp: ob.utc_valid };
+  } catch (err) {
+    console.warn('fetchIemObservation_ error for ' + stationId + '/' + network + ':', err);
+    return null;
+  }
+}
+
+async function fetchWhitefaceObservation_() {
+  try {
+    // NOT routed through a proxy — tested and confirmed this doesn't help.
+    // corsproxy.io's own server (presumably on an unrestricted network) ALSO
+    // times out reaching this endpoint ("522: Connection timed out"), meaning
+    // the problem isn't CORS or one specific network being restrictive — this
+    // port may simply be unreachable from arbitrary external sources (possibly
+    // IP-allowlisted on ASRC's end). A proxy can't fix that, and routing through
+    // one would risk breaking this for visitors on normal networks where direct
+    // access might currently work fine. If your network specifically blocks
+    // outbound port 3000 (confirmed via ERR_CONNECTION_TIMED_OUT on a corporate
+    // network/VPN), this card will fall back to mock for you specifically —
+    // that's a network limitation, not a bug, and worth re-testing from a
+    // different network to confirm.
+    var resp = await fetchWithTimeout_('https://api.asrc.albany.edu:3000/wfmsapi');
+    if (!resp.ok) { console.warn('Whiteface (WFMS) fetch failed: HTTP ' + resp.status); return null; }
+    var d = await resp.json();
+
+    var sustainedMph = (d.WS_mph && d.WS_mph.value != null) ? Math.round(Number(d.WS_mph.value)) : null;
+    var tempF = (d.Temp_degF && d.Temp_degF.value != null) ? Math.round(Number(d.Temp_degF.value)) : null;
+    var windChillF = (d.WindChill_F && d.WindChill_F.value != null) ? Math.round(Number(d.WindChill_F.value)) : null;
+    var directionLabel = (d.WindDir && d.WindDir.value) ? d.WindDir.value : null;
+    var directionDeg = (d.WindDir && d.WindDir.units != null && d.WindDir.units !== '-') ? Number(d.WindDir.units) : null;
+
+    if (sustainedMph == null && tempF == null) return null;
+
+    var timestamp = parseWfmsDateTime_(d.DateTime && d.DateTime.value);
+
+    return {
+      sustainedMph: sustainedMph,
+      tempF: tempF,
+      feelsF: windChillF != null ? windChillF : tempF,
+      directionDeg: directionDeg,
+      directionLabel: directionLabel,
+      timestamp: timestamp
+    };
+  } catch (err) {
+    console.warn('fetchWhitefaceObservation_ error:', err);
+    return null;
+  }
+}
+
+function parseWfmsDateTime_(str) {
+  if (!str) return null;
+  var m = String(str).match(/(\w+)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!m) return null;
+
+  var months = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+  var month = months.indexOf(m[1]) + 1;
+  if (month === 0) return null;
+
+  var day = parseInt(m[2], 10);
+  var year = parseInt(m[3], 10);
+  var hour = parseInt(m[4], 10) % 12;
+  if (m[6].toUpperCase() === 'PM') hour += 12;
+  var minute = parseInt(m[5], 10);
+
+  var offsetHours = usEasternOffsetHours_(year, month, day);
+  var utcMs = Date.UTC(year, month - 1, day, hour - offsetHours, minute);
+  return new Date(utcMs).toISOString();
+}
+
+function usEasternOffsetHours_(year, month, day) {
+  var dstStart = nthSundayOfMonthUTC_(year, 3, 2);
+  var dstEnd = nthSundayOfMonthUTC_(year, 11, 1);
+  var d = new Date(Date.UTC(year, month - 1, day));
+  return (d >= dstStart && d < dstEnd) ? -4 : -5;
+}
+
+function nthSundayOfMonthUTC_(year, month, n) {
+  var first = new Date(Date.UTC(year, month - 1, 1));
+  var firstSunday = 1 + ((7 - first.getUTCDay()) % 7);
+  var day = firstSunday + (n - 1) * 7;
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+async function fetchIemCoopObservation_(stationId, network) {
+  var rows = await fetchIemCoopRows_(stationId, network);
+  if (!rows.length) return null;
+
+  var tempRow = findLatestNonNullRow_(rows, ['TAIRGZZ']);
+  if (!tempRow || tempRow.TAIRGZZ == null) return null;
+
+  return { tempF: Math.round(tempRow.TAIRGZZ), tempTimestamp: tempRow.utc_valid };
+}
+
+// Tries successive hourly RRS editions until one actually contains this station's
+// wind data — NOT just until a fetch succeeds. Confirmed live: the current hour's
+// edition can fetch fine (HTTP 200) but simply not include a given station's lines
+// at all (its sensor's reporting cadence didn't line up with that particular hour's
+// snapshot) while the previous few hours' editions do have it. Retrying only on HTTP
+// failure (the original design) would silently return nothing in that case.
+//
+// All candidate hours are fetched IN PARALLEL (not one-by-one) since they're
+// independent requests — this was previously sequential, which made Mt. Mansfield's
+// wind data the slowest single thing on the page whenever the newest edition or two
+// lacked this station. Picks the freshest (smallest hoursBack) edition that actually
+// has the station's data.
+async function fetchRrsWindObservation_(pil, stationId) {
+  var hoursBackOptions = [0, 1, 2, 3, 4, 5, 6];
+  var texts = await Promise.all(hoursBackOptions.map(function (hoursBack) {
+    return fetchRrsProductTextForStamp_(pil, rrsStampForHoursBack_(hoursBack));
+  }));
+
+  for (var i = 0; i < texts.length; i++) {
+    var text = texts[i];
+    if (!text) continue;
+
+    var sustained = parseRrsSeries_(text, stationId, 'USIRG');
+    var gust = parseRrsSeries_(text, stationId, 'UPERG');
+    var dir = parseRrsSeries_(text, stationId, 'UDIRG');
+    if (!sustained && !gust) continue; // this edition lacks this station — check the next (older) one
+
+    var timestamps = [];
+    if (sustained) timestamps.push(new Date(sustained.timestamp).getTime());
+    if (gust) timestamps.push(new Date(gust.timestamp).getTime());
+    var windTimestamp = timestamps.length ? new Date(Math.max.apply(null, timestamps)).toISOString() : null;
+
+    return {
+      sustainedMph: sustained ? Math.round(sustained.value) : null,
+      gustMph: gust ? Math.round(gust.value) : null,
+      directionDeg: dir ? Math.round(dir.value) : null,
+      windTimestamp: windTimestamp
+    };
+  }
+  return null;
+}
+
+// RRS editions are issued at :12 past each UTC hour. hoursBack=0 means "the most
+// recent edition that should already exist" (steps back one hour first if we're not
+// past :12 yet this hour), hoursBack=1,2,3... step further back from there.
+function rrsStampForHoursBack_(hoursBack) {
+  var now = new Date();
+  var nowUtcMinute = now.getUTCMinutes();
+  var baseHour = (nowUtcMinute < 12) ? new Date(now.getTime() - 3600000) : now;
+  var candidate = new Date(baseHour.getTime() - hoursBack * 3600000);
+  return candidate.getUTCFullYear() + pad2_(candidate.getUTCMonth() + 1) + pad2_(candidate.getUTCDate()) +
+    pad2_(candidate.getUTCHours()) + '12';
+}
+
+async function fetchRrsProductTextForStamp_(pil, stamp) {
+  try {
+    var url = 'https://mesonet.agron.iastate.edu/wx/afos/p.php?pil=' + encodeURIComponent(pil) + '&e=' + stamp;
+    var resp = await fetchWithTimeout_(url);
+    if (!resp.ok) return null;
+    var html = await resp.text();
+    return extractAfosPreText_(html);
+  } catch (err) {
+    console.warn('fetchRrsProductTextForStamp_ error for ' + pil + ' at ' + stamp + ':', err);
+    return null;
+  }
+}
+
+// Confirmed live: this page can contain MULTIPLE <pre class="afos-pre"> blocks
+// with the same nominal timestamp — NWS/IEM sometimes issues sparse partial
+// re-transmissions alongside the full one, and the full content isn't
+// reliably the LAST block (a case was found where it was the middle one,
+// with a sparse single-station snippet appearing after it). Concatenating
+// every block and searching all of them means parseRrsSeries_ finds a
+// station's data regardless of which specific block it landed in, instead
+// of us needing to guess which position is "correct".
+function extractAfosPreText_(html) {
+  var matches = html.match(/<pre class="afos-pre">([\s\S]*?)<\/pre>/g);
+  if (!matches || !matches.length) return null;
+  return matches.map(function (block) {
+    return block
+      .replace(/^<pre class="afos-pre">/, '')
+      .replace(/<\/pre>$/, '')
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  }).join('\n');
+}
+
+function parseRrsSeries_(text, stationId, code) {
+  var lines = text.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var m = lines[i].match(/^\.E\s+(\S+)\s+(\d{8})\s+DH(\d{2})(\d{2})\/([A-Z0-9]+)\/DIN(\d+)\/(.+)$/);
+    if (!m) continue;
+    if (m[1] !== stationId || m[5] !== code) continue;
+
+    var dateStr = m[2], startHour = Number(m[3]), startMin = Number(m[4]), durMin = Number(m[6]);
+    var values = m[7].split('/').filter(function (v) { return v.length > 0; });
+
+    var j = i + 1;
+    while (j < lines.length) {
+      var cont = lines[j].match(/^\.E\d+\s+(.+)$/);
+      if (!cont) break;
+      values = values.concat(cont[1].split('/').filter(function (v) { return v.length > 0; }));
+      j++;
+    }
+
+    for (var k = values.length - 1; k >= 0; k--) {
+      if (values[k] === 'M') continue;
+      var num = parseFloat(values[k]);
+      if (isNaN(num)) continue;
+      var year = Number(dateStr.substr(0, 4)), month = Number(dateStr.substr(4, 2)), day = Number(dateStr.substr(6, 2));
+      var ts = new Date(Date.UTC(year, month - 1, day, startHour, startMin + k * durMin));
+      return { value: num, timestamp: ts.toISOString() };
+    }
+    return null;
+  }
+  return null;
+}
+
+async function fetchIemCoopRows_(stationId, network) {
+  var today = formatDateYMD_(new Date(), 'America/New_York');
+  var rows = await fetchIemObhistoryRows_(stationId, network, today);
+  if (!rows || !rows.length) {
+    var yesterday = formatDateYMD_(new Date(Date.now() - 86400000), 'America/New_York');
+    rows = await fetchIemObhistoryRows_(stationId, network, yesterday);
+  }
+  return rows || [];
+}
+
+async function fetchIemObhistoryRows_(stationId, network, dateStr) {
+  try {
+    var url = 'https://mesonet.agron.iastate.edu/api/1/obhistory.json?station=' + encodeURIComponent(stationId) +
+      '&network=' + encodeURIComponent(network) + '&date=' + dateStr;
+    var resp = await fetchWithTimeout_(url);
+    if (!resp.ok) {
+      console.warn('IEM obhistory fetch failed for ' + stationId + '/' + network + '/' + dateStr + ': HTTP ' + resp.status);
+      return null;
+    }
+    return (await resp.json()).data || [];
+  } catch (err) {
+    console.warn('fetchIemObhistoryRows_ error for ' + stationId + '/' + network + '/' + dateStr + ':', err);
+    return null;
+  }
+}
+
+function findLatestNonNullRow_(rows, fieldNames) {
+  for (var i = rows.length - 1; i >= 0; i--) {
+    for (var j = 0; j < fieldNames.length; j++) {
+      if (rows[i][fieldNames[j]] != null) return rows[i];
+    }
+  }
+  return null;
+}
+
+function mergeObservations_(noaa, iem, coopWind) {
+  if (!noaa && !iem && !coopWind) return null;
+
+  var sustainedMph = null, sustainedTimestamp = null;
+  if (iem && iem.sustainedMph != null) {
+    sustainedMph = iem.sustainedMph;
+    sustainedTimestamp = iem.timestamp;
+  } else if (coopWind && coopWind.sustainedMph != null) {
+    sustainedMph = coopWind.sustainedMph;
+    sustainedTimestamp = coopWind.windTimestamp;
+  } else if (noaa && noaa.sustainedMph != null) {
+    sustainedMph = noaa.sustainedMph;
+    sustainedTimestamp = noaa.timestamp;
+  }
+
+  var gustMph = null, gustTimestamp = null;
+  if (noaa && noaa.gustMph != null) {
+    gustMph = noaa.gustMph;
+    gustTimestamp = noaa.timestamp;
+  } else if (coopWind && coopWind.gustMph != null) {
+    gustMph = coopWind.gustMph;
+    gustTimestamp = coopWind.windTimestamp;
+  }
+
+  // Physical sanity check: gust can never legitimately be lower than sustained
+  // AT THE SAME MOMENT. But sustained and gust here come from two independently
+  // timed sources, and wind is naturally turbulent — a fresher gust reading
+  // simply CAN be lower than a slightly-older sustained reading with no error
+  // involved at all. An earlier version of this check picked "whichever
+  // timestamp is fresher" to keep, which meant a fresher-but-lower gust would
+  // delete a perfectly good, still-current sustained reading — confirmed live
+  // on Colchester Reef, and the actual cause of "several lake gauges showing
+  // zero/blank sustained wind and only gusts". Sustained drives the barb itself
+  // and matters more, so it's never the one dropped: on conflict, keep
+  // sustained and suppress gust instead.
+  if (sustainedMph != null && gustMph != null && gustMph < sustainedMph) {
+    gustMph = null;
+    gustTimestamp = null;
+  }
+
+  var directionDeg = (iem && iem.sustainedMph != null && iem.directionDeg != null) ? iem.directionDeg
+                    : (noaa && noaa.directionDeg != null) ? noaa.directionDeg
+                    : (coopWind && coopWind.directionDeg != null) ? coopWind.directionDeg : null;
+  var directionLabel = (iem && iem.directionLabel) ? iem.directionLabel
+                      : (directionDeg != null ? degreesToCompass_(directionDeg) : null);
+
+  var tempCandidates = [];
+  if (coopWind && coopWind.tempF != null && coopWind.tempTimestamp) {
+    tempCandidates.push({ v: coopWind.tempF, t: new Date(coopWind.tempTimestamp).getTime() });
+  }
+  if (iem && iem.tempF != null && iem.timestamp) {
+    tempCandidates.push({ v: iem.tempF, t: new Date(iem.timestamp).getTime() });
+  }
+  if (noaa && noaa.tempF != null && noaa.timestamp) {
+    tempCandidates.push({ v: noaa.tempF, t: new Date(noaa.timestamp).getTime() });
+  }
+  tempCandidates.sort(function (a, b) { return b.t - a.t; });
+  var tempF = tempCandidates.length ? tempCandidates[0].v : null;
+  var tempTimestampMs = tempCandidates.length ? tempCandidates[0].t : null;
+
+  var feelsF = (iem && iem.feelsF != null) ? iem.feelsF : (noaa && noaa.feelsF != null ? noaa.feelsF : tempF);
+
+  if (sustainedMph == null && gustMph == null && tempF == null) return null;
+
+  var candidateTimestamps = [];
+  if (gustTimestamp) candidateTimestamps.push(new Date(gustTimestamp).getTime());
+  if (sustainedTimestamp) candidateTimestamps.push(new Date(sustainedTimestamp).getTime());
+  if (tempTimestampMs) candidateTimestamps.push(tempTimestampMs);
+  if (!candidateTimestamps.length) return null;
+
+  var primaryMs = Math.max.apply(null, candidateTimestamps);
+  var ageMinutes = (Date.now() - primaryMs) / 60000;
+  var isStale = ageMinutes > STALE_OBSERVATION_MINUTES;
+
+  var sustainedAsOf = null;
+  if (sustainedTimestamp) {
+    var sustainedMs = new Date(sustainedTimestamp).getTime();
+    if (primaryMs - sustainedMs > 30 * 60000) {
+      sustainedAsOf = formatTimeWithDate_(new Date(sustainedMs), 'America/New_York');
+    }
+  }
+
+  return {
+    sustained: sustainedMph,
+    sustainedAsOf: sustainedAsOf,
+    gust: gustMph,
+    gustOnly: sustainedMph == null && gustMph != null,
+    direction: directionLabel,
+    directionDeg: directionDeg,
+    temp: tempF,
+    feelsLike: feelsF,
+    updated: formatTime12_(new Date(primaryMs), 'America/New_York'),
+    stale: isStale,
+    staleAge: isStale ? humanizeAge_(ageMinutes) : null
+  };
+}
+
+function degreesToCompass_(deg) {
+  if (deg == null) return null;
+  var dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  var idx = Math.round(deg / 22.5) % 16;
+  return dirs[idx];
+}
+
+async function fetchUsgsWaterTemp_(siteId) {
+  try {
+    var url = 'https://waterservices.usgs.gov/nwis/iv/?sites=' + encodeURIComponent(siteId) + '&parameterCd=00010&format=json';
+    var resp = await fetchWithTimeout_(url);
+    if (!resp.ok) { console.warn('USGS water temp fetch failed for ' + siteId + ': HTTP ' + resp.status); return null; }
+    var series = (await resp.json()).value.timeSeries;
+    if (!series || !series.length) return null;
+
+    var values = series[0].values[0].value;
+    if (!values || !values.length) return null;
+
+    var latest = values[values.length - 1];
+    var tempC = parseFloat(latest.value);
+    if (isNaN(tempC)) return null;
+
+    return { waterTempF: Math.round(tempC * 9 / 5 + 32), timestamp: latest.dateTime };
+  } catch (err) {
+    console.warn('fetchUsgsWaterTemp_ error for ' + siteId + ':', err);
+    return null;
+  }
+}
+
+async function buildNdbcStation_(s) {
+  try {
+    var ndbc = await fetchNdbcObservation_(s.ndbcId);
+    if (!ndbc) return Object.assign({}, s, MOCK_STATIONS[s.id] || {});
+
+    var threshold = s.staleThresholdMin || STALE_OBSERVATION_MINUTES;
+    var ageMinutes = (Date.now() - new Date(ndbc.timestamp).getTime()) / 60000;
+    var isStale = ageMinutes > threshold;
+
+    return Object.assign({}, s, {
+      sustained: ndbc.sustainedMph,
+      gust: ndbc.gustMph,
+      gustOnly: ndbc.sustainedMph == null && ndbc.gustMph != null,
+      direction: degreesToCompass_(ndbc.directionDeg),
+      directionDeg: ndbc.directionDeg,
+      temp: ndbc.tempF,
+      feelsLike: ndbc.tempF,
+      waterTemp: ndbc.waterTempF,
+      waveHeightFt: ndbc.waveHeightFt,
+      updated: formatTime12_(new Date(ndbc.timestamp), 'America/New_York'),
+      stale: isStale,
+      staleAge: isStale ? humanizeAge_(ageMinutes) : null
+    });
+  } catch (err) {
+    console.warn('buildNdbcStation_ NDBC error for ' + s.ndbcId + ':', err);
+    return Object.assign({}, s, MOCK_STATIONS[s.id] || {});
+  }
+}
+
+// NDBC does not send CORS headers (confirmed), so this fetch will likely fail with
+// a CORS error in the browser console — that's expected, not a bug in this code.
+// Set NDBC_PROXY_URL above to a working proxy to fix; until then this gracefully
+// returns null and the station falls back to mock data, same as any other outage.
+async function fetchNdbcObservation_(ndbcId) {
+  try {
+    var base = NDBC_PROXY_URL || 'https://www.ndbc.noaa.gov/data/realtime2/';
+    var url = base + ndbcId + '.txt';
+    var resp = await fetchWithTimeout_(url);
+    if (!resp.ok) { console.warn('NDBC fetch failed for ' + ndbcId + ': HTTP ' + resp.status); return null; }
+    var fullText = await resp.text();
+    var lines = fullText.split('\n');
+    var dataLine = lines[2];
+    if (!dataLine || !dataLine.trim()) {
+      console.warn('NDBC ' + ndbcId + ': no data line at index 2. First 300 chars of response:', fullText.slice(0, 300));
+      return null;
+    }
+
+    var cols = dataLine.trim().split(/\s+/);
+    var mm = function (v) { return (v == null || v === 'MM') ? null : Number(v); };
+
+    var year = Number(cols[0]), month = Number(cols[1]), day = Number(cols[2]),
+        hour = Number(cols[3]), minute = Number(cols[4]);
+    var wdir = mm(cols[5]);
+    var wspdMs = mm(cols[6]);
+    var gstMs = mm(cols[7]);
+    var wvhtM = mm(cols[8]);
+    var atmpC = mm(cols[13]);
+    var wtmpC = mm(cols[14]);
+
+    if (wspdMs == null && gstMs == null && atmpC == null) {
+      console.warn('NDBC ' + ndbcId + ': parsed dataLine but wind/temp all null. Raw dataLine:', dataLine);
+      return null;
+    }
+
+    return {
+      sustainedMph: wspdMs != null ? Math.round(wspdMs * 2.23694) : null,
+      gustMph: gstMs != null ? Math.round(gstMs * 2.23694) : null,
+      directionDeg: wdir,
+      tempF: atmpC != null ? Math.round(atmpC * 9 / 5 + 32) : null,
+      waterTempF: wtmpC != null ? Math.round(wtmpC * 9 / 5 + 32) : null,
+      waveHeightFt: wvhtM != null ? Math.round(wvhtM * 3.28084 * 10) / 10 : null,
+      timestamp: new Date(Date.UTC(year, month - 1, day, hour, minute)).toISOString()
+    };
+  } catch (err) {
+    console.warn('fetchNdbcObservation_ error for ' + ndbcId + ' (likely CORS — see notes at top of file):', err);
+    return null;
+  }
+}
+
+function speedToMph_(measurement) {
+  if (!measurement || measurement.value == null) return null;
+  var v = measurement.value;
+  var unit = measurement.unitCode || '';
+  if (unit.indexOf('km_h') > -1) return Math.round(v * 0.621371);
+  if (unit.indexOf('m_s') > -1) return Math.round(v * 2.23694);
+  if (unit.indexOf('mi_h') > -1) return Math.round(v);
+  console.warn('speedToMph_: unrecognized unitCode "' + unit + '", assuming km/h');
+  return Math.round(v * 0.621371);
+}
+
+function cToF_(c) {
+  if (c == null) return null;
+  return Math.round(c * 9 / 5 + 32);
+}
+
+function humanizeAge_(ageMinutes) {
+  var mins = Math.round(ageMinutes);
+  if (mins < 60) return mins + ' min';
+  var hours = Math.round(mins / 60);
+  if (hours < 24) return hours + ' hr';
+  var days = Math.round(hours / 24);
+  return days + (days === 1 ? ' day' : ' days');
+}
+
+// ====== RECREATIONAL FORECAST (NWS "REC" text product) =======================
+
+async function getRecreationalForecast_() {
+  try {
+    var listResp = await fetchWithTimeout_('https://api.weather.gov/products/types/REC/locations/' + REC_ISSUEDBY);
+    if (!listResp.ok) return MOCK_REC_FORECAST;
+
+    var graph = (await listResp.json())['@graph'];
+    if (!graph || !graph.length) return MOCK_REC_FORECAST;
+
+    var latestId = graph[0].id;
+    var productResp = await fetchWithTimeout_('https://api.weather.gov/products/' + latestId);
+    if (!productResp.ok) return MOCK_REC_FORECAST;
+
+    var product = await productResp.json();
+    var parsed = parseRecProduct_(product.productText);
+    parsed.issued = product.issuanceTime;
+    return parsed;
+  } catch (err) {
+    console.warn('getRecreationalForecast_ error:', err);
+    return MOCK_REC_FORECAST;
+  }
+}
+
+function parseRecProduct_(rawText) {
+  var body = rawText || '';
+  var firstTitleIdx = body.indexOf('.The ');
+  if (firstTitleIdx === -1) return { issued: null, regions: [] };
+  body = body.slice(firstTitleIdx);
+  body = body.replace(/\n\$\$[\s\S]*$/, '');
+  body = body.replace(/\n&&\n/g, '\n\n');
+
+  var blocks = body.split(/\n(?=\.The )/).map(function (b) { return b.trim(); }).filter(Boolean);
+
+  var regions = blocks.map(function (block) {
+    var titleMatch = block.match(/^\.(.+?)\.\.\./s);
+    var title = titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : 'Forecast';
+    var rest = titleMatch ? block.slice(titleMatch[0].length) : block;
+
+    var periodMatches = rest.match(/\.[A-Z][A-Z /]*\.\.\.[\s\S]*?(?=\n\.[A-Z][A-Z /]*\.\.\.|\n\n[A-Z]|$)/g) || [];
+    var periods = periodMatches.map(function (chunk) {
+      var m = chunk.match(/^\.([A-Z][A-Z /]*)\.\.\.([\s\S]*)$/);
+      return m ? { label: m[1].trim(), text: m[2].replace(/\s+/g, ' ').trim() } : null;
+    }).filter(Boolean);
+
+    var lastChunk = periodMatches[periodMatches.length - 1] || '';
+    var lastIdx = lastChunk ? rest.indexOf(lastChunk) + lastChunk.length : 0;
+    var notes = rest.slice(lastIdx).replace(/\s+/g, ' ').trim();
+
+    return { title: title, periods: periods, notes: notes };
+  });
+
+  return { issued: null, regions: regions };
+}
+
+// =============================================================================
+// FRONT-END RENDERING
+// =============================================================================
+
+// Standard meteorological wind barb: shaft points toward where the wind is
+// blowing FROM (rotated by directionDeg, 0=N=up), with ticks encoding speed in
+// 5-knot increments — half barb=5kt, full barb=10kt, pennant (triangle)=50kt.
+// Requires BOTH sustained speed and direction to draw a real barb — falls back
+// to a plain unoriented dot otherwise rather than misrepresent missing data.
+// Color the barb by severity: lake stations use <15/15-25/>25 mph, mountain
+// stations get raised thresholds (<30/30-45/>45) since exposed summits run much
+// windier in normal conditions.
+function windSpeedColor_(speedMph, isMountain) {
+  if (speedMph == null) return '#8a8f98';
+  var lowMax = isMountain ? 30 : 15;
+  var midMax = isMountain ? 45 : 25;
+  if (speedMph < lowMax) return '#3fae4a';
+  if (speedMph <= midMax) return '#b8860b'; // deeper goldenrod — better contrast on white than a lighter yellow
+  return '#c0392b';
+}
+
+// Standard meteorological wind barb: shaft points toward where the wind is
+// blowing FROM (rotated by directionDeg, 0=N=up), with ticks encoding speed in
+// 5-knot increments — half barb=5kt, full barb=10kt, pennant (triangle)=50kt.
+// Requires BOTH sustained speed and direction to draw a real barb — falls back
+// to a plain unoriented dot otherwise rather than misrepresent missing data.
+function windBarbSVG(sustainedMph, directionDeg, gustMph, isMountain) {
+  // cy moved up from the box's visual center: a southerly wind rotates the shaft
+  // to point DOWNWARD from the dot, and centered at 78 that left only ~2 units of
+  // clearance before the METAR text sitting right below this SVG — now ~12.
+  var cx = 110, cy = 62, staffLen = 50;
+  var colorBasis = sustainedMph != null ? sustainedMph : gustMph;
+  var color = windSpeedColor_(colorBasis, isMountain);
+
+  if (sustainedMph == null || directionDeg == null || isNaN(sustainedMph) || isNaN(directionDeg)) {
+    return '<svg class="wind-barb-svg" viewBox="0 0 220 130" width="100%" height="112" xmlns="http://www.w3.org/2000/svg">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="none" stroke="' + color + '" stroke-width="2" /></svg>';
+  }
+
+  var knots = sustainedMph * 0.868976;
+  var rounded = Math.round(knots / 5) * 5;
+  var isCalm = rounded < 3;
+
+  var svg = '<svg class="wind-barb-svg" viewBox="0 0 220 130" width="100%" height="112" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + color + '" />';
+
+  if (!isCalm) {
+    var tipY = cy - staffLen;
+    var inner = '<line x1="' + cx + '" y1="' + cy + '" x2="' + cx + '" y2="' + tipY + '" stroke="' + color + '" stroke-width="2.5" />';
+
+    var remaining = rounded;
+    var pennants = Math.floor(remaining / 50); remaining -= pennants * 50;
+    var fullBarbs = Math.floor(remaining / 10); remaining -= fullBarbs * 10;
+    var halfBarb = remaining >= 5 ? 1 : 0;
+
+    // Angle measured directly from NWS's own reference gifs (see
+    // weather.gov/hfo/windbarbinfo): each tick leans toward the TIP at
+    // atan(3) ≈ 71.6° from the shaft. Length/spacing/half-barb ratio are
+    // scaled up from that reference's own proportions — at this card's small
+    // render size (~100px), the reference's tighter spacing and half-barb
+    // ratio read as one indistinct blob rather than clearly separate,
+    // clearly-graduated strokes.
+    var tickLen = 20;
+    var tickSpacing = tickLen * 0.45;
+    var theta = Math.atan(3);
+    var leanDx = Math.sin(theta), leanDy = -Math.cos(theta);
+    var perpDx = Math.cos(theta), perpDy = Math.sin(theta);
+    var pos = tipY;
+
+    for (var p = 0; p < pennants; p++) {
+      var pennantLen = tickLen, pennantHalfW = tickLen * 0.285;
+      var apexX = cx + leanDx * pennantLen, apexY = pos + leanDy * pennantLen;
+      var b1x = cx + perpDx * pennantHalfW, b1y = pos + perpDy * pennantHalfW;
+      var b2x = cx - perpDx * pennantHalfW, b2y = pos - perpDy * pennantHalfW;
+      inner += '<polygon points="' + apexX + ',' + apexY + ' ' + b1x + ',' + b1y + ' ' + b2x + ',' + b2y + '" fill="' + color + '" />';
+      pos += tickLen * 0.85;
+    }
+    for (var b = 0; b < fullBarbs; b++) {
+      var ex = cx + leanDx * tickLen, ey = pos + leanDy * tickLen;
+      inner += '<line x1="' + cx + '" y1="' + pos + '" x2="' + ex + '" y2="' + ey + '" stroke="' + color + '" stroke-width="2.4" />';
+      pos += tickSpacing;
+    }
+    if (halfBarb) {
+      // Deliberately much shorter (0.4x, not 0.5x) AND thinner than a full
+      // barb — makes "half" read unambiguously smaller at a glance instead
+      // of a subtle length difference that's easy to miss at card scale.
+      var hl = tickLen * 0.4;
+      var hex = cx + leanDx * hl, hey = pos + leanDy * hl;
+      inner += '<line x1="' + cx + '" y1="' + pos + '" x2="' + hex + '" y2="' + hey + '" stroke="' + color + '" stroke-width="1.8" />';
+    }
+
+    svg += '<g transform="rotate(' + directionDeg + ' ' + cx + ' ' + cy + ')">' + inner + '</g>';
+  }
+
+  svg += '</svg>';
+  return svg;
+}
+
+// "250° 21G28 kt" — same shorthand a coded METAR uses (e.g. 25021G28KT), now in
+// knots to match real METAR convention. Everything upstream (merge logic, the
+// gust-can't-be-lower-than-sustained sanity check, the barb's own geometry, the
+// color thresholds) stays in mph internally — this is purely the final display
+// conversion, so converting both sustained and gust by the same factor can't
+// introduce a new inconsistency between them. Gust only appended when present,
+// same as METAR omits the G-group entirely when there's no gust.
+function metarLineHTML(sustainedMph, directionDeg, gustMph) {
+  var dirStr = (directionDeg != null) ? Math.round(directionDeg) : '---';
+  var sustKt = (sustainedMph != null) ? Math.round(sustainedMph * 0.868976) : null;
+  var gustKt = (gustMph != null) ? Math.round(gustMph * 0.868976) : null;
+  var sustStr = (sustKt != null) ? sustKt : '--';
+  var gustHtml = (gustKt != null) ? ('<span class="metar-gust">G' + gustKt + '</span>') : '';
+  return dirStr + '&deg; ' + sustStr + gustHtml + ' kt';
+}
+
+function fmtVal(v) { return (v == null) ? '--' : v; }
+
+function renderGaugeLoading() {
+  var wrap = document.getElementById('gaugeColAll');
+  if (!wrap) return;
+
+  wrap.innerHTML = '';
+
+  STATIONS.forEach(function(station) {
+    var card = document.createElement('div');
+    card.className = 'gauge-card loading-card';
+
+    card.innerHTML =
+      '<div class="gauge-loading">' +
+        '<div class="loading-spinner"></div>' +
+        '<div class="loading-title">' + station.name + '</div>' +
+        '<div class="loading-text">Loading latest observation...</div>' +
+      '</div>';
+
+    wrap.appendChild(card);
+  });
+}
+
+function buildGaugeCard(station) {
+  var card = document.createElement('div');
+  card.className = 'gauge-card' + (station.stale ? ' is-stale' : '');
+  // Left border matches the barb's own severity color exactly (same function,
+  // same thresholds) — lets severity read at a glance without even looking
+  // at the barb itself.
+  var severityBasis = station.sustained != null ? station.sustained : station.gust;
+  card.style.borderLeft = '4px solid ' + windSpeedColor_(severityBasis, station.region !== 'Lake Champlain');
+  var staleBadge = station.stale
+    ? '<div class="stale-badge">&#9888; STALE &middot; ' + station.staleAge + ' old</div>'
+    : '';
+  var gustOnlyNote = station.gustOnly
+    ? '<div class="gust-only-note">This station reports gust only — no sustained wind speed</div>'
+    : '';
+  var sustainedAsOfNote = station.sustainedAsOf
+    ? '<div class="gust-only-note">Sustained as of ' + station.sustainedAsOf + '</div>'
+    : '';
+  // Combined onto one line when both exist (previously two separate rows) —
+  // Valcour Buoy is the only station with both, and the extra row was making
+  // its card need more total content height than others, which under
+  // flexbox's default shrink behavior compressed its wind barb smaller than
+  // every other card's (see .gauge-card svg flex-shrink:0 fix below too).
+  var waterWaveRow = '';
+  if (station.waterTemp != null && station.waveHeightFt != null) {
+    waterWaveRow = '<div class="water-row">&#127754; Water <span class="water-temp">' + fmtVal(station.waterTemp) + '&deg;F</span>' +
+      ' &nbsp;&#127754; Waves <span class="wave-height">' + fmtVal(station.waveHeightFt) + ' ft</span></div>';
+  } else if (station.waterTemp != null) {
+    waterWaveRow = '<div class="water-row">&#127754; Water <span class="water-temp">' + fmtVal(station.waterTemp) + '&deg;F</span></div>';
+  } else if (station.waveHeightFt != null) {
+    waterWaveRow = '<div class="wave-row">&#127754; Waves <span class="wave-height">' + fmtVal(station.waveHeightFt) + ' ft</span></div>';
+  }
+  card.innerHTML =
+    '<h3>' + station.name + '</h3>' +
+    '<div class="region ' + station.regionColor + '">' + station.region + '</div>' +
+    staleBadge +
+    windBarbSVG(station.sustained, station.directionDeg, station.gust, station.region !== 'Lake Champlain') +
+    '<div class="metar-line">' + metarLineHTML(station.sustained, station.directionDeg, station.gust) + '</div>' +
+    gustOnlyNote +
+    sustainedAsOfNote +
+    '<div class="temp-row">&#127777;&#65039; <span class="temp">' + fmtVal(station.temp) + '&deg;F</span>' +
+    '<span class="feels">' + station.tempLabel + ' ' + fmtVal(station.feelsLike) + '&deg;F</span></div>' +
+    waterWaveRow +
+    '<div class="updated-row">Updated: ' + station.updated + '</div>';
+  return card;
+}
+
+// All 6 stations stacked in one column, evenly sized (via the
+// .gauge-col-all .gauge-card flex:1 CSS rule) to fill the available height.
+function renderGauges(stations) {
+  var col = document.getElementById('gaugeColAll');
+  col.innerHTML = '';
+  stations.forEach(function (s) {
+    col.appendChild(buildGaugeCard(s));
+  });
+}
+
+// Embedded conditional row right under the header — only takes up space
+// when there's an active hazard, collapses to nothing on a clear day.
+function renderHazards(hazards) {
+  var row = document.getElementById('headerAlertRow');
+  var list = document.getElementById('headerAlertList');
+  list.innerHTML = '';
+
+  if (!hazards || hazards.length === 0) {
+    row.classList.remove('is-visible');
+    return;
+  }
+
+  row.classList.add('is-visible');
+  hazards.forEach(function (h) {
+    var d = document.createElement('div');
+    d.className = 'hazard-item';
+    d.innerHTML = '<b>' + h.title + '</b><span>' + h.location + '</span>';
+    list.appendChild(d);
+  });
+}
+
+// The big center map is the Google Drive file that used to hold a static
+// thermocline image — its content is now the auto-generated GLWU wave
+// height + wind barb map instead (see the Python pipeline conversation),
+// so it's labeled and placed accordingly. NOAA's separate 8-panel
+// time-series chart (a different, genuinely distinct visual — wave height
+// over time at 8 points, vs. this map's spatial snapshot) gets its own
+// section below instead of sharing space with the big map.
+function renderGlerlImages() {
+  var cacheBust = Date.now();
+
+  var mapWrap = document.getElementById('centerMapWrap');
+  mapWrap.innerHTML =
+    '<img src="https://lh3.googleusercontent.com/d/15QyC0yqn5Q-wFTZwQ-Qcm-Be252JwFnx?t=' + cacheBust + '" alt="Lake Champlain Wave Height &amp; Wind Barbs">';
+
+  // Our own auto-generated 8-station forecast chart (2x4 grid, forward-only,
+  // built from the same GLWU data as the map above) — replaces NOAA's static
+  // wvht_1d_8station.png, which was too wide to fit this column readably.
+  var waveGraphs = document.getElementById('waveGraphsSection');
+  waveGraphs.innerHTML =
+    '<img src="https://lh3.googleusercontent.com/d/1EwxrJOQcBkyh8Ic-7s4rq2h10UPR7pDr?t=' + cacheBust + '" alt="Lake Champlain 8-Station Wave Height Forecast">';
+}
+
+function renderRecForecast(forecast) {
+  var wrap = document.getElementById('recForecast');
+  wrap.innerHTML = '';
+  if (!forecast || !forecast.regions || !forecast.regions.length) return;
+
+  if (forecast.issued) {
+    document.getElementById('recIssuedLabel').textContent =
+      'Issued ' + new Date(forecast.issued).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  }
+
+  forecast.regions.forEach(function (region) {
+    var card = document.createElement('div');
+    card.className = 'rec-card';
+    var periodsHtml = region.periods.map(function (p) {
+      return '<div class="rec-period"><div class="lbl">' + p.label + '</div><p class="txt">' + p.text + '</p></div>';
+    }).join('');
+    card.innerHTML = '<h4>' + region.title + '</h4>' + periodsHtml +
+      (region.notes ? '<div class="rec-notes">' + region.notes + '</div>' : '');
+    wrap.appendChild(card);
+  });
+}
+
+var REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
+function renderMeta(data) {
+  var updated = new Date(data.updated);
+  document.getElementById('updatedLabel').textContent = 'Updated ' + updated.toLocaleString('en-US', {
+    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+  });
+  var next = new Date(updated.getTime() + REFRESH_INTERVAL_MS);
+  document.getElementById('nextUpdateLabel').textContent = 'Next ' +
+    next.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function renderAll(data) {
+  renderMeta(data);
+  renderHazards(data.hazards);
+  renderGauges(data.stations);
+  renderRecForecast(data.recreationalForecast);
+}
+
+function showError(err) {
+  var msg = (err && err.message) ? err.message : String(err);
+  console.error('Dashboard load failed:', err);
+  var banner = document.getElementById('errorBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'errorBanner';
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+  banner.textContent = 'Dashboard failed to load: ' + msg;
+}
+
+async function refresh() {
+  try {
+    var data = await getDashboardData();
+    var banner = document.getElementById('errorBanner');
+    if (banner) banner.remove();
+    renderAll(data);
+  } catch (err) {
+    showError(err);
+  }
+}
+
+// GLERL/temp-profile imagery is static/public — render immediately, don't wait on fetches.
+renderGlerlImages();
+setInterval(renderGlerlImages, REFRESH_INTERVAL_MS);
+
+/* Show station cards immediately while observations load */
+renderGaugeLoading();
+
+refresh();
+setInterval(refresh, REFRESH_INTERVAL_MS);
+
+// Browsers throttle timers in background/inactive tabs — setInterval above can
+// silently stall for a long time if this tab sits unfocused (confirmed: our own
+// fetch logic is correct and returns fresh data on demand, so a stale-looking
+// page is almost always this, not a data bug). Refresh immediately whenever the
+// tab becomes visible again, rather than waiting for the next throttled tick.
+var lastVisibilityRefresh = Date.now();
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible' && Date.now() - lastVisibilityRefresh > 30000) {
+    lastVisibilityRefresh = Date.now();
+    refresh();
+  }
+});
+
+// Info modal — open on button click, close on the X, click-outside, or Escape.
+var infoOverlay = document.getElementById('infoModalOverlay');
+document.getElementById('infoBtn').addEventListener('click', function () {
+  infoOverlay.classList.add('is-visible');
+});
+document.getElementById('infoModalClose').addEventListener('click', function () {
+  infoOverlay.classList.remove('is-visible');
+});
+infoOverlay.addEventListener('click', function (e) {
+  if (e.target === infoOverlay) infoOverlay.classList.remove('is-visible');
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') infoOverlay.classList.remove('is-visible');
+});
+</script>
+</body>
+</html>
