@@ -31,12 +31,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy pandas matplotlib scipy requests beautifulsoup4 lxml pillow imageio gspread google-auth google-api-python-client pygrib cartopy metpy
 
-      - name: Run dashboard
+      - name: Run main dashboard
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
           GLWU_DRIVE_FOLDER_ID: ${{ secrets.GLWU_DRIVE_FOLDER_ID }}
         run: python main.py
+
+      - name: Generate Mount Mansfield sounding and diagnostics
+        run: python tempprofile.py
+
+      - name: Generate Mount Mansfield snow depth
+        run: python MansfieldSnowDepth.py
 
       - name: Upload generated dashboard outputs
         if: always()
