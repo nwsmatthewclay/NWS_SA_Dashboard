@@ -72,6 +72,26 @@ except ImportError:
 SITES = ["KBTV", "KPBG", "KMSS", "KSLK", "RUT", "KMPV", "1V4", "KEFK"]
 MODELS = ["rap", "hrrr", "nam", "gfs"]
 
+# RAP and HRRR post hourly BUFKIT files; NAM and GFS only post at
+# synoptic hours (confirmed against a live directory listing - hours
+# other than 00/06/12/18 simply don't have nam/gfs subfolders at all,
+# while rap/hrrr exist every hour).
+SYNOPTIC_ONLY_MODELS = {"nam", "gfs"}
+
+
+def get_bufkit_run_time(model, now=None):
+    """
+    Pick the run time to request for a given model. Hourly models
+    (rap, hrrr) use the previous hour. Synoptic-only models (nam, gfs)
+    round down to the most recent of 00/06/12/18Z.
+    """
+    now = now or dt.datetime.utcnow()
+    if model in SYNOPTIC_ONLY_MODELS:
+        run_time = now - dt.timedelta(hours=1)  # archive posting lag
+        synoptic_hour = (run_time.hour // 6) * 6
+        return run_time.replace(hour=synoptic_hour, minute=0, second=0, microsecond=0)
+    return now - dt.timedelta(hours=1)
+
 SPREADSHEET_ID = "11FjM4i1s0SpOE5y5_nPDRzLEsoAPA62keyS06a0G3Fo"
 FORECAST_TAB = "Forecast"
 CURRENT_TAB = "Current"
@@ -79,8 +99,17 @@ CURRENT_TAB = "Current"
 SERVICE_ACCOUNT_EMAIL = "severe-dashboard-bot@macro-thinker-499803-u2.iam.gserviceaccount.com"
 
 BUFKIT_BASE_URL = (
-    "https://mtarchive.geol.iastate.edu/{yyyy}/{mm}/{dd}/bufkit/{hh}/{model}/{model}_{site}.buf"
+    "https://mtarchive.geol.iastate.edu/{yyyy}/{mm}/{dd}/bufkit/{hh}/{model}/{prefix}_{site}.buf"
 )
+# The URL folder name and the filename prefix don't always match -
+# GFS's BUFKIT files are named gfs3_<site>.buf even though they live
+# in the .../gfs/ folder (confirmed against a live directory listing).
+BUFKIT_FILENAME_PREFIX = {
+    "rap": "rap",
+    "hrrr": "hrrr",
+    "nam": "nam",
+    "gfs": "gfs3",
+}
 
 # --- GLWU (Great Lakes Wave Unit) ---
 GLWU_NOMADS_BASE = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/glwu/prod/"
@@ -181,6 +210,7 @@ def fetch_bufkit_text(site, model, run_time):
         dd=run_time.strftime("%d"),
         hh=run_time.strftime("%H"),
         model=model,
+        prefix=BUFKIT_FILENAME_PREFIX.get(model, model),
         site=site.lower(),
     )
     try:
@@ -417,15 +447,35 @@ def write_parameters_to_sheet(current_results, forecast_results, run_time):
     )
 
 
+def fetch_bufkit_text_with_retry(site, model, now=None, max_hours_back=4):
+    """
+    Try the model's expected run time, then step back hour-by-hour
+    (or synoptic-cycle-by-cycle for nam/gfs) up to max_hours_back times
+    to absorb normal archive posting lag - confirmed the top of the
+    current hour can be briefly empty even for hourly models.
+    """
+    now = now or dt.datetime.utcnow()
+    step = dt.timedelta(hours=6) if model in SYNOPTIC_ONLY_MODELS else dt.timedelta(hours=1)
+
+    run_time = get_bufkit_run_time(model, now)
+    for _ in range(max_hours_back):
+        text = fetch_bufkit_text(site, model, run_time)
+        if text is not None:
+            return text, run_time
+        run_time = run_time - step
+    return None, None
+
+
 def run_bufkit_job():
-    run_time = dt.datetime.utcnow() - dt.timedelta(hours=1)
+    now = dt.datetime.utcnow()
     current_results = []
     forecast_results = []
 
     for site in SITES:
         for model in MODELS:
-            raw = fetch_bufkit_text(site, model, run_time)
+            raw, run_time = fetch_bufkit_text_with_retry(site, model, now)
             if raw is None:
+                print(f"SKIPPING {site}/{model}: no file found in the last few cycles")
                 continue
             try:
                 profiles = parse_bufkit_profiles(raw)
@@ -449,7 +499,7 @@ def run_bufkit_job():
                     current_results.append(params)
 
     if current_results or forecast_results:
-        write_parameters_to_sheet(current_results, forecast_results, run_time)
+        write_parameters_to_sheet(current_results, forecast_results, now)
     else:
         print("No BUFKIT results this run — skipping sheet write.")
 
@@ -501,8 +551,8 @@ def load_glwu_frame(grib_path, forecast_hour):
     grbs = pygrib.open(grib_path)
 
     wave_msg = grbs.select(shortName="swh", forecastTime=forecast_hour)[0]
-    u_msg = grbs.select(shortName="10u", forecastTime=forecast_hour)[0]
-    v_msg = grbs.select(shortName="10v", forecastTime=forecast_hour)[0]
+    u_msg = grbs.select(shortName="u", forecastTime=forecast_hour)[0]
+    v_msg = grbs.select(shortName="v", forecastTime=forecast_hour)[0]
 
     wave_m, lats, lons = wave_msg.data()
     u_ms, _, _ = u_msg.data()
