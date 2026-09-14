@@ -306,14 +306,14 @@
 
   table { width: 100%; border-collapse: collapse; }
   thead th {
-    text-align: left; font-size: 14px; font-weight: 600; color: #93a3b8;
+    text-align: left; font-size: 17px; font-weight: 600; color: #93a3b8;
     padding: 12px 10px; border-bottom: 1px solid #1c2c41; background: #0b1726;
     white-space: nowrap;
     position: sticky; top: 0; z-index: 2;
   }
   thead th:first-child { padding-left: 16px; }
   thead th:last-child { padding-right: 16px; }
-  tbody td { padding: 13px 10px; font-size: 15px; border-bottom: 1px solid #16223588; white-space: nowrap; }
+  tbody td { padding: 14px 10px; font-size: 18px; border-bottom: 1px solid #16223588; white-space: nowrap; }
   tbody td:first-child { padding-left: 16px; }
   tbody td:last-child { padding-right: 16px; }
   tbody tr:last-child td { border-bottom: none; }
@@ -329,12 +329,12 @@
   tr.detail-row.open { display: table-row; }
   tr.detail-row td {
     background: #0b1726; padding: 6px 16px 16px 40px;
-    font-size: 14px; color: #a9b7c9; white-space: normal; line-height: 1.5;
+    font-size: 16px; color: #a9b7c9; white-space: normal; line-height: 1.5;
     border-bottom: 1px solid #16223588;
   }
   tr.detail-row .detail-label { color: #6b7c93; font-weight: 600; margin-right: 6px; }
   .tag-badge {
-    display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.4px;
+    display: inline-block; font-size: 13px; font-weight: 800; letter-spacing: 0.4px;
     padding: 3px 7px; border-radius: 4px; margin-left: 8px; vertical-align: middle;
     white-space: nowrap;
   }
@@ -3170,8 +3170,23 @@ function resetMapView(){
   if(!map) return;
   suppressInteractionFlag = true;
   map.invalidateSize();
-  if(geoLayer && geoLayer.getLayers().length){
-    map.fitBounds(geoLayer.getBounds(),{
+
+  // Office/CWA mode should fit to the OFFICIAL NWS CWA polygon, not to the
+  // union of individual forecast zones. The forecast-zone union can have a
+  // slightly different extent and is not guaranteed to represent the actual
+  // CWA footprint. State mode continues to fit to the loaded state zones.
+  let bounds = null;
+  if(settings.regionType === 'office'){
+    const cwaBounds = getCWABoundaryExportBounds();
+    if(cwaBounds && cwaBounds.isValid()) bounds = cwaBounds;
+  }
+
+  if(!bounds && geoLayer && geoLayer.getLayers().length){
+    bounds = geoLayer.getBounds();
+  }
+
+  if(bounds && bounds.isValid()){
+    map.fitBounds(bounds,{
       padding:[10,10]
     });
   }else{
@@ -3342,6 +3357,12 @@ async function loadZones(){
         pan: false
       });
 
+      // Load the official CWA footprint before the first automatic fit.
+      // This restores the intended BTV CWA initial viewport rather than
+      // relying on the combined forecast-zone extent.
+      if(settings.regionType === 'office'){
+        await loadCWABoundary();
+      }
       resetMapView();
     }
 
@@ -3396,6 +3417,13 @@ async function switchRegionZones(regionType, regionId){
     if(countyPolygonLayer) countyPolygonLayer.clearLayers();
     if(fireZonePolygonLayer) fireZonePolygonLayer.clearLayers();
     if(resolvedZoneLayer) resolvedZoneLayer.clearLayers();
+
+    // Refresh the official CWA geometry before refitting after an office
+    // switch. The CWA cache is keyed to settings.regionId, so this cannot
+    // accidentally reuse the previous office's footprint.
+    if(settings.regionType === 'office'){
+      await loadCWABoundary();
+    }
     resetMapView();
     statusEl.style.display = 'none';
   } catch(e){
