@@ -33,79 +33,6 @@
   .leaflet-map-pane canvas{z-index:100;}
   .leaflet-map-pane svg{z-index:200;}
 
-/* How It Works modal */
-.help-modal{
-  position:fixed; inset:0; z-index:100000;
-  display:flex; align-items:center; justify-content:center;
-  padding:24px;
-  background:rgba(3,12,23,.72);
-  backdrop-filter:blur(3px);
-}
-.help-modal[aria-hidden="true"]{display:none;}
-.help-dialog{
-  width:min(680px, 100%);
-  max-height:min(82vh, 760px);
-  overflow:auto;
-  background:#101c2b;
-  color:#f3f6fa;
-  border:1px solid #34465b;
-  border-radius:14px;
-  box-shadow:0 24px 70px rgba(0,0,0,.45);
-  padding:28px 30px 24px;
-}
-.help-dialog h2{
-  margin:0 0 8px;
-  font-size:26px;
-  line-height:1.15;
-  color:#fff;
-}
-.help-dialog .help-intro{
-  margin:0 0 22px;
-  color:#b9c7d7;
-  font-size:15px;
-  line-height:1.5;
-}
-.help-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.help-card{
-  background:#172537;
-  border:1px solid #293b50;
-  border-radius:10px;
-  padding:15px 16px;
-}
-.help-card h3{
-  margin:0 0 6px;
-  font-size:15px;
-  color:#fff;
-}
-.help-card p{
-  margin:0;
-  color:#b9c7d7;
-  font-size:13px;
-  line-height:1.45;
-}
-.help-card strong{color:#fff;}
-.help-actions{
-  display:flex; justify-content:flex-end; align-items:center;
-  margin-top:22px;
-}
-.help-close{
-  border:0; border-radius:8px;
-  padding:11px 20px;
-  background:#2f80c9; color:#fff;
-  font-weight:700; font-size:14px;
-  cursor:pointer;
-}
-.help-close:hover{filter:brightness(1.08);}
-.help-close:focus-visible{outline:2px solid #fff; outline-offset:2px;}
-@media (max-width:640px){
-  .help-modal{padding:14px;}
-  .help-dialog{padding:22px 20px 20px; max-height:88vh;}
-  .help-grid{grid-template-columns:1fr;}
-}
 </style>
 <style>
   * { box-sizing: border-box; }
@@ -8833,43 +8760,6 @@ document.addEventListener('click', (e) => { if(!document.getElementById('wfoComb
 
 
 
-<div id="how-it-works-modal" class="help-modal" aria-hidden="false">
-  <div class="help-dialog" role="dialog" aria-modal="true" aria-labelledby="how-it-works-title">
-    <h2 id="how-it-works-title">How This Dashboard Works</h2>
-    <p class="help-intro">A quick guide to finding active hazards, controlling what appears on the map, and creating NWS graphics.</p>
-
-    <div class="help-grid">
-      <div class="help-card">
-        <h3>🗺️ Click a hazard</h3>
-        <p>Click any highlighted zone or warning polygon on the map to open its details, including timing, affected area, impacts, and safety information.</p>
-      </div>
-      <div class="help-card">
-        <h3>🖼️ Create an image</h3>
-        <p>From a hazard popup, choose <strong>Create Image for This Hazard</strong>. The dashboard automatically fits the map to that product and creates the graphic — no dragging or map selection required.</p>
-      </div>
-      <div class="help-card">
-        <h3>🎛️ Zone &amp; polygon controls</h3>
-        <p><strong>Zone Warnings</strong> controls zone, county, and fire-weather products. <strong>Polygon Warnings</strong> controls storm-based warning polygons. Turn either on or off independently.</p>
-      </div>
-      <div class="help-card">
-        <h3>📋 Legend</h3>
-        <p>Click a hazard type in the legend to hide or show that product type on the map. This also controls what is included when you use the map export.</p>
-      </div>
-      <div class="help-card">
-        <h3>📍 Office &amp; state views</h3>
-        <p>Use the selector at the top to view an individual <strong>NWS Weather Forecast Office</strong> or switch to a <strong>state</strong>-wide view.</p>
-      </div>
-      <div class="help-card">
-        <h3>⏱️ Times &amp; updates</h3>
-        <p>The dashboard automatically refreshes active hazards. Use the time-zone selector to change how product times are displayed.</p>
-      </div>
-    </div>
-
-    <div class="help-actions">
-      <button id="how-it-works-close" class="help-close" type="button">Got It — Show Me the Dashboard</button>
-    </div>
-  </div>
-</div>
 <div id="export-product-modal" class="export-product-modal" aria-hidden="true">
   <div class="export-product-dialog" role="dialog" aria-modal="true" aria-labelledby="export-product-title">
     <h2 id="export-product-title" class="export-product-title">Choose Export Type</h2>
@@ -8880,34 +8770,7 @@ document.addEventListener('click', (e) => { if(!document.getElementById('wfoComb
 </div>
 
 
-<script>
-(function(){
-  const modal = document.getElementById('how-it-works-modal');
-  const closeBtn = document.getElementById('how-it-works-close');
-  if(!modal || !closeBtn) return;
 
-  function closeHelp(){
-    modal.setAttribute('aria-hidden','true');
-    document.body.classList.remove('help-modal-open');
-  }
-
-  closeBtn.addEventListener('click', closeHelp);
-
-  modal.addEventListener('click', function(e){
-    if(e.target === modal) closeHelp();
-  });
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false'){
-      e.preventDefault();
-      closeHelp();
-    }
-  });
-
-  document.body.classList.add('help-modal-open');
-  window.setTimeout(function(){ closeBtn.focus(); }, 50);
-})();
-</script>
 
 </body>
 </html>
