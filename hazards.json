@@ -10,56 +10,87 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-29896",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d96de22595185dace09dc73c46bcf606f460699f.002.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-29896",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d96de22595185dace09dc73c46bcf606f460699f.002.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-29896",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.d96de22595185dace09dc73c46bcf606f460699f.002.1",
+                "areaDesc": "Central and Southeast Phillips; Central and Southern Valley; Petroleum; Garfield; McCone",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "030071",
+                        "030105",
+                        "030069",
+                        "030033",
+                        "030055"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "MTZ016",
+                        "MTZ017",
+                        "MTZ021",
+                        "MTZ022",
+                        "MTZ023"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/MTZ016",
+                    "https://api.weather.gov/zones/forecast/MTZ017",
+                    "https://api.weather.gov/zones/forecast/MTZ021",
+                    "https://api.weather.gov/zones/forecast/MTZ022",
+                    "https://api.weather.gov/zones/forecast/MTZ023"
                 ],
-                "references": [],
-                "sent": "2026-09-14T15:23:09+00:00",
-                "effective": "2026-09-14T15:23:09+00:00",
-                "onset": null,
-                "expires": "2026-09-14T15:33:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.21839ad83e266b08b8b471778db1160e00534a47.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.21839ad83e266b08b8b471778db1160e00534a47.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-13T23:48:00-06:00"
+                    }
+                ],
+                "sent": "2026-09-14T09:31:00-06:00",
+                "effective": "2026-09-14T09:31:00-06:00",
+                "onset": "2026-09-14T09:31:00-06:00",
+                "expires": "2026-09-15T00:00:00-06:00",
+                "ends": "2026-09-15T00:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Lake Wind Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Glasgow MT",
+                "headline": "Lake Wind Advisory issued September 14 at 9:31AM MDT until September 15 at 12:00AM MDT by NWS Glasgow MT",
+                "description": "* WHAT...West winds 25 to 35 mph with gusts up to 50 mph.\n\n* WHERE...Fort Peck Lake.\n\n* WHEN...Until midnight MDT tonight.\n\n* IMPACTS...Strong winds and rough waves on area lakes will create\nhazardous conditions for small craft.\n\n* ADDITIONAL DETAILS...Wave heights as high as 6 feet.",
+                "instruction": "Boaters on Fort Peck Lake should use extra caution since strong winds\nand rough waves can overturn small craft.",
+                "response": "Execute",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "NPWGGW"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 141523"
+                        "WWUS75 KGGW 141531"
+                    ],
+                    "NWSheadline": [
+                        "LAKE WIND ADVISORY REMAINS IN EFFECT UNTIL MIDNIGHT MDT TONIGHT"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KGGW.LW.Y.0045.000000T0000Z-260915T0600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-15T00:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.701cd9e8bb214ecf5beff8ecf17c978566615dc7.001.1,2026-09-13T10:58:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.202a8a98d3a7156f33adb7cb06024e63134100a7.001.1,2026-09-12T22:59:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9e24f37ee91d6569f3076a728b86b8cdff765303.001.1,2026-09-12T13:39:00-06:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +102,717 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "LWY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d96de22595185dace09dc73c46bcf606f460699f.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d96de22595185dace09dc73c46bcf606f460699f.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d96de22595185dace09dc73c46bcf606f460699f.001.1",
+                "areaDesc": "Daniels; Sheridan; Western Roosevelt; Richland; Dawson; Prairie; Wibaux; Eastern Roosevelt",
+                "geocode": {
+                    "SAME": [
+                        "030019",
+                        "030091",
+                        "030085",
+                        "030083",
+                        "030021",
+                        "030079",
+                        "030109"
+                    ],
+                    "UGC": [
+                        "MTZ018",
+                        "MTZ019",
+                        "MTZ020",
+                        "MTZ024",
+                        "MTZ025",
+                        "MTZ026",
+                        "MTZ027",
+                        "MTZ062"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/MTZ018",
+                    "https://api.weather.gov/zones/forecast/MTZ019",
+                    "https://api.weather.gov/zones/forecast/MTZ020",
+                    "https://api.weather.gov/zones/forecast/MTZ024",
+                    "https://api.weather.gov/zones/forecast/MTZ025",
+                    "https://api.weather.gov/zones/forecast/MTZ026",
+                    "https://api.weather.gov/zones/forecast/MTZ027",
+                    "https://api.weather.gov/zones/forecast/MTZ062"
+                ],
+                "references": [],
+                "sent": "2026-09-14T09:31:00-06:00",
+                "effective": "2026-09-14T09:31:00-06:00",
+                "onset": "2026-09-14T12:00:00-06:00",
+                "expires": "2026-09-15T00:00:00-06:00",
+                "ends": "2026-09-15T00:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "High Wind Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Glasgow MT",
+                "headline": "High Wind Warning issued September 14 at 9:31AM MDT until September 15 at 12:00AM MDT by NWS Glasgow MT",
+                "description": "* WHAT...West winds 30 to 40 mph with gusts up to 60 mph expected.\n\n* WHERE...Daniels, Dawson, Roosevelt, Prairie, Richland, Sheridan,\nand Wibaux Counties.\n\n* WHEN...Until midnight MDT tonight.\n\n* IMPACTS...Damaging winds could blow down trees and power lines.\nWidespread power outages are possible. Travel could be difficult,\nespecially for high profile vehicles.",
+                "instruction": "People are urged to secure loose objects that could be blown around\nor damaged by the wind.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWGGW"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KGGW 141531"
+                    ],
+                    "NWSheadline": [
+                        "HIGH WIND WARNING IN EFFECT UNTIL MIDNIGHT MDT TONIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KGGW.HW.W.0016.260914T1800Z-260915T0600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-15T00:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "HWW"
+                    ],
+                    "NationalWeatherService": [
+                        "HWW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.003.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.003.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.003.1",
+                "areaDesc": "Eastern Alaska Range North of Trims Camp",
+                "geocode": {
+                    "SAME": [
+                        "002240"
+                    ],
+                    "UGC": [
+                        "AKZ849"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AKZ849"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:30:00-08:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:34:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-14T07:30:00-08:00",
+                "effective": "2026-09-14T07:30:00-08:00",
+                "onset": "2026-09-15T10:00:00-08:00",
+                "expires": "2026-09-14T16:00:00-08:00",
+                "ends": "2026-09-16T01:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Wind Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Fairbanks AK",
+                "headline": "Wind Advisory issued September 14 at 7:30AM AKDT until September 16 at 1:00AM AKDT by NWS Fairbanks AK",
+                "description": "* WHAT...South winds 30 to 40 mph with gusts up to 65 mph expected.\n\n* WHERE...Eastern Alaska Range North of Trims Camp.\n\n* WHEN...From 10 AM Tuesday to 1 AM AKDT Wednesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...There is a chance wind gusts could be stronger\ndepending on the track and strength of the low moving across the YK\nDelta.",
+                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWAFG"
+                    ],
+                    "WMOidentifier": [
+                        "WWAK73 PAFG 141530"
+                    ],
+                    "NWSheadline": [
+                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 AM TUESDAY TO 1 AM AKDT WEDNESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAFG.WI.Y.0033.260915T1800Z-260916T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-16T01:00:00-08:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.002.1,2026-09-13T10:28:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WIY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.004.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.004.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.004.1",
+                "areaDesc": "Central Interior",
+                "geocode": {
+                    "SAME": [
+                        "002290"
+                    ],
+                    "UGC": [
+                        "AKZ846"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AKZ846"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:30:00-08:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:34:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-14T07:30:00-08:00",
+                "effective": "2026-09-14T07:30:00-08:00",
+                "onset": "2026-09-15T22:00:00-08:00",
+                "expires": "2026-09-14T16:00:00-08:00",
+                "ends": "2026-09-16T22:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Wind Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Fairbanks AK",
+                "headline": "Wind Advisory issued September 14 at 7:30AM AKDT until September 16 at 10:00PM AKDT by NWS Fairbanks AK",
+                "description": "* WHAT...Southwest winds 15 to 25 mph with gusts up to 40 mph\nexpected.\n\n* WHERE...Lake Minchumina.\n\n* WHEN...From 10 PM Tuesday to 10 PM AKDT Wednesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
+                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWAFG"
+                    ],
+                    "WMOidentifier": [
+                        "WWAK73 PAFG 141530"
+                    ],
+                    "NWSheadline": [
+                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 PM TUESDAY TO 10 PM AKDT WEDNESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAFG.WI.Y.0033.260916T0600Z-260917T0600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-16T22:00:00-08:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.003.1,2026-09-13T10:28:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WIY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.002.1",
+                "areaDesc": "Northern Denali Borough",
+                "geocode": {
+                    "SAME": [
+                        "002068"
+                    ],
+                    "UGC": [
+                        "AKZ847"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AKZ847"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:30:00-08:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:34:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-14T07:30:00-08:00",
+                "effective": "2026-09-14T07:30:00-08:00",
+                "onset": "2026-09-15T10:00:00-08:00",
+                "expires": "2026-09-14T16:00:00-08:00",
+                "ends": "2026-09-15T22:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Wind Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Fairbanks AK",
+                "headline": "Wind Advisory issued September 14 at 7:30AM AKDT until September 15 at 10:00PM AKDT by NWS Fairbanks AK",
+                "description": "* WHAT...Southeast winds 30 to 40 mph with gusts up to 60 mph\nexpected.\n\n* WHERE...Northern Denali Borough.\n\n* WHEN...From 10 AM to 10 PM AKDT Tuesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...Wind gusts up to 40 mph possible along the\nParks Hwy towards Anderson. There is a chance wind gusts could be\nstronger depending on the track and strength of the low moving\nacross the YK Delta.",
+                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWAFG"
+                    ],
+                    "WMOidentifier": [
+                        "WWAK73 PAFG 141530"
+                    ],
+                    "NWSheadline": [
+                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 AM TO 10 PM AKDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAFG.WI.Y.0033.260915T1800Z-260916T0600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-15T22:00:00-08:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.001.1,2026-09-13T10:28:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WIY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.001.1",
+                "areaDesc": "Fairbanks Metro Area",
+                "geocode": {
+                    "SAME": [
+                        "002090"
+                    ],
+                    "UGC": [
+                        "AKZ844"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AKZ844"
+                ],
+                "references": [],
+                "sent": "2026-09-14T07:30:00-08:00",
+                "effective": "2026-09-14T07:30:00-08:00",
+                "onset": "2026-09-14T07:30:00-08:00",
+                "expires": "2026-09-14T10:00:00-08:00",
+                "ends": "2026-09-14T10:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Dense Fog Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Fairbanks AK",
+                "headline": "Dense Fog Advisory issued September 14 at 7:30AM AKDT until September 14 at 10:00AM AKDT by NWS Fairbanks AK",
+                "description": "* WHAT...Visibility as low as one quarter mile in dense fog.\n\n* WHERE...Fairbanks Metro Area.\n\n* WHEN...Until 10 AM AKDT this morning.\n\n* IMPACTS...Low visibility could make driving conditions hazardous.",
+                "instruction": "If driving, slow down, use your headlights, and leave plenty of\ndistance ahead of you.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWAFG"
+                    ],
+                    "WMOidentifier": [
+                        "WWAK73 PAFG 141530"
+                    ],
+                    "NWSheadline": [
+                        "DENSE FOG ADVISORY IN EFFECT UNTIL 10 AM AKDT THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.PAFG.FG.Y.0005.260914T1530Z-260914T1800Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-14T10:00:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FGY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.005.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.005.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ce0bdc8db3bf7d7a2ede9df04628f7946e2f7f62.005.1",
+                "areaDesc": "White Mountains and High Terrain South of the Yukon River",
+                "geocode": {
+                    "SAME": [
+                        "002290"
+                    ],
+                    "UGC": [
+                        "AKZ834"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AKZ834"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.004.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.004.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:30:00-08:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.004.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.004.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T06:34:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-14T07:30:00-08:00",
+                "effective": "2026-09-14T07:30:00-08:00",
+                "onset": "2026-09-16T04:00:00-08:00",
+                "expires": "2026-09-14T16:00:00-08:00",
+                "ends": "2026-09-17T04:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Wind Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Fairbanks AK",
+                "headline": "Wind Advisory issued September 14 at 7:30AM AKDT until September 17 at 4:00AM AKDT by NWS Fairbanks AK",
+                "description": "* WHAT...Southwest winds 15 to 25 mph with gusts up to 40 mph\nexpected.\n\n* WHERE...White Mountains and High Terrain South of the Yukon River.\n\n* WHEN...From 4 AM Wednesday to 4 AM AKDT Thursday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
+                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWAFG"
+                    ],
+                    "WMOidentifier": [
+                        "WWAK73 PAFG 141530"
+                    ],
+                    "NWSheadline": [
+                        "WIND ADVISORY REMAINS IN EFFECT FROM 4 AM WEDNESDAY TO 4 AM AKDT THURSDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAFG.WI.Y.0033.260916T1200Z-260917T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T04:00:00-08:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.004.1,2026-09-13T10:28:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WIY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.cb81b3f16e1556c8de81acc74c02ee3d156d5724.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.cb81b3f16e1556c8de81acc74c02ee3d156d5724.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.cb81b3f16e1556c8de81acc74c02ee3d156d5724.002.1",
+                "areaDesc": "Allegan",
+                "geocode": {
+                    "SAME": [
+                        "026005"
+                    ],
+                    "UGC": [
+                        "MIZ064"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/MIZ064"
+                ],
+                "references": [],
+                "sent": "2026-09-14T11:25:00-04:00",
+                "effective": "2026-09-14T11:25:00-04:00",
+                "onset": "2026-09-14T22:00:00-04:00",
+                "expires": "2026-09-14T22:30:00-04:00",
+                "ends": "2026-09-15T17:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Beach Hazards Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Grand Rapids MI",
+                "headline": "Beach Hazards Statement issued September 14 at 11:25AM EDT until September 15 at 5:00PM EDT by NWS Grand Rapids MI",
+                "description": "* WHAT...High wave action, strong currents, and dangerous\nswimming conditions expected. Piers may be heavily swamped by\nwaves.\n\n* WHERE...Allegan county.\n\n* WHEN...From 10 PM EDT this evening through Tuesday afternoon.\n\n* IMPACTS...Strong currents can pull swimmers into deeper water\nand high waves can sweep people off piers.",
+                "instruction": "Remain out of the water to avoid hazardous swimming conditions\nand do not venture out on piers. Please check with your local\nauthorities on potential beach closures.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CFWGRR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS43 KGRR 141525"
+                    ],
+                    "NWSheadline": [
+                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT FROM 10 PM EDT THIS EVENING THROUGH TUESDAY AFTERNOON"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KGRR.BH.S.0026.260915T0200Z-260915T2100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-15T17:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.002.1,2026-09-14T02:49:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "BHS"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.cb81b3f16e1556c8de81acc74c02ee3d156d5724.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.cb81b3f16e1556c8de81acc74c02ee3d156d5724.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.cb81b3f16e1556c8de81acc74c02ee3d156d5724.001.1",
+                "areaDesc": "Mason; Oceana; Muskegon; Ottawa",
+                "geocode": {
+                    "SAME": [
+                        "026105",
+                        "026127",
+                        "026121",
+                        "026139"
+                    ],
+                    "UGC": [
+                        "MIZ037",
+                        "MIZ043",
+                        "MIZ050",
+                        "MIZ056"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/MIZ037",
+                    "https://api.weather.gov/zones/forecast/MIZ043",
+                    "https://api.weather.gov/zones/forecast/MIZ050",
+                    "https://api.weather.gov/zones/forecast/MIZ056"
+                ],
+                "references": [],
+                "sent": "2026-09-14T11:25:00-04:00",
+                "effective": "2026-09-14T11:25:00-04:00",
+                "onset": "2026-09-14T22:00:00-04:00",
+                "expires": "2026-09-14T22:30:00-04:00",
+                "ends": "2026-09-15T23:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Beach Hazards Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Grand Rapids MI",
+                "headline": "Beach Hazards Statement issued September 14 at 11:25AM EDT until September 15 at 11:00PM EDT by NWS Grand Rapids MI",
+                "description": "* WHAT...High wave action, strong currents, and dangerous\nswimming conditions expected. Piers may be heavily swamped by\nwaves.\n\n* WHERE...Mason, Oceana, Muskegon and Ottawa counties.\n\n* WHEN...From 10 PM EDT this evening through Tuesday evening.\n\n* IMPACTS...Strong currents can pull swimmers into deeper water\nand high waves can sweep people off piers.",
+                "instruction": "Remain out of the water to avoid hazardous swimming conditions\nand do not venture out on piers. Please check with your local\nauthorities on potential beach closures.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CFWGRR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS43 KGRR 141525"
+                    ],
+                    "NWSheadline": [
+                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT FROM 10 PM EDT THIS EVENING THROUGH TUESDAY EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KGRR.BH.S.0026.260915T0200Z-260916T0300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-15T23:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.001.1,2026-09-14T02:49:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "BHS"
                     ]
                 }
             }
@@ -4212,362 +4953,6 @@
                     ],
                     "NationalWeatherService": [
                         "FGY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.002.1",
-                "areaDesc": "Eastern Alaska Range North of Trims Camp",
-                "geocode": {
-                    "SAME": [
-                        "002240"
-                    ],
-                    "UGC": [
-                        "AKZ849"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ849"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-13T10:28:00-08:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-14T06:30:00-08:00"
-                    }
-                ],
-                "sent": "2026-09-14T06:34:00-08:00",
-                "effective": "2026-09-14T06:34:00-08:00",
-                "onset": "2026-09-15T10:00:00-08:00",
-                "expires": "2026-09-14T16:00:00-08:00",
-                "ends": "2026-09-16T01:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Fairbanks AK",
-                "headline": "Wind Advisory issued September 14 at 6:34AM AKDT until September 16 at 1:00AM AKDT by NWS Fairbanks AK",
-                "description": "* WHAT...South winds 30 to 40 mph with gusts up to 65 mph expected.\n\n* WHERE...Eastern Alaska Range North of Trims Camp.\n\n* WHEN...From 10 AM Tuesday to 1 AM AKDT Wednesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...There is a chance wind gusts could be stronger\ndepending on the track and strength of the low moving across the YK\nDelta.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWAFG"
-                    ],
-                    "WMOidentifier": [
-                        "WWAK73 PAFG 141434"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 AM TUESDAY TO 1 AM AKDT WEDNESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.PAFG.WI.Y.0033.260915T1800Z-260916T0900Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-16T01:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.004.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.004.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.004.1",
-                "areaDesc": "White Mountains and High Terrain South of the Yukon River",
-                "geocode": {
-                    "SAME": [
-                        "002290"
-                    ],
-                    "UGC": [
-                        "AKZ834"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ834"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.004.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.004.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-13T10:28:00-08:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.004.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.004.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-14T06:30:00-08:00"
-                    }
-                ],
-                "sent": "2026-09-14T06:34:00-08:00",
-                "effective": "2026-09-14T06:34:00-08:00",
-                "onset": "2026-09-16T04:00:00-08:00",
-                "expires": "2026-09-14T16:00:00-08:00",
-                "ends": "2026-09-17T04:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Fairbanks AK",
-                "headline": "Wind Advisory issued September 14 at 6:34AM AKDT until September 17 at 4:00AM AKDT by NWS Fairbanks AK",
-                "description": "* WHAT...Southwest winds 15 to 25 mph with gusts up to 40 mph\nexpected.\n\n* WHERE...White Mountains and High Terrain South of the Yukon River.\n\n* WHEN...From 4 AM Wednesday to 4 AM AKDT Thursday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...There is a chance wind gusts could be stronger\ndepending on the track and strength of the low moving across the YK\nDelta.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWAFG"
-                    ],
-                    "WMOidentifier": [
-                        "WWAK73 PAFG 141434"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY REMAINS IN EFFECT FROM 4 AM WEDNESDAY TO 4 AM AKDT THURSDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.PAFG.WI.Y.0033.260916T1200Z-260917T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T04:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.003.1",
-                "areaDesc": "Central Interior",
-                "geocode": {
-                    "SAME": [
-                        "002290"
-                    ],
-                    "UGC": [
-                        "AKZ846"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ846"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.003.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.003.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-13T10:28:00-08:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.003.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.003.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-14T06:30:00-08:00"
-                    }
-                ],
-                "sent": "2026-09-14T06:34:00-08:00",
-                "effective": "2026-09-14T06:34:00-08:00",
-                "onset": "2026-09-15T22:00:00-08:00",
-                "expires": "2026-09-14T16:00:00-08:00",
-                "ends": "2026-09-16T22:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Fairbanks AK",
-                "headline": "Wind Advisory issued September 14 at 6:34AM AKDT until September 16 at 10:00PM AKDT by NWS Fairbanks AK",
-                "description": "* WHAT...Southwest winds 15 to 25 mph with gusts up to 40 mph\nexpected.\n\n* WHERE...Lake Minchumina.\n\n* WHEN...From 10 PM Tuesday to 10 PM AKDT Wednesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...There is a chance wind gusts could be stronger\ndepending on the track and strength of the low moving across the YK\nDelta.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWAFG"
-                    ],
-                    "WMOidentifier": [
-                        "WWAK73 PAFG 141434"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 PM TUESDAY TO 10 PM AKDT WEDNESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.PAFG.WI.Y.0033.260916T0600Z-260917T0600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-16T22:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.dd48d4fbe25b214d5a46ace1e64869fe600faf57.001.1",
-                "areaDesc": "Northern Denali Borough",
-                "geocode": {
-                    "SAME": [
-                        "002068"
-                    ],
-                    "UGC": [
-                        "AKZ847"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ847"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.d4576aaefaabecceb72348db362e31a2778aa915.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-13T10:28:00-08:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.77adbe4d9daa889617f1868828bca56202384947.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-14T06:30:00-08:00"
-                    }
-                ],
-                "sent": "2026-09-14T06:34:00-08:00",
-                "effective": "2026-09-14T06:34:00-08:00",
-                "onset": "2026-09-15T10:00:00-08:00",
-                "expires": "2026-09-14T16:00:00-08:00",
-                "ends": "2026-09-15T22:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Fairbanks AK",
-                "headline": "Wind Advisory issued September 14 at 6:34AM AKDT until September 15 at 10:00PM AKDT by NWS Fairbanks AK",
-                "description": "* WHAT...Southeast winds 30 to 40 mph with gusts up to 60 mph\nexpected.\n\n* WHERE...Windy Pass.\n\n* WHEN...From 10 AM to 10 PM AKDT Tuesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...Wind gusts up to 40 mph possible along the\nParks Hwy towards Anderson. There is a chance wind gusts could be\nstronger depending on the track and strength of the low moving\nacross the YK Delta.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWAFG"
-                    ],
-                    "WMOidentifier": [
-                        "WWAK73 PAFG 141434"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 AM TO 10 PM AKDT TUESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.PAFG.WI.Y.0033.260915T1800Z-260916T0600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-15T22:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
                     ]
                 }
             }
@@ -16556,167 +16941,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.001.1",
-                "areaDesc": "Mason; Oceana; Muskegon; Ottawa",
-                "geocode": {
-                    "SAME": [
-                        "026105",
-                        "026127",
-                        "026121",
-                        "026139"
-                    ],
-                    "UGC": [
-                        "MIZ037",
-                        "MIZ043",
-                        "MIZ050",
-                        "MIZ056"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/MIZ037",
-                    "https://api.weather.gov/zones/forecast/MIZ043",
-                    "https://api.weather.gov/zones/forecast/MIZ050",
-                    "https://api.weather.gov/zones/forecast/MIZ056"
-                ],
-                "references": [],
-                "sent": "2026-09-14T02:49:00-04:00",
-                "effective": "2026-09-14T02:49:00-04:00",
-                "onset": "2026-09-14T22:00:00-04:00",
-                "expires": "2026-09-14T11:00:00-04:00",
-                "ends": "2026-09-15T23:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Grand Rapids MI",
-                "headline": "Beach Hazards Statement issued September 14 at 2:49AM EDT until September 15 at 11:00PM EDT by NWS Grand Rapids MI",
-                "description": "* WHAT...High wave action, strong currents, and dangerous\nswimming conditions expected. Piers may be heavily swamped by\nwaves.\n\n* WHERE...Mason, Oceana, Muskegon and Ottawa counties.\n\n* WHEN...From this evening through Tuesday evening.\n\n* IMPACTS...Strong currents can pull swimmers into deeper water\nand high waves can sweep people off piers.",
-                "instruction": "Remain out of the water to avoid hazardous swimming conditions\nand do not venture out on piers. Please check with your local\nauthorities on potential beach closures.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWGRR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS43 KGRR 140649"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT IN EFFECT FROM THIS EVENING THROUGH TUESDAY EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KGRR.BH.S.0026.260915T0200Z-260916T0300Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-15T23:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.59994becfdf201ef1023a34fc12e7454550b3b45.002.1",
-                "areaDesc": "Allegan",
-                "geocode": {
-                    "SAME": [
-                        "026005"
-                    ],
-                    "UGC": [
-                        "MIZ064"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/MIZ064"
-                ],
-                "references": [],
-                "sent": "2026-09-14T02:49:00-04:00",
-                "effective": "2026-09-14T02:49:00-04:00",
-                "onset": "2026-09-14T22:00:00-04:00",
-                "expires": "2026-09-14T11:00:00-04:00",
-                "ends": "2026-09-15T17:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Grand Rapids MI",
-                "headline": "Beach Hazards Statement issued September 14 at 2:49AM EDT until September 15 at 5:00PM EDT by NWS Grand Rapids MI",
-                "description": "* WHAT...High wave action, strong currents, and dangerous\nswimming conditions expected. Piers may be heavily swamped by\nwaves.\n\n* WHERE...Allegan county.\n\n* WHEN...From this evening through Tuesday afternoon.\n\n* IMPACTS...Strong currents can pull swimmers into deeper water\nand high waves can sweep people off piers.",
-                "instruction": "Remain out of the water to avoid hazardous swimming conditions\nand do not venture out on piers. Please check with your local\nauthorities on potential beach closures.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWGRR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS43 KGRR 140649"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT IN EFFECT FROM THIS EVENING THROUGH TUESDAY AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KGRR.BH.S.0026.260915T0200Z-260915T2100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-15T17:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.131d170e40669190f51b037f702b671333ccfcf1.003.1",
             "type": "Feature",
             "geometry": null,
@@ -18572,104 +18796,6 @@
                     ],
                     "NationalWeatherService": [
                         "HTY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.21839ad83e266b08b8b471778db1160e00534a47.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.21839ad83e266b08b8b471778db1160e00534a47.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.21839ad83e266b08b8b471778db1160e00534a47.001.1",
-                "areaDesc": "Central and Southeast Phillips; Central and Southern Valley; Petroleum; Garfield; McCone",
-                "geocode": {
-                    "SAME": [
-                        "030071",
-                        "030105",
-                        "030069",
-                        "030033",
-                        "030055"
-                    ],
-                    "UGC": [
-                        "MTZ016",
-                        "MTZ017",
-                        "MTZ021",
-                        "MTZ022",
-                        "MTZ023"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/MTZ016",
-                    "https://api.weather.gov/zones/forecast/MTZ017",
-                    "https://api.weather.gov/zones/forecast/MTZ021",
-                    "https://api.weather.gov/zones/forecast/MTZ022",
-                    "https://api.weather.gov/zones/forecast/MTZ023"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.701cd9e8bb214ecf5beff8ecf17c978566615dc7.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.701cd9e8bb214ecf5beff8ecf17c978566615dc7.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-13T10:58:00-06:00"
-                    }
-                ],
-                "sent": "2026-09-13T23:48:00-06:00",
-                "effective": "2026-09-13T23:48:00-06:00",
-                "onset": "2026-09-13T23:48:00-06:00",
-                "expires": "2026-09-14T15:00:00-06:00",
-                "ends": "2026-09-15T00:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Lake Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Glasgow MT",
-                "headline": "Lake Wind Advisory issued September 13 at 11:48PM MDT until September 15 at 12:00AM MDT by NWS Glasgow MT",
-                "description": "* WHAT...Southeast winds at 10 to 20 with gusts to 30 mph, switching\nto west northwest at 20 to 30 mph with gusts up to 50 mph after 8\nAM.\n\n* WHERE...Fort Peck Lake, Medicine Lake, and Nelson Reservoir.\n\n* WHEN...Until midnight MDT Monday Night.\n\n* IMPACTS...Strong winds and rough waves on area lakes will create\nhazardous conditions for small craft.\n\n* ADDITIONAL DETAILS...Wave heights as high as 4 to 5 feet on Fort\nPeck Lake.",
-                "instruction": "Boaters on Fort Peck Lake should use extra caution since strong winds\nand rough waves can overturn small craft.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWGGW"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS75 KGGW 140548"
-                    ],
-                    "NWSheadline": [
-                        "LAKE WIND ADVISORY REMAINS IN EFFECT UNTIL MIDNIGHT MDT MONDAY NIGHT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KGGW.LW.Y.0045.000000T0000Z-260915T0600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-15T00:00:00-06:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.202a8a98d3a7156f33adb7cb06024e63134100a7.001.1,2026-09-12T22:59:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9e24f37ee91d6569f3076a728b86b8cdff765303.001.1,2026-09-12T13:39:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "LWY"
                     ]
                 }
             }
@@ -25501,5 +25627,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-14T15:23:40+00:00"
+    "updated": "2026-09-14T15:33:15+00:00"
 }
