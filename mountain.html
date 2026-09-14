@@ -1,0 +1,2902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mount Mansfield Dashboard</title>
+<style>
+
+  /* =====================================================================
+     LAYOUT PHILOSOPHY (rewrite)
+     ---------------------------------------------------------------------
+     Previous versions let CONTENT decide box sizes: an image's own
+     aspect ratio (width:100%; height:auto) determined how tall its
+     container got, a card list's item count determined the sidebar's
+     height, and the two main rows were "auto auto" - sized to whatever
+     their tallest content demanded. Every one of the recurring overlap/
+     squish/oversize bugs traced back to that same pattern: two things
+     that both wanted to dictate a shared boundary.
+
+     This version inverts it. The two main rows get a FIXED height
+     budget (percentages of the available vertical space, defined once,
+     here). Everything inside a row must fit INTO that budget:
+       - images use max-width/max-height + object-fit:contain, so they
+         scale to fit their box in both dimensions (letterboxing if
+         their aspect doesn't match) instead of forcing the box to grow
+       - card lists use flex:1 1 0 with overflow:hidden as a hard
+         backstop, so a long list compresses rather than overflowing
+     Nothing in here can push past its box and collide with a sibling,
+     regardless of what the underlying PNGs or data happen to look like
+     on a given day. That's the actual fix - not another size tweak.
+     ===================================================================== */
+
+  :root {
+    --navy: #0e2a4d;
+    --navy-light: #16457c;
+    --page-bg: #eef1f5;
+    --card-bg: #ffffff;
+    --card-border: #e2e6ea;
+    --ink: #1a2332;
+    --muted: #6b7688;
+    --blue: #1e5fa8;
+    --sidebar-card-bg: #f4f6f8;
+    --snow-card-from: #123a63;
+    --snow-card-to: #0a2647;
+    --froude-card-from: #5f3dc4;
+    --froude-card-to: #362174;
+    --live-green: #2fbf71;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: var(--page-bg);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ================= NAVBAR (fixed height) ================= */
+
+  .navbar {
+    flex: 0 0 62px;
+    background: linear-gradient(120deg, #0a2040 0%, var(--navy) 55%, #163a68 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+  }
+
+  .navbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .navbar .brand-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--navy-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .navbar h1 {
+    font-size: 16px;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .navbar .subtitle {
+    font-size: 11px;
+    color: #a9bdd6;
+    margin-top: 1px;
+  }
+
+  .navbar .right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .navbar .live {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #bcd6f2;
+  }
+
+  .navbar .live .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--live-green);
+    box-shadow: 0 0 0 0 rgba(47,191,113,0.6);
+    animation: pulse 2.2s infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(47,191,113,0.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(47,191,113,0); }
+    100% { box-shadow: 0 0 0 0 rgba(47,191,113,0); }
+  }
+
+  .navbar .clock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14.5px;
+  }
+
+  /* ================= MAIN (everything below the navbar) ================= */
+
+  .main {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 1700px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px 22px;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(20, 30, 50, 0.05);
+  }
+
+  /* ================= TOP ROW: fixed % of available height ================= */
+
+  .top-row {
+    flex: 0 0 63%;
+    min-height: 0;
+    display: flex;
+    gap: 16px;
+  }
+
+  /* ---- Sounding panel ---- */
+  /*
+    flex:0 0 66% / sidebar's 34% preserves the 2:1 ratio measured
+    directly off the reference layout. Both are now height-bounded by
+    top-row's fixed budget, and the image inside is constrained on
+    BOTH axes (object-fit:contain) - it will never force this box
+    taller than its budget, unlike the old width:100%;height:auto
+    approach.
+  */
+
+  .sounding-panel {
+    flex: 0 0 66%;
+    min-width: 0;
+    height: 100%;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .sounding-panel img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border-radius: 6px;
+  }
+
+  /* ---- Sidebar ---- */
+
+  .sidebar {
+    flex: 0 0 34%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .sidebar h2 {
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    margin: 2px 0 2px 2px;
+    flex: 0 0 auto;
+  }
+
+  .summit-card {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--sidebar-card-bg);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: background 0.4s ease;
+  }
+
+  .summit-card .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .summit-card .icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 9px;
+    background: #e4ecf5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .summit-card .icon svg {
+    width: 23px;
+    height: 23px;
+    stroke: var(--blue);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .summit-card .name {
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .summit-card .elev {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .summit-card .stats {
+    display: flex;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .summit-card .stat {
+    flex: 1;
+    text-align: center;
+  }
+
+  .summit-card .stat + .stat {
+    border-left: 1px solid var(--card-border);
+  }
+
+  .summit-card .stat .label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  .summit-card .stat .value {
+    font-size: 19px;
+    font-weight: 800;
+    margin-top: 4px;
+    transition: opacity 0.25s ease;
+  }
+
+  /* ================= WIND SPEED COLOR-CODING ================= */
+  /*
+    <30 mph green, 30-45 orange, 45-60 red, >60 purple (see
+    applyWindColor_ in the script below). Accent left-border only -
+    same vernacular as the dashboard card in tempprofile.py
+    (plot_dashboard_card) - rather than filling the whole card, so
+    the card stays its normal light background/dark text throughout.
+  */
+
+  .summit-card {
+    border-left: 4px solid transparent;
+  }
+
+  .summit-card.wind-calm    { border-left-color: #2f9e44; }
+  .summit-card.wind-breezy  { border-left-color: #f59f00; }
+  .summit-card.wind-strong  { border-left-color: #e03131; }
+  .summit-card.wind-extreme { border-left-color: #9c36b5; }
+
+  /* ================= BOTTOM ROW: remaining height ================= */
+
+  .bottom-row {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    gap: 16px;
+  }
+
+  .snow-summary {
+    flex: 0 0 20%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    padding: 18px 20px;
+    background: linear-gradient(160deg, var(--snow-card-from), var(--snow-card-to));
+    color: white;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .snow-summary .eyebrow {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #cfe0f2;
+  }
+
+  .snow-summary .headline {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .snow-summary .headline .snowflake {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    color: #bcd6f2;
+    align-self: center;
+  }
+
+  .snow-summary .value {
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .snow-summary .unit {
+    font-size: 18px;
+    font-weight: 700;
+    color: #bcd6f2;
+  }
+
+  .snow-summary .location {
+    font-size: 13px;
+    color: #cfe0f2;
+    margin-top: 6px;
+  }
+
+  .snow-summary .departure {
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-top: 12px;
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    align-self: flex-start;
+  }
+
+  .snow-summary .departure.placeholder {
+    color: #bcd6f2;
+    font-weight: 600;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .snow-summary .updated {
+    font-size: 11px;
+    color: #9db6d4;
+    margin-top: auto;
+    padding-top: 12px;
+  }
+
+  .snow-summary .stats-mini {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.14);
+    display: flex;
+  }
+
+  .snow-summary .stat-mini-col {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .snow-summary .stat-mini-col + .stat-mini-col {
+    border-left: 1px solid rgba(255,255,255,0.14);
+  }
+
+  .snow-summary .stat-mini-col .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #9db6d4;
+  }
+
+  .snow-summary .stat-mini-col .value {
+    display: block;
+    font-size: 19px;
+    font-weight: 800;
+    color: #eaf1fa;
+    margin-top: 5px;
+  }
+
+  .snow-chart-panel {
+    flex: 0 0 46%;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .snow-chart-panel img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ================= 2x2 STAT GRID ================= */
+
+  .quad-stats {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .quad-card {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 10px 16px;
+    background: linear-gradient(160deg, var(--snow-card-from), var(--snow-card-to));
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: background 0.4s ease;
+  }
+
+  .quad-card .eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #cfe0f2;
+  }
+
+  .quad-card .value {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-top: 6px;
+    transition: opacity 0.25s ease;
+  }
+
+  .quad-card .subtext {
+    font-size: 13px;
+    color: #cfe0f2;
+    margin-top: 4px;
+  }
+
+  .froude-card {
+    background: linear-gradient(160deg, var(--froude-card-from), var(--froude-card-to));
+  }
+
+  .froude-card .eyebrow {
+    color: #e3d9fc;
+  }
+
+  .froude-card .value {
+    font-size: 42px;
+  }
+
+  .froude-card .subtext {
+    font-weight: 700;
+    color: #e3d9fc;
+  }
+
+  .ptype-card.ptype-rain { background: linear-gradient(160deg, #2f9e44, #1c6b2c); }
+  .ptype-card.ptype-snow { background: linear-gradient(160deg, #1971c2, #0b4a85); }
+  .ptype-card.ptype-mix { background: linear-gradient(160deg, #f59f00, #a66a00); }
+  .ptype-card.ptype-frz { background: linear-gradient(160deg, #e03131, #962020); }
+
+  .shear-card.shear-low { background: linear-gradient(160deg, #2f9e44, #1c6b2c); }
+  .shear-card.shear-mod { background: linear-gradient(160deg, #f59f00, #a66a00); }
+  .shear-card.shear-high { background: linear-gradient(160deg, #e03131, #962020); }
+
+</style>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 20 L9 8 L13 15 L16 10 L21 20 Z"/>
+        </svg>
+      </div>
+      <div>
+        <h1>MOUNT MANSFIELD DASHBOARD</h1>
+        <div class="subtitle">Real-time Mountain Observations</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="live"><span class="dot"></span>LIVE</div>
+      <div class="clock">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0f2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 7 L12 12 L16 14"/>
+        </svg>
+        <span id="nav-clock">25 Jul 2026 02:03 UTC</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- ================= TOP ROW: SOUNDING + SIDEBAR ================= -->
+    <div class="top-row">
+
+      <div class="card sounding-panel">
+        <!--
+          Served as a plain static file from the severe-dashboard repo
+          (committed by the workflow after tempprofile.py runs), not
+          hotlinked from Drive - Drive enforces an anonymous per-file
+          download quota that made the image intermittently fail to
+          load on the live page. raw.githubusercontent.com has no such
+          quota for public repos.
+        -->
+        <img id="sounding-image" src="https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/vt_pseudo_sounding.png" alt="Mount Mansfield observed slope profile">
+      </div>
+
+      <div class="sidebar">
+        <h2>MOUNTAIN OBSERVATIONS</h2>
+
+        <!--
+          Mount Mansfield / MMNV1, Whiteface, Bolton Vista Peak, and
+          Burke Mountain are all wired live - see the fetch*Observation_
+          functions below. Wind chill is computed client-side (NWS
+          formula) for Mansfield; Whiteface/Burke/Bolton report their
+          own via their respective APIs.
+        -->
+
+        <div class="summit-card" data-station="WHITEFACE">
+          <div class="header">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M4 20 L11 6 L14 12 L17 9 L20 20 Z"/></svg>
+            </div>
+            <div>
+              <div class="name">Whiteface Mountain</div>
+              <div class="elev" data-field="elevation">4,867 ft</div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="label">TEMP</div><div class="value" data-field="temp">—</div></div>
+            <div class="stat"><div class="label">WIND</div><div class="value" data-field="wind">—</div></div>
+            <div class="stat"><div class="label">GUST</div><div class="value" data-field="gust">—</div></div>
+            <div class="stat"><div class="label">CHILL</div><div class="value" data-field="windchill">—</div></div>
+          </div>
+        </div>
+
+        <div class="summit-card" data-station="MMNV1">
+          <div class="header">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M3 20 L9 8 L13 15 L16 10 L21 20 Z"/></svg>
+            </div>
+            <div>
+              <div class="name">Mount Mansfield</div>
+              <div class="elev" data-field="elevation">3,891 ft</div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="label">TEMP</div><div class="value" data-field="temp">—</div></div>
+            <div class="stat"><div class="label">WIND</div><div class="value" data-field="wind">—</div></div>
+            <div class="stat"><div class="label">GUST</div><div class="value" data-field="gust">—</div></div>
+            <div class="stat"><div class="label">CHILL</div><div class="value" data-field="windchill">—</div></div>
+          </div>
+        </div>
+
+        <div class="summit-card" data-station="BOLTON">
+          <div class="header">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M4 20 L11 6 L14 12 L17 9 L20 20 Z"/></svg>
+            </div>
+            <div>
+              <div class="name">Bolton Vista Peak</div>
+              <div class="elev" data-field="elevation">3,150 ft</div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="label">TEMP</div><div class="value" data-field="temp">—</div></div>
+            <div class="stat"><div class="label">WIND</div><div class="value" data-field="wind">—</div></div>
+            <div class="stat"><div class="label">GUST</div><div class="value" data-field="gust">—</div></div>
+            <div class="stat"><div class="label">CHILL</div><div class="value" data-field="windchill">—</div></div>
+          </div>
+        </div>
+
+        <div class="summit-card" data-station="BURKE">
+          <div class="header">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M4 20 L11 6 L14 12 L17 9 L20 20 Z"/></svg>
+            </div>
+            <div>
+              <div class="name">Burke Mountain</div>
+              <div class="elev" data-field="elevation">3,058 ft</div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="label">TEMP</div><div class="value" data-field="temp">—</div></div>
+            <div class="stat"><div class="label">WIND</div><div class="value" data-field="wind">—</div></div>
+            <div class="stat"><div class="label">GUST</div><div class="value" data-field="gust">—</div></div>
+            <div class="stat"><div class="label">CHILL</div><div class="value" data-field="windchill">—</div></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= BOTTOM ROW: SNOW DEPTH + P-TYPE + FROUDE ================= -->
+    <div class="bottom-row">
+
+      <div class="snow-summary">
+        <div class="eyebrow">SNOW DEPTH</div>
+
+        <div class="headline">
+          <svg class="snowflake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M12 2 V22 M4 7 L20 17 M20 7 L4 17"/>
+          </svg>
+          <span class="value" data-field="snow-depth">18</span>
+          <span class="unit">in</span>
+        </div>
+
+        <div class="location">at Mansfield Summit</div>
+
+        <div class="departure placeholder" data-field="departure">
+          Departure — pending wiring
+        </div>
+
+        <div class="stats-mini">
+          <div class="stat-mini-col">
+            <span class="label">NORMAL</span>
+            <span class="value" data-field="snow-normal">—</span>
+          </div>
+          <div class="stat-mini-col">
+            <span class="label">RECORD HIGH</span>
+            <span class="value" data-field="snow-record-high">—</span>
+          </div>
+          <div class="stat-mini-col">
+            <span class="label">RECORD LOW</span>
+            <span class="value" data-field="snow-record-low">—</span>
+          </div>
+        </div>
+
+        <div class="updated">Updated: <span data-field="updated">25 Jul 2026 02:03 UTC</span></div>
+      </div>
+
+      <div class="snow-chart-panel">
+        <img src="https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/vt_snow_depth_chart.png" alt="Mount Mansfield snow depth, current season vs. historical max/min/average">
+      </div>
+
+      <div class="quad-stats">
+
+        <div class="quad-card ptype-card">
+          <div class="eyebrow">EXPECTED P-TYPE</div>
+          <div class="value" data-field="precip-type">Rain</div>
+        </div>
+
+        <div class="quad-card froude-card">
+          <div class="eyebrow">FROUDE NUMBER</div>
+          <div class="value" data-field="froude-number">0.09</div>
+          <div class="subtext" data-field="flow-regime">Blocked</div>
+        </div>
+
+        <div class="quad-card">
+          <div class="eyebrow">FREEZING LEVEL</div>
+          <div class="value" data-field="freezing-level">&mdash;</div>
+        </div>
+
+        <div class="quad-card shear-card">
+          <div class="eyebrow">SHEAR (SFC&ndash;SUMMIT)</div>
+          <div class="value" data-field="bulk-shear">&mdash;</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // ============================================================
+    // LIVE CLOCK - ticks every second. The rest of the dashboard
+    // refreshes every 5 minutes (REFRESH_INTERVAL_MS below); this is
+    // just a "yes, this page is actually alive" visual, cheap to run
+    // on its own faster interval.
+    // ============================================================
+
+    function tickClock() {
+      const now = new Date();
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const hh = String(now.getUTCHours()).padStart(2, "0");
+      const mm = String(now.getUTCMinutes()).padStart(2, "0");
+      const ss = String(now.getUTCSeconds()).padStart(2, "0");
+      const el = document.getElementById("nav-clock");
+      if (el) {
+        el.textContent = `${now.getUTCDate()} ${months[now.getUTCMonth()]} ${now.getUTCFullYear()} ${hh}:${mm}:${ss} UTC`;
+      }
+    }
+
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    // Populates the cards backed by tempprofile.py / mansfield_snow_depth.py /
+    // mansfield_obs.py's JSON exports (vt_diagnostics_status.json,
+    // vt_snow_depth_status.json, vt_mansfield_obs_status.json).
+    // The sounding image, snow chart image, and the Nose/Taft Lodge/Base
+    // Lodge cards are still unwired - see the TODO comments next to those
+    // elements in the markup above.
+
+    const DATA_BASE = "https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/";
+    const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // matches the workflow's ~15 min cadence closely enough
+
+// ============================================================================
+// MOUNT MANSFIELD / MMNV1 LIVE OBSERVATION HELPERS
+// Source logic transplanted from the Recreation Dashboard.
+//
+// Temperature: IEM VT_COOP observation history / TAIRGZZ
+// Wind:        IEM AFOS archive / RRSBTV
+// Station:     MMNV1
+// ============================================================================
+
+const MANSFIELD_STATION = "MMNV1";
+const MANSFIELD_COOP_NETWORK = "VT_COOP";
+const MANSFIELD_RRS_PIL = "RRSBTV";
+
+
+// ---------------------------------------------------------------------------
+// Fetch helper
+// Prevents a failed/slow IEM request from hanging the dashboard indefinitely.
+// ---------------------------------------------------------------------------
+
+async function fetchWithTimeout_(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+
+  try {
+    return await fetch(
+      url,
+      Object.assign({}, options, {
+        signal: controller.signal
+      })
+    );
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Date helpers
+// Used by the IEM COOP observation-history request.
+// ---------------------------------------------------------------------------
+
+function tzParts_(date, timeZone) {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: timeZone,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+
+  const parts = {};
+
+  formatter.formatToParts(date).forEach((part) => {
+    parts[part.type] = part.value;
+  });
+
+  return parts;
+}
+
+
+function formatDateYMD_(date, timeZone) {
+  const p = tzParts_(date, timeZone);
+
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+
+function pad2_(number) {
+  return number < 10 ? `0${number}` : String(number);
+}
+
+
+// ---------------------------------------------------------------------------
+// Wind chill
+//
+// Official NWS wind-chill equation.
+// Valid when:
+//   Temperature <= 50 F
+//   Wind >= 3 mph
+//
+// If conditions don't meet those criteria, we return the actual temperature
+// instead of displaying an artificial wind-chill value.
+// ---------------------------------------------------------------------------
+
+function calculateWindChill_(tempF, windMph) {
+
+  if (
+    tempF === null ||
+    tempF === undefined ||
+    windMph === null ||
+    windMph === undefined
+  ) {
+    return null;
+  }
+
+  if (tempF > 50 || windMph < 3) {
+    return null;
+  }
+
+  const windFactor = Math.pow(windMph, 0.16);
+
+  return (
+    35.74 +
+    (0.6215 * tempF) -
+    (35.75 * windFactor) +
+    (0.4275 * tempF * windFactor)
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Wind speed display: mph, rounded to the nearest integer.
+//
+// Every source station already reports mph natively (IEM/RRS
+// sustained speed, Whiteface's API, Weather.com PWS for
+// Burke/Bolton), so this is just formatting/rounding - no unit
+// conversion needed. (Earlier version converted to knots; reverted
+// per correction - mph throughout.)
+// ---------------------------------------------------------------------------
+
+// "165° 5 mph" - direction as a bare degree number, speed rounded to
+// the nearest integer. Falls back to just the speed if direction
+// isn't available, and to an em dash if neither is.
+function formatWindDisplay_(directionDeg, speedMph) {
+
+  if (speedMph === null || speedMph === undefined || !Number.isFinite(speedMph)) {
+    return "\u2014";
+  }
+
+  const speedText = `${Math.round(speedMph)} mph`;
+
+  if (directionDeg === null || directionDeg === undefined || !Number.isFinite(directionDeg)) {
+    return speedText;
+  }
+
+  return `${Math.round(directionDeg)}\u00b0 ${speedText}`;
+}
+
+// Gust doesn't carry a direction, just "23 mph" (or an em dash).
+function formatGustDisplay_(gustMph) {
+
+  if (gustMph === null || gustMph === undefined || !Number.isFinite(gustMph)) {
+    return "\u2014";
+  }
+
+  return `${Math.round(gustMph)} mph`;
+}
+
+// ---------------------------------------------------------------------------
+// Wind speed color-coding for the summit cards.
+//
+// Thresholds as given: <30 mph green, 30-45 mph orange, 45-60 mph
+// red, >60 mph purple - applied directly to the mph value shown on
+// the card.
+// ---------------------------------------------------------------------------
+
+const WIND_COLOR_CLASSES = ["wind-calm", "wind-breezy", "wind-strong", "wind-extreme"];
+
+function windColorClass_(speedMph) {
+  if (speedMph === null || speedMph === undefined) return null;
+  if (speedMph < 30) return "wind-calm";
+  if (speedMph < 45) return "wind-breezy";
+  if (speedMph < 60) return "wind-strong";
+  return "wind-extreme";
+}
+
+function applyWindColor_(cardEl, speedMph) {
+  if (!cardEl) return;
+  cardEl.classList.remove(...WIND_COLOR_CLASSES);
+  const cls = windColorClass_(speedMph);
+  if (cls) cardEl.classList.add(cls);
+}
+
+// ============================================================================
+// MMNV1 TEMPERATURE — IEM VT_COOP
+// ============================================================================
+//
+// Pulls the observation history for MMNV1 from the VT_COOP network.
+//
+// TAIRGZZ = instantaneous air temperature in degrees F.
+//
+// We request today's observations first. If today's dataset is empty
+// (which can happen shortly after midnight), we automatically try yesterday.
+// ============================================================================
+
+async function fetchMansfieldTemperature_() {
+
+  // Try today first.
+  const today = formatDateYMD_(
+    new Date(),
+    "America/New_York"
+  );
+
+  let rows = await fetchIemObhistoryRows_(
+    MANSFIELD_STATION,
+    MANSFIELD_COOP_NETWORK,
+    today
+  );
+
+  let tempRow =
+    rows && rows.length
+      ? findLatestNonNullRow_(rows, ["TAIRGZZ"])
+      : null;
+
+
+  // If MMNV1 / TAIRGZZ is temporarily missing from today's
+  // observation history, try yesterday as a fallback.
+  //
+  // This also handles the period immediately after midnight.
+  if (!tempRow) {
+
+    const yesterday = formatDateYMD_(
+      new Date(Date.now() - 86400000),
+      "America/New_York"
+    );
+
+    const previousRows =
+      await fetchIemObhistoryRows_(
+        MANSFIELD_STATION,
+        MANSFIELD_COOP_NETWORK,
+        yesterday
+      );
+
+    tempRow =
+      previousRows && previousRows.length
+        ? findLatestNonNullRow_(
+            previousRows,
+            ["TAIRGZZ"]
+          )
+        : null;
+  }
+
+
+  if (
+    !tempRow ||
+    tempRow.TAIRGZZ == null
+  ) {
+
+    console.warn(
+      "MMNV1: no valid TAIRGZZ temperature available."
+    );
+
+    return null;
+  }
+
+
+  const tempF =
+    Number(tempRow.TAIRGZZ);
+
+
+  if (!Number.isFinite(tempF)) {
+
+    console.warn(
+      "MMNV1: invalid TAIRGZZ value:",
+      tempRow.TAIRGZZ
+    );
+
+    return null;
+  }
+
+
+  console.log(
+    "MMNV1 temperature:",
+    tempF,
+    tempRow.utc_valid
+  );
+
+
+  return {
+    tempF: tempF,
+    timestamp: tempRow.utc_valid
+  };
+}
+
+
+// ---------------------------------------------------------------------------
+// Retrieve MMNV1 COOP observation rows.
+//
+// Try today first. If nothing is available, try yesterday.
+// ---------------------------------------------------------------------------
+
+async function fetchIemCoopRows_(stationId, network) {
+
+  const today = formatDateYMD_(
+    new Date(),
+    "America/New_York"
+  );
+
+  let rows = await fetchIemObhistoryRows_(
+    stationId,
+    network,
+    today
+  );
+
+  if (!rows || !rows.length) {
+
+    const yesterday = formatDateYMD_(
+      new Date(Date.now() - 86400000),
+      "America/New_York"
+    );
+
+    rows = await fetchIemObhistoryRows_(
+      stationId,
+      network,
+      yesterday
+    );
+  }
+
+  return rows || [];
+}
+
+
+// ---------------------------------------------------------------------------
+// Actual IEM API request.
+// ---------------------------------------------------------------------------
+
+async function fetchIemObhistoryRows_(stationId, network, dateString) {
+
+  try {
+
+    const url =
+      "https://mesonet.agron.iastate.edu/api/1/obhistory.json" +
+      "?station=" + encodeURIComponent(stationId) +
+      "&network=" + encodeURIComponent(network) +
+      "&date=" + encodeURIComponent(dateString);
+
+    const response = await fetchWithTimeout_(
+      url,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+
+      console.warn(
+        `IEM obhistory failed for ${stationId}/${network}/${dateString}: HTTP ${response.status}`
+      );
+
+      return null;
+    }
+
+    const json = await response.json();
+
+    return json.data || [];
+
+  } catch (error) {
+
+    console.warn(
+      `IEM obhistory error for ${stationId}/${network}/${dateString}:`,
+      error
+    );
+
+    return null;
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Starting at the newest observation, find the first row containing a
+// non-null value for one of the requested fields.
+//
+// For Mansfield we're currently requesting only TAIRGZZ.
+// ---------------------------------------------------------------------------
+
+function findLatestNonNullRow_(rows, fieldNames) {
+
+  for (let i = rows.length - 1; i >= 0; i--) {
+
+    for (let j = 0; j < fieldNames.length; j++) {
+
+      if (rows[i][fieldNames[j]] != null) {
+        return rows[i];
+      }
+    }
+  }
+
+  return null;
+}
+
+// ============================================================================
+// MMNV1 WIND — NWS BTV RRS PRODUCT VIA IEM AFOS ARCHIVE
+// ============================================================================
+//
+// Product: RRSBTV
+// Station: MMNV1
+//
+// SHEF parameters:
+//   USIRG = sustained wind speed
+//   UPERG = peak/gust wind
+//   UDIRG = wind direction
+//
+// RRSBTV editions are normally available at :12 after each UTC hour.
+// We search the newest expected edition plus the previous 6 hours because
+// MMNV1 is not guaranteed to appear in every hourly product.
+// ============================================================================
+
+async function fetchMansfieldWind_() {
+
+  const hoursBackOptions = [0, 1, 2, 3, 4, 5, 6];
+
+  // Fetch all candidate RRS editions in parallel.
+  const texts = await Promise.all(
+    hoursBackOptions.map((hoursBack) => {
+
+      const stamp = rrsStampForHoursBack_(hoursBack);
+
+      return fetchRrsProductTextForStamp_(
+        MANSFIELD_RRS_PIL,
+        stamp
+      );
+    })
+  );
+
+
+  // Search newest -> oldest and stop at the first edition
+  // that actually contains MMNV1 wind data.
+  for (let i = 0; i < texts.length; i++) {
+
+    const text = texts[i];
+
+    if (!text) continue;
+
+
+    const sustained = parseRrsSeries_(
+      text,
+      MANSFIELD_STATION,
+      "USIRG"
+    );
+
+    const gust = parseRrsSeries_(
+      text,
+      MANSFIELD_STATION,
+      "UPERG"
+    );
+
+    const direction = parseRrsSeries_(
+      text,
+      MANSFIELD_STATION,
+      "UDIRG"
+    );
+
+
+    // If neither sustained nor gust exists, this particular
+    // RRS edition does not contain usable MMNV1 wind data.
+    if (!sustained && !gust) {
+      continue;
+    }
+
+
+    // Determine the newest timestamp represented by the wind observations.
+    const timestamps = [];
+
+    if (sustained) {
+      timestamps.push(
+        new Date(sustained.timestamp).getTime()
+      );
+    }
+
+    if (gust) {
+      timestamps.push(
+        new Date(gust.timestamp).getTime()
+      );
+    }
+
+    const windTimestamp = timestamps.length
+      ? new Date(Math.max(...timestamps)).toISOString()
+      : null;
+
+
+    return {
+
+      sustainedMph:
+        sustained
+          ? Math.round(sustained.value)
+          : null,
+
+      gustMph:
+        gust
+          ? Math.round(gust.value)
+          : null,
+
+      directionDeg:
+        direction
+          ? Math.round(direction.value)
+          : null,
+
+      timestamp: windTimestamp
+    };
+  }
+
+
+  console.warn(
+    "MMNV1: no wind observation found in the latest 7 RRSBTV editions."
+  );
+
+  return null;
+}
+
+
+// ============================================================================
+// BUILD THE RRS PRODUCT TIMESTAMP
+// ============================================================================
+//
+// Example:
+//
+//   25 July 2026 at 21 UTC
+//
+// becomes:
+//
+//   202607252112
+//
+//                    ^^
+//                    :12 issuance
+//
+// If the current UTC minute is BEFORE :12, the current-hour edition probably
+// does not exist yet, so hoursBack=0 begins with the previous hour.
+// ============================================================================
+
+function rrsStampForHoursBack_(hoursBack) {
+
+  const now = new Date();
+
+  const baseHour =
+    now.getUTCMinutes() < 12
+      ? new Date(now.getTime() - 3600000)
+      : now;
+
+  const candidate =
+    new Date(
+      baseHour.getTime() -
+      (hoursBack * 3600000)
+    );
+
+
+  return (
+    candidate.getUTCFullYear() +
+    pad2_(candidate.getUTCMonth() + 1) +
+    pad2_(candidate.getUTCDate()) +
+    pad2_(candidate.getUTCHours()) +
+    "12"
+  );
+}
+
+
+// ============================================================================
+// FETCH ONE RRSBTV EDITION
+// ============================================================================
+
+async function fetchRrsProductTextForStamp_(pil, stamp) {
+
+  try {
+
+    const url =
+      "https://mesonet.agron.iastate.edu/wx/afos/p.php" +
+      "?pil=" + encodeURIComponent(pil) +
+      "&e=" + encodeURIComponent(stamp);
+
+
+    const response = await fetchWithTimeout_(
+      url,
+      { cache: "no-store" }
+    );
+
+
+    if (!response.ok) {
+
+      console.warn(
+        `RRS fetch failed for ${pil} ${stamp}: HTTP ${response.status}`
+      );
+
+      return null;
+    }
+
+
+    const html = await response.text();
+
+    return extractAfosPreText_(html);
+
+
+  } catch (error) {
+
+    console.warn(
+      `RRS fetch error for ${pil} ${stamp}:`,
+      error
+    );
+
+    return null;
+  }
+}
+
+
+// ============================================================================
+// EXTRACT AFOS PRODUCT TEXT FROM IEM HTML
+// ============================================================================
+//
+// Important:
+//
+// IEM can return MULTIPLE:
+//
+//     <pre class="afos-pre">
+//
+// blocks for the same nominal issuance.
+//
+// The working recreation dashboard encountered cases where the complete
+// product was not the final <pre> block. Therefore we concatenate ALL of
+// them instead of assuming the first or last block is the correct one.
+// ============================================================================
+
+function extractAfosPreText_(html) {
+
+  const matches =
+    html.match(
+      /<pre class="afos-pre">([\s\S]*?)<\/pre>/g
+    );
+
+
+  if (!matches || !matches.length) {
+    return null;
+  }
+
+
+  return matches
+    .map((block) => {
+
+      return block
+
+        .replace(
+          /^<pre class="afos-pre">/,
+          ""
+        )
+
+        .replace(
+          /<\/pre>$/,
+          ""
+        )
+
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">");
+
+    })
+
+    .join("\n");
+}
+
+
+// ============================================================================
+// PARSE A SHEF .E TIME SERIES
+// ============================================================================
+//
+// Example structure:
+//
+// .E MMNV1 20260725 DH2112/USIRG/DIN15/...
+//
+// Continuation lines may follow:
+//
+// .E1 ...
+// .E2 ...
+//
+// We collect the entire series, then work BACKWARD through it to obtain
+// the newest valid value.
+//
+// "M" = missing and is skipped.
+// ============================================================================
+
+function parseRrsSeries_(text, stationId, code) {
+
+  const lines = text.split("\n");
+
+
+  for (let i = 0; i < lines.length; i++) {
+
+    const match = lines[i].match(
+      /^\.E\s+(\S+)\s+(\d{8})\s+DH(\d{2})(\d{2})\/([A-Z0-9]+)\/DIN(\d+)\/(.+)$/
+    );
+
+
+    if (!match) {
+      continue;
+    }
+
+
+    // Wrong station or wrong SHEF parameter.
+    if (
+      match[1] !== stationId ||
+      match[5] !== code
+    ) {
+      continue;
+    }
+
+
+    const dateString = match[2];
+
+    const startHour =
+      Number(match[3]);
+
+    const startMinute =
+      Number(match[4]);
+
+    const intervalMinutes =
+      Number(match[6]);
+
+
+    let values =
+      match[7]
+        .split("/")
+        .filter((value) => value.length > 0);
+
+
+    // --------------------------------------------------------------
+    // Collect continuation lines:
+    //
+    // .E1
+    // .E2
+    // .E3
+    // etc.
+    // --------------------------------------------------------------
+
+    let j = i + 1;
+
+
+    while (j < lines.length) {
+
+      const continuation =
+        lines[j].match(
+          /^\.E\d+\s+(.+)$/
+        );
+
+
+      if (!continuation) {
+        break;
+      }
+
+
+      values = values.concat(
+
+        continuation[1]
+
+          .split("/")
+
+          .filter(
+            (value) =>
+              value.length > 0
+          )
+      );
+
+
+      j++;
+    }
+
+
+    // --------------------------------------------------------------
+    // Start with the newest value and work backward until we find
+    // something that isn't missing.
+    // --------------------------------------------------------------
+
+    for (
+      let k = values.length - 1;
+      k >= 0;
+      k--
+    ) {
+
+      if (values[k] === "M") {
+        continue;
+      }
+
+
+      const numericValue =
+        parseFloat(values[k]);
+
+
+      if (Number.isNaN(numericValue)) {
+        continue;
+      }
+
+
+      const year =
+        Number(
+          dateString.substring(0, 4)
+        );
+
+      const month =
+        Number(
+          dateString.substring(4, 6)
+        );
+
+      const day =
+        Number(
+          dateString.substring(6, 8)
+        );
+
+
+      const timestamp =
+        new Date(
+          Date.UTC(
+            year,
+            month - 1,
+            day,
+            startHour,
+            startMinute +
+              (k * intervalMinutes)
+          )
+        );
+
+
+      return {
+
+        value: numericValue,
+
+        timestamp:
+          timestamp.toISOString()
+      };
+    }
+
+
+    return null;
+  }
+
+
+  return null;
+}
+    
+    //**Remove soon** Per-station metadata for the Mountain Observations sidebar. Elevation
+    // lives here (not just typed into markup) so it's one source of truth
+    // and reusable for future calcs (lapse rate, freezing-level AGL, etc.)
+    // as more stations get wired up.
+    const STATION_CONFIG = {
+      MMNV1: { name: "Mount Mansfield", elevationFt: 3891 },
+    };
+
+    function setField(fieldName, text) {
+      document.querySelectorAll(`[data-field="${fieldName}"]`).forEach((el) => {
+        el.textContent = text;
+      });
+    }
+
+    // Scoped version of setField - use this for anything that lives inside
+    // a specific station card (temp/wind/windchill/elevation), since those
+    // data-field names repeat across all four sidebar cards and the global
+    // setField() would stomp on the other stations too.
+    function cardField(station, fieldName) {
+      return document.querySelector(`.summit-card[data-station="${station}"] [data-field="${fieldName}"]`);
+    }
+
+    // green=rain, blue=snow, yellow=sleet/wintry mix, red=freezing rain
+    const PRECIP_COLOR_CLASS = {
+      "Rain": "ptype-rain",
+      "Snow": "ptype-snow",
+      "Sleet": "ptype-mix",
+      "Wintry Mix": "ptype-mix",
+      "Freezing Rain": "ptype-frz",
+    };
+
+    function applyPrecipColor(precipType) {
+      document.querySelectorAll('.ptype-card').forEach((card) => {
+        card.classList.remove("ptype-rain", "ptype-snow", "ptype-mix", "ptype-frz");
+        const cls = PRECIP_COLOR_CLASS[precipType];
+        if (cls) card.classList.add(cls);
+      });
+    }
+
+    // <15 kt green, 15-25 kt yellow, >=25 kt red (also covers 25-40
+    // and beyond - there's no 4th color to split that range further).
+    function shearColorClass(shearKt) {
+      if (shearKt === null || shearKt === undefined) return null;
+      if (shearKt < 15) return "shear-low";
+      if (shearKt < 25) return "shear-mod";
+      return "shear-high";
+    }
+
+    function applyShearColor(shearKt) {
+      document.querySelectorAll('.shear-card').forEach((card) => {
+        card.classList.remove("shear-low", "shear-mod", "shear-high");
+        const cls = shearColorClass(shearKt);
+        if (cls) card.classList.add(cls);
+      });
+    }
+
+    function formatDateUTC(isoString) {
+      if (!isoString) return "\u2014";
+      const d = new Date(isoString);
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const hh = String(d.getUTCHours()).padStart(2, "0");
+      const mm = String(d.getUTCMinutes()).padStart(2, "0");
+      return `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${hh}:${mm} UTC`;
+    }
+
+    // Formats a station's live wind reading to match the existing
+    // "dir/speed" display convention already used by the mockup cards
+    // (e.g. "240/35").
+    function formatWind(dirDeg, speedMph) {
+      if (dirDeg === null || dirDeg === undefined || speedMph === null || speedMph === undefined) {
+        return "\u2014";
+      }
+      return `${Math.round(dirDeg)}/${Math.round(speedMph)}`;
+    }
+
+    async function refreshDiagnostics() {
+      try {
+        const res = await fetch(DATA_BASE + "vt_diagnostics_status.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        setField("precip-type", data.precip_type ?? "\u2014");
+        applyPrecipColor(data.precip_type);
+
+        setField(
+          "froude-number",
+          data.froude_number !== null && data.froude_number !== undefined
+            ? data.froude_number.toFixed(2)
+            : "\u2014"
+        );
+        setField("flow-regime", data.flow_regime ?? "\u2014");
+
+        setField(
+          "freezing-level",
+          data.freezing_level_ft !== null && data.freezing_level_ft !== undefined
+            ? `${Math.round(data.freezing_level_ft).toLocaleString()} ft`
+            : "None in layer"
+        );
+
+        setField(
+          "bulk-shear",
+          data.bulk_shear_kt !== null && data.bulk_shear_kt !== undefined
+            ? `${Math.round(data.bulk_shear_kt)} kt`
+            : "\u2014"
+        );
+        applyShearColor(data.bulk_shear_kt);
+      } catch (err) {
+        // Leave whatever's currently showing (placeholder or last
+        // successful fetch) rather than blanking the card on a
+        // transient network/404 error.
+        console.warn("Diagnostics status fetch failed:", err);
+      }
+    }
+
+    async function refreshSnowDepth() {
+      try {
+        const res = await fetch(DATA_BASE + "vt_snow_depth_status.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        setField(
+          "snow-depth",
+          data.current_depth_in !== null && data.current_depth_in !== undefined
+            ? Math.round(data.current_depth_in)
+            : "\u2014"
+        );
+
+        setField("departure", data.departure_text ?? "\u2014");
+
+        document.querySelectorAll('[data-field="departure"]').forEach((el) => {
+          el.classList.remove("placeholder");
+        });
+
+        setField(
+          "snow-normal",
+          data.normal_depth_in !== null && data.normal_depth_in !== undefined
+            ? `${Math.round(data.normal_depth_in)}"`
+            : "\u2014"
+        );
+
+        setField(
+          "snow-record-high",
+          data.record_high_in !== null && data.record_high_in !== undefined
+            ? `${Math.round(data.record_high_in)}"`
+            : "\u2014"
+        );
+
+        setField(
+          "snow-record-low",
+          data.record_low_in !== null && data.record_low_in !== undefined
+            ? `${Math.round(data.record_low_in)}"`
+            : "\u2014"
+        );
+
+        setField("updated", formatDateUTC(data.generated_at));
+      } catch (err) {
+        console.warn("Snow depth status fetch failed:", err);
+      }
+    }
+
+async function refreshMansfieldObs() {
+  const card = document.querySelector(
+    '.summit-card[data-station="MMNV1"]'
+  );
+
+  if (!card) {
+    console.warn("MMNV1 summit card not found.");
+    return;
+  }
+
+  // Existing fields in the actual Mount Mansfield card
+  const tempEl = card.querySelector('[data-field="temp"]');
+const windEl = card.querySelector('[data-field="wind"]');
+const gustEl = card.querySelector('[data-field="gust"]');
+const chillEl = card.querySelector('[data-field="windchill"]');
+const elevationEl = card.querySelector('[data-field="elevation"]');
+
+  try {
+
+    // Fetch temperature + wind simultaneously
+    const results = await Promise.allSettled([
+      fetchMansfieldTemperature_(),
+      fetchMansfieldWind_()
+    ]);
+
+    const temperature =
+      results[0].status === "fulfilled"
+        ? results[0].value
+        : null;
+
+    const wind =
+      results[1].status === "fulfilled"
+        ? results[1].value
+        : null;
+
+
+    // ============================================================
+    // TEMPERATURE
+    // ============================================================
+
+    if (
+      tempEl &&
+      temperature &&
+      temperature.tempF != null
+    ) {
+      tempEl.textContent =
+        `${Math.round(temperature.tempF)}°`;
+    } else if (tempEl) {
+      tempEl.textContent = "—";
+    }
+
+
+    // ============================================================
+    // WIND
+    //
+    // "165° 5 mph" - direction in degrees, speed rounded to the
+    // nearest integer (see formatWindDisplay_).
+    // ============================================================
+
+    if (windEl) {
+      windEl.textContent = wind
+        ? formatWindDisplay_(wind.directionDeg, wind.sustainedMph)
+        : "—";
+    }
+
+    applyWindColor_(card, wind ? wind.sustainedMph : null);
+
+// ============================================================
+// WIND GUST
+//
+// UPERG from the RRSBTV product. Same mph->kt conversion as
+// sustained wind.
+// ============================================================
+
+if (gustEl) {
+  gustEl.textContent = wind ? formatGustDisplay_(wind.gustMph) : "—";
+}
+    
+    // ============================================================
+    // WIND CHILL
+    //
+    // NWS formula using sustained wind.
+    // ============================================================
+
+    if (
+      chillEl &&
+      temperature &&
+      temperature.tempF != null &&
+      wind &&
+      wind.sustainedMph != null
+    ) {
+
+      const windChill =
+        calculateWindChill_(
+          temperature.tempF,
+          wind.sustainedMph
+        );
+
+      chillEl.textContent =
+        windChill != null
+          ? `${Math.round(windChill)}°`
+          : "—";
+
+    } else if (chillEl) {
+
+      chillEl.textContent = "—";
+    }
+
+
+    // ============================================================
+    // ELEVATION
+    //
+    // You already have MMNV1 = 4,393 ft in STATION_CONFIG.
+    // ============================================================
+
+    if (
+      elevationEl &&
+      STATION_CONFIG.MMNV1
+    ) {
+
+      elevationEl.textContent =
+        `${STATION_CONFIG.MMNV1.elevationFt.toLocaleString()} ft`;
+    }
+
+
+    // ============================================================
+    // TEST OUTPUT
+    // ============================================================
+
+    console.log("MMNV1 LIVE OBS:", {
+      temperature,
+      wind,
+      windChill:
+        temperature &&
+        wind &&
+        temperature.tempF != null &&
+        wind.sustainedMph != null
+          ? Math.round(
+              calculateWindChill_(
+                temperature.tempF,
+                wind.sustainedMph
+              )
+            )
+          : null
+    });
+
+  } catch (error) {
+
+    console.error(
+      "MMNV1 observation refresh failed:",
+      error
+    );
+  }
+}
+function degreesToCompass_(deg) {
+  if (deg == null) return null;
+
+  const directions = [
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW"
+  ];
+
+  const index =
+    Math.round(deg / 22.5) % 16;
+
+  return directions[index];
+}
+
+// ============================================================================
+// WHITEFACE MOUNTAIN — ASRC / UNIVERSITY AT ALBANY
+// ============================================================================
+//
+// API:
+// https://api.asrc.albany.edu:3000/wfmsapi
+//
+// Fields:
+//   WS_mph       = sustained wind speed
+//   Temp_degF    = air temperature
+//   WindChill_F  = wind chill
+//   WindDir      = wind direction
+//   DateTime     = observation time
+// ============================================================================
+
+async function fetchWhitefaceObservation_() {
+  try {
+
+    const response = await fetchWithTimeout_(
+      "https://api.asrc.albany.edu:3000/wfmsapi",
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      console.warn(
+        `Whiteface API failed: HTTP ${response.status}`
+      );
+      return null;
+    }
+
+    const data = await response.json();
+
+
+    const sustainedMph =
+      data.WS_mph &&
+      data.WS_mph.value != null
+        ? Math.round(Number(data.WS_mph.value))
+        : null;
+
+
+    const tempF =
+      data.Temp_degF &&
+      data.Temp_degF.value != null
+        ? Math.round(Number(data.Temp_degF.value))
+        : null;
+
+
+    const windChillF =
+      data.WindChill_F &&
+      data.WindChill_F.value != null
+        ? Math.round(Number(data.WindChill_F.value))
+        : null;
+
+
+    const directionLabel =
+      data.WindDir &&
+      data.WindDir.value
+        ? data.WindDir.value
+        : null;
+
+
+    const directionDeg =
+      data.WindDir &&
+      data.WindDir.units != null &&
+      data.WindDir.units !== "-"
+        ? Number(data.WindDir.units)
+        : null;
+
+
+    if (
+      sustainedMph == null &&
+      tempF == null
+    ) {
+      return null;
+    }
+
+
+    const timestamp =
+      parseWfmsDateTime_(
+        data.DateTime &&
+        data.DateTime.value
+      );
+
+
+    return {
+      sustainedMph,
+      tempF,
+      windChillF:
+  tempF != null &&
+  tempF <= 50 &&
+  sustainedMph != null &&
+  sustainedMph >= 3 &&
+  windChillF != null
+    ? windChillF
+    : null,
+      directionDeg,
+      directionLabel,
+      timestamp
+    };
+
+  } catch (error) {
+
+    console.warn(
+      "Whiteface observation fetch failed:",
+      error
+    );
+
+    return null;
+  }
+}
+
+function parseWfmsDateTime_(str) {
+  if (!str) return null;
+
+  const match = String(str).match(
+    /(\w+)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)/i
+  );
+
+  if (!match) {
+    return null;
+  }
+
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
+
+  const month =
+    months.indexOf(match[1]);
+
+  if (month === -1) {
+    return null;
+  }
+
+
+  const day =
+    parseInt(match[2], 10);
+
+  const year =
+    parseInt(match[3], 10);
+
+  let hour =
+    parseInt(match[4], 10) % 12;
+
+  const minute =
+    parseInt(match[5], 10);
+
+
+  if (
+    match[6].toUpperCase() === "PM"
+  ) {
+    hour += 12;
+  }
+
+
+  // Whiteface API observation times are local Eastern time.
+  //
+  // We mainly need this for observation age/display. The recreation
+  // dashboard uses the same parser for the WFMS feed.
+
+  return new Date(
+    year,
+    month,
+    day,
+    hour,
+    minute
+  ).toISOString();
+}
+
+// ============================================================================
+// REFRESH WHITEFACE MOUNTAIN OBSERVATION CARD
+// ============================================================================
+
+async function refreshWhitefaceObs() {
+
+  const card = document.querySelector(
+    '.summit-card[data-station="WHITEFACE"]'
+  );
+
+  if (!card) {
+    console.warn("Whiteface summit card not found.");
+    return;
+  }
+
+
+  const tempEl =
+    card.querySelector('[data-field="temp"]');
+
+  const windEl =
+    card.querySelector('[data-field="wind"]');
+
+  const chillEl =
+    card.querySelector('[data-field="windchill"]');
+
+  const elevationEl =
+    card.querySelector('[data-field="elevation"]');
+
+
+  try {
+
+    const obs =
+      await fetchWhitefaceObservation_();
+
+
+    if (!obs) {
+
+      console.warn(
+        "Whiteface: no observation available."
+      );
+
+      if (tempEl) {
+        tempEl.textContent = "—";
+      }
+
+      if (windEl) {
+        windEl.textContent = "—";
+      }
+
+      if (chillEl) {
+        chillEl.textContent = "—";
+      }
+
+      return;
+    }
+
+
+    // ============================================================
+    // TEMPERATURE
+    // ============================================================
+
+    if (
+      tempEl &&
+      obs.tempF != null
+    ) {
+
+      tempEl.textContent =
+        `${Math.round(obs.tempF)}°`;
+
+    } else if (tempEl) {
+
+      tempEl.textContent = "—";
+    }
+
+
+    // ============================================================
+    // WIND
+    //
+    // "165° 5 mph" - same format as Mansfield. Whiteface sometimes
+    // only gives a compass label (e.g. "NW") instead of a numeric
+    // degree - formatWindDisplay_ needs a number, so that fallback
+    // stays handled here rather than folded into the shared helper.
+    // ============================================================
+
+    if (windEl) {
+
+      if (obs.directionDeg != null && Number.isFinite(obs.directionDeg)) {
+
+        windEl.textContent = formatWindDisplay_(obs.directionDeg, obs.sustainedMph);
+
+      } else if (obs.directionLabel && obs.sustainedMph != null) {
+
+        windEl.textContent = `${obs.directionLabel} ${Math.round(obs.sustainedMph)} mph`;
+
+      } else {
+
+        windEl.textContent = formatWindDisplay_(null, obs.sustainedMph);
+      }
+    }
+
+    applyWindColor_(card, obs.sustainedMph);
+
+
+    // ============================================================
+    // WIND CHILL
+    //
+    // Whiteface conveniently provides its own wind-chill value,
+    // so we use that rather than recalculating it.
+    // ============================================================
+
+    if (
+      chillEl &&
+      obs.windChillF != null
+    ) {
+
+      chillEl.textContent =
+        `${Math.round(obs.windChillF)}°`;
+
+    } else if (chillEl) {
+
+      chillEl.textContent = "—";
+    }
+
+
+    // ============================================================
+    // ELEVATION
+    // ============================================================
+
+    if (elevationEl) {
+
+      elevationEl.textContent =
+        "4,867 ft";
+    }
+
+
+    // ============================================================
+    // TEST OUTPUT
+    // ============================================================
+
+    console.log(
+      "WHITEFACE LIVE OBS:",
+      obs
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Whiteface observation refresh failed:",
+      error
+    );
+  }
+}
+
+// ============================================================================
+// BURKE MOUNTAIN SUMMIT — WEATHER.COM PWS
+// ============================================================================
+//
+// Station: KVTEASTB15
+//
+// API provides:
+//   Temperature
+//   Sustained wind
+//   Wind gust
+//   Wind direction
+//   Wind chill
+//   Elevation
+//   Observation timestamp
+//
+// Elevation is supplied by the station metadata: 3,058 ft.
+// ============================================================================
+
+const BURKE_STATION = "KVTEASTB15";
+const BOLTON_STATION = "KVTBOLTO4";
+    
+const BURKE_API_URL =
+  "https://api.weather.com/v2/pws/observations/current" +
+  "?apiKey=e1f10a1e78da46f5b10a1e78da96f525" +
+  "&stationId=" + BURKE_STATION +
+  "&numericPrecision=decimal" +
+  "&format=json" +
+  "&units=e";
+const BOLTON_API_URL =
+  "https://api.weather.com/v2/pws/observations/current" +
+  "?apiKey=e1f10a1e78da46f5b10a1e78da96f525" +
+  "&stationId=" + BOLTON_STATION +
+  "&numericPrecision=decimal" +
+  "&format=json" +
+  "&units=e";
+
+
+async function fetchBurkeObservation_() {
+
+  try {
+
+    const response = await fetchWithTimeout_(
+      BURKE_API_URL,
+      { cache: "no-store" }
+    );
+
+
+    if (!response.ok) {
+
+      console.warn(
+        `Burke PWS API failed: HTTP ${response.status}`
+      );
+
+      return null;
+    }
+
+
+    const data = await response.json();
+
+
+    // ------------------------------------------------------------
+    // Weather.com wraps the current observation in an array.
+    // ------------------------------------------------------------
+
+    if (
+      !data ||
+      !Array.isArray(data.observations) ||
+      !data.observations.length
+    ) {
+
+      console.warn(
+        "Burke: API returned no observations."
+      );
+
+      return null;
+    }
+
+
+    const raw = data.observations[0];
+
+    const imperial = raw.imperial || {};
+
+
+    // ------------------------------------------------------------
+    // TEMPERATURE
+    // ------------------------------------------------------------
+
+    const tempF =
+      imperial.temp != null
+        ? Number(imperial.temp)
+        : null;
+
+
+    // ------------------------------------------------------------
+    // WIND
+    // ------------------------------------------------------------
+
+    const sustainedMph =
+      imperial.windSpeed != null
+        ? Number(imperial.windSpeed)
+        : null;
+
+
+    const gustMph =
+      imperial.windGust != null
+        ? Number(imperial.windGust)
+        : null;
+
+
+    const directionDeg =
+      raw.winddir != null
+        ? Number(raw.winddir)
+        : null;
+
+
+    // ------------------------------------------------------------
+    // WIND CHILL
+    //
+    // Weather.com returns the actual air temperature as "windChill"
+    // when wind chill is not applicable.
+    //
+    // For our dashboard:
+    //
+    //   Temp > 50 F  → —
+    //   Wind < 3 mph → —
+    //
+    // Otherwise use the station's reported wind-chill value.
+    // ------------------------------------------------------------
+
+    let windChillF = null;
+
+
+    if (
+      tempF != null &&
+      tempF <= 50 &&
+      sustainedMph != null &&
+      sustainedMph >= 3 &&
+      imperial.windChill != null
+    ) {
+
+      const wc =
+        Number(imperial.windChill);
+
+
+      if (Number.isFinite(wc)) {
+        windChillF = wc;
+      }
+    }
+
+
+    // ------------------------------------------------------------
+    // ELEVATION
+    // ------------------------------------------------------------
+
+    const elevationFt =
+      imperial.elev != null
+        ? Number(imperial.elev)
+        : null;
+
+
+    // ------------------------------------------------------------
+    // OBSERVATION TIME
+    //
+    // obsTimeUtc is already ISO-8601, so unlike Whiteface we don't
+    // need a custom timestamp parser.
+    // ------------------------------------------------------------
+
+    const timestamp =
+      raw.obsTimeUtc || null;
+
+
+    // ------------------------------------------------------------
+    // Basic validation.
+    // ------------------------------------------------------------
+
+    if (
+      !Number.isFinite(tempF) &&
+      !Number.isFinite(sustainedMph)
+    ) {
+
+      console.warn(
+        "Burke: observation contained no usable temperature or wind."
+      );
+
+      return null;
+    }
+
+
+    // ------------------------------------------------------------
+    // Return normalized observation.
+    //
+    // Same general structure we're using for the other mountain
+    // stations, which keeps the card updater simple.
+    // ------------------------------------------------------------
+
+    return {
+
+      stationId:
+        raw.stationID || BURKE_STATION,
+
+      tempF:
+        Number.isFinite(tempF)
+          ? tempF
+          : null,
+
+      sustainedMph:
+        Number.isFinite(sustainedMph)
+          ? sustainedMph
+          : null,
+
+      gustMph:
+        Number.isFinite(gustMph)
+          ? gustMph
+          : null,
+
+      directionDeg:
+        Number.isFinite(directionDeg)
+          ? directionDeg
+          : null,
+
+      windChillF,
+
+      elevationFt:
+        Number.isFinite(elevationFt)
+          ? elevationFt
+          : null,
+
+      timestamp,
+
+      humidity:
+        raw.humidity != null
+          ? Number(raw.humidity)
+          : null,
+
+      dewpointF:
+        imperial.dewpt != null
+          ? Number(imperial.dewpt)
+          : null
+    };
+
+
+  } catch (error) {
+
+    console.warn(
+      "Burke observation fetch failed:",
+      error
+    );
+
+    return null;
+  }
+}
+
+// ============================================================================
+// REFRESH BURKE MOUNTAIN OBSERVATION CARD
+// ============================================================================
+
+async function refreshBurkeObs() {
+
+  const card = document.querySelector(
+    '.summit-card[data-station="BURKE"]'
+  );
+
+  if (!card) {
+    console.warn("Burke summit card not found.");
+    return;
+  }
+
+
+  const tempEl =
+    card.querySelector('[data-field="temp"]');
+
+  const windEl =
+  card.querySelector('[data-field="wind"]');
+
+const gustEl =
+  card.querySelector('[data-field="gust"]');
+
+const chillEl =
+  card.querySelector('[data-field="windchill"]');
+
+  const elevationEl =
+    card.querySelector('[data-field="elevation"]');
+
+
+  try {
+
+    const obs =
+      await fetchBurkeObservation_();
+
+
+    // ============================================================
+    // NO OBSERVATION
+    // ============================================================
+
+    if (!obs) {
+
+      console.warn(
+        "Burke: no observation available."
+      );
+
+      if (tempEl) {
+        tempEl.textContent = "—";
+      }
+
+      if (windEl) {
+        windEl.textContent = "—";
+      }
+
+      if (chillEl) {
+        chillEl.textContent = "—";
+      }
+
+      return;
+    }
+
+
+    // ============================================================
+    // TEMPERATURE
+    // ============================================================
+
+    if (
+      tempEl &&
+      obs.tempF != null
+    ) {
+
+      tempEl.textContent =
+        `${Math.round(obs.tempF)}°`;
+
+    } else if (tempEl) {
+
+      tempEl.textContent = "—";
+    }
+
+
+    // ============================================================
+    // WIND
+    //
+    // "165° 5 mph" - same format as Mansfield/Whiteface.
+    // ============================================================
+
+    if (windEl) {
+      windEl.textContent = formatWindDisplay_(obs.directionDeg, obs.sustainedMph);
+    }
+
+    applyWindColor_(card, obs.sustainedMph);
+
+// ============================================================
+// WIND GUST
+//
+// Current gust reported by KVTEASTB15 / Weather.com PWS.
+// ============================================================
+
+if (gustEl) {
+  gustEl.textContent = formatGustDisplay_(obs.gustMph);
+}
+
+    // ============================================================
+    // WIND CHILL
+    //
+    // fetchBurkeObservation_() already applies our rule:
+    //
+    //   Temp > 50 F  → null
+    //   Wind < 3 mph → null
+    //
+    // Therefore null simply displays as —.
+    // ============================================================
+
+    if (
+      chillEl &&
+      obs.windChillF != null
+    ) {
+
+      chillEl.textContent =
+        `${Math.round(obs.windChillF)}°`;
+
+    } else if (chillEl) {
+
+      chillEl.textContent = "—";
+    }
+
+
+    // ============================================================
+    // ELEVATION
+    //
+    // Use the actual elevation reported by the PWS.
+    // ============================================================
+
+    if (
+      elevationEl &&
+      obs.elevationFt != null
+    ) {
+
+      elevationEl.textContent =
+        `${obs.elevationFt.toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        })} ft`;
+    }
+
+
+    // ============================================================
+    // TEST OUTPUT
+    // ============================================================
+
+    console.log(
+      "BURKE LIVE OBS:",
+      obs
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Burke observation refresh failed:",
+      error
+    );
+  }
+}
+
+async function fetchBoltonObservation_() {
+
+  try {
+
+    const response = await fetchWithTimeout_(
+      BOLTON_API_URL,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      console.warn(`Bolton PWS API failed: HTTP ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (
+      !data ||
+      !Array.isArray(data.observations) ||
+      !data.observations.length
+    ) {
+      console.warn("Bolton: API returned no observations.");
+      return null;
+    }
+
+    const raw = data.observations[0];
+    const imperial = raw.imperial || {};
+
+    const tempF =
+      imperial.temp != null
+        ? Number(imperial.temp)
+        : null;
+
+    const sustainedMph =
+      imperial.windSpeed != null
+        ? Number(imperial.windSpeed)
+        : null;
+
+    const gustMph =
+      imperial.windGust != null
+        ? Number(imperial.windGust)
+        : null;
+
+    const directionDeg =
+      raw.winddir != null
+        ? Number(raw.winddir)
+        : null;
+
+    let windChillF = null;
+
+    if (
+      tempF != null &&
+      tempF <= 50 &&
+      sustainedMph != null &&
+      sustainedMph >= 3 &&
+      imperial.windChill != null
+    ) {
+
+      const wc = Number(imperial.windChill);
+
+      if (Number.isFinite(wc)) {
+        windChillF = wc;
+      }
+    }
+
+    const elevationFt =
+      imperial.elev != null
+        ? Number(imperial.elev)
+        : null;
+
+    return {
+
+      stationId:
+        raw.stationID || BOLTON_STATION,
+
+      tempF,
+
+      sustainedMph,
+
+      gustMph,
+
+      directionDeg,
+
+      windChillF,
+
+      elevationFt,
+
+      timestamp: raw.obsTimeUtc || null
+    };
+
+  } catch (error) {
+
+    console.warn(
+      "Bolton observation fetch failed:",
+      error
+    );
+
+    return null;
+  }
+}
+
+async function refreshBoltonObs() {
+
+  const card = document.querySelector(
+    '.summit-card[data-station="BOLTON"]'
+  );
+
+  if (!card) {
+    console.warn("Bolton summit card not found.");
+    return;
+  }
+
+  const tempEl = card.querySelector('[data-field="temp"]');
+  const windEl = card.querySelector('[data-field="wind"]');
+  const gustEl = card.querySelector('[data-field="gust"]');
+  const chillEl = card.querySelector('[data-field="windchill"]');
+  const elevationEl = card.querySelector('[data-field="elevation"]');
+
+  try {
+
+    const obs = await fetchBoltonObservation_();
+
+    if (!obs) {
+
+      tempEl.textContent = "—";
+      windEl.textContent = "—";
+      gustEl.textContent = "—";
+      chillEl.textContent = "—";
+
+      return;
+    }
+
+    tempEl.textContent =
+      obs.tempF != null
+        ? `${Math.round(obs.tempF)}°`
+        : "—";
+
+    windEl.textContent = formatWindDisplay_(obs.directionDeg, obs.sustainedMph);
+    applyWindColor_(card, obs.sustainedMph);
+
+    gustEl.textContent = formatGustDisplay_(obs.gustMph);
+
+    chillEl.textContent =
+      obs.windChillF != null
+        ? `${Math.round(obs.windChillF)}°`
+        : "—";
+
+    if (
+      elevationEl &&
+      obs.elevationFt != null
+    ) {
+
+      elevationEl.textContent =
+        `${Math.round(obs.elevationFt)} ft`;
+    }
+
+    console.log(
+      "BOLTON LIVE OBS:",
+      obs
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Bolton observation refresh failed:",
+      error
+    );
+  }
+}    
+
+    // Seeds name/elevation from STATION_CONFIG immediately on load, so the
+    // card is correct even before the first fetch resolves - and so
+    // elevation has one source of truth as more stations get wired up.
+    function seedStationConfig() {
+      Object.entries(STATION_CONFIG).forEach(([station, cfg]) => {
+        const nameEl = document.querySelector(`.summit-card[data-station="${station}"] .name`);
+        if (nameEl) nameEl.textContent = cfg.name;
+        const elevEl = cardField(station, "elevation");
+        if (elevEl) elevEl.textContent = `${cfg.elevationFt.toLocaleString()} ft`;
+      });
+    }
+
+    function refreshAll() {
+      refreshDiagnostics();
+      refreshSnowDepth();
+      refreshMansfieldObs();
+      refreshWhitefaceObs();
+      refreshBurkeObs();
+      refreshBoltonObs();
+    }
+
+    // Color the static placeholder immediately, don't wait on the
+    // fetch to resolve first.
+    applyPrecipColor(document.querySelector('[data-field="precip-type"]')?.textContent.trim());
+
+    seedStationConfig();
+    refreshAll();
+    setInterval(refreshAll, REFRESH_INTERVAL_MS);
+  </script>
+
+</body>
+</html>
