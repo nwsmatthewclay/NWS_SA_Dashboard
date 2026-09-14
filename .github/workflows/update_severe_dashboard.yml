@@ -6,7 +6,7 @@ on:
     - cron: "*/15 * * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   update-dashboard:
@@ -52,3 +52,17 @@ jobs:
           path: outputs/
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Commit generated dashboard outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add outputs/
+
+          if git diff --cached --quiet; then
+            echo "No generated output changes to commit."
+          else
+            git commit -m "Update dashboard outputs"
+            git push
+          fi
