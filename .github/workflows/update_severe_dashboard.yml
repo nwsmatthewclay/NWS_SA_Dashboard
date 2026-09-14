@@ -1,59 +1,74 @@
-name: Update Severe Dashboard
+```yaml
+name: NWS Situational Awareness Dashboard
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: read
 
 jobs:
-  run-dashboard:
+  update-dashboard:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write   # needed so this job can commit PNGs back to the repo
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
-      - name: Install system libraries (eccodes, geos, proj)
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libeccodes0 libeccodes-dev libgeos-dev libproj-dev proj-bin
+          sudo apt-get install -y \
+            libeccodes-dev \
+            libgeos-dev \
+            libproj-dev \
+            proj-data \
+            proj-bin
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install \
+            numpy \
+            pandas \
+            matplotlib \
+            scipy \
+            requests \
+            beautifulsoup4 \
+            lxml \
+            pillow \
+            imageio \
+            gspread \
+            google-auth \
+            google-api-python-client \
+            pygrib \
+            cartopy
 
-      - name: Show trigger type
-        run: echo "Triggered by ${{ github.event_name }}"
-
-      - name: Run main data pipeline (BUFKIT params + GLWU animation)
+      - name: Run dashboard
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          NCEI_CDO_TOKEN: ${{ secrets.NCEI_CDO_TOKEN }}
+          GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
           GLWU_DRIVE_FOLDER_ID: ${{ secrets.GLWU_DRIVE_FOLDER_ID }}
-        run: python main.py
-
-      - name: Run Mansfield temperature profile script
-        run: python tempprofile.py
-
-      - name: Run Mansfield temperature profile script
-        run: python MansfieldSnowDepth.py
-
-      - name: Commit dashboard outputs
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add outputs/
-          git commit -m "Update dashboard outputs [skip ci]" || echo "No changes to commit"
-          git pull --rebase
-          git push
+          python main.py
+
+      # Generated dashboard products remain job artifacts.
+      # They are NOT committed back into main.
+      - name: Upload generated dashboard outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-outputs-${{ github.run_number }}
+          path: outputs/
+          if-no-files-found: ignore
+          retention-days: 7
+```
