@@ -8,33 +8,26 @@ Two independent data sources, kept separate on purpose:
    maintained by NWS, matching the season chart on
    https://www.weather.gov/btv/recreation.
 
-2. CURRENT DEPTH + DEPARTURE FROM NORMAL - Matt Parrilla's full-history
-   CSV (https://matthewparrilla.com/mansfield-stake/), which tracks
-   the same stake but goes back to 1954 (vs. the NWS feeds' single
-   climatological average), so departure-from-normal here is checked
-   against real season-by-season history rather than one blended
-   average curve.
+2. CURRENT DEPTH - MMNV1 Mount Mansfield COOP observation via IEM.
+   This is the live/current snow-depth source used for the status card.
 
-   Note: matthewparrilla.com also publishes a JSON feed
-   (mansfield-observations.json) with temperature/wind/precip, but as
-   of this writing it hasn't updated since Jan 2026 - that one is not
-   used here. The CSV is the one that's current (verified via its S3
-   Last-Modified header, not just eyeballing values).
+3. HISTORICAL DEPTH / NORMAL / RANK - committed snow-depth.csv.
+   The CSV is the single source of truth for the historical comparison,
+   including the Average Season normal and season-by-season records.
 
 Source format notes:
     - The NWS .xml files are not real XML - each is a thin
       <data><text>...</text></data> wrapper around a JS array literal
       of [Date.UTC(y,m,d), depth_inches] pairs. Date.UTC's month is
       0-indexed (0=Jan), unlike Python's date().month.
-    - The Parrilla CSV is wide-format: one row per ski season
-      ("2025-2026"), one column per day of the season ("9/1".."6/30" -
-      it only tracks Sep-Jun, not summer), plus a final "Average
-      Season" row with the climatological mean for each day. It's
-      served gzip-Content-Encoded, which `requests` decompresses
-      automatically - no manual gzip handling needed.
+    - The committed snow-depth.csv is wide-format: one row per ski
+      season ("2025-2026"), one column per day of the season
+      ("9/1".."6/30" - it only tracks Sep-Jun), plus a final
+      "Average Season" row with the climatological mean for each day.
 
 Data sources:
-    https://www.weather.gov/source/btv/rec/mmn/2025-2026depth.xml
+    https://www.weather.gov/source/btv/rec/mmn/{current-season}depth.xml
+    https://mesonet.agron.iastate.edu/cgi-bin/request/coopobs.py
     https://www.weather.gov/source/btv/rec/mmn/avgdepth.xml
     https://www.weather.gov/source/btv/rec/mmn/maxdepth.xml
     https://www.weather.gov/source/btv/rec/mmn/mindepth.xml
@@ -49,7 +42,8 @@ import io
 import json
 import os
 import re
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
@@ -60,31 +54,26 @@ import requests
 
 # ---- Chart data sources (NWS, unchanged) ----
 
-CURRENT_URL = "https://www.weather.gov/source/btv/rec/mmn/2025-2026depth.xml"
+CURRENT_URL_TEMPLATE = "https://www.weather.gov/source/btv/rec/mmn/{season}depth.xml"
 AVERAGE_URL = "https://www.weather.gov/source/btv/rec/mmn/avgdepth.xml"
 MAX_URL = "https://www.weather.gov/source/btv/rec/mmn/maxdepth.xml"
 MIN_URL = "https://www.weather.gov/source/btv/rec/mmn/mindepth.xml"
 
-# ---- Current depth / departure data source (Parrilla CSV) ----
-
-HISTORY_CSV_URL = "https://s3.amazonaws.com/matthewparrilla.com/snow-depth.csv"
+# ---- Historical depth / normal data source (local CSV) ----
+# The committed CSV is now the single source of truth for historical
+# normal, record high, record low, and day-of-season ranking.
+BASE_DIR = Path(__file__).resolve().parent
+HISTORY_CSV_PATHS = [
+    BASE_DIR / "data" / "snow-depth.csv",
+    BASE_DIR / "snow-depth.csv",
+]
 AVERAGE_ROW_LABEL = "Average Season"
 
-HYD_URL = "https://forecast.weather.gov/product.php"
-HYD_PARAMS = {"site": "BTV", "issuedby": "BTV", "product": "HYD", "format": "txt", "glossary": "0"}
-HYD_MAX_VERSION_FALLBACK = 3
-
-HYD_COLUMN_LABELS = ["24 Hrs", "Max", "Min", "Cur", "Weather", "New", "Total", "SWE"]
-HYD_COLUMN_FIELD_NAMES = {
-    "24 Hrs": "precip_24hr",
-    "Max": "temp_max",
-    "Min": "temp_min",
-    "Cur": "temp_cur",
-    "Weather": "present_weather",
-    "New": "snow_new",
-    "Total": "snow_total",
-    "SWE": "snow_swe",
-}
+# ---- Current Mount Mansfield snow depth (IEM MMNV1 COOP) ----
+# MMNV1 is the Mount Mansfield COOP station used by the profile.
+IEM_COOPOBS_URL = "https://mesonet.agron.iastate.edu/cgi-bin/request/coopobs.py"
+MMNV1_STATION = "MMNV1"
+IEM_LOOKBACK_DAYS = 14
 
 HEADERS = {
     "User-Agent": (
@@ -92,7 +81,7 @@ HEADERS = {
     ),
 }
 
-REPO_OUTPUT_DIR = "outputs"
+REPO_OUTPUT_DIR = str(BASE_DIR / "outputs")
 
 STATUS_OUTPUT_FILE = os.path.join(REPO_OUTPUT_DIR, "vt_snow_depth_status.json")
 CHART_OUTPUT_FILE = os.path.join(REPO_OUTPUT_DIR, "vt_snow_depth_chart.png")
@@ -193,29 +182,44 @@ def plot_snow_depth_chart(current_series, average_series, max_series, min_series
 
 
 # =====================================================================
-# CURRENT DEPTH / DEPARTURE (Parrilla full-history CSV)
+# HISTORICAL DEPTH / DEPARTURE (committed full-history CSV)
 # =====================================================================
+
+def locate_history_csv():
+    """Return the first committed historical snow-depth CSV that exists."""
+
+    for path in HISTORY_CSV_PATHS:
+        if path.exists():
+            return path
+
+    searched = ", ".join(str(path) for path in HISTORY_CSV_PATHS)
+    raise FileNotFoundError(
+        f"Historical snow-depth CSV not found. Expected one of: {searched}"
+    )
+
 
 def fetch_snow_depth_history():
     """
-    Fetch and parse the full-history CSV: one row per ski season back
-    to 1954, one column per day of the season (9/1 through 6/30 - it
-    doesn't track summer), plus a final "Average Season" row.
-
-    Returns (day_labels, season_rows) where day_labels is the ordered
-    list of "M/D" column headers and season_rows is
-    {season_label: [value_str, ...]} (values are raw strings - some
-    cells are blank for unreported days).
+    Load the committed full-history CSV: one row per ski season back to
+    1954, one column per day of the season, plus the final ``Average Season``
+    row. This is intentionally local/version-controlled rather than fetched
+    from a remote copy so the dashboard's historical standing cannot change
+    underneath the workflow.
     """
 
-    response = requests.get(HISTORY_CSV_URL, headers=HEADERS, timeout=30)
-    response.raise_for_status()
+    csv_path = locate_history_csv()
+    with csv_path.open("r", newline="", encoding="utf-8-sig") as handle:
+        reader = csv.reader(handle)
+        rows = list(reader)
 
-    reader = csv.reader(io.StringIO(response.text))
-    rows = list(reader)
+    if not rows or len(rows[0]) < 2:
+        raise ValueError(f"Historical snow-depth CSV is empty or malformed: {csv_path}")
 
-    day_labels = rows[0][1:]
-    season_rows = {row[0]: row[1:] for row in rows[1:] if row}
+    day_labels = [label.strip() for label in rows[0][1:]]
+    season_rows = {row[0].strip(): row[1:] for row in rows[1:] if row and row[0].strip()}
+
+    if AVERAGE_ROW_LABEL not in season_rows:
+        raise ValueError(f"Historical snow-depth CSV is missing '{AVERAGE_ROW_LABEL}': {csv_path}")
 
     return day_labels, season_rows
 
@@ -256,7 +260,7 @@ def latest_reported_index(day_labels, values, as_of_label):
     return None
 
 
-def rank_for_day(day_labels, season_rows, day_index, current_depth):
+def rank_for_day(day_labels, season_rows, day_index, current_depth, exclude_season=None):
     """
     Where the current depth ranks among all historical seasons' depth
     on this same day-of-season (1 = deepest on record for this date).
@@ -268,7 +272,7 @@ def rank_for_day(day_labels, season_rows, day_index, current_depth):
 
     for season, values in season_rows.items():
 
-        if season == AVERAGE_ROW_LABEL:
+        if season == AVERAGE_ROW_LABEL or season == exclude_season:
             continue
 
         if day_index >= len(values):
@@ -303,176 +307,91 @@ def rank_for_day(day_labels, season_rows, day_index, current_depth):
     return rank, len(comparisons), deepest_season, record_high_in, record_low_in
 
 # =====================================================================
-# CURRENT DEPTH (HYDBTV - Daily Hydrometeorological Data Summary)
+# CURRENT DEPTH (IEM MMNV1 COOP)
 # =====================================================================
 
-def extract_hyd_pre_text(html):
+def parse_iem_coop_csv(text):
+    """Parse the IEM COOP CSV into rows."""
+
+    reader = csv.DictReader(io.StringIO(text))
+    return list(reader)
+
+
+def fetch_current_mansfield_depth(as_of=None):
     """
-    Pull raw text out of the <pre>...</pre> block(s) on a
-    forecast.weather.gov product.php page. Concatenates every <pre>
-    block rather than assuming there's exactly one, same tolerant
-    approach as the RRSBTV parsing on the JS side of the dashboard,
-    since these NWS product pages have shown that same quirk.
-    """
+    Get the latest reported snow depth from the MMNV1 Mount Mansfield COOP
+    station. IEM publishes the raw COOP snow-depth observation as ``snowd``.
 
-    matches = re.findall(r"<pre[^>]*>([\s\S]*?)</pre>", html)
-
-    if not matches:
-        return None
-
-    text = "\n".join(matches)
-
-    return (
-        text.replace("&amp;", "&")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">")
-    )
-
-
-def fetch_hyd_product_text(version):
-    """
-    Fetch one HYDBTV issuance (version=1 is current, version=2/3 are
-    progressively older reissues) and return its raw product text, or
-    None if the page didn't contain a <pre> block at all.
+    We look back a short window because MMNV1 is a daily COOP observation,
+    not a continuous automated snow-depth sensor. The latest usable MMNV1
+    observation is therefore the correct live/current value available from
+    that station.
     """
 
-    params = dict(HYD_PARAMS, version=str(version))
+    as_of = as_of or datetime.now(timezone.utc).date()
+    start_date = as_of - timedelta(days=IEM_LOOKBACK_DAYS)
 
-    response = requests.get(HYD_URL, params=params, headers=HEADERS, timeout=30)
-    response.raise_for_status()
-
-    return extract_hyd_pre_text(response.text)
-
-
-def hyd_column_bounds(header_line):
-    """
-    (start, end) character ranges for each HYD sub-column, derived
-    from the product's own header line rather than hardcoded offsets -
-    this is boilerplate NWS output, but trusting the actual page over
-    an assumed fixed offset costs nothing and protects against a
-    future formatting tweak silently breaking this.
-    """
-
-    positions = []
-
-    for label in HYD_COLUMN_LABELS:
-        idx = header_line.find(label)
-        if idx == -1:
-            return None
-        positions.append((label, idx))
-
-    bounds = {}
-
-    for i, (label, start) in enumerate(positions):
-        end = positions[i + 1][1] if i + 1 < len(positions) else None
-        bounds[label] = (start, end)
-
-    return bounds
-
-
-def parse_mansfield_row(product_text):
-    """
-    Slice the Mount Mansfield row by the header's own column
-    positions - Mansfield frequently omits Precip/Present Weather/New/
-    SWE, and position-based slicing (instead of assuming a fixed count
-    of whitespace-separated tokens) is the only reliable way to land
-    on "Total" regardless of which other fields are blank that day.
-
-    Returns a dict of field_name -> raw stripped string, or None if
-    this issuance has no Mount Mansfield row at all (the without-
-    Mansfield-data reissue case).
-    """
-
-    header_match = re.search(r"^\s*24 Hrs.*SWE\s*$", product_text, re.MULTILINE)
-
-    if not header_match:
-        return None
-
-    bounds = hyd_column_bounds(header_match.group(0))
-
-    if bounds is None:
-        return None
-
-    row_match = re.search(r"^Mount Mansfield.*$", product_text, re.MULTILINE)
-
-    if not row_match:
-        return None
-
-    row = row_match.group(0)
-
-    fields = {}
-
-    for label, (start, end) in bounds.items():
-        raw = row[start:end] if end is not None else row[start:]
-        fields[HYD_COLUMN_FIELD_NAMES[label]] = raw.strip()
-
-    return fields
-
-
-def parse_snow_total_inches(fields):
-    """
-    Mansfield's "Total" field as a float, or None if it's blank
-    (not reported) or "M" (missing/instrument outage).
-    """
-
-    if not fields:
-        return None
-
-    raw = fields.get("snow_total", "")
-
-    if raw in ("", "M", "T"):
-        return None
+    params = {
+        "network": "VT_COOP",
+        "stations": MMNV1_STATION,
+        "sts": start_date.isoformat(),
+        "ets": as_of.isoformat(),
+        "what": "download",
+        "delim": "comma",
+    }
 
     try:
-        return float(raw)
-    except ValueError:
+        response = requests.get(
+            IEM_COOPOBS_URL, headers=HEADERS, params=params, timeout=30
+        )
+        response.raise_for_status()
+    except requests.RequestException as error:
+        print(f"IEM MMNV1 snow-depth fetch failed: {error}")
         return None
 
+    rows = parse_iem_coop_csv(response.text)
+    candidates = []
 
-def fetch_current_mansfield_depth():
-    """
-    Mount Mansfield's current total snow depth straight from HYDBTV,
-    rather than waiting on Parrilla's CSV to catch up to it. Walks
-    backward through the last few issuances (version=1, 2, 3) until
-    one has a usable Mansfield Total - see the HYD_MAX_VERSION_FALLBACK
-    comment above for why that's necessary.
-    """
+    for row in rows:
+        if row.get("station") != MMNV1_STATION:
+            continue
 
-    for version in range(1, HYD_MAX_VERSION_FALLBACK + 1):
+        raw_depth = (row.get("snowd") or row.get("snow_depth") or "").strip()
+        if raw_depth in ("", "M", "m", "NA", "null"):
+            continue
 
         try:
-            product_text = fetch_hyd_product_text(version)
-        except requests.RequestException as error:
-            print(f"HYD version={version} fetch failed: {error}")
+            depth = float(raw_depth)
+        except ValueError:
             continue
 
-        if not product_text:
-            continue
+        valid = row.get("valid", "")
+        candidates.append((valid, depth, row))
 
-        depth = parse_snow_total_inches(parse_mansfield_row(product_text))
+    if not candidates:
+        print("IEM MMNV1: no usable snow-depth observation found in lookback window.")
+        return None
 
-        if depth is not None:
-            return {"depth_in": depth, "hyd_version": version}
+    candidates.sort(key=lambda item: item[0])
+    valid, depth, row = candidates[-1]
 
-    print(
-        "HYD: no usable Mount Mansfield Total depth found in the last "
-        f"{HYD_MAX_VERSION_FALLBACK} issuances."
-    )
-
-    return None
+    return {
+        "depth_in": depth,
+        "observed": valid,
+        "source": "IEM VT_COOP MMNV1",
+    }
 
 def build_snow_depth_observation(as_of=None):
     """
-    Current depth (preferring live HYDBTV, falling back to the CSV's
-    current-season value) + departure from normal and rank against
+    Current depth from live MMNV1 COOP observations + departure from normal
+    and rank against
     70+ years of history (both only computable when the CSV has a
     day-of-season column to compare against, i.e. during the tracked
     Sep-Jun season).
 
-    HYDBTV is attempted unconditionally, regardless of season - it's
-    a live station reading, not bound by the CSV's season-only
-    column range, so "off-season" per the CSV doesn't mean HYDBTV
-    has nothing to say. Departure/normal/rank are the only pieces
+    MMNV1 is attempted unconditionally, regardless of season - it is
+    a live station observation and is independent of the CSV's season-only
+    column range. Departure/normal/rank are the only pieces
     that gracefully degrade to None off-season, since those
     genuinely depend on a day-of-season column that doesn't exist
     for Jul/Aug.
@@ -480,7 +399,7 @@ def build_snow_depth_observation(as_of=None):
 
     as_of = as_of or datetime.now(timezone.utc).date()
 
-    hyd_result = fetch_current_mansfield_depth()
+    current_result = fetch_current_mansfield_depth(as_of)
 
     day_labels, season_rows = fetch_snow_depth_history()
 
@@ -488,25 +407,26 @@ def build_snow_depth_observation(as_of=None):
 
     base_result = {
         "station": "Mount Mansfield Stake",
-        "source": "matthewparrilla.com/mansfield-stake (NWS Daily Hydromet Report)",
+        "source": "MMNV1 (IEM) + committed snow-depth.csv",
         "season": season_label,
         "as_of_date": as_of.isoformat(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
     # No CSV day-of-season column to compare against (Jul/Aug) - but
-    # HYDBTV may still have a real live current-depth reading, so
+    # MMNV1 may still have a real live current-depth reading, so
     # surface that even though departure/normal/rank can't be
     # computed against a day-of-season column that doesn't exist.
     if season_label is None or season_label not in season_rows:
 
-        if hyd_result is not None:
+        if current_result is not None:
 
             return {
                 **base_result,
                 "observed_date_label": None,
-                "current_depth_in": hyd_result["depth_in"],
-                "current_depth_source": f"HYDBTV (version={hyd_result['hyd_version']})",
+                "current_observation": current_result["observed"],
+                "current_depth_in": current_result["depth_in"],
+                "current_depth_source": current_result["source"],
                 "normal_depth_in": None,
                 "record_high_in": None,
                 "record_low_in": None,
@@ -519,6 +439,7 @@ def build_snow_depth_observation(as_of=None):
         return {
             **base_result,
             "observed_date_label": None,
+            "current_observation": None,
             "current_depth_in": None,
             "normal_depth_in": None,
             "record_high_in": None,
@@ -534,7 +455,7 @@ def build_snow_depth_observation(as_of=None):
     current_values = season_rows[season_label]
     idx = latest_reported_index(day_labels, current_values, as_of_label)
 
-    if idx is None and hyd_result is None:
+    if idx is None and current_result is None:
 
         return {
             **base_result,
@@ -550,30 +471,26 @@ def build_snow_depth_observation(as_of=None):
             "rank_of": None,
         }
 
-    # idx/obs_label are still needed (even when HYD has the current
-    # depth) to look up normal_depth_in and rank_for_day() against
-    # the right day-of-season column. Fall back to the most recent
-    # CSV-reported day if the CSV itself has nothing for today yet
-    # but HYD does.
+    # idx/obs_label are still needed (even when MMNV1 has the current
+    # depth) to look up normal_depth_in and rank_for_day() against the
+    # right day-of-season column. Fall back to the most recent
+    # CSV-reported day if the historical CSV has nothing for today yet.
     if idx is None:
         idx = latest_reported_index(day_labels, current_values, day_labels[-1])
 
     obs_label = day_labels[idx] if idx is not None else None
 
-    # Prefer the live HYDBTV reading over the CSV's current-season
-    # value when we can get one - the CSV lags behind HYDBTV itself
-    # (Parrilla's site says it updates "within the hour" of a new
-    # HYDBTV issuance, so the CSV is never actually the freshest
-    # source).
-    if hyd_result is not None:
-        current_depth = hyd_result["depth_in"]
-        current_depth_source = f"HYDBTV (version={hyd_result['hyd_version']})"
-    elif idx is not None:
-        current_depth = float(current_values[idx])
-        current_depth_source = "matthewparrilla.com/mansfield-stake (fallback, HYDBTV unavailable)"
+    # The current value always comes from MMNV1. We do not fall back to the
+    # historical/current-season CSV for the live depth because the CSV is
+    # intentionally historical/climatological data for this product.
+    if current_result is not None:
+        current_depth = current_result["depth_in"]
+        current_depth_source = current_result["source"]
+        current_observation = current_result["observed"]
     else:
         current_depth = None
         current_depth_source = None
+        current_observation = None
 
     average_values = season_rows.get(AVERAGE_ROW_LABEL, [])
     normal_depth = None
@@ -599,7 +516,7 @@ def build_snow_depth_observation(as_of=None):
 
     if idx is not None and current_depth is not None:
         rank, rank_of, deepest_season, record_high_in, record_low_in = rank_for_day(
-            day_labels, season_rows, idx, current_depth
+            day_labels, season_rows, idx, current_depth, exclude_season=season_label
         )
     else:
         rank, rank_of, deepest_season, record_high_in, record_low_in = None, None, None, None, None
@@ -607,6 +524,7 @@ def build_snow_depth_observation(as_of=None):
     return {
         **base_result,
         "observed_date_label": obs_label,
+        "current_observation": current_observation,
         "current_depth_in": current_depth,
         "current_depth_source": current_depth_source,
         "normal_depth_in": normal_depth,
@@ -628,17 +546,23 @@ def main():
 
     os.makedirs(REPO_OUTPUT_DIR, exist_ok=True)
 
-    # Chart: NWS feeds, unchanged.
+    # Chart: NWS feeds. Current-season URL is generated from the run date.
+    season = season_label_for_date(datetime.now(timezone.utc).date())
+    current_url = CURRENT_URL_TEMPLATE.format(season=season) if season else None
 
-    current_series = fetch_depth_series(CURRENT_URL)
+    try:
+        current_series = fetch_depth_series(current_url) if current_url else {}
+    except requests.RequestException as error:
+        print(f"Current-season NWS snow-depth chart feed unavailable: {error}")
+        current_series = {}
+
     average_series = fetch_depth_series(AVERAGE_URL)
     max_series = fetch_depth_series(MAX_URL)
     min_series = fetch_depth_series(MIN_URL)
 
     plot_snow_depth_chart(current_series, average_series, max_series, min_series)
 
-    # Current depth + departure: HYDBTV live reading preferred,
-    # Parrilla's full-history CSV for normal/rank/fallback.
+    # Current depth: live MMNV1. Historical normal/rank/records: committed CSV.
 
     status = build_snow_depth_observation()
 
