@@ -42,6 +42,7 @@ guaranteed match to the old chart.
 
 import os
 import io
+import re
 import json
 import datetime as dt
 
@@ -73,6 +74,14 @@ SKEW_HEIGHT_IN = 3.0
 MANSFIELD_STATION_ID = "MMNV1"
 MANSFIELD_ELEV_FT = 3891
 
+# BUFKIT gives the full tropospheric profile (surface to ~12 hPa);
+# this script only wants the shallow LOW-LEVEL layer relevant to
+# rain/snow line and freezing-rain analysis. Trim to this height (AGL,
+# meters) before computing y-limits or plotting - without this, a full
+# profile blows the Skew-T's pressure axis out to near-zero/negative
+# values (caught in testing against a live sample).
+LOW_LEVEL_MAX_HEIGHT_M = 3500
+
 # NWS RRS SHEF text product (wind/temp obs) via IEM AFOS
 RRS_AFOS_URL = (
     "https://mesonet.agron.iastate.edu/api/1/nws/afos/list.json"
@@ -80,9 +89,13 @@ RRS_AFOS_URL = (
 )
 
 # BUFKIT RAP model sounding, fetched via IEM's mtarchive for the
-# BTV-area grid point closest to Mansfield. Adjust `bufkit_site` if
-# the original used a different site identifier.
-BUFKIT_BASE_URL = "https://mtarchive.iastate.edu/{yyyy}/{mm}/{dd}/bufkit/{hh}/rap/rap_{site}.buf"
+# BTV-area grid point closest to Mansfield (no BUFKIT point exists
+# for the summit itself, so KBTV is used as the nearest available
+# site). NOTE: the correct host is mtarchive.geol.iastate.edu — an
+# earlier draft of this file used mtarchive.iastate.edu (missing
+# ".geol"), which resolves nowhere and would have silently failed
+# every fetch. Verified against a live file at this exact URL pattern.
+BUFKIT_BASE_URL = "https://mtarchive.geol.iastate.edu/{yyyy}/{mm}/{dd}/bufkit/{hh}/rap/rap_{site}.buf"
 BUFKIT_SITE = "kbtv"
 
 # Wind units: mph throughout (confirmed correction from an earlier
@@ -100,67 +113,129 @@ COLOR_SHEAR = "#7048a3"
 # 2. DATA FETCHING
 # =====================================================================
 
-def fetch_latest_rrs_obs():
+BUFKIT_MISSING = -9999.0
+BUFKIT_STNPRM_KEYS = {
+    "SHOW", "LIFT", "SWET", "KINX", "LCLP", "PWAT", "TOTL",
+    "CAPE", "LCLT", "CINS", "EQLV", "LFCT", "BRCH",
+}
+
+
+def parse_bufkit_profiles(raw_text):
     """
-    Pull the most recent RRSBTV SHEF text product via IEM's AFOS API
-    and parse out the Mount Mansfield (MMNV1) temperature/wind line.
+    Parse every forecast-hour ("STIM") block out of a raw BUFKIT text
+    file. Verified against a live sample from mtarchive.geol.iastate.edu.
 
-    Returns a dict: {"temp_f": float, "wind_mph": float,
-    "wind_dir": int, "valid": datetime} or None if unavailable.
+    Each level's data is written across two physical lines (8 values
+    in SNPARM order, then the remaining 2 — CFRL, HGHT).
+
+    Returns a list of profile dicts sorted by forecast_hour ascending;
+    each has pressure/temperature/dewpoint/direction/speed_kt/height
+    (numpy arrays, surface-first, missing values as NaN) plus
+    model_params (BUFKIT's own SHOW/LIFT/SWET/KINX/PWAT/CAPE/CINS/etc,
+    computed by the model itself — use these directly, they're not a
+    MetPy recalculation).
     """
-    try:
-        resp = requests.get(RRS_AFOS_URL, timeout=20)
-        resp.raise_for_status()
-        data = resp.json()
-        products = data.get("data", [])
-        if not products:
-            return None
+    blocks = raw_text.split("STID = ")
+    profiles = []
 
-        # IEM's AFOS list can return multiple pre-blocks with the same
-        # timestamp for this product - the real content has, in past
-        # sessions, shown up split across blocks. Concatenate all of
-        # them defensively rather than trusting the last block alone.
-        raw_text = "".join(p.get("data", "") for p in products)
-
-        return _parse_rrs_text(raw_text)
-    except Exception as exc:
-        print(f"WARNING: could not fetch RRS obs: {exc}")
-        return None
-
-
-def _parse_rrs_text(raw_text):
-    """
-    Parse SHEF-encoded text for the Mansfield station line.
-    SHEF fields of interest: TAIRGZZ (air temp), UDIRG (wind dir),
-    UPERG (wind speed peak), USIRG (wind speed sustained).
-
-    This parser is intentionally defensive - SHEF text formatting
-    varies run to run. Extend the regex/section matching here once
-    you have a live sample to test against.
-    """
-    result = {"temp_f": None, "wind_mph": None, "wind_dir": None, "valid": None}
-
-    for line in raw_text.splitlines():
-        if MANSFIELD_STATION_ID not in line.upper():
+    for block in blocks[1:]:
+        lines = block.splitlines()
+        if not lines:
             continue
-        # Placeholder parse logic - real SHEF decoding needs the
-        # actual field layout from a live sample. Left explicit so
-        # it fails loudly (returns None fields) rather than silently
-        # guessing wrong numbers.
-        pass
+        header_line = lines[0]
 
-    return result
+        time_match = re.search(r"TIME\s*=\s*(\d{6})/(\d{4})", header_line)
+        valid_time = None
+        if time_match:
+            yymmdd, hhmm = time_match.groups()
+            yy, mm, dd = int(yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6])
+            hh, minute = int(hhmm[0:2]), int(hhmm[2:4])
+            valid_time = dt.datetime(2000 + yy, mm, dd, hh, minute)
+
+        stim_match = re.search(r"STIM\s*=\s*(\d+)", block)
+        forecast_hour = int(stim_match.group(1)) if stim_match else None
+
+        table_marker = "CFRL HGHT"
+        table_idx = block.find(table_marker)
+        if table_idx == -1:
+            continue
+
+        param_section = block[:block.find("PRES TMPC")]
+        model_params = {}
+        for m in re.finditer(r"\b([A-Z]{4})\s*=\s*(-?\d+\.\d+)", param_section):
+            key, val = m.groups()
+            if key in BUFKIT_STNPRM_KEYS:
+                v = float(val)
+                model_params[key] = None if v == BUFKIT_MISSING else v
+
+        data_text = block[table_idx + len(table_marker):].strip("\r\n ")
+        raw_lines = [l for l in data_text.splitlines() if l.strip()]
+
+        levels = []
+        i = 0
+        while i + 1 < len(raw_lines):
+            line1 = raw_lines[i].split()
+            line2 = raw_lines[i + 1].split()
+            if len(line1) != 8 or len(line2) != 2:
+                break
+            levels.append([float(x) for x in line1 + line2])
+            i += 2
+
+        if not levels:
+            continue
+
+        arr = np.array(levels)
+        arr[arr == BUFKIT_MISSING] = np.nan
+
+        profiles.append({
+            "forecast_hour": forecast_hour,
+            "valid_time": valid_time,
+            "pressure": arr[:, 0],
+            "temperature": arr[:, 1],
+            "wetbulb": arr[:, 2],
+            "dewpoint": arr[:, 3],
+            "theta_e": arr[:, 4],
+            "direction": arr[:, 5],
+            "speed_kt": arr[:, 6],
+            "omega": arr[:, 7],
+            "cfrl": arr[:, 8],
+            "height": arr[:, 9],
+            "model_params": model_params,
+        })
+
+    profiles.sort(key=lambda p: p["forecast_hour"] if p["forecast_hour"] is not None else 0)
+    return profiles
+
+
+def trim_to_low_level(profile):
+    """
+    Cut a full-depth BUFKIT profile down to just the levels within
+    LOW_LEVEL_MAX_HEIGHT_M of the surface. Always keeps at least the
+    first 3 levels even if the height field is malformed, so downstream
+    code has enough points to plot rather than crashing outright.
+    """
+    height_agl = profile["height"] - profile["height"][0]
+    mask = height_agl <= LOW_LEVEL_MAX_HEIGHT_M
+    if mask.sum() < 3:
+        mask = np.zeros_like(mask, dtype=bool)
+        mask[:min(3, len(mask))] = True
+
+    trimmed = dict(profile)
+    for key in ("pressure", "temperature", "wetbulb", "dewpoint", "theta_e",
+                "direction", "speed_kt", "omega", "cfrl", "height"):
+        trimmed[key] = profile[key][mask]
+    return trimmed
 
 
 def fetch_bufkit_profile():
     """
-    Fetch the most recent RAP BUFKIT sounding for the Mansfield-area
-    grid point and return arrays of (pressure, temperature, dewpoint,
-    u_wind, v_wind) suitable for metpy's SkewT.
+    Fetch the most recent RAP BUFKIT sounding for KBTV (nearest
+    available BUFKIT point to Mount Mansfield) and return the
+    surface-hour (forecast_hour == 0) profile dict.
 
-    Returns None if the archive request fails (e.g. run not posted
-    yet) - caller should fall back to the previous cached PNG rather
-    than crash the workflow.
+    Returns None if the archive request or parse fails — caller
+    should fall back to the previous cached PNG rather than crash
+    the workflow.
     """
     now = dt.datetime.utcnow()
     # RAP runs hourly; step back a couple hours to make sure the
@@ -181,16 +256,17 @@ def fetch_bufkit_profile():
         print(f"WARNING: BUFKIT fetch failed ({url}): {exc}")
         return None
 
-    # NOTE: actual BUFKIT text parsing (STN/STIM header, PRES/TMPC/
-    # DWPC/DRCT/SKNT columns) was handled by a dedicated parser in the
-    # original script. Re-implement using a BUFKIT parsing library
-    # (e.g. `bufkit` or a hand-rolled column splitter) once you have a
-    # sample file to test against - the column layout must match
-    # exactly or the sounding will silently plot garbage.
-    raise NotImplementedError(
-        "BUFKIT text parsing needs to be re-implemented against a "
-        "live sample file - see function docstring."
-    )
+    try:
+        profiles = parse_bufkit_profiles(resp.text)
+    except Exception as exc:
+        print(f"WARNING: BUFKIT parse failed: {exc}")
+        return None
+
+    for p in profiles:
+        if p["forecast_hour"] == 0:
+            return p
+
+    return profiles[0] if profiles else None
 
 
 # =====================================================================
@@ -297,8 +373,10 @@ def plot_pseudo_sounding(profile, params, out_path):
     pressure = profile["pressure"] * units.hPa
     temperature = profile["temperature"] * units.degC
     dewpoint = profile["dewpoint"] * units.degC
-    u_wind = profile["u"] * units("m/s")
-    v_wind = profile["v"] * units("m/s")
+    u_wind, v_wind = mpcalc.wind_components(
+        profile["speed_kt"] * units.knots,
+        profile["direction"] * units.deg,
+    )
 
     skew.plot(pressure, temperature, "r")
     skew.plot(pressure, dewpoint, "g")
@@ -360,16 +438,71 @@ def main():
         print("No profile data available this run — leaving previous PNG in place.")
         return
 
+    profile = trim_to_low_level(profile)
+    if len(profile["pressure"]) < 3:
+        print("Too few low-level points after trimming — leaving previous PNG in place.")
+        return
+
     surface_temp_f = profile["temperature"][0] * 9 / 5 + 32
-    freezing_level_ft = 0.0  # TODO: derive from profile once parsing is restored
-    warm_layer_present = False  # TODO: scan profile for T > 0C aloft over a sub-freezing surface
+    height_agl_m = profile["height"] - profile["height"][0]
+
+    # Freezing level: first height (AGL, converted to ft) where temp
+    # crosses from above 0C to at/below 0C, scanning upward
+    freezing_level_ft = None
+    for i in range(len(profile["temperature"]) - 1):
+        t0, t1 = profile["temperature"][i], profile["temperature"][i + 1]
+        if np.isnan(t0) or np.isnan(t1):
+            continue
+        if t0 > 0 >= t1:
+            frac = t0 / (t0 - t1) if (t0 - t1) != 0 else 0
+            h_m = height_agl_m[i] + frac * (height_agl_m[i + 1] - height_agl_m[i])
+            freezing_level_ft = float(h_m * 3.28084)
+            break
+    if freezing_level_ft is None:
+        # never crosses freezing in this profile - either all warm or all cold
+        freezing_level_ft = 0.0 if profile["temperature"][0] <= 0 else float(height_agl_m[-1] * 3.28084)
+
+    # warm layer aloft: any level > 0C above a surface that's <= 0C
+    warm_layer_present = bool(
+        profile["temperature"][0] <= 0 and np.nanmax(profile["temperature"]) > 0
+    )
+
+    # 0-1km shear, using BUFKIT's own direction/speed columns
+    try:
+        u, v = mpcalc.wind_components(profile["speed_kt"] * units.knots, profile["direction"] * units.deg)
+        u_shear, v_shear = mpcalc.bulk_shear(
+            profile["pressure"] * units.hPa, u, v,
+            height=height_agl_m * units.m, depth=1000 * units.m,
+        )
+        shear_kt = float(mpcalc.wind_speed(u_shear, v_shear).to("knots").magnitude)
+    except Exception as exc:
+        print(f"WARNING: shear calc failed: {exc}")
+        shear_kt = 0.0
+
+    # Froude number: needs a bulk wind speed, a stability (Brunt-Vaisala)
+    # estimate, and the barrier height. This is a simplified single-layer
+    # estimate over the lowest ~1km - refine against real cases if the
+    # mountain-wave flagging needs to be more precise.
+    try:
+        surface_speed_ms = float(profile["speed_kt"][0]) * 0.514444
+        dtheta_dz = (profile["temperature"][1] - profile["temperature"][0]) / max(
+            height_agl_m[1] - height_agl_m[0], 1.0
+        )
+        n_squared = max((9.81 / (profile["temperature"][0] + 273.15)) * (dtheta_dz + 0.0098), 1e-6)
+        brunt_vaisala = n_squared ** 0.5
+        froude = compute_froude_number(surface_speed_ms, brunt_vaisala, MANSFIELD_ELEV_FT * 0.3048)
+    except Exception as exc:
+        print(f"WARNING: Froude calc failed: {exc}")
+        froude = None
+
+    critical_level_m = find_critical_level(height_agl_m, profile["direction"])
 
     params = {
         "p_type": classify_precip_type(surface_temp_f, freezing_level_ft, warm_layer_present),
-        "froude": None,  # TODO: wire compute_froude_number() once N and U are derived
+        "froude": froude,
         "freezing_level_ft": freezing_level_ft,
-        "shear_kt": 0.0,  # TODO: derive 0-1km shear from u/v arrays
-        "critical_level_ft": None,
+        "shear_kt": shear_kt,
+        "critical_level_ft": (critical_level_m * 3.28084) if critical_level_m is not None else None,
     }
 
     plot_pseudo_sounding(profile, params, out_path)
