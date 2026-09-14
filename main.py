@@ -37,6 +37,7 @@ from PIL import Image
 # GOOGLE SHEETS AUTH
 # ============================================================
 
+# Primary Google credentials — used for the forecast/current Sheets outputs.
 creds_dict = json.loads(os.environ["GOOGLE_CREDENTIALS"])
 
 scopes = [
@@ -47,6 +48,15 @@ scopes = [
 creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
 gc = gspread.authorize(creds)
 drive_service = build("drive", "v3", credentials=creds)
+
+# Separate Google credentials for the GLWU Drive account.
+# GLWU lives under a different Google account from the forecast Sheet, so it
+# needs its own service-account JSON in GitHub Actions.
+glwu_creds_dict = json.loads(os.environ["GLWU_GOOGLE_CREDENTIALS"])
+glwu_creds = Credentials.from_service_account_info(glwu_creds_dict, scopes=[
+    "https://www.googleapis.com/auth/drive",
+])
+glwu_drive_service = build("drive", "v3", credentials=glwu_creds)
 
 # ============================================================
 # MODELS + FORECAST-HOUR CAP
@@ -503,7 +513,7 @@ AIRPLANE_PATH = mpath.Path([
 # must be shared with the service account's email (found in
 # creds_dict["client_email"]) with Editor access, or the upload will fail
 # with a 403/404.
-GLWU_DRIVE_FOLDER_ID = os.environ.get("GLWU_DRIVE_FOLDER_ID", "")
+GLWU_DRIVE_FOLDER_ID = os.environ.get("GLWU_DRIVE_FOLDER_ID", "1InNdENvWv4CZE6-jhAEhy1OIIwAbf281")
 
 # ============================================================
 # 8-STATION WAVE HEIGHT FORECAST (vertical stacked chart)
@@ -1589,7 +1599,7 @@ def glwu_upload_to_drive(local_path: Path, drive_filename: str, mimetype: str):
         f"and '{GLWU_DRIVE_FOLDER_ID}' in parents "
         f"and trashed = false"
     )
-    existing = drive_service.files().list(
+    existing = glwu_drive_service.files().list(
         q=query, spaces="drive", fields="files(id, name)"
     ).execute().get("files", [])
 
@@ -1597,11 +1607,11 @@ def glwu_upload_to_drive(local_path: Path, drive_filename: str, mimetype: str):
 
     if existing:
         file_id = existing[0]["id"]
-        drive_service.files().update(fileId=file_id, media_body=media).execute()
+        glwu_drive_service.files().update(fileId=file_id, media_body=media).execute()
         print(f"  Updated existing Drive file: {drive_filename} (id={file_id})")
     else:
         file_metadata = {"name": drive_filename, "parents": [GLWU_DRIVE_FOLDER_ID]}
-        created = drive_service.files().create(
+        created = glwu_drive_service.files().create(
             body=file_metadata, media_body=media, fields="id"
         ).execute()
         print(f"  Created new Drive file: {drive_filename} (id={created.get('id')})")
