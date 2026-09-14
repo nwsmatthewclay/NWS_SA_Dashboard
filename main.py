@@ -1985,9 +1985,10 @@ for model in MODELS:
         stim_locations = [i for i, line in enumerate(lines) if line.startswith("STIM =")]
         print(f"  Found {len(stim_locations)} forecast hours")
 
+        model_max_hours = MODEL_MAX_FORECAST_HOURS.get(model, MAX_FORECAST_HOURS)
         n_hours = len(stim_locations) - 1
-        if n_hours > MAX_FORECAST_HOURS:
-            n_hours = MAX_FORECAST_HOURS
+        if n_hours > model_max_hours:
+            n_hours = model_max_hours
 
         for hour in range(n_hours):
             start = stim_locations[hour]
