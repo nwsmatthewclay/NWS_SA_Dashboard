@@ -822,7 +822,7 @@ body {
           load on the live page. raw.githubusercontent.com has no such
           quota for public repos.
         -->
-        <img id="sounding-image" src="https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/vt_pseudo_sounding.png" alt="Mount Mansfield observed slope profile">
+        <img id="sounding-image" src="https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/vt_pseudo_sounding.png" alt="Mount Mansfield observed slope profile">
       </div>
 
       <div class="snow-row">
@@ -1185,7 +1185,7 @@ body {
     tickClock();
     setInterval(tickClock, 1000);
 
-    const DATA_BASE = "https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/";
+    const DATA_BASE = "https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/";
     const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 const MANSFIELD_STATION = "MMNV1";
@@ -3186,7 +3186,14 @@ async function refreshBoltonObs() {
       });
     }
 
+    function refreshSoundingImage() {
+      const img = document.getElementById("sounding-image");
+      if (!img) return;
+      img.src = "https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/vt_pseudo_sounding.png?t=" + Date.now();
+    }
+
     function refreshAll() {
+      refreshSoundingImage();
       refreshDiagnostics();
       refreshSnowDepth();
       refreshMansfieldObs();
