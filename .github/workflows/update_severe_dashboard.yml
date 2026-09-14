@@ -1,3 +1,4 @@
+```yaml
 name: NWS Situational Awareness Dashboard
 
 on:
@@ -15,8 +16,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,42 +25,20 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libeccodes-dev \
-            libgeos-dev \
-            libproj-dev \
-            proj-data \
-            proj-bin
+          sudo apt-get install -y libeccodes-dev libgeos-dev libproj-dev proj-data proj-bin
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install \
-            numpy \
-            pandas \
-            matplotlib \
-            scipy \
-            requests \
-            beautifulsoup4 \
-            lxml \
-            pillow \
-            imageio \
-            gspread \
-            google-auth \
-            google-api-python-client \
-            pygrib \
-            cartopy
+          pip install numpy pandas matplotlib scipy requests beautifulsoup4 lxml pillow imageio gspread google-auth google-api-python-client pygrib cartopy
 
       - name: Run dashboard
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
           GLWU_DRIVE_FOLDER_ID: ${{ secrets.GLWU_DRIVE_FOLDER_ID }}
-        run: |
-          python main.py
+        run: python main.py
 
-      # Generated dashboard products remain job artifacts.
-      # They are NOT committed back into main.
       - name: Upload generated dashboard outputs
         if: always()
         uses: actions/upload-artifact@v4
