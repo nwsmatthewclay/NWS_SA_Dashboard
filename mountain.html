@@ -150,9 +150,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: row;
-  max-width: 1700px;
   width: 100%;
-  margin: 0 auto;
   padding: 10px 20px;
   gap: 12px;
 }
@@ -169,7 +167,7 @@ body {
 /* ================= LEFT COLUMN: Skew-T + snow/diagnostics row ================= */
 
 .left-column {
-  flex: 0 0 59.5%;
+  flex: 0 0 65%;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -230,10 +228,10 @@ body {
   position: relative;
   background: var(--sidebar-card-bg);
   border-radius: 12px;
-  padding: 16px 18px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -262,7 +260,7 @@ body {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   padding: 2px;
 }
 
@@ -272,6 +270,7 @@ body {
   display: flex;
 }
 
+.summit-card[data-station="WASHINGTON"] { --mtn-accent: #c9203a; --mtn-accent-bg: #fbdde1; }
 .summit-card[data-station="WHITEFACE"] { --mtn-accent: #7048a3; --mtn-accent-bg: #ece3f7; }
 .summit-card[data-station="MMNV1"]     { --mtn-accent: #1c7ed6; --mtn-accent-bg: #dceafb; }
 .summit-card[data-station="BOLTON"]    { --mtn-accent: #2f9e6e; --mtn-accent-bg: #ddf3e8; }
@@ -294,10 +293,14 @@ body {
 
 .card-illustration {
   position: relative;
-  flex: 0 0 34%;
-  min-width: 140px;
+  flex: 0 0 16%;
+  min-width: 66px;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--mtn-accent-bg, #e4ecf5) 0%, rgba(255,255,255,0.4) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--mtn-accent-bg, #e4ecf5) 0%,
+    rgba(255,255,255,0.4) 100%
+  );
 }
 
 .mountain-art {
@@ -315,25 +318,25 @@ body {
 
 .elevation-badge {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 7px;
+  left: 7px;
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 11px;
+  gap: 4px;
+  padding: 4px 9px;
   border-radius: 999px;
   background: rgba(255,255,255,0.88);
-  font-size: 13px;
+  font-size: 10.5px;
   font-weight: 800;
   color: var(--mtn-accent, var(--ink));
   box-shadow: 0 1px 2px rgba(20,30,50,0.12);
 }
 
 .elevation-badge svg {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
   stroke: var(--mtn-accent, var(--ink));
   fill: none;
   stroke-width: 2;
@@ -347,13 +350,13 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 16px;
-  padding: 18px 24px;
+  gap: 8px;
+  padding: 10px 16px;
 }
 
 .station-name {
   font-weight: 800;
-  font-size: 24px;
+  font-size: 18px;  /* was 24px, compressed to fit 5 cards */
   letter-spacing: 0.01em;
   color: var(--mtn-accent, var(--ink));
   white-space: nowrap;
@@ -364,24 +367,43 @@ body {
 .stat-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .temp-block {
   flex: 0 0 auto;
-  padding-right: 20px;
-  margin-right: 16px;
+  padding-right: 14px;
+  margin-right: 10px;
   border-right: 1px solid var(--card-border);
 }
 
 .stat-temp {
-  font-size: 50px;
-  font-weight: 800;
+  font-size: 32px;  /* was 50px, compressed to fit 5 cards */
+  font-weight: 700;
   line-height: 1;
   color: var(--mtn-accent, var(--ink));
   white-space: nowrap;
 }
 
+.stat-col:nth-child(2) {
+    flex: 0.8;
+}
+
+/* Wind */
+.stat-col:nth-child(3) {
+    flex: 1.35;
+}
+
+/* Gust */
+.stat-col:nth-child(4) {
+    flex: 1.35;
+}
+
+/* Wind Chill */
+.stat-col:nth-child(5) {
+    flex: 0.9;
+}
+  
 .stat-col {
   flex: 1 1 0;
   min-width: 0;
@@ -399,14 +421,14 @@ body {
    were colored. One consistent voice per card. */
 
 .stat-col .stat-label {
-  font-size: 12.5px;
+  font-size: 9.5px; /* was 12.5px, compressed to fit 5 cards */
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: var(--mtn-accent, var(--muted));
 }
 
 .stat-col .stat-value {
-  font-size: 22px;
+  font-size: 16px;  /* was 22px, compressed to fit 5 cards */
   font-weight: 800;
   color: var(--mtn-accent, var(--ink));
   white-space: nowrap;
@@ -429,12 +451,6 @@ body {
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.mini-icon.dir-arrow {
-  stroke: var(--mtn-accent, var(--blue));
-  transform-origin: center;
-  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 .stat-cell.stale-field,
@@ -624,6 +640,132 @@ body {
   margin-top: 5px;
 }
 
+.snow-summary .pct-normal-row {
+  margin-top: 16px;
+}
+
+.snow-summary .pct-normal-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #9db6d4;
+}
+
+.snow-summary .pct-normal-label .readout {
+  font-size: 13px;
+  font-weight: 800;
+  color: #eaf1fa;
+  letter-spacing: 0;
+}
+
+.snow-summary .pct-normal-track {
+  margin-top: 6px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.14);
+  overflow: hidden;
+}
+
+.snow-summary .pct-normal-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #bcd6f2, #eaf1fa);
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.snow-summary .record-range-row {
+  margin-top: 16px;
+}
+
+.snow-summary .record-range-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #9db6d4;
+}
+
+.snow-summary .record-range-label .readout {
+  font-size: 13px;
+  font-weight: 800;
+  color: #eaf1fa;
+  letter-spacing: 0;
+}
+
+.snow-summary .record-range-track {
+  position: relative;
+  margin-top: 8px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.10), rgba(255,255,255,0.22), rgba(255,255,255,0.10));
+}
+
+.snow-summary .record-range-marker {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #eaf1fa;
+  border: 3px solid var(--snow-card-to);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  transform: translate(-50%, -50%);
+  transition: left 0.5s ease;
+}
+
+.snow-summary .record-range-endpoints {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9db6d4;
+}
+
+/* Off-season state: current_depth/normal/record fields all come back
+   null outside winter (confirmed against the live feed). Rather than
+   a wall of "—" placeholders that reads like something's broken, this
+   fills the same space with one deliberate, centered message — and
+   since it flex-grows to fill whatever room is left in the card, it
+   also closes the "too much empty space" gap this whole fix is about. */
+.snow-summary .off-season-block {
+  display: none;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  color: #bcd6f2;
+  padding: 10px 0;
+}
+
+.snow-summary .off-season-block .snowflake-ghost {
+  width: 34px;
+  height: 34px;
+  opacity: 0.45;
+}
+
+.snow-summary .off-season-block .off-season-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #eaf1fa;
+}
+
+.snow-summary .off-season-block .off-season-subtext {
+  font-size: 11.5px;
+  color: #9db6d4;
+  max-width: 240px;
+  line-height: 1.5;
+}
+  
 /* ================= DIAGNOSTIC CARD GRID (moved into snow-row) ================= */
 
 .quad-stats {
@@ -632,7 +774,7 @@ body {
   min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   gap: 8px;
 }
 
@@ -715,7 +857,7 @@ body {
 
 .quad-card .gauge-track {
   position: relative;
-  height: 4px;
+  height: 5px;
   border-radius: 999px;
   background: rgba(107, 118, 136, 0.25);
 }
@@ -724,11 +866,12 @@ body {
   position: absolute;
   top: 50%;
   left: var(--gauge-pct, 0%);
-  width: 9px;
-  height: 9px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: var(--quad-accent, var(--blue));
-  border: 2px solid var(--card-bg);
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 1px 3px rgba(20, 30, 50, 0.25);
   transform: translate(-50%, -50%);
   transition: left 0.4s ease, background 0.4s ease;
 }
@@ -780,6 +923,20 @@ body {
 .quad-card.ptype-card.ptype-snow { --quad-accent: #1c7ed6; --quad-accent-bg: #dceafb; }
 .quad-card.ptype-card.ptype-mix  { --quad-accent: #d9822b; --quad-accent-bg: #faead3; }
 .quad-card.ptype-card.ptype-frz  { --quad-accent: #e03131; --quad-accent-bg: #fbdcdc; }
+
+/* Mountain Wave Potential and Rime Icing Potential - same
+   low/moderate/high traffic-light convention as shear/lapse above.
+   Colors are driven directly by tempprofile.py's own computed
+   category string (mountain_wave_category / rime_icing_category:
+   Low/Moderate/High/Indeterminate), not re-derived thresholds -
+   see waveColorClass_/rimeColorClass_ in the script below. */
+.quad-card.wave-card.wave-low    { --quad-accent: #2f9e44; --quad-accent-bg: #ddf3e8; }
+.quad-card.wave-card.wave-mod    { --quad-accent: #d9822b; --quad-accent-bg: #faead3; }
+.quad-card.wave-card.wave-high   { --quad-accent: #e03131; --quad-accent-bg: #fbdcdc; }
+
+.quad-card.rime-card.rime-low    { --quad-accent: #2f9e44; --quad-accent-bg: #ddf3e8; }
+.quad-card.rime-card.rime-mod    { --quad-accent: #d9822b; --quad-accent-bg: #faead3; }
+.quad-card.rime-card.rime-high   { --quad-accent: #e03131; --quad-accent-bg: #fbdcdc; }
 </style>
 </head>
 <body>
@@ -822,7 +979,7 @@ body {
           load on the live page. raw.githubusercontent.com has no such
           quota for public repos.
         -->
-        <img id="sounding-image" src="https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/vt_pseudo_sounding.png" alt="Mount Mansfield observed slope profile">
+        <img id="sounding-image" src="https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/vt_pseudo_sounding.png" alt="Mount Mansfield observed slope profile">
       </div>
 
       <div class="snow-row">
@@ -844,21 +1001,59 @@ body {
             Departure — pending wiring
           </div>
 
-          <div class="stats-mini">
-            <div class="stat-mini-col">
-              <span class="label">NORMAL</span>
-              <span class="value" data-field="snow-normal">—</span>
+          <div data-section="in-season">
+            <div class="stats-mini">
+              <div class="stat-mini-col">
+                <span class="label">NORMAL</span>
+                <span class="value" data-field="snow-normal">—</span>
+              </div>
+              <div class="stat-mini-col">
+                <span class="label">RECORD HIGH</span>
+                <span class="value" data-field="snow-record-high">—</span>
+              </div>
+              <div class="stat-mini-col">
+                <span class="label">RECORD LOW</span>
+                <span class="value" data-field="snow-record-low">—</span>
+              </div>
+              <div class="stat-mini-col">
+                <span class="label">RANK</span>
+                <span class="value" data-field="snow-rank">—</span>
+              </div>
             </div>
-            <div class="stat-mini-col">
-              <span class="label">RECORD HIGH</span>
-              <span class="value" data-field="snow-record-high">—</span>
+
+            <div class="pct-normal-row">
+              <div class="pct-normal-label">
+                <span>% OF NORMAL</span>
+                <span class="readout" data-field="snow-pct-readout">&mdash;</span>
+              </div>
+              <div class="pct-normal-track">
+                <div class="pct-normal-fill" data-field="snow-pct-fill"></div>
+              </div>
             </div>
-            <div class="stat-mini-col">
-              <span class="label">RECORD LOW</span>
-              <span class="value" data-field="snow-record-low">—</span>
+
+            <div class="record-range-row">
+              <div class="record-range-label">
+                <span>RECORD RANGE</span>
+                <span class="readout" data-field="record-range-readout">&mdash;</span>
+              </div>
+              <div class="record-range-track">
+                <div class="record-range-marker" data-field="record-range-marker"></div>
+              </div>
+              <div class="record-range-endpoints">
+                <span data-field="record-range-low-label">—</span>
+                <span data-field="record-range-high-label">—</span>
+              </div>
             </div>
           </div>
 
+          <div class="off-season-block" data-section="off-season">
+            <svg class="snowflake-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <path d="M12 2 V22 M4 7 L20 17 M20 7 L4 17"/>
+            </svg>
+            <div class="off-season-title">Off-Season</div>
+            <div class="off-season-subtext" data-field="off-season-subtext">Normals and records return once accumulation begins this winter.</div>
+          </div>
+          
           <div class="updated">Updated: <span data-field="updated">25 Jul 2026 02:03 UTC</span></div>
         </div>
 
@@ -940,6 +1135,36 @@ body {
             <div class="ptype-pill"><span class="ptype-dot"></span><span data-field="precip-type-pill">&mdash;</span></div>
           </div>
 
+          <div class="quad-card wave-card">
+            <div class="quad-header">
+              <div class="quad-icon">
+                <svg viewBox="0 0 24 24"><path d="M2 12 C5 8, 7 16, 10 12 S15 8, 18 12 S21 16, 22 12"/></svg>
+              </div>
+              <div class="eyebrow">MOUNTAIN WAVE POTENTIAL</div>
+            </div>
+            <div class="value" data-field="mountain-wave-potential">&mdash;</div>
+            <div class="subtext"><span data-field="mountain-wave-score">&mdash;</span>/10</div>
+            <div class="gauge">
+              <div class="gauge-track"><div class="gauge-dot" data-gauge="wave"></div></div>
+              <div class="gauge-labels"><span>LOW</span><span>HIGH</span></div>
+            </div>
+          </div>
+
+          <div class="quad-card rime-card">
+            <div class="quad-header">
+              <div class="quad-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 3 V21 M12 3 L9 6 M12 3 L15 6 M12 21 L9 18 M12 21 L15 18 M4.5 7.5 L19.5 16.5 M4.5 7.5 L7 7.2 M4.5 7.5 L5.6 9.8 M19.5 16.5 L17 16.8 M19.5 16.5 L18.4 14.2 M19.5 7.5 L4.5 16.5 M19.5 7.5 L17 7.2 M19.5 7.5 L18.4 9.8 M4.5 16.5 L7 16.8 M4.5 16.5 L5.6 14.2"/></svg>
+              </div>
+              <div class="eyebrow">RIME ICING POTENTIAL</div>
+            </div>
+            <div class="value" data-field="rime-icing-potential">&mdash;</div>
+            <div class="subtext"><span data-field="rime-icing-score">&mdash;</span>/6</div>
+            <div class="gauge">
+              <div class="gauge-track"><div class="gauge-dot" data-gauge="rime"></div></div>
+              <div class="gauge-labels"><span>LOW</span><span>HIGH</span></div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -968,6 +1193,50 @@ body {
 
         <div class="mountain-table-wrap">
 
+          <div class="summit-card" data-station="WASHINGTON">
+            <div class="station-cell">
+              <div class="card-illustration">
+                <svg class="mountain-art" viewBox="0 0 300 200" preserveAspectRatio="xMidYMax slice">
+                  <polygon class="layer-back" points="0,200 0,120 60,45 105,110 150,15 195,105 240,50 280,115 300,90 300,200"/>
+                  <polygon class="layer-front" points="0,200 30,140 80,55 125,130 175,35 220,135 270,80 300,140 300,200"/>
+                  <polygon class="layer-snow" points="160,42 175,15 190,58 178,66 162,64"/>
+                  <polygon class="layer-snow" points="30,140 45,120 58,140"/>
+                  <polygon class="layer-tree" points="14,200 22,178 30,200"/>
+                  <polygon class="layer-tree" points="255,200 264,176 273,200"/>
+                  <polygon class="layer-tree" points="240,200 248,182 256,200"/>
+                </svg>
+                <div class="elevation-badge">
+                  <svg viewBox="0 0 24 24"><path d="M3 20 L9 8 L13 15 L16 10 L21 20 Z"/></svg>
+                  <span data-field="elevation">6,288 ft</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="station-name">Mount Washington</div>
+                <div class="stat-row">
+                  <div class="temp-block">
+                    <span class="stat-cell stat-temp" data-field="temp">&mdash;</span>
+                  </div>
+                  <div class="stat-col">
+                    <span class="stat-label">DIR</span>
+                    <span class="stat-cell stat-value" data-field="dir">&mdash;</span>
+                  </div>
+                  <div class="stat-col">
+                    <span class="stat-label">WIND (mph)</span>
+                    <span class="stat-cell stat-value" data-field="wind">&mdash;</span>
+                  </div>
+                  <div class="stat-col">
+                    <span class="stat-label">GUST (mph)</span>
+                    <span class="stat-cell stat-value" data-field="gust">&mdash;</span>
+                  </div>
+                  <div class="stat-col">
+                    <span class="stat-label">WIND CHILL</span>
+                    <span class="stat-cell stat-value" data-field="windchill">&mdash;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="summit-card" data-station="WHITEFACE">
             <div class="station-cell">
               <div class="card-illustration">
@@ -992,18 +1261,16 @@ body {
                     <span class="stat-cell stat-temp" data-field="temp">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">DIRECTION</span>
-                    <span class="stat-cell-inner">
-                      <svg class="mini-icon dir-arrow" data-field="dir-arrow" viewBox="0 0 24 24"><path d="M12 2 L12 20 M12 2 L7 8 M12 2 L17 8"/></svg>
-                    </span>
+                    <span class="stat-label">DIR</span>
                     <span class="stat-cell stat-value" data-field="dir">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">WIND</span>
+                    <span class="stat-label">WIND (mph)
+                    </span>
                     <span class="stat-cell stat-value" data-field="wind">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">GUST</span>
+                    <span class="stat-label">GUST (mph)</span>
                     <span class="stat-cell stat-value" data-field="gust">&mdash;</span>
                   </div>
                   <div class="stat-col">
@@ -1039,18 +1306,15 @@ body {
                     <span class="stat-cell stat-temp" data-field="temp">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">DIRECTION</span>
-                    <span class="stat-cell-inner">
-                      <svg class="mini-icon dir-arrow" data-field="dir-arrow" viewBox="0 0 24 24"><path d="M12 2 L12 20 M12 2 L7 8 M12 2 L17 8"/></svg>
-                    </span>
+                    <span class="stat-label">DIR</span>
                     <span class="stat-cell stat-value" data-field="dir">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">WIND</span>
+                    <span class="stat-label">WIND (mph)</span>
                     <span class="stat-cell stat-value" data-field="wind">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">GUST</span>
+                    <span class="stat-label">GUST (mph)</span>
                     <span class="stat-cell stat-value" data-field="gust">&mdash;</span>
                   </div>
                   <div class="stat-col">
@@ -1085,18 +1349,15 @@ body {
                     <span class="stat-cell stat-temp" data-field="temp">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">DIRECTION</span>
-                    <span class="stat-cell-inner">
-                      <svg class="mini-icon dir-arrow" data-field="dir-arrow" viewBox="0 0 24 24"><path d="M12 2 L12 20 M12 2 L7 8 M12 2 L17 8"/></svg>
-                    </span>
+                    <span class="stat-label">DIR</span>
                     <span class="stat-cell stat-value" data-field="dir">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">WIND</span>
+                    <span class="stat-label">WIND (mph)</span>
                     <span class="stat-cell stat-value" data-field="wind">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">GUST</span>
+                    <span class="stat-label">GUST (mph)</span>
                     <span class="stat-cell stat-value" data-field="gust">&mdash;</span>
                   </div>
                   <div class="stat-col">
@@ -1131,18 +1392,15 @@ body {
                     <span class="stat-cell stat-temp" data-field="temp">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">DIRECTION</span>
-                    <span class="stat-cell-inner">
-                      <svg class="mini-icon dir-arrow" data-field="dir-arrow" viewBox="0 0 24 24"><path d="M12 2 L12 20 M12 2 L7 8 M12 2 L17 8"/></svg>
-                    </span>
+                    <span class="stat-label">DIR</span>
                     <span class="stat-cell stat-value" data-field="dir">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">WIND</span>
+                    <span class="stat-label">WIND (mph)</span>
                     <span class="stat-cell stat-value" data-field="wind">&mdash;</span>
                   </div>
                   <div class="stat-col">
-                    <span class="stat-label">GUST</span>
+                    <span class="stat-label">GUST (mph)</span>
                     <span class="stat-cell stat-value" data-field="gust">&mdash;</span>
                   </div>
                   <div class="stat-col">
@@ -1185,7 +1443,7 @@ body {
     tickClock();
     setInterval(tickClock, 1000);
 
-    const DATA_BASE = "https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/";
+    const DATA_BASE = "https://raw.githubusercontent.com/matthewclay88/severe-dashboard/main/outputs/";
     const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 const MANSFIELD_STATION = "MMNV1";
@@ -2031,6 +2289,49 @@ function applyLapseColor(rate) {
             card.classList.add(cls);
     });
 }
+
+// ---------------------------------------------------------------------------
+// Mountain Wave Potential (0-10) and Rime Icing Potential (0-6) -
+// field names and category logic below now match tempprofile.py's
+// export_diagnostics_status() exactly: mountain_wave_category /
+// mountain_wave_score / mountain_wave_max_score and the rime_icing_*
+// equivalents. Category ("Low"/"Moderate"/"High"/"Indeterminate") is
+// computed server-side in mountain_wave_potential()/
+// rime_icing_potential() - colored directly from that string rather
+// than re-derived from score thresholds here, since "Indeterminate"
+// (both load-bearing ingredients missing) isn't a score band at all,
+// it's a distinct "we couldn't assess this" state.
+// ---------------------------------------------------------------------------
+
+function waveColorClass(category) {
+    if (category === "Low") return "wave-low";
+    if (category === "Moderate") return "wave-mod";
+    if (category === "High") return "wave-high";
+    return null; // Indeterminate / unknown - falls back to neutral muted accent
+}
+
+function applyWaveColor(category) {
+    document.querySelectorAll(".wave-card").forEach((card) => {
+        card.classList.remove("wave-low", "wave-mod", "wave-high");
+        const cls = waveColorClass(category);
+        if (cls) card.classList.add(cls);
+    });
+}
+
+function rimeColorClass(category) {
+    if (category === "Low") return "rime-low";
+    if (category === "Moderate") return "rime-mod";
+    if (category === "High") return "rime-high";
+    return null; // Indeterminate / unknown - falls back to neutral muted accent
+}
+
+function applyRimeColor(category) {
+    document.querySelectorAll(".rime-card").forEach((card) => {
+        card.classList.remove("rime-low", "rime-mod", "rime-high");
+        const cls = rimeColorClass(category);
+        if (cls) card.classList.add(cls);
+    });
+}
     
     function formatDateUTC(isoString) {
       if (!isoString) return "\u2014";
@@ -2172,6 +2473,52 @@ setField(
 
 applyLapseColor(data.mean_lapse_rate_C_km);
 setGauge_("lapse", data.mean_lapse_rate_C_km, 0, 10);
+
+setField(
+    "mountain-wave-potential",
+    data.mountain_wave_category ?? "\u2014"
+);
+setField(
+    "mountain-wave-score",
+    data.mountain_wave_score !== null && data.mountain_wave_score !== undefined
+        ? data.mountain_wave_score
+        : "\u2014"
+);
+applyWaveColor(data.mountain_wave_category);
+setGauge_(
+    "wave",
+    data.mountain_wave_score,
+    0,
+    data.mountain_wave_max_score ?? 10
+);
+document.querySelectorAll('[data-field="mountain-wave-potential"]').forEach((el) => {
+    el.title = Array.isArray(data.mountain_wave_reasons)
+        ? data.mountain_wave_reasons.join("\n")
+        : "";
+});
+
+setField(
+    "rime-icing-potential",
+    data.rime_icing_category ?? "\u2014"
+);
+setField(
+    "rime-icing-score",
+    data.rime_icing_score !== null && data.rime_icing_score !== undefined
+        ? data.rime_icing_score
+        : "\u2014"
+);
+applyRimeColor(data.rime_icing_category);
+setGauge_(
+    "rime",
+    data.rime_icing_score,
+    0,
+    data.rime_icing_max_score ?? 6
+);
+document.querySelectorAll('[data-field="rime-icing-potential"]').forEach((el) => {
+    el.title = Array.isArray(data.rime_icing_reasons)
+        ? data.rime_icing_reasons.join("\n")
+        : "";
+});
         
       } catch (err) {
         console.warn("Diagnostics status fetch failed:", err);
@@ -2218,9 +2565,99 @@ setGauge_("lapse", data.mean_lapse_rate_C_km, 0, 10);
             : "\u2014"
         );
 
+        const currentIn = data.current_depth_in;
+        const normalIn = data.normal_depth_in;
+        let pctOfNormal = null;
+        if (
+          currentIn !== null && currentIn !== undefined &&
+          normalIn !== null && normalIn !== undefined && normalIn > 0
+        ) {
+          pctOfNormal = (currentIn / normalIn) * 100;
+        }
+
+        setField(
+          "snow-pct-readout",
+          pctOfNormal !== null ? `${Math.round(pctOfNormal)}% of normal` : "\u2014"
+        );
+
+        document.querySelectorAll('[data-field="snow-pct-fill"]').forEach((el) => {
+          el.style.width = pctOfNormal !== null ? `${Math.min(100, Math.max(0, pctOfNormal))}%` : "0%";
+        });
+
+        // RANK — already computed server-side (rank/rank_of in the feed)
+        // but wasn't being displayed anywhere until now.
+        setField(
+          "snow-rank",
+          data.rank !== null && data.rank !== undefined && data.rank_of !== null && data.rank_of !== undefined
+            ? `${ordinalSuffix_(data.rank)} of ${data.rank_of}`
+            : "\u2014"
+        );
+
+        // RECORD RANGE — where today's depth sits between the record low
+        // and record high for this date, using fields already fetched
+        // for the mini-stats above (no new data source needed).
+        const recordLowIn = data.record_low_in;
+        const recordHighIn = data.record_high_in;
+        let recordRangePct = null;
+
+        if (
+          currentIn !== null && currentIn !== undefined &&
+          recordLowIn !== null && recordLowIn !== undefined &&
+          recordHighIn !== null && recordHighIn !== undefined &&
+          recordHighIn > recordLowIn
+        ) {
+          recordRangePct = ((currentIn - recordLowIn) / (recordHighIn - recordLowIn)) * 100;
+        }
+
+        document.querySelectorAll('[data-field="record-range-marker"]').forEach((el) => {
+          el.style.left = recordRangePct !== null ? `${Math.min(100, Math.max(0, recordRangePct))}%` : "0%";
+          el.style.opacity = recordRangePct !== null ? "1" : "0.25";
+        });
+
+        setField(
+          "record-range-readout",
+          currentIn !== null && currentIn !== undefined ? `${Math.round(currentIn)}" today` : "\u2014"
+        );
+        setField(
+          "record-range-low-label",
+          recordLowIn !== null && recordLowIn !== undefined ? `${Math.round(recordLowIn)}"` : "\u2014"
+        );
+        setField(
+          "record-range-high-label",
+          recordHighIn !== null && recordHighIn !== undefined ? `${Math.round(recordHighIn)}"` : "\u2014"
+        );
+
+        // OFF-SEASON — normal/record/rank fields all come back null
+        // outside winter (confirmed against the live feed: season itself
+        // is explicitly null then too). Swap the mini-stats/bars for one
+        // deliberate message instead of a wall of "—" placeholders.
+        const isOffSeason =
+          data.season === null || data.season === undefined ||
+          (normalIn == null && recordLowIn == null && recordHighIn == null);
+
+        document.querySelectorAll('[data-section="in-season"]').forEach((el) => {
+          el.style.display = isOffSeason ? "none" : "block";
+        });
+        document.querySelectorAll('[data-section="off-season"]').forEach((el) => {
+          el.style.display = isOffSeason ? "flex" : "none";
+        });
+
         setField("updated", formatDateUTC(data.generated_at));
       } catch (err) {
         console.warn("Snow depth status fetch failed:", err);
+      }
+    }
+
+    // "1st" / "2nd" / "3rd" / "4th"... with the 11/12/13 exception.
+    function ordinalSuffix_(n) {
+      const rounded = Math.round(n);
+      const mod100 = rounded % 100;
+      if (mod100 >= 11 && mod100 <= 13) return `${rounded}th`;
+      switch (rounded % 10) {
+        case 1: return `${rounded}st`;
+        case 2: return `${rounded}nd`;
+        case 3: return `${rounded}rd`;
+        default: return `${rounded}th`;
       }
     }
 
@@ -2683,6 +3120,191 @@ async function refreshWhitefaceObs() {
       "Whiteface observation refresh failed:",
       error
     );
+  }
+}
+
+const WASHINGTON_API_URL = "https://api.weather.gov/stations/KMWN/observations/latest";
+
+function cToF_(celsius) {
+  return celsius == null ? null : (celsius * 9 / 5) + 32;
+}
+
+function kmhToMph_(kmh) {
+  return kmh == null ? null : kmh * 0.621371;
+}
+
+const WASHINGTON_OBS_URL = "https://api.weather.gov/stations/KMWN/observations?limit=20";
+
+function cToF_(celsius) {
+  return celsius == null ? null : (celsius * 9 / 5) + 32;
+}
+
+function kmhToMph_(kmh) {
+  return kmh == null ? null : kmh * 0.621371;
+}
+
+async function fetchWashingtonObservation_() {
+
+  try {
+
+    const response = await fetchWithTimeout_(
+      WASHINGTON_OBS_URL,
+      { cache: "no-store", headers: { Accept: "application/geo+json" } }
+    );
+
+    if (!response.ok) {
+      console.warn(`Washington API failed: HTTP ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+    const features = (data && data.features) || [];
+
+    if (!features.length) {
+      console.warn("Washington: no observations returned.");
+      return null;
+    }
+
+    // Walk newest -> oldest, filling each field independently from
+    // whichever observation has it first - same pattern as
+    // extract_latest_nws_values() in tempprofile.py. A single
+    // record can easily have temperature but null wind (or vice
+    // versa), so scanning just /latest can silently drop a field
+    // that's actually available a cycle or two back.
+
+    let tempC = null, tempTimestamp = null;
+    let windKmh = null, directionDeg = null, windTimestamp = null;
+    let gustKmh = null, gustTimestamp = null;
+    let chillC = null;
+
+    for (const feature of features) {
+
+      const p = feature.properties || {};
+
+      if (tempC == null && p.temperature && p.temperature.value != null) {
+        tempC = Number(p.temperature.value);
+        tempTimestamp = p.timestamp;
+      }
+
+      if (
+        windKmh == null &&
+        p.windSpeed && p.windSpeed.value != null &&
+        p.windDirection && p.windDirection.value != null
+      ) {
+        windKmh = Number(p.windSpeed.value);
+        directionDeg = Number(p.windDirection.value);
+        windTimestamp = p.timestamp;
+      }
+
+      if (gustKmh == null && p.windGust && p.windGust.value != null) {
+        gustKmh = Number(p.windGust.value);
+        gustTimestamp = p.timestamp;
+      }
+
+      if (chillC == null && p.windChill && p.windChill.value != null) {
+        chillC = Number(p.windChill.value);
+      }
+
+      if (tempC != null && windKmh != null && gustKmh != null) {
+        break;
+      }
+    }
+
+    if (tempC == null && windKmh == null) {
+      console.warn("Washington: no usable temperature or wind in recent observations.");
+      return null;
+    }
+
+    const timestamps = [tempTimestamp, windTimestamp, gustTimestamp]
+      .filter(Boolean)
+      .map((t) => new Date(t).getTime());
+
+    const latestTimestamp = timestamps.length
+      ? new Date(Math.max(...timestamps)).toISOString()
+      : null;
+
+    return {
+      tempF: cToF_(tempC),
+      sustainedMph: kmhToMph_(windKmh),
+      gustMph: kmhToMph_(gustKmh),
+      directionDeg,
+      windChillF: cToF_(chillC),
+      timestamp: latestTimestamp
+    };
+
+  } catch (error) {
+
+    console.warn("Washington observation fetch failed:", error);
+    return null;
+  }
+}
+
+async function refreshWashingtonObs() {
+
+  const card = document.querySelector(
+    '.summit-card[data-station="WASHINGTON"]'
+  );
+
+  if (!card) {
+    console.warn("Washington summit card not found.");
+    return;
+  }
+
+  const tempEl = card.querySelector('[data-field="temp"]');
+  const gustEl = card.querySelector('[data-field="gust"]');
+  const chillEl = card.querySelector('[data-field="windchill"]');
+
+  try {
+
+    const obs = await fetchWashingtonObservation_();
+
+    if (!obs) {
+
+      if (tempEl) tempEl.textContent = "—";
+      setWindDisplay_(card, null, null);
+      if (gustEl) gustEl.textContent = "—";
+      if (chillEl) chillEl.textContent = "—";
+
+      applyFieldStaleness_(card, "temp", false, null);
+      applyFieldStaleness_(card, "dir", false, null);
+      applyFieldStaleness_(card, "wind", false, null);
+      applyFieldStaleness_(card, "gust", false, null);
+      applyFieldStaleness_(card, "windchill", false, null);
+
+      return;
+    }
+
+    if (tempEl) {
+      tempEl.textContent = obs.tempF != null ? `${Math.round(obs.tempF)}°` : "—";
+    }
+
+    setWindDisplay_(card, obs.directionDeg, obs.sustainedMph);
+
+    const wxAge = ageMinutes_(obs.timestamp);
+    const wxIsStale = wxAge !== null && wxAge > MAX_OBSERVATION_AGE_MINUTES;
+
+    applyWindColor_(
+      card,
+      wxIsStale ? null : obs.sustainedMph,
+      wxIsStale ? null : obs.gustMph
+    );
+
+    if (gustEl) gustEl.textContent = formatGustDisplay_(obs.gustMph);
+
+    if (chillEl) {
+      chillEl.textContent = obs.windChillF != null ? `${Math.round(obs.windChillF)}°` : "—";
+    }
+
+    applyFieldStaleness_(card, "temp", obs.tempF != null, obs.timestamp);
+    applyFieldStaleness_(card, "dir", obs.directionDeg != null, obs.timestamp);
+    applyFieldStaleness_(card, "wind", obs.sustainedMph != null, obs.timestamp);
+    applyFieldStaleness_(card, "gust", obs.gustMph != null, obs.timestamp);
+    applyFieldStaleness_(card, "windchill", obs.windChillF != null, obs.timestamp);
+
+    console.log("WASHINGTON LIVE OBS:", obs);
+
+  } catch (error) {
+    console.error("Washington observation refresh failed:", error);
   }
 }
 
@@ -3186,16 +3808,10 @@ async function refreshBoltonObs() {
       });
     }
 
-    function refreshSoundingImage() {
-      const img = document.getElementById("sounding-image");
-      if (!img) return;
-      img.src = "https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/vt_pseudo_sounding.png?t=" + Date.now();
-    }
-
     function refreshAll() {
-      refreshSoundingImage();
       refreshDiagnostics();
       refreshSnowDepth();
+      refreshWashingtonObs();
       refreshMansfieldObs();
       refreshWhitefaceObs();
       refreshBurkeObs();
