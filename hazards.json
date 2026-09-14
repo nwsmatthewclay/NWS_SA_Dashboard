@@ -10,56 +10,228 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-36681",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ac7c954f65711702a911572794df83adf51f224c.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -107.63,
+                            37.06
+                        ],
+                        [
+                            -107.68,
+                            37.21
+                        ],
+                        [
+                            -107.31,
+                            37.36
+                        ],
+                        [
+                            -107.2,
+                            37.11
+                        ],
+                        [
+                            -107.63,
+                            37.06
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-36681",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ac7c954f65711702a911572794df83adf51f224c.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-36681",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.ac7c954f65711702a911572794df83adf51f224c.001.1",
+                "areaDesc": "Archuleta, CO; La Plata, CO",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "008007",
+                        "008067"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "COC007",
+                        "COC067"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/COC007",
+                    "https://api.weather.gov/zones/county/COC067"
                 ],
                 "references": [],
-                "sent": "2026-09-14T19:03:09+00:00",
-                "effective": "2026-09-14T19:03:09+00:00",
-                "onset": null,
-                "expires": "2026-09-14T19:13:09+00:00",
-                "ends": null,
-                "status": "Test",
+                "sent": "2026-09-14T13:11:00-06:00",
+                "effective": "2026-09-14T13:11:00-06:00",
+                "onset": "2026-09-14T13:11:00-06:00",
+                "expires": "2026-09-14T13:45:00-06:00",
+                "ends": "2026-09-14T13:45:00-06:00",
+                "status": "Actual",
                 "messageType": "Alert",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Severe Thunderstorm Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Grand Junction CO",
+                "headline": "Severe Thunderstorm Warning issued September 14 at 1:11PM MDT until September 14 at 1:45PM MDT by NWS Grand Junction CO",
+                "description": "SVRGJT\n\nThe National Weather Service in Grand Junction has issued a\n\n* Severe Thunderstorm Warning for...\nNorthwestern Archuleta County in southwestern Colorado...\nSoutheastern La Plata County in southwestern Colorado...\n\n* Until 145 PM MDT.\n\n* At 110 PM MDT, a severe thunderstorm was located near Ignacio, or\n18 miles southeast of Durango, moving east at 20 mph.\n\nHAZARD...60 mph wind gusts and quarter size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Hail damage to vehicles is expected. Expect wind damage\nto roofs, siding, and trees.\n\n* Locations impacted include...\nBayfield and Ignacio.",
+                "instruction": "For your protection move to an interior room on the lowest floor of a\nbuilding.",
+                "response": "Shelter",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "SVRGJT"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 141903"
+                        "WUUS55 KGJT 141911"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-09-14T19:10:00-00:00...storm...250DEG...19KT...37.16,-107.56"
+                    ],
+                    "windThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxWindGust": [
+                        "60 MPH"
+                    ],
+                    "hailThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxHailSize": [
+                        "1.00"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KGJT.SV.W.0023.260914T1911Z-260914T1945Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-14T13:45:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SVR"
+                    ],
+                    "NationalWeatherService": [
+                        "SVW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.73c494c3425712ab2373b97b18df098ae762f53b.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.73c494c3425712ab2373b97b18df098ae762f53b.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.73c494c3425712ab2373b97b18df098ae762f53b.001.1",
+                "areaDesc": "Towner; Cavalier; Benson; Ramsey; Eddy; Nelson; Griggs; Steele; Barnes; Western Walsh County",
+                "geocode": {
+                    "SAME": [
+                        "038095",
+                        "038019",
+                        "038005",
+                        "038071",
+                        "038027",
+                        "038063",
+                        "038039",
+                        "038091",
+                        "038003",
+                        "038099"
+                    ],
+                    "UGC": [
+                        "NDZ006",
+                        "NDZ007",
+                        "NDZ014",
+                        "NDZ015",
+                        "NDZ024",
+                        "NDZ026",
+                        "NDZ028",
+                        "NDZ029",
+                        "NDZ038",
+                        "NDZ054"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NDZ006",
+                    "https://api.weather.gov/zones/forecast/NDZ007",
+                    "https://api.weather.gov/zones/forecast/NDZ014",
+                    "https://api.weather.gov/zones/forecast/NDZ015",
+                    "https://api.weather.gov/zones/forecast/NDZ024",
+                    "https://api.weather.gov/zones/forecast/NDZ026",
+                    "https://api.weather.gov/zones/forecast/NDZ028",
+                    "https://api.weather.gov/zones/forecast/NDZ029",
+                    "https://api.weather.gov/zones/forecast/NDZ038",
+                    "https://api.weather.gov/zones/forecast/NDZ054"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T11:20:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-14T11:20:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-14T14:11:00-05:00",
+                "effective": "2026-09-14T14:11:00-05:00",
+                "onset": "2026-09-14T22:00:00-05:00",
+                "expires": "2026-09-15T00:00:00-05:00",
+                "ends": "2026-09-15T07:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Wind Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Grand Forks ND",
+                "headline": "Wind Advisory issued September 14 at 2:11PM CDT until September 15 at 7:00AM CDT by NWS Grand Forks ND",
+                "description": "* WHAT...West winds 25 to 35 mph with gusts up to 50 mph expected.\n\n* WHERE...Benson, Cavalier, Eddy, Nelson, Ramsey, Towner, Western\nWalsh, Barnes, Griggs, and Steele Counties.\n\n* WHEN...From 10 PM this evening to 7 AM CDT Tuesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
+                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.\n\nSecure outdoor objects.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWFGF"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS73 KFGF 141911"
+                    ],
+                    "NWSheadline": [
+                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 PM THIS EVENING TO 7 AM CDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KFGF.WI.Y.0015.260915T0300Z-260915T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-15T07:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed987d2931837a64697bb6aec209467cf3592db9.001.1,2026-09-14T04:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d35c2878c75412b15814651b3412319187eeda38.001.1,2026-09-13T20:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cb344ef8ad9d421079cf168a675ab47bd0d5d2dd.001.1,2026-09-13T13:28:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +243,7 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "WIY"
                     ]
                 }
             }
@@ -9947,192 +10119,6 @@
                     ],
                     "NationalWeatherService": [
                         "HTY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.001.1",
-                "areaDesc": "Steele; Barnes",
-                "geocode": {
-                    "SAME": [
-                        "038091",
-                        "038003"
-                    ],
-                    "UGC": [
-                        "NDZ029",
-                        "NDZ038"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/NDZ029",
-                    "https://api.weather.gov/zones/forecast/NDZ038"
-                ],
-                "references": [],
-                "sent": "2026-09-14T11:20:00-05:00",
-                "effective": "2026-09-14T11:20:00-05:00",
-                "onset": "2026-09-14T22:00:00-05:00",
-                "expires": "2026-09-14T19:30:00-05:00",
-                "ends": "2026-09-15T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Grand Forks ND",
-                "headline": "Wind Advisory issued September 14 at 11:20AM CDT until September 15 at 7:00AM CDT by NWS Grand Forks ND",
-                "description": "* WHAT...West winds 25 to 35 mph with gusts up to 50 mph expected.\n\n* WHERE...Barnes and Steele Counties.\n\n* WHEN...From 10 PM this evening to 7 AM CDT Tuesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWFGF"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KFGF 141620"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY IN EFFECT FROM 10 PM THIS EVENING TO 7 AM CDT TUESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXA.KFGF.WI.Y.0015.260915T0300Z-260915T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-15T07:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.b77dd0d6ac188f19ab5fde659c0e312a9297e061.002.1",
-                "areaDesc": "Towner; Cavalier; Benson; Ramsey; Eddy; Nelson; Griggs; Western Walsh County",
-                "geocode": {
-                    "SAME": [
-                        "038095",
-                        "038019",
-                        "038005",
-                        "038071",
-                        "038027",
-                        "038063",
-                        "038039",
-                        "038099"
-                    ],
-                    "UGC": [
-                        "NDZ006",
-                        "NDZ007",
-                        "NDZ014",
-                        "NDZ015",
-                        "NDZ024",
-                        "NDZ026",
-                        "NDZ028",
-                        "NDZ054"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/NDZ006",
-                    "https://api.weather.gov/zones/forecast/NDZ007",
-                    "https://api.weather.gov/zones/forecast/NDZ014",
-                    "https://api.weather.gov/zones/forecast/NDZ015",
-                    "https://api.weather.gov/zones/forecast/NDZ024",
-                    "https://api.weather.gov/zones/forecast/NDZ026",
-                    "https://api.weather.gov/zones/forecast/NDZ028",
-                    "https://api.weather.gov/zones/forecast/NDZ054"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ed987d2931837a64697bb6aec209467cf3592db9.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.ed987d2931837a64697bb6aec209467cf3592db9.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-14T04:06:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-14T11:20:00-05:00",
-                "effective": "2026-09-14T11:20:00-05:00",
-                "onset": "2026-09-14T22:00:00-05:00",
-                "expires": "2026-09-14T19:30:00-05:00",
-                "ends": "2026-09-15T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Grand Forks ND",
-                "headline": "Wind Advisory issued September 14 at 11:20AM CDT until September 15 at 7:00AM CDT by NWS Grand Forks ND",
-                "description": "* WHAT...West winds 25 to 35 mph with gusts up to 50 mph expected.\n\n* WHERE...Benson, Cavalier, Eddy, Nelson, Ramsey, Towner, Western\nWalsh, and Griggs Counties.\n\n* WHEN...From 10 PM this evening to 7 AM CDT Tuesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.\n\nSecure outdoor objects.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWFGF"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KFGF 141620"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY REMAINS IN EFFECT FROM 10 PM THIS EVENING TO 7 AM CDT TUESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KFGF.WI.Y.0015.260915T0300Z-260915T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-15T07:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d35c2878c75412b15814651b3412319187eeda38.001.1,2026-09-13T20:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cb344ef8ad9d421079cf168a675ab47bd0d5d2dd.001.1,2026-09-13T13:28:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
                     ]
                 }
             }
@@ -28870,5 +28856,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-14T19:03:13+00:00"
+    "updated": "2026-09-14T19:13:33+00:00"
 }
