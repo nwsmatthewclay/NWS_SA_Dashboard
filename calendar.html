@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NWS Burlington DSS Calendar</title>
+<base target="_top">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #06090f;
+    --surface:   #0d1117;
+    --surface2:  #131920;
+    --border:    #1e2d3d;
+    --border2:   #243447;
+    --text:      #e2e8f0;
+    --muted:     #8899a6;
+
+    /* Viewport-relative calendar text sizes. clamp(min, preferred, max)
+       means these scale with actual screen width instead of staying
+       pinned to a fixed px value — so a 4K TV and a 1080p monitor both
+       render calendar text at a similar PHYSICAL size, not the same
+       CSS-pixel size. --calScale (set per-cell by fitCalendarCells())
+       still multiplies on top of these for overflow-based shrinking. */
+    --cal-day-font:    clamp(14px, 1.15vw, 24px);
+    --cal-chip-name:   clamp(13px, 1.1vw,  22px);
+    --cal-chip-time:   clamp(10px, 0.85vw, 17px);
+    --cal-chip-pad-v:  clamp(6px,  0.55vw, 12px);
+    --cal-chip-pad-h:  clamp(8px,  0.7vw,  14px);
+    --cal-chip-border: clamp(3px,  0.35vw, 7px);
+    --cal-legend-font: clamp(12px, 1vw,    20px);
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── TOP HEADER (logo + last-updated only — no nav, no other tabs) ── */
+  .top-header {
+    background: #0f1b2de0;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .header-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .header-brand .nws-logo { width: 160px; height: auto; display: block; object-fit: contain; }
+  .header-brand h1 { font-size: 17px; font-weight: 600; color: #fff; line-height: 1.1; white-space: nowrap; }
+  .header-sep { width: 1px; background: var(--border); align-self: stretch; margin: 0 4px; flex-shrink: 0; }
+
+  .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+  .refresh-btn {
+    background: #112233; border: 1px solid #1d6fa4; color: #64b5f6;
+    width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
+    font-size: 15px; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .refresh-btn:hover { background: #1a3a55; }
+
+  .last-updated-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #0f1b2d;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 5px 10px;
+    min-width: 120px;
+  }
+  .last-updated-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+  #lastUpdatedText {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64b5f6;
+  }
+
+  /* ── CALENDAR (fills the rest of the screen, no scrolling) ── */
+  #calendarContainer {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .cal-legend-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 1.4vw, 30px);
+    flex-wrap: wrap;
+    padding: clamp(8px, 0.7vw, 18px) clamp(12px, 1.2vw, 24px);
+    font-size: var(--cal-legend-font);
+    font-weight: 800;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .cal-legend-item { display: flex; align-items: center; gap: 10px; }
+  .cal-legend-swatch { width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0; }
+
+  #calendarScrollWrapper {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 8px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* One of the two stacked weeks. Weeks split the available height
+     proportionally to their own content (see the "flex vs even split"
+     note in chat) — a busier week can claim more room than a light one,
+     while each cell's own auto-fit still guarantees nothing overflows. */
+  .cal-week-grid {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ffffff;
+  }
+
+  .cal-grid-headrow {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #ffffff;
+    border-bottom: 1px solid #ffffff;
+  }
+
+  .cal-grid-bodyrow {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #ffffff;
+  }
+
+  .cal-day-header {
+    display: block;
+    padding: var(--cal-chip-pad-v) var(--cal-chip-pad-h);
+    text-align: center;
+    background: var(--surface);
+  }
+  .cal-day-header .day-name {
+    font-size: var(--cal-day-font);
+    font-weight: 800;
+    color: white;
+    letter-spacing: 0.02em;
+  }
+  .cal-day-header.is-today {
+    background: #0d2a45;
+    box-shadow: inset 0 0 0 2px #3b82f6;
+  }
+  .cal-day-header.is-today .day-name { color: #93c5fd; }
+  .cal-day-header.is-today::after {
+    content: 'TODAY';
+    display: block;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #60a5fa;
+    margin-top: 2px;
+  }
+
+  /* Grid cell — content never overflows because JS sets --calScale on
+     this element per-cell, shrinking font/padding only as much as that
+     specific day's event count requires. */
+  .cal-grid-cell {
+    background: var(--surface);
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cal-events {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: calc(8px * var(--calScale, 1));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: calc(6px * var(--calScale, 1));
+  }
+
+  .cal-empty-day {
+    padding: calc(var(--cal-chip-pad-v) * var(--calScale, 1)) calc(var(--cal-chip-pad-h) * var(--calScale, 1));
+    border-left: calc(var(--cal-chip-border) * var(--calScale, 1)) solid #166534;
+    border-radius: 6px;
+    line-height: 1.2;
+    background: #052e16;
+    color: #86efac;
+    font-size: calc(var(--cal-chip-name) * var(--calScale, 1));
+    font-weight: 800;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .cal-event-chip {
+    padding: calc(var(--cal-chip-pad-v) * var(--calScale, 1)) calc(var(--cal-chip-pad-h) * var(--calScale, 1));
+    border-left-width: calc(var(--cal-chip-border) * var(--calScale, 1));
+    border-radius: 6px;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+  .cal-event-chip .chip-name {
+    font-size: calc(var(--cal-chip-name) * var(--calScale, 1));
+    font-weight: 800;
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.25;
+  }
+  .cal-event-chip .chip-time {
+    font-size: calc(var(--cal-chip-time) * var(--calScale, 1));
+    font-weight: 700;
+    opacity: 0.9;
+    margin-top: calc(2px * var(--calScale, 1));
+  }
+  .cal-chip-radar   { background: #3b0a0a; border-left-color: #ef4444; color: #fca5a5; }
+  .cal-chip-onsite  { background: #2e1065; border-left-color: #a855f7; color: #d8b4fe; }
+  .cal-chip-headsup { background: #172554; border-left-color: #3b82f6; color: #93c5fd; }
+  .cal-chip-call    { background: #3d2800; border-left-color: #f59e0b; color: #fcd34d; }
+  /* Recurring internal reminder — visually separated from external
+     heads-up DSS emails with a white outline instead of touching the
+     existing border-left-width/color used for type coding. */
+  .cal-chip-weeklybrief { outline: 2px solid #ffffff; outline-offset: -2px; }
+
+  /* ── MODAL (kept for click-to-detail if this page is ever opened in a
+     normal browser rather than an unattended TV) ── */
+  #calendarModal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 9999;
+  }
+  .modal-box {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 12px; width: 480px; max-width: 90%; padding: 24px;
+    color: var(--text); margin: 80px auto;
+  }
+  .modal-box h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .modal-row { margin-bottom: 10px; font-size: 13px; }
+  .modal-row strong { display: block; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .modal-close { margin-top: 16px; padding: 8px 20px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 6px; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 600; }
+
+  /* ── MISC ── */
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #243447; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── TOP HEADER ── -->
+<div class="top-header">
+  <div class="header-brand">
+    <img class="nws-logo"
+         src="https://lh3.googleusercontent.com/d/1GT37aCk0jaEtRToJ_afhTcBJAbCFybXt"
+         alt="NWS Burlington">
+    <div>
+      <h1>NWS Burlington DSS Calendar</h1>
+    </div>
+  </div>
+  <div class="header-sep"></div>
+  <div class="header-right">
+    <div class="last-updated-box">
+      <div class="last-updated-label">LAST UPDATED</div>
+      <div id="lastUpdatedText">--:--:--</div>
+    </div>
+    <button class="refresh-btn" onclick="refreshCalendarData()" title="Refresh">↻</button>
+  </div>
+</div>
+
+<!-- ── CALENDAR ── -->
+<div id="calendarContainer">
+  <div id="calendarLegendBar" class="cal-legend-bar"></div>
+  <div id="calendarScrollWrapper">
+    <!-- Calendar grid injected here by buildCalendar() -->
+  </div>
+</div>
+
+<!-- DETAIL MODAL (harmless if this page never receives a click) -->
+<div id="calendarModal">
+  <div class="modal-box">
+    <div id="calendarModalContent"></div>
+    <button class="modal-close" id="btnCloseModal">Close</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+var dssRows  = [];
+var callRows = [];
+
+// Escape user-entered text before it goes into innerHTML templates
+// (event names, contact info, call descriptions, etc all come from
+// free-text sheet fields, so this guards the calendar chips and modal
+// from broken markup / stray quotes).
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function safeHref(url) {
+  var u = String(url || '').trim();
+  if (!/^https?:\/\//i.test(u)) return '';
+  return escapeHtml(u);
+}
+
+function formatTimeRange(start, end) {
+  if (!start) return '';
+  return end ? (start + ' – ' + end) : start;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════════════
+function closeCalendarModal() { document.getElementById('calendarModal').style.display = 'none'; }
+function showCalendarModal(html) {
+  document.getElementById('calendarModalContent').innerHTML = html;
+  document.getElementById('calendarModal').style.display   = 'block';
+}
+
+function showDssDetails(eventName) {
+  var headers        = dssRows[0];
+  var eventCol       = headers.indexOf('Event Name');
+  var typeCol        = headers.indexOf('DSS Type');
+  var contactCol     = headers.indexOf('Contact Name');
+  var contactInfoCol = headers.indexOf('Contact Info');
+  var radarStartCol  = headers.indexOf('Radar Start');
+  var radarEndCol    = headers.indexOf('Radar End');
+  var emailCol       = headers.indexOf('Email Due By');
+  var dssStartCol    = headers.indexOf('DSS Start');
+  var dssEndCol      = headers.indexOf('DSS End');
+  var html = '';
+  for (var i = 1; i < dssRows.length; i++) {
+    var row = dssRows[i];
+    if (row[eventCol] !== eventName) continue;
+
+    var radarRange = row[radarStartCol]
+      ? row[radarStartCol] + (row[radarEndCol] ? ' – ' + row[radarEndCol] : '')
+      : '';
+    var dssRange = (dssStartCol !== -1 && row[dssStartCol])
+      ? row[dssStartCol] + (dssEndCol !== -1 && row[dssEndCol] ? ' – ' + row[dssEndCol] : '')
+      : '';
+
+    html =
+      '<h2>' + escapeHtml(row[eventCol]) + '</h2>' +
+      '<div class="modal-row"><strong>DSS Type</strong>'     + escapeHtml(row[typeCol])        + '</div>' +
+      '<div class="modal-row"><strong>Contact</strong>'      + escapeHtml(row[contactCol])     + '</div>' +
+      '<div class="modal-row"><strong>Contact Info</strong>' + escapeHtml(row[contactInfoCol]) + '</div>' +
+      (row[emailCol] ? '<div class="modal-row"><strong>Email Due</strong>'   + escapeHtml(row[emailCol]) + '</div>' : '') +
+      (radarRange ? '<div class="modal-row"><strong>Radar Watch</strong>' + escapeHtml(radarRange) + '</div>' : '') +
+      (dssRange ? '<div class="modal-row"><strong>On-Site DSS Time</strong>' + escapeHtml(dssRange) + '</div>' : '');
+    break;
+  }
+  showCalendarModal(html);
+}
+
+function showCallDetails(rowIndex) {
+  var call = callRows[rowIndex];
+  if (!call) return;
+  var urlMatch = String(call[3] || '').match(/https?:\/\/\S+/);
+  var joinHref = urlMatch ? safeHref(urlMatch[0]) : '';
+  var html =
+    '<h2>' + escapeHtml(call[2]) + '</h2>' +
+    '<div class="modal-row"><strong>Date</strong>'         + escapeHtml(call[0]) + '</div>' +
+    '<div class="modal-row"><strong>Time</strong>'         + escapeHtml(call[1]) + '</div>' +
+    '<div class="modal-row"><strong>Contact Info</strong>' + escapeHtml(call[3]) + '</div>' +
+    (call[4] ? '<div class="modal-row"><strong>Additional</strong>' + escapeHtml(call[4]) + '</div>' : '') +
+    (joinHref ? '<br><a href="' + joinHref + '" target="_blank" style="display:inline-block;background:#1d6fa4;color:white;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;">Join Meeting</a>' : '');
+  showCalendarModal(html);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  BUILD CALENDAR (2-week grid)
+// ══════════════════════════════════════════════════════════════
+function buildCalendar() {
+  var headers       = dssRows[0] || [];
+  var eventCol      = headers.indexOf('Event Name');
+  var eventDateCol  = headers.indexOf('Event Date');
+  var typeCol       = headers.indexOf('DSS Type');
+  var radarStartCol = headers.indexOf('Radar Start');
+  var radarEndCol   = headers.indexOf('Radar End');
+  var emailTimeCol  = headers.indexOf('Email Due By');
+  var dssStartCol   = headers.indexOf('DSS Start');
+  var dssEndCol     = headers.indexOf('DSS End');
+  var cancelledCol  = headers.indexOf('Cancelled');
+
+  var now = new Date();
+  var todayIso = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+
+  var startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  var dayBuckets  = Array(14).fill(null).map(function() { return []; });
+  var callBuckets = Array(14).fill(null).map(function() { return []; });
+
+  for (var ci = 1; ci < callRows.length; ci++) {
+    var call = callRows[ci];
+    if (!call) continue;
+    if (String(call[5]).trim().toUpperCase() === 'TRUE') continue;
+    var cp = String(call[0] || '').split('/');
+    if (cp.length !== 3) continue;
+    var callDate = new Date(cp[2], cp[0]-1, cp[1]);
+    var diff = Math.floor((callDate - startOfWeek) / 86400000);
+    if (diff >= 0 && diff < 14) callBuckets[diff].push({ event: call[2], time: call[1], rowIndex: ci });
+  }
+
+  for (var i = 1; i < dssRows.length; i++) {
+    var row = dssRows[i];
+    if (!row) continue;
+    if (String(row[cancelledCol]).trim().toUpperCase() === 'TRUE') continue;
+    var p = String(row[eventDateCol] || '').split('/');
+    if (p.length !== 3) continue;
+    var eDate = new Date(Number(p[2]), Number(p[0])-1, Number(p[1]));
+    var diff2 = Math.floor((eDate - startOfWeek) / 86400000);
+    if (diff2 >= 0 && diff2 < 14) {
+      dayBuckets[diff2].push({
+        name: row[eventCol], type: row[typeCol],
+        radarStart: row[radarStartCol], radarEnd: row[radarEndCol],
+        emailTime: row[emailTimeCol],
+        dssStart: row[dssStartCol], dssEnd: row[dssEndCol]
+      });
+    }
+  }
+
+  function dssChipHtml(ev) {
+    var cls = 'cal-chip-headsup';
+    var timeStr = ev.emailTime || '';
+    if (ev.type === 'Active radar watch') {
+      cls = 'cal-chip-radar';
+      timeStr = formatTimeRange(ev.radarStart, ev.radarEnd);
+    } else if (ev.type === 'On-Site DSS') {
+      cls = 'cal-chip-onsite';
+      timeStr = formatTimeRange(ev.dssStart, ev.dssEnd);
+    }
+
+    // BTV Weekly Brief is an internal office reminder riding along in the
+    // heads-up-email bucket — give it a white outline so it doesn't blend
+    // in with actual external DSS heads-up emails.
+    if (/weekly brief/i.test(ev.name || '')) {
+      cls += ' cal-chip-weeklybrief';
+    }
+
+    return (
+      '<div class="cal-event-chip ' + cls + '" data-dss-event="' + escapeHtml(ev.name) + '">' +
+        '<div class="chip-name">' + escapeHtml(ev.name) + '</div>' +
+        (timeStr ? '<div class="chip-time">' + escapeHtml(timeStr) + '</div>' : '') +
+      '</div>'
+    );
+  }
+
+  function callChipHtml(callItem) {
+    return (
+      '<div class="cal-event-chip cal-chip-call" data-call-index="' + callItem.rowIndex + '">' +
+        '<div class="chip-name">' + escapeHtml(callItem.event) + '</div>' +
+        '<div class="chip-time">' + escapeHtml(callItem.time) + '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderWeek(startDay) {
+    var headerCells = '';
+    var bodyCells   = '';
+
+    for (var d = startDay; d < startDay + 7; d++) {
+      var dd = new Date(startOfWeek);
+      dd.setDate(startOfWeek.getDate() + d);
+      var iso = dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-' + String(dd.getDate()).padStart(2,'0');
+      var dayName  = dd.toLocaleDateString('en-US', { weekday: 'short' });
+      var monthDay = (dd.getMonth()+1) + '/' + dd.getDate();
+      var isToday  = iso === todayIso;
+
+      headerCells +=
+        '<span class="cal-day-header' + (isToday ? ' is-today' : '') + '" data-jump-date="' + iso + '">' +
+          '<span class="day-name">' + dayName + ' ' + monthDay + '</span>' +
+        '</span>';
+
+      // Weekly Brief is a standing Monday reminder — pin it to the top
+      // of the cell above any other DSS items that day, rather than
+      // sitting wherever it happens to fall in date-sorted order.
+      var sortedDayItems = dayBuckets[d].slice().sort(function(a, b) {
+        var aIsBrief = /weekly brief/i.test(a.name || '');
+        var bIsBrief = /weekly brief/i.test(b.name || '');
+        if (aIsBrief && !bIsBrief) return -1;
+        if (bIsBrief && !aIsBrief) return 1;
+        return 0;
+      });
+
+      var items = sortedDayItems.map(dssChipHtml).concat(callBuckets[d].map(callChipHtml));
+      var cellContent = items.length > 0
+        ? items.join('')
+        : '<div class="cal-empty-day">No Scheduled DSS or Coordination Calls</div>';
+      bodyCells += '<div class="cal-grid-cell"><div class="cal-events">' + cellContent + '</div></div>';
+    }
+
+    return (
+      '<div class="cal-week-grid">' +
+        '<div class="cal-grid-headrow">' + headerCells + '</div>' +
+        '<div class="cal-grid-bodyrow">' + bodyCells + '</div>' +
+      '</div>'
+    );
+  }
+
+  var legendBar = document.getElementById('calendarLegendBar');
+  if (legendBar) {
+    legendBar.innerHTML =
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#ef4444;"></span>Radar Watch</div>' +
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#3b82f6;"></span>Heads-Up Email</div>' +
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#a855f7;"></span>On-Site DSS</div>' +
+      '<div class="cal-legend-item"><span class="cal-legend-swatch" style="background:#f59e0b;"></span>Coordination Call</div>';
+  }
+
+  var wrapper = document.getElementById('calendarScrollWrapper');
+  wrapper.innerHTML = renderWeek(0) + renderWeek(7);
+  fitCalendarCells();
+}
+
+// ── TV / KIOSK PER-DAY AUTO-FIT ─────────────────────────────────
+// Each day cell has a fixed height (set by the CSS grid). Most days
+// have 1-2 events and render at full size. A day with a pile of
+// events gets its OWN --calScale shrunk — via a real overflow check,
+// not a guess based on count — until its content fits without
+// scrolling. Other days on the same row are unaffected.
+function fitCalendarCells() {
+  var cells = document.querySelectorAll('#calendarScrollWrapper .cal-grid-cell');
+
+  cells.forEach(function (cell) {
+    var eventsEl = cell.querySelector('.cal-events');
+    if (!eventsEl) return;
+
+    var scale = 1;
+    cell.style.setProperty('--calScale', scale);
+
+    var attempts = 0;
+    while (eventsEl.scrollHeight > eventsEl.clientHeight + 1 && scale > 0.4 && attempts < 40) {
+      scale = Math.max(0.4, scale - 0.03);
+      cell.style.setProperty('--calScale', scale.toFixed(2));
+      attempts++;
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DATA REFRESH
+// ══════════════════════════════════════════════════════════════
+function updateLastUpdated() {
+  var now = new Date();
+  document.getElementById('lastUpdatedText').textContent =
+    now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+async function refreshCalendarData() {
+  try {
+    const [eventsResponse, callsResponse] = await Promise.all([
+      fetch("events.json?_=" + Date.now()),
+      fetch("calls.json?_=" + Date.now())
+    ]);
+
+    if (!eventsResponse.ok) throw new Error("Unable to load events.json");
+    if (!callsResponse.ok) throw new Error("Unable to load calls.json");
+
+    dssRows  = await eventsResponse.json();
+    callRows = await callsResponse.json();
+
+    buildCalendar();
+  } catch (err) {
+    console.error("refreshCalendarData failed:", err);
+  }
+
+  updateLastUpdated();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOM READY
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  document.getElementById('btnCloseModal').addEventListener('click', closeCalendarModal);
+  document.getElementById('calendarModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCalendarModal();
+  });
+
+  document.getElementById('calendarScrollWrapper').addEventListener('click', function(e) {
+    var chip = e.target.closest('[data-dss-event]');
+    if (chip) { showDssDetails(chip.getAttribute('data-dss-event')); return; }
+    var callChip = e.target.closest('[data-call-index]');
+    if (callChip) { showCallDetails(parseInt(callChip.getAttribute('data-call-index'), 10)); return; }
+  });
+
+  var _calResizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearInterval(_calResizeTimer);
+    _calResizeTimer = setTimeout(fitCalendarCells, 150);
+  });
+
+  refreshCalendarData();
+  setInterval(refreshCalendarData, 300000); // every 5 minutes
+
+});
+</script>
+</body>
+</html>
