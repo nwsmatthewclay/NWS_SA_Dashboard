@@ -79,7 +79,7 @@ CURRENT_TAB = "Current"
 SERVICE_ACCOUNT_EMAIL = "severe-dashboard-bot@macro-thinker-499803-u2.iam.gserviceaccount.com"
 
 BUFKIT_BASE_URL = (
-    "https://mtarchive.iastate.edu/{yyyy}/{mm}/{dd}/bufkit/{hh}/{model}/{model}_{site}.buf"
+    "https://mtarchive.geol.iastate.edu/{yyyy}/{mm}/{dd}/bufkit/{hh}/{model}/{model}_{site}.buf"
 )
 
 # --- GLWU (Great Lakes Wave Unit) ---
@@ -471,7 +471,7 @@ def find_latest_glwu_grib():
         date_str = check_time.strftime("%Y%m%d")
         url = (
             f"{GLWU_NOMADS_BASE}glwu.{date_str}/"
-            f"glwu.t{cycle:02d}z.{GLWU_GRID_NAME}.grib2"
+            f"glwu.{GLWU_GRID_NAME}.t{cycle:02d}z.grib2"
         )
         try:
             resp = requests.head(url, timeout=15)
