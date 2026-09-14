@@ -239,6 +239,31 @@ def observation_age_minutes(timestamp):
     return (now - dt).total_seconds() / 60.0
 
 
+# Any single field (temperature, dewpoint, or wind) older than this
+# is treated as unusable - a station's WIND reading being 200+
+# minutes stale while its TEMPERATURE is fresh (or vice versa) is a
+# real thing that happens with these feeds, so this is checked per
+# field in build_profile(), not once per station.
+MAX_OBSERVATION_AGE_MINUTES = 100
+
+
+def is_stale(timestamp, max_age_minutes=MAX_OBSERVATION_AGE_MINUTES):
+    """
+    True if `timestamp` is older than `max_age_minutes`, using the
+    same age calculation as observation_age_minutes(). A missing
+    timestamp is NOT itself treated as stale - a value with no
+    timestamp attached is a separate "we don't know how old this is"
+    situation, handled wherever that value gets used, not here.
+    """
+
+    age = observation_age_minutes(timestamp)
+
+    if age is None:
+        return False
+
+    return age > max_age_minutes
+
+
 def fmt(value, decimals=1):
     """
     Safe formatting helper.
@@ -277,6 +302,66 @@ def choose_tick_interval(axis_range, target_ticks=8, candidates=(0.5, 1, 2, 2.5,
     return candidates[-1]
 
 
+def measure_skewt_height_to_width_ratio(
+    bottom_pressure, top_pressure, left_temperature, right_temperature,
+    probe_size_in=14.0,
+):
+    """
+    Determine the height:width ratio MetPy's SkewT will actually
+    render for the given pressure/temperature limits, independent of
+    whatever box it's eventually placed in.
+
+    SkewT locks its own axes aspect internally
+    (ax.set_aspect(80.5, adjustable='box')) so the 45-degree skew
+    lines render at a geometrically true 45 degrees on screen. That
+    lock is NOT optional cosmetic behavior - it's part of what makes
+    a Skew-T diagram a Skew-T (disabling it was tried directly and
+    corrupted the coordinate math compute_skew_corrected_xlim relies
+    on, since that function assumes an affine, consistent transform
+    between its probe and the final render).
+
+    Because the lock is tied to the data ranges (not the box we hand
+    it), the box has to be SHAPED to match what the lock wants, not
+    the other way around - guessing skew_width_in/skew_height_in
+    independently just produces a box the axes doesn't fill, with
+    the gap rendering as blank margin. For a shallow near-surface
+    pressure slice like this one (a small fraction of a full
+    troposphere), that natural shape is short and wide, not tall -
+    there's no honest way around that without either showing a much
+    larger pressure range or breaking the 45-degree geometry.
+
+    Probes with a deliberately oversized, square box (14in) so
+    neither dimension is the binding constraint, and reads back the
+    axes' actual rendered pixel box to recover the aspect the lock
+    wants for this pressure/temperature range. skew_width_in and
+    skew_height_in in plot_skewt() are then DERIVED from this
+    measurement - one fixed (width, since that's the dimension that
+    matters for the rest of the dashboard layout), one computed -
+    rather than picked by guesswork or clamped toward a guessed
+    range, either of which reintroduces the same mismatch this
+    probing exists to eliminate.
+    """
+
+    probe_fig = plt.figure(figsize=(probe_size_in, probe_size_in))
+
+    probe_skew = SkewT(
+        probe_fig, rotation=45, rect=(0.02, 0.02, 0.96, 0.96)
+    )
+
+    probe_skew.ax.set_ylim(bottom_pressure, top_pressure)
+    probe_skew.ax.set_xlim(left_temperature, right_temperature)
+
+    probe_fig.canvas.draw()
+
+    bbox = probe_skew.ax.get_window_extent()
+
+    ratio = bbox.height / bbox.width
+
+    plt.close(probe_fig)
+
+    return ratio
+
+
 def compute_skew_corrected_xlim(
     bottom_pressure, top_pressure, points,
     box_width_in=10.0, box_height_in=10.0,
@@ -310,6 +395,14 @@ def compute_skew_corrected_xlim(
     the correction can be wrong for exactly the days whose natural
     aspect doesn't match it - confirmed directly: switching to a
     fixed box without this fix let 2 of 4 test scenarios clip.
+
+    IMPORTANT: this probe deliberately does NOT touch the axes'
+    aspect lock (no set_aspect override). The lock has to stay
+    identical between this probe and the real chart in plot_skewt(),
+    or the shift amounts measured here won't match what actually
+    happens at render time - confirmed directly: disabling the lock
+    here while the box shape was tuned for the LOCKED aspect produced
+    wildly wrong (garbage) corrected limits.
 
     Approach: render the given points against a deliberately
     oversized, arbitrary xlim so nothing clips, measure where they
@@ -1116,7 +1209,13 @@ def build_profile(observations):
     Convert normalized observations into an elevation-sorted profile.
 
     Temperature is required for a station to enter the thermal profile.
-    Dewpoint and wind are optional.
+    Dewpoint and wind are optional. Any field older than
+    MAX_OBSERVATION_AGE_MINUTES is dropped before the station is
+    built - a stale TEMPERATURE is treated the same as a missing one
+    (station skipped), while a stale DEWPOINT or WIND just nulls out
+    that one field, since a station can easily have one fresh field
+    and one stale one, and dropping the whole station over a single
+    stale field would throw away otherwise-good data.
     """
 
     profile = []
@@ -1138,6 +1237,21 @@ def build_profile(observations):
             "temperature_C"
         )
 
+        temperature_time = obs.get(
+            "temperature_time"
+        )
+
+        if temperature is not None and is_stale(temperature_time):
+
+            print(
+                f"Skipping {stid}: "
+                f"temperature is "
+                f"{observation_age_minutes(temperature_time):.0f} min old "
+                f"(over {MAX_OBSERVATION_AGE_MINUTES:.0f} min limit)."
+            )
+
+            temperature = None
+
         if temperature is None:
 
             print(
@@ -1146,6 +1260,48 @@ def build_profile(observations):
             )
 
             continue
+
+        dewpoint = obs.get(
+            "dewpoint_C"
+        )
+
+        dewpoint_time = obs.get(
+            "dewpoint_time"
+        )
+
+        if dewpoint is not None and is_stale(dewpoint_time):
+
+            print(
+                f"  {stid}: dropping stale dewpoint "
+                f"({observation_age_minutes(dewpoint_time):.0f} min old)."
+            )
+
+            dewpoint = None
+
+        wind_speed = obs.get(
+            "wind_speed_kmh"
+        )
+
+        wind_direction = obs.get(
+            "wind_direction_deg"
+        )
+
+        wind_time = obs.get(
+            "wind_time"
+        )
+
+        if (
+            (wind_speed is not None or wind_direction is not None)
+            and is_stale(wind_time)
+        ):
+
+            print(
+                f"  {stid}: dropping stale wind "
+                f"({observation_age_minutes(wind_time):.0f} min old)."
+            )
+
+            wind_speed = None
+            wind_direction = None
 
         profile.append({
             "stid": stid,
@@ -1156,22 +1312,22 @@ def build_profile(observations):
                 temperature,
 
             "temperature_time":
-                obs.get("temperature_time"),
+                temperature_time,
 
             "dewpoint_C":
-                obs.get("dewpoint_C"),
+                dewpoint,
 
             "dewpoint_time":
-                obs.get("dewpoint_time"),
+                dewpoint_time,
 
             "wind_speed_kmh":
-                obs.get("wind_speed_kmh"),
+                wind_speed,
 
             "wind_direction_deg":
-                obs.get("wind_direction_deg"),
+                wind_direction,
 
             "wind_time":
-                obs.get("wind_time"),
+                wind_time,
 
             "barometric_pressure_Pa":
                 obs.get(
@@ -1536,29 +1692,100 @@ def interp_crossing(z1, v1, z2, v2, target=0.0):
 
     return z1 + frac * (z2 - z1)
 
-
-def find_zero_level(points):
+def analyze_zero_level(points):
     """
-    Lowest elevation (ft) at which a series crosses 0, given a list
-    of (elevation_ft, value) tuples with value already screened for
-    None. Returns None if no crossing exists in the observed layer.
+    Analyze the 0 C structure of an elevation-sorted series.
+
+    Returns:
+        {
+            "status": str,
+            "level_ft": float or None,
+            "lower_crossing_ft": float or None,
+            "upper_crossing_ft": float or None,
+        }
+
+    status:
+        "above_layer"   - all observed values > 0 C
+        "surface"   - all observed values < 0 C
+        "normal"        - warm below, cold above
+        "warm_layer"    - cold below, warm above
+        "warm_nose"     - cold below, warm layer, cold again
+        "unavailable"   - fewer than two valid observations
     """
 
-    points = [p for p in points if p[1] is not None]
+    points = sorted(
+        [p for p in points if p[1] is not None],
+        key=lambda p: p[0]
+    )
+
+    result = {
+        "status": "unavailable",
+        "level_ft": None,
+        "lower_crossing_ft": None,
+        "upper_crossing_ft": None,
+    }
 
     if len(points) < 2:
-        return None
+        return result
+
+    values = [v for _, v in points]
+
+    # Entire observed profile is warm.
+    if all(v > 0 for v in values):
+        result["status"] = "above_layer"
+        return result
+
+    # Entire observed profile is cold.
+    if all(v < 0 for v in values):
+        result["status"] = "surface"
+        return result
+
+    crossings = []
 
     for (z1, v1), (z2, v2) in zip(points, points[1:]):
 
         if v1 == 0:
-            return z1
+            crossing = z1
 
-        if (v1 > 0 > v2) or (v1 < 0 < v2):
-            return interp_crossing(z1, v1, z2, v2)
+        elif v2 == 0:
+            crossing = z2
 
-    return None
+        elif (v1 > 0 > v2) or (v1 < 0 < v2):
+            crossing = interp_crossing(z1, v1, z2, v2)
 
+        else:
+            continue
+
+        if crossing is not None:
+            if not crossings or abs(crossing - crossings[-1]) > 0.1:
+                crossings.append(crossing)
+
+    if not crossings:
+        return result
+
+    surface_value = points[0][1]
+
+    # Warm at lowest observation -> traditional freezing level.
+    if surface_value >= 0:
+        result["status"] = "normal"
+        result["level_ft"] = crossings[0]
+        return result
+
+    # Cold at lowest observation and at least two crossings:
+    # elevated warm nose bounded by two zero crossings.
+    if len(crossings) >= 2:
+        result["status"] = "warm_nose"
+        result["lower_crossing_ft"] = crossings[0]
+        result["upper_crossing_ft"] = crossings[1]
+        result["level_ft"] = crossings[0]
+        return result
+
+    # Cold at lowest observation with one upward crossing.
+    result["status"] = "warm_layer"
+    result["level_ft"] = crossings[0]
+    result["lower_crossing_ft"] = crossings[0]
+
+    return result
 
 def mean_lapse_rate(profile):
     """
@@ -1891,6 +2118,600 @@ def classify_flow_regime(Fr):
     return "Blocked"
 
 
+# =====================================================================
+# 11C. MOUNTAIN WAVE POTENTIAL
+# =====================================================================
+#
+# A composite, low-level-plus-model PROXY for mountain-wave/
+# downslope-wind favorability at the ridge, from five ingredients:
+# the Froude regime, the observed profile's stability structure, the
+# cross-barrier wind at the summit, how directionally coherent the
+# observed wind is, and - the one ingredient the observed
+# surface-to-summit profile alone could never see - whether a
+# critical level (a layer above the ridge where wind speed drops
+# toward zero or reverses direction) is present in a RAP model wind
+# profile. A critical level is the textbook trigger for the most
+# severe downslope windstorms and wave-breaking events (Durran 1990
+# or any standard mountain-meteorology reference); see the CRITICAL
+# LEVEL DETECTION section above for exactly what that component can
+# and can't tell you (it's a single model analysis hour over
+# smoothed terrain, not an observation).
+#
+# Treat the whole index as "how favorable do the ingredients look",
+# not "is a wave occurring right now" - it is a coarse favorability
+# estimate, not a forecast, and not a substitute for an actual
+# forecast discussion, AIRMET/SIGMET, or PIREP.
+
+WAVE_LOW_MAX = 3
+WAVE_MODERATE_MAX = 7
+
+WAVE_WIND_STRONG_KT = 30.0
+WAVE_WIND_MODERATE_KT = 15.0
+
+WAVE_COHERENT_SPREAD_DEG = 30.0
+WAVE_PARTIAL_SPREAD_DEG = 60.0
+
+
+def ridge_top_station(profile, top_stid=SHEAR_TOP_STID):
+    """
+    The named summit station's full record from the profile, or
+    None if it isn't present in today's pull.
+    """
+
+    return next((x for x in profile if x["stid"] == top_stid), None)
+
+
+def ridge_top_cross_barrier_kt(profile, top_stid=SHEAR_TOP_STID):
+    """
+    Cross-barrier (ridge-normal) wind component AT THE SUMMIT, in
+    knots - the level that actually matters for wave generation.
+    This is deliberately separate from brunt_vaisala_and_froude's
+    cross-barrier term, which is evaluated at KBTV (the valley
+    floor) because that's what the bulk Froude number's upstream
+    approach flow is conventionally referenced to; wave generation
+    itself is driven by the flow actually crossing the ridge.
+
+    Returns None if the summit station is missing wind data.
+    """
+
+    station = ridge_top_station(profile, top_stid)
+
+    if (
+        station is None
+        or station.get("wind_speed_kmh") is None
+        or station.get("wind_direction_deg") is None
+    ):
+        return None
+
+    speed_kt = (
+        station["wind_speed_kmh"] * units("km/hour")
+    ).to("knots").m
+
+    return float(
+        cross_barrier_component(
+            speed_kt, station["wind_direction_deg"]
+        )
+    )
+
+
+def directional_consistency_deg(profile):
+    """
+    Maximum pairwise angular spread (degrees) among every station
+    that has a wind direction observation - a coarse proxy for how
+    coherent the flow is from valley floor to ridge. A tight spread
+    suggests a single organized flow crossing the barrier; a wide
+    spread suggests the wind is doing different things at different
+    levels, which works against a clean, organized wave response.
+
+    Returns None if fewer than two stations have wind direction data
+    - can't assess a spread from a single point, and with wind
+    sensors frequently missing at the mid-elevation NWS stations,
+    this will often legitimately be "not enough data" rather than a
+    real zero-spread reading.
+    """
+
+    directions = [
+        x["wind_direction_deg"]
+        for x in profile
+        if x.get("wind_direction_deg") is not None
+    ]
+
+    if len(directions) < 2:
+        return None
+
+    max_spread = 0.0
+
+    for i in range(len(directions)):
+        for j in range(i + 1, len(directions)):
+
+            diff = abs(directions[i] - directions[j])
+            diff = min(diff, 360.0 - diff)
+
+            max_spread = max(max_spread, diff)
+
+    return max_spread
+
+
+# =====================================================================
+# CRITICAL LEVEL DETECTION (RAP model wind profile above the ridge)
+# =====================================================================
+#
+# Everything above this point can only see the shallow surface-to-
+# summit OBSERVED profile - which has no way to detect a critical
+# level (a layer above the ridge where wind speed drops toward zero
+# or reverses direction). That's the textbook trigger for the most
+# severe downslope-windstorm and wave-breaking events (Durran 1990),
+# and until now this script had no way to see it at all.
+#
+# The fix: a separate script in this same repo pulls full-depth RAP
+# BUFKIT soundings at KBTV and exports the surface-through-500 hPa
+# wind profile as JSON (see that script's export_wind_profile_json).
+# The functions below fetch that JSON and scan it for a critical
+# level within a few km above the ridge.
+#
+# This is a MODEL-based diagnostic, not an observation, and it
+# deserves the same caution any single model analysis hour does:
+# RAP's terrain is far smoother than the actual Green Mountains, so
+# its near-surface wind can differ meaningfully from what's actually
+# happening at the ridge. Treat a detected critical level as "this
+# ingredient is present in the model", not a guarantee.
+
+RAP_WIND_PROFILE_URL_TEMPLATE = (
+    "https://raw.githubusercontent.com/matthewclay88/severe-dashboard/"
+    "main/outputs/{site}_rap_wind_profile.json"
+)
+
+CRITICAL_LEVEL_SPEED_KT = 10.0            # at/below this, treat wind as "near-calm" - a classic critical-level signature
+CRITICAL_LEVEL_DIR_REVERSAL_DEG = 120.0   # offset from ridge-top wind direction considered a reversal
+CRITICAL_LEVEL_SEARCH_DEPTH_M = 3000.0    # how far above ridge-top to look - a critical level much higher than this rarely matters for surface downslope winds
+
+
+def fetch_rap_wind_profile(site="kbtv", timeout=20):
+    """
+    Fetch the RAP wind-profile JSON exported by the companion
+    BUFKIT/Sheets script - the surface-through-500 hPa vertical wind
+    profile at `site` from the most recent RAP analysis hour.
+
+    Returns None (never raises) on any failure - network issue,
+    missing file, malformed JSON - since a missing wind profile
+    should make the critical-level component of the mountain-wave
+    index degrade to "unavailable", not crash the whole run. This is
+    a network call, so it belongs in the fetch phase (see main()),
+    not inside the otherwise-pure diagnostics computation.
+    """
+
+    url = RAP_WIND_PROFILE_URL_TEMPLATE.format(site=site.lower())
+
+    try:
+
+        response = requests.get(url, timeout=timeout)
+        response.raise_for_status()
+
+        payload = response.json()
+
+    except Exception as exc:
+
+        print(f"WARNING: could not fetch RAP wind profile: {exc}")
+
+        return None
+
+    if not payload.get("levels"):
+        return None
+
+    return payload
+
+
+def critical_level_above_ridge(
+    wind_profile, ridge_elevation_ft, ridge_wind_direction_deg
+):
+    """
+    Scan a RAP wind-profile payload (see fetch_rap_wind_profile) from
+    ridge-top upward through CRITICAL_LEVEL_SEARCH_DEPTH_M for the
+    LOWEST level where either:
+
+        - wind speed drops to or below CRITICAL_LEVEL_SPEED_KT, or
+        - wind direction has swung more than
+          CRITICAL_LEVEL_DIR_REVERSAL_DEG from the observed
+          ridge-top direction
+
+    Returns a dict describing the lowest such level found, or None
+    if no critical level appears within the search depth (or if the
+    wind profile / ridge wind direction aren't available).
+    """
+
+    if wind_profile is None or ridge_wind_direction_deg is None:
+        return None
+
+    ridge_elevation_m = ft_to_m(ridge_elevation_ft)
+    search_top_m = ridge_elevation_m + CRITICAL_LEVEL_SEARCH_DEPTH_M
+
+    levels = sorted(
+        wind_profile["levels"], key=lambda lvl: lvl["height_m"]
+    )
+
+    for level in levels:
+
+        if level["height_m"] < ridge_elevation_m:
+            continue
+
+        if level["height_m"] > search_top_m:
+            break
+
+        dir_diff = abs(level["wind_dir_deg"] - ridge_wind_direction_deg) % 360.0
+        dir_diff = min(dir_diff, 360.0 - dir_diff)
+
+        is_weak = level["wind_speed_kt"] <= CRITICAL_LEVEL_SPEED_KT
+        is_reversed = dir_diff >= CRITICAL_LEVEL_DIR_REVERSAL_DEG
+
+        if is_weak or is_reversed:
+
+            return {
+                "height_m": level["height_m"],
+                "height_ft": level["height_m"] / 0.3048,
+                "pressure_hPa": level["pressure_hPa"],
+                "wind_speed_kt": level["wind_speed_kt"],
+                "wind_dir_deg": level["wind_dir_deg"],
+                "reason": "weak wind" if is_weak else "directional reversal",
+            }
+
+    return None
+
+
+
+def mountain_wave_potential(profile, diagnostics, rap_wind_profile=None):
+    """
+    Composite Low/Moderate/High mountain-wave-potential index from
+    five ingredients (0-2 points each, 0-10 total):
+
+        1. Froude regime                       - already computed
+        2. Ridge-top stability (a capping       - built here from
+           inversion positioned in the upper      max_inversion /
+           third of the profile scores           stability_label
+           highest - that's the actual "lid"
+           that traps wave energy, not just
+           any low-level inversion)
+        3. Cross-barrier wind AT THE SUMMIT     - built here
+        4. Directional coherence across the     - built here
+           observed layer
+        5. A critical level above the ridge     - built here, from
+           (see critical_level_above_ridge)       a RAP model wind
+                                                    profile - the
+                                                    ONE ingredient
+                                                    the observed
+                                                    profile alone
+                                                    could never see
+
+    Bucketed Low (0-3) / Moderate (4-7) / High (8-10). Each
+    component contributes 0 points (not a penalty - genuinely "no
+    signal") when its underlying data is missing. If BOTH
+    load-bearing ingredients (Froude number and summit wind) are
+    unavailable, the whole index reports "Indeterminate" rather than
+    a manufactured Low score, since a fabricated 0 in that situation
+    would misrepresent "we couldn't assess this" as "we assessed
+    this as unfavorable".
+
+    `rap_wind_profile` is optional and comes from
+    fetch_rap_wind_profile() - pass None (the default) to run the
+    original four-ingredient version if the wind profile isn't
+    available for some reason; component 5 then reports
+    "unavailable" like any other missing ingredient.
+
+    See the CRITICAL LEVEL DETECTION section above for what
+    component 5 can and can't tell you, and the section 11C module
+    comment further above for why this whole index is a low-level
+    favorability estimate, not a forecast.
+    """
+
+    points = 0
+    reasons = []
+
+    # ---------------- 1. Froude regime ----------------
+
+    fr = diagnostics.get("froude_number")
+    flow_regime = diagnostics.get("flow_regime")
+
+    if fr is None:
+        reasons.append("Froude number unavailable")
+    elif flow_regime == "Blocked":
+        reasons.append(f"Blocked flow (Fr {fr:.2f})")
+    elif flow_regime == "Partially blocked":
+        points += 2
+        reasons.append(f"Near-resonant flow regime (Fr {fr:.2f})")
+    else:
+        # Unblocked / flow-over
+        points += 1
+        reasons.append(f"Unblocked flow-over (Fr {fr:.2f})")
+
+    # ---------------- 2. Ridge-top stability ----------------
+
+    inv = diagnostics.get("max_inversion")
+    stability = diagnostics.get("stability_label")
+
+    elevations = sorted(STATIONS.values())
+    ridge_top_threshold_ft = elevations[0] + (
+        (elevations[-1] - elevations[0]) * 2.0 / 3.0
+    )
+
+    if inv is not None and inv["z2"] >= ridge_top_threshold_ft:
+        points += 2
+        reasons.append(
+            f"Capping inversion near ridge-top "
+            f"(+{inv['dT']:.1f} C at {inv['z2']:.0f} ft)"
+        )
+    elif stability in ("Stable", "Very Stable"):
+        points += 1
+        reasons.append(f"{stability} layer, no distinct ridge-top cap")
+    else:
+        reasons.append(f"{stability or 'Unknown'} stratification")
+
+    # ---------------- 3. Ridge-top cross-barrier wind ----------------
+
+    ridge_wind_kt = ridge_top_cross_barrier_kt(profile)
+
+    if ridge_wind_kt is None:
+        reasons.append("Summit wind unavailable")
+    elif ridge_wind_kt >= WAVE_WIND_STRONG_KT:
+        points += 2
+        reasons.append(f"Strong cross-barrier flow at summit ({ridge_wind_kt:.0f} kt)")
+    elif ridge_wind_kt >= WAVE_WIND_MODERATE_KT:
+        points += 1
+        reasons.append(f"Moderate cross-barrier flow at summit ({ridge_wind_kt:.0f} kt)")
+    else:
+        reasons.append(f"Weak cross-barrier flow at summit ({ridge_wind_kt:.0f} kt)")
+
+    # ---------------- 4. Directional coherence ----------------
+
+    spread = directional_consistency_deg(profile)
+
+    if spread is None:
+        reasons.append("Insufficient wind-direction data")
+    elif spread <= WAVE_COHERENT_SPREAD_DEG:
+        points += 2
+        reasons.append(f"Coherent flow ({spread:.0f}\u00b0 spread)")
+    elif spread <= WAVE_PARTIAL_SPREAD_DEG:
+        points += 1
+        reasons.append(f"Somewhat coherent flow ({spread:.0f}\u00b0 spread)")
+    else:
+        reasons.append(f"Disorganized flow ({spread:.0f}\u00b0 spread)")
+
+    # ---------------- 5. Critical level above the ridge ----------------
+    #
+    # The single most decisive ingredient in the literature when it's
+    # actually present - a critical level traps wave energy instead
+    # of letting it radiate away. Scored the same 0-2 scale as the
+    # others for simplicity, even though it arguably deserves more
+    # weight; the honesty of "we now have a real signal for this"
+    # matters more here than precisely calibrating the weighting.
+
+    ridge_station = ridge_top_station(profile)
+    ridge_wind_dir = (
+        ridge_station.get("wind_direction_deg") if ridge_station else None
+    )
+
+    critical_level = critical_level_above_ridge(
+        rap_wind_profile,
+        profile[-1]["elevation_ft"],
+        ridge_wind_dir,
+    )
+
+    if rap_wind_profile is None:
+        reasons.append("RAP wind profile unavailable")
+    elif ridge_wind_dir is None:
+        reasons.append("No observed ridge-top direction to compare against")
+    elif critical_level is not None:
+        points += 2
+        reasons.append(
+            f"Critical level aloft ({critical_level['reason']} at "
+            f"{critical_level['height_ft']:.0f} ft, "
+            f"{critical_level['wind_speed_kt']:.0f} kt)"
+        )
+    else:
+        reasons.append(
+            f"No critical level within "
+            f"{CRITICAL_LEVEL_SEARCH_DEPTH_M:.0f} m above ridge (RAP)"
+        )
+
+    # ---------------- Bucket ----------------
+
+    if fr is None and ridge_wind_kt is None:
+        category = "Indeterminate"
+    elif points <= WAVE_LOW_MAX:
+        category = "Low"
+    elif points <= WAVE_MODERATE_MAX:
+        category = "Moderate"
+    else:
+        category = "High"
+
+    return {
+        "score": points,
+        "max_score": 10,
+        "category": category,
+        "reasons": reasons,
+        "critical_level": critical_level,
+    }
+
+
+# =====================================================================
+# 11D. RIME ICING POTENTIAL
+# =====================================================================
+#
+# Same pattern as 11C's mountain-wave index: a composite score built
+# from ingredients this profile can actually assess, degrading
+# honestly instead of guessing when something's missing.
+#
+# Rime ice forms when supercooled liquid droplets freeze on contact
+# with an exposed surface - distinct from freezing rain, which
+# classify_precip_type() already handles. Three ingredients matter:
+# temperature in the supercooled-droplet range (roughly -2 C to
+# -20 C - warmer than that nothing freezes, colder than that a lot
+# of the liquid water has already glaciated into ice crystals),
+# moisture/cloud presence (you need actual liquid water around,
+# meaning the summit needs to be at or near saturation), and wind
+# (drives accretion rate - it's specifically why rime grows into
+# wind-pointing "feathers" rather than sitting like calm-air hoar
+# frost).
+#
+# THE REAL LIMITATION: MMNV1 (the actual summit) never reports
+# dewpoint - only temperature and wind, see fetch_mmvn1(). The
+# moisture component below therefore has to use the next station
+# down that DOES have a dewpoint as a proxy for "is the summit
+# sitting in cloud", not a true summit reading. That component is
+# treated as load-bearing: if no station in the profile has moisture
+# data at all, the whole index reports "Indeterminate" rather than a
+# manufactured score, since temperature and wind alone can't confirm
+# there's any liquid water present to freeze in the first place.
+
+RIME_LOW_MAX = 2
+RIME_MODERATE_MAX = 4
+
+RIME_TEMP_PRIME_LOW_C = -20.0
+RIME_TEMP_PRIME_HIGH_C = -2.0
+RIME_TEMP_MARGINAL_LOW_C = -25.0
+
+RIME_RH_SATURATED_PCT = 90.0
+RIME_RH_MOIST_PCT = 75.0
+
+RIME_WIND_STRONG_KT = 25.0
+RIME_WIND_MODERATE_KT = 10.0
+
+
+def uppermost_station_with_dewpoint(profile):
+    """
+    The highest-elevation station in `profile` that has a dewpoint
+    reading, or None if no station has one this run. Searched from
+    the top down since MMNV1 - the actual summit - never reports
+    dewpoint (see fetch_mmvn1()), so the next station down is
+    usually the best available proxy for how moist the air is near
+    the ridge. `profile` is already elevation-sorted ascending, so
+    walking it in reverse starts at the highest station.
+    """
+
+    for station in reversed(profile):
+
+        if station.get("dewpoint_C") is not None:
+            return station
+
+    return None
+
+
+def rime_icing_potential(profile, diagnostics):
+    """
+    Composite Low/Moderate/High rime-icing-potential index for the
+    summit, from three ingredients (0-2 points each, 0-6 total):
+
+        1. Summit temperature in the classic supercooled-droplet
+           range
+        2. Moisture near the top of the profile (see the module
+           comment above for why this is a proxy, not a direct
+           summit reading) - LOAD-BEARING: if unavailable, the
+           whole index reports "Indeterminate"
+        3. Summit wind speed - the accretion-rate driver
+
+    Bucketed Low (0-2) / Moderate (3-4) / High (5-6).
+
+    Treat this index as "how favorable do the ingredients look for
+    icing on exposed summit terrain", not a confirmed observation -
+    it is not a substitute for an actual PIREP, webcam check, or
+    on-mountain report.
+    """
+
+    points = 0
+    reasons = []
+
+    summit = profile[-1]
+
+    # ---------------- 1. Summit temperature range ----------------
+
+    summit_temp = summit.get("temperature_C")
+
+    if summit_temp is None:
+        reasons.append("Summit temperature unavailable")
+    elif RIME_TEMP_PRIME_LOW_C <= summit_temp <= RIME_TEMP_PRIME_HIGH_C:
+        points += 2
+        reasons.append(f"Summit temp in classic rime range ({summit_temp:.1f} C)")
+    elif (
+        RIME_TEMP_MARGINAL_LOW_C <= summit_temp < RIME_TEMP_PRIME_LOW_C
+    ) or (
+        RIME_TEMP_PRIME_HIGH_C < summit_temp <= 0.0
+    ):
+        points += 1
+        reasons.append(f"Summit temp marginal for rime ({summit_temp:.1f} C)")
+    else:
+        reasons.append(f"Summit temp outside rime range ({summit_temp:.1f} C)")
+
+    # ---------------- 2. Moisture near the top ----------------
+
+    moisture_station = uppermost_station_with_dewpoint(profile)
+
+    rh = (
+        moisture_station.get("relative_humidity_pct")
+        if moisture_station is not None
+        else None
+    )
+
+    if moisture_station is None or rh is None:
+        reasons.append("No dewpoint data available near ridge-top")
+    elif rh >= RIME_RH_SATURATED_PCT:
+        points += 2
+        reasons.append(
+            f"Near-saturated air at {moisture_station['stid']} "
+            f"({rh:.0f}% RH, {moisture_station['elevation_ft']:.0f} ft)"
+        )
+    elif rh >= RIME_RH_MOIST_PCT:
+        points += 1
+        reasons.append(
+            f"Moist air at {moisture_station['stid']} "
+            f"({rh:.0f}% RH, {moisture_station['elevation_ft']:.0f} ft)"
+        )
+    else:
+        reasons.append(
+            f"Dry air at {moisture_station['stid']} "
+            f"({rh:.0f}% RH, {moisture_station['elevation_ft']:.0f} ft)"
+        )
+
+    # ---------------- 3. Summit wind speed ----------------
+
+    summit_wind_kmh = summit.get("wind_speed_kmh")
+
+    if summit_wind_kmh is None:
+        reasons.append("Summit wind unavailable")
+    else:
+
+        summit_wind_kt = (
+            summit_wind_kmh * units("km/hour")
+        ).to("knots").m
+
+        if summit_wind_kt >= RIME_WIND_STRONG_KT:
+            points += 2
+            reasons.append(
+                f"Strong summit wind ({summit_wind_kt:.0f} kt) - rapid accretion"
+            )
+        elif summit_wind_kt >= RIME_WIND_MODERATE_KT:
+            points += 1
+            reasons.append(f"Moderate summit wind ({summit_wind_kt:.0f} kt)")
+        else:
+            reasons.append(f"Light summit wind ({summit_wind_kt:.0f} kt)")
+
+    # ---------------- Bucket ----------------
+
+    if moisture_station is None or rh is None:
+        category = "Indeterminate"
+    elif points <= RIME_LOW_MAX:
+        category = "Low"
+    elif points <= RIME_MODERATE_MAX:
+        category = "Moderate"
+    else:
+        category = "High"
+
+    return {
+        "score": points,
+        "max_score": 6,
+        "category": category,
+        "reasons": reasons,
+    }
+
+
+
 def layer_lapse_rates(profile):
     """
     Lapse rate (C/km, positive = cooling with height) of the layer
@@ -2093,10 +2914,17 @@ def stability_label(mean_lapse, inversion):
     return label, subtext
 
 
-def build_diagnostics(profile):
+def build_diagnostics(profile, rap_wind_profile=None):
     """
     Assemble the full winter-profile diagnostics dictionary from an
     elevation-sorted, pressure-populated profile.
+
+    `rap_wind_profile` is the optional RAP wind-profile payload from
+    fetch_rap_wind_profile() (a network call, done earlier in the
+    fetch phase - see main()) - passed through to
+    mountain_wave_potential() for critical-level detection. None is
+    a perfectly valid value; that component just reports
+    "unavailable" instead.
     """
 
     diagnostics = {}
@@ -2104,24 +2932,43 @@ def build_diagnostics(profile):
     # ---------------- THERMAL ----------------
 
     freezing_points = [
-        (x["elevation_ft"], x["temperature_C"]) for x in profile
+        (x["elevation_ft"], x["temperature_C"])
+        for x in profile
     ]
 
-    diagnostics["freezing_level_ft"] = find_zero_level(freezing_points)
+    freezing_analysis = analyze_zero_level(freezing_points)
+
+    diagnostics["freezing_level_ft"] = freezing_analysis["level_ft"]
+    diagnostics["freezing_level_status"] = freezing_analysis["status"]
+    diagnostics["freezing_lower_crossing_ft"] = freezing_analysis["lower_crossing_ft"]
+    diagnostics["freezing_upper_crossing_ft"] = freezing_analysis["upper_crossing_ft"]
 
     wetbulb_series = compute_wetbulb_series(profile)
 
     if len(wetbulb_series) >= 2:
 
         wb_points = [
-            (w["elevation_ft"], w["wetbulb_C"]) for w in wetbulb_series
+            (w["elevation_ft"], w["wetbulb_C"])
+            for w in wetbulb_series
         ]
 
-        diagnostics["wet_bulb_zero_ft"] = find_zero_level(wb_points)
+        wb_analysis = analyze_zero_level(wb_points)
 
     else:
 
-        diagnostics["wet_bulb_zero_ft"] = None
+        wb_analysis = {
+            "status": "unavailable",
+            "level_ft": None,
+            "lower_crossing_ft": None,
+            "upper_crossing_ft": None,
+        }
+
+    diagnostics["wet_bulb_zero_ft"] = wb_analysis["level_ft"]
+    diagnostics["wet_bulb_zero_status"] = wb_analysis["status"]
+    diagnostics["wet_bulb_lower_crossing_ft"] = wb_analysis["lower_crossing_ft"]
+    diagnostics["wet_bulb_upper_crossing_ft"] = wb_analysis["upper_crossing_ft"]
+
+    # ---------------- THERMAL / STABILITY ----------------
 
     rh_values = [
         x["relative_humidity_pct"]
@@ -2130,7 +2977,8 @@ def build_diagnostics(profile):
     ]
 
     diagnostics["mean_relative_humidity_pct"] = (
-        float(np.mean(rh_values)) if rh_values else None
+        float(np.mean(rh_values))
+        if rh_values else None
     )
 
     diagnostics["mean_lapse_rate_C_km"] = mean_lapse_rate(profile)
@@ -2164,13 +3012,29 @@ def build_diagnostics(profile):
 
     diagnostics["positive_energy_Jkg"] = Ep
     diagnostics["negative_energy_Jkg"] = En
+
     diagnostics["precip_type"] = classify_precip_type(
-        Ep, En, profile[0]["temperature_C"]
+        Ep,
+        En,
+        profile[0]["temperature_C"],
     )
 
+    # ---------------- MOUNTAIN WAVE POTENTIAL ----------------
+    #
+    # Depends on froude_number/flow_regime/stability_label/
+    # max_inversion above, so this has to run last.
+
+    diagnostics["mountain_wave"] = mountain_wave_potential(profile, diagnostics, rap_wind_profile)
+
+    # ---------------- RIME ICING POTENTIAL ----------------
+    #
+    # Fully self-contained from the observed profile - unlike
+    # mountain_wave above, this needs no RAP/network data.
+
+    diagnostics["rime_icing"] = rime_icing_potential(profile, diagnostics)
+
     return diagnostics
-
-
+    
 def diagnostic_display_rows(diagnostics):
     """
     Build the (label, value, is_section_header) rows shared by the
@@ -2222,7 +3086,28 @@ def diagnostic_display_rows(diagnostics):
         (shear_label, shear_text, False),
         ("Froude Number", froude_text, False),
         ("Flow Regime", diagnostics["flow_regime"], False),
+        ("MOUNTAIN WAVE", "", True),
+        (
+            "Wave Potential",
+            f"{diagnostics['mountain_wave']['category']} "
+            f"({diagnostics['mountain_wave']['score']}/{diagnostics['mountain_wave']['max_score']})",
+            False,
+        ),
     ]
+
+    for reason in diagnostics["mountain_wave"]["reasons"]:
+        rows.append((f"  - {reason}", "", False))
+
+    rows.append(("RIME ICING", "", True))
+    rows.append((
+        "Icing Potential",
+        f"{diagnostics['rime_icing']['category']} "
+        f"({diagnostics['rime_icing']['score']}/{diagnostics['rime_icing']['max_score']})",
+        False,
+    ))
+
+    for reason in diagnostics["rime_icing"]["reasons"]:
+        rows.append((f"  - {reason}", "", False))
 
     return rows
 
@@ -2336,6 +3221,8 @@ def print_diagnostics(diagnostics):
 
         if is_header:
             print(f"\n{label}")
+        elif value == "":
+            print(f"  {label}")
         else:
             print(f"  {label:<22}: {value}")
 
@@ -2599,30 +3486,47 @@ def plot_skewt(
     if dewpoints:
         t_min = min(t_min, min(dewpoints))
 
-    # Modest, mostly-fixed pressure padding - not tuned for squareness
-    # anymore. A fixed 850 mb ceiling trims how much sky gets shown
-    # above the summit station instead of the proportional padding
-    # used for the (since-reverted) square layout; a small safety
-    # margin keeps this sane if a station's pressure ever ends up
-    # unusually close to that ceiling.
+    # ==============================================================
+    # FIXED PRESSURE / TEMPERATURE WINDOW
+    # ==============================================================
+    #
+    # These are constants, not derived from today's data - that's
+    # the actual fix for the PNG changing size run to run. The
+    # output's shape was never determined directly by the data; it
+    # was determined by the PRESSURE and TEMPERATURE RANGES fed into
+    # the sizing probe below, and those ranges used to come straight
+    # from bottom_pressure/top_pressure/min_width, which varied with
+    # KBTV's actual pressure and the day's actual temperature spread.
+    # Fix those three inputs and the probe computes the same
+    # "natural aspect" every time, which means skew_width_in,
+    # skew_height_in, fig_width_in, and fig_height_in all come out
+    # identical run after run - a real plug-and-play PNG.
+    #
+    # These are FLOORS, not hard caps: if one unusual day's data
+    # genuinely needs more room to avoid clipping an actual
+    # observation, the window widens/heightens just for that day
+    # rather than silently cutting real weather data off screen. A
+    # rare size deviation on an extreme day is a far smaller problem
+    # on a dashboard than a hidden clipped point - but it should be
+    # rare enough in practice that the output is effectively fixed.
 
-    bottom_pressure = p_max + 15.0
-    top_pressure = min(850.0, p_min - 15.0)
+    FIXED_BOTTOM_PRESSURE_HPA = 1040.0  # comfortably above any realistic KBTV (330 ft) station pressure
+    FIXED_TOP_PRESSURE_HPA = 860.0      # tightened from 880 so it actually binds instead of getting overridden by a typical day's data
+    FIXED_TEMP_WIDTH_C = 18.0           # narrower floor for a taller chart - height is derived from width, so this trades some x-axis padding for more vertical inches
 
-    # Deliberately FIXED, not derived from the data - see the FIGURE
-    # SIZING comment below for why. Defined here (before the xlim
-    # correction) so compute_skew_corrected_xlim's probe uses this
-    # exact box shape rather than an arbitrary square one - the skew
-    # correction has to match whatever shape MetPy will actually
-    # render into, or points can still clip.
+    bottom_pressure = max(FIXED_BOTTOM_PRESSURE_HPA, p_max + 15.0)
+    top_pressure = min(FIXED_TOP_PRESSURE_HPA, p_min - 15.0)
 
-    skew_width_in = 5.5
-    skew_height_in = 3.0
-
-    # Temperature-axis limits, corrected for the skew transform's
-    # horizontal shift with height (see compute_skew_corrected_xlim)
-    # rather than just the raw temperature range - a real effect even
-    # at this more modest pressure range, just smaller in magnitude.
+    if (
+        bottom_pressure != FIXED_BOTTOM_PRESSURE_HPA
+        or top_pressure != FIXED_TOP_PRESSURE_HPA
+    ):
+        print(
+            f"[SIZING] pressure window widened beyond the fixed "
+            f"defaults today: bottom={bottom_pressure:.1f} hPa "
+            f"(fixed={FIXED_BOTTOM_PRESSURE_HPA}), "
+            f"top={top_pressure:.1f} hPa (fixed={FIXED_TOP_PRESSURE_HPA})"
+        )
 
     skew_points = []
 
@@ -2636,29 +3540,65 @@ def plot_skewt(
         if station.get("wetbulb_C") is not None:
             skew_points.append((station["wetbulb_C"], station["pressure_hPa"]))
 
+    # ==============================================================
+    # SKEW-T BOX SIZE - DERIVED FROM THE LOCKED ASPECT
+    # ==============================================================
+    #
+    # SkewT's aspect lock (ax.set_aspect(80.5, adjustable='box')) is
+    # what keeps the 45-degree skew lines geometrically true - it's
+    # not optional cosmetic behavior, it's part of what makes a
+    # Skew-T a Skew-T. Disabling it corrupts the coordinate math
+    # (confirmed directly - it broke compute_skew_corrected_xlim's
+    # shift-correction, which assumes the transform is affine and
+    # consistent between its probe and the final render).
+    #
+    # Width is the fixed anchor, height is derived from a probe, and
+    # neither is clamped, since a guessed clamp is exactly what
+    # caused an earlier round of this same bug. With the pressure
+    # and temperature window now fixed too (see above), this probe
+    # measures the same ratio every run, so the derived dimensions
+    # are effectively fixed as well - not just "wide", but the SAME
+    # wide every time.
+
+    TARGET_SKEW_WIDTH_IN = 13.0
+
+    rough_left, rough_right = compute_skew_corrected_xlim(
+        bottom_pressure, top_pressure, skew_points,
+        box_width_in=12.0, box_height_in=12.0, min_width=FIXED_TEMP_WIDTH_C,
+    )
+
+    height_to_width = measure_skewt_height_to_width_ratio(
+        bottom_pressure, top_pressure, rough_left, rough_right,
+    )
+
+    skew_width_in = TARGET_SKEW_WIDTH_IN
+    skew_height_in = skew_width_in * height_to_width
+
+    print(
+        f"[SIZING] height_to_width={height_to_width:.3f}  "
+        f"skew_width_in={skew_width_in:.2f}  "
+        f"skew_height_in={skew_height_in:.2f}"
+    )
+
+    # Final xlim, corrected against the box we're ACTUALLY going to
+    # use - has to match, not just be close (see
+    # compute_skew_corrected_xlim's own docstring).
     left_temperature, right_temperature = compute_skew_corrected_xlim(
         bottom_pressure, top_pressure, skew_points,
         box_width_in=skew_width_in, box_height_in=skew_height_in,
+        min_width=FIXED_TEMP_WIDTH_C,
     )
+
 
     # ==============================================================
     # FIGURE SIZING
     # ==============================================================
     #
-    # Deliberately FIXED, not derived from the data. Earlier versions
-    # probed the Skew-T's natural (aspect-locked) shape for the
-    # day's specific data and sized the figure to match it exactly.
-    # That produced a genuinely different output size on different
-    # days - some days narrower, some taller - which caused two
-    # separate visible problems on the dashboard: the fixed-length
-    # title text would collide with the date on narrow-width days,
-    # and the image's on-page footprint would visibly change size
-    # ("snap" bigger/smaller) as the underlying data changed, even
-    # though the CSS grid ratio around it never changed. A fixed
-    # figure size trades a little wasted margin on days whose data
-    # doesn't perfectly match this aspect for a stable, predictable
-    # output every time - which matters more for a fixed dashboard
-    # layout than a perfectly tight fit.
+    # header_in/gap1_in/bottom_margin_in/left_margin_in/
+    # right_margin_in/wind_col_in are fixed chrome around the chart;
+    # skew_width_in/skew_height_in (above) are now correctly derived
+    # rather than guessed, so the total figure size below just adds
+    # a small, constant amount of margin on top of them.
 
     wind_col_in = 0.9
     content_gap_in = 0.15
@@ -2674,7 +3614,7 @@ def plot_skewt(
     # edge, not just eyeballing it. The right side only needs to
     # clear the wind barb column, which is a fixed-width axes, not
     # text that grows with the data - a smaller margin is fine there.
-    left_margin_in = 0.55
+    left_margin_in = 0.78
     right_margin_in = 0.20
 
     header_in = 0.62
@@ -2728,24 +3668,24 @@ def plot_skewt(
         FixedFormatter([f"{t:.{xtick_decimals}f}" for t in xticks])
     )
 
-    # Round-number pressure gridlines (every 10 hPa) anchored to
+    # Round-number pressure gridlines (every 20 hPa) anchored to
     # KBTV's actual surface pressure.
 
     kbtv_station = next(
         (x for x in profile if x["stid"] == "KBTV"), profile[0]
     )
 
-    tick_base = 10.0 * round(kbtv_station["pressure_hPa"] / 10.0)
+    tick_base = 20.0 * round(kbtv_station["pressure_hPa"] / 20.0)
 
     yticks = []
     tick = tick_base
 
-    while tick >= top_pressure - 10:
+    while tick >= top_pressure - 20:
 
-        if tick <= bottom_pressure + 10:
+        if tick <= bottom_pressure + 20:
             yticks.append(tick)
 
-        tick -= 10
+        tick -= 20
 
     # FixedLocator/FixedFormatter (not plain set_yticks/set_yticklabels)
     # so these persist through any later redraw - a log-scale y-axis
@@ -2850,6 +3790,174 @@ def plot_skewt(
     )
 
     # ==============================================================
+    # SUMMARY BOXES (mountain wave + rime icing, upper-right of chart)
+    # ==============================================================
+    #
+    # Anchored by their RIGHT edge in the chart's upper-right corner
+    # - the legend already claims upper-left, and there's reliably
+    # open gridded space here on a chart this wide. Box WIDTH is not
+    # guessed: text is placed first, then fig.canvas.draw() forces a
+    # real render so each line's actual pixel width can be measured
+    # via get_window_extent() and converted back to axes-fraction
+    # units - same probe-then-measure approach
+    # compute_skew_corrected_xlim uses elsewhere in this file, just
+    # measuring rendered text instead of data-point positions. A
+    # fixed guessed width either leaves blank space (too wide) or
+    # clips text (too narrow); this makes the box hug whichever line
+    # is actually longest, so it never covers more of the profile
+    # than the content genuinely needs.
+
+    category_colors = {
+        "Low": "#2f9e44",
+        "Moderate": "#d9822b",
+        "High": "#e03131",
+        "Indeterminate": MUTED_TEXT,
+    }
+
+    box_right = 0.985
+    box_top = 0.98
+    box_height = 0.12
+    box_gap = 0.012
+    box_pad = 0.014  # inset between the text and the box's own edge
+
+    wave = diagnostics.get("mountain_wave")
+    rime = diagnostics.get("rime_icing")
+
+    wave_texts = []
+    rime_texts = []
+
+    if wave is not None:
+
+        wave_color = category_colors.get(wave["category"], MUTED_TEXT)
+
+        critical_level = wave.get("critical_level")
+
+        if critical_level is not None:
+            wave_detail = (
+                f"Critical level: {critical_level['height_ft']:.0f} ft "
+                f"({critical_level['reason']})"
+            )
+        else:
+            wave_detail = "No critical level in RAP profile"
+
+        wave_texts = [
+            skew.ax.text(
+                box_right - box_pad, box_top - 0.022,
+                "MOUNTAIN WAVE POTENTIAL",
+                transform=skew.ax.transAxes,
+                fontsize=6.5, fontweight="bold", color=MUTED_TEXT,
+                ha="right", va="top", zorder=20,
+            ),
+            skew.ax.text(
+                box_right - box_pad, box_top - 0.055,
+                f"{wave['category']}  ({wave['score']}/{wave['max_score']})",
+                transform=skew.ax.transAxes,
+                fontsize=10.5, fontweight="bold", color=wave_color,
+                ha="right", va="top", zorder=20,
+            ),
+            skew.ax.text(
+                box_right - box_pad, box_top - 0.093,
+                wave_detail,
+                transform=skew.ax.transAxes,
+                fontsize=6, color=MUTED_TEXT,
+                ha="right", va="top", zorder=20,
+            ),
+        ]
+
+    rime_box_top = (box_top - box_height - box_gap) if wave is not None else box_top
+
+    if rime is not None:
+
+        rime_color = category_colors.get(rime["category"], MUTED_TEXT)
+
+        # Lead with the moisture reason (component 2) rather than
+        # the first reason in the list - it's the load-bearing
+        # ingredient (see rime_icing_potential's docstring), so it's
+        # the most useful single line to show when space only
+        # allows one.
+        rime_detail = rime["reasons"][1] if len(rime["reasons"]) > 1 else ""
+
+        rime_texts = [
+            skew.ax.text(
+                box_right - box_pad, rime_box_top - 0.022,
+                "RIME ICING POTENTIAL",
+                transform=skew.ax.transAxes,
+                fontsize=6.5, fontweight="bold", color=MUTED_TEXT,
+                ha="right", va="top", zorder=20,
+            ),
+            skew.ax.text(
+                box_right - box_pad, rime_box_top - 0.055,
+                f"{rime['category']}  ({rime['score']}/{rime['max_score']})",
+                transform=skew.ax.transAxes,
+                fontsize=10.5, fontweight="bold", color=rime_color,
+                ha="right", va="top", zorder=20,
+            ),
+            skew.ax.text(
+                box_right - box_pad, rime_box_top - 0.093,
+                rime_detail,
+                transform=skew.ax.transAxes,
+                fontsize=6, color=MUTED_TEXT,
+                ha="right", va="top", zorder=20,
+            ),
+        ]
+
+    # Force a real render so the text objects above have actual
+    # pixel extents to measure - matplotlib can't report layout
+    # sizes for text that's never been drawn.
+
+    if wave_texts or rime_texts:
+
+        fig.canvas.draw()
+        renderer = fig.canvas.get_renderer()
+
+        ax_width_px = skew.ax.get_window_extent(renderer=renderer).width
+
+        def widest_line_axes_fraction(text_objs):
+
+            widest_px = max(
+                t.get_window_extent(renderer=renderer).width
+                for t in text_objs
+            )
+
+            return widest_px / ax_width_px
+
+        if wave_texts:
+
+            wave_box_width = widest_line_axes_fraction(wave_texts) + 2 * box_pad
+            wave_box_left = box_right - wave_box_width
+
+            skew.ax.add_patch(
+                FancyBboxPatch(
+                    (wave_box_left, box_top - box_height), wave_box_width, box_height,
+                    boxstyle="round,pad=0.01,rounding_size=0.015",
+                    transform=skew.ax.transAxes,
+                    linewidth=1.0,
+                    edgecolor=DIVIDER_COLOR,
+                    facecolor="white",
+                    alpha=0.92,
+                    zorder=19,
+                )
+            )
+
+        if rime_texts:
+
+            rime_box_width = widest_line_axes_fraction(rime_texts) + 2 * box_pad
+            rime_box_left = box_right - rime_box_width
+
+            skew.ax.add_patch(
+                FancyBboxPatch(
+                    (rime_box_left, rime_box_top - box_height), rime_box_width, box_height,
+                    boxstyle="round,pad=0.01,rounding_size=0.015",
+                    transform=skew.ax.transAxes,
+                    linewidth=1.0,
+                    edgecolor=DIVIDER_COLOR,
+                    facecolor="white",
+                    alpha=0.92,
+                    zorder=19,
+                )
+            )
+
+    # ==============================================================
     # WIND COLUMN (separate axes, plain upright barbs)
     # ==============================================================
 
@@ -2927,6 +4035,12 @@ def plot_skewt(
     # ==============================================================
     # SAVE
     # ==============================================================
+
+    print(
+        f"[SIZING] final fig_width_in={fig_width_in:.2f}  "
+        f"fig_height_in={fig_height_in:.2f}  "
+        f"aspect={fig_width_in / fig_height_in:.3f}"
+    )
 
     plt.savefig(OUTPUT_FILE, dpi=175)
     plt.close(fig)
@@ -3447,7 +4561,17 @@ def export_diagnostics_status(diagnostics, profile):
         "precip_type_raw": precip_type_raw,
         "froude_number": round(float(froude), 2) if froude is not None else None,
         "flow_regime": diagnostics["flow_regime"],
+        
         "freezing_level_ft": diagnostics["freezing_level_ft"],
+        "freezing_level_status": diagnostics["freezing_level_status"],
+        "freezing_lower_crossing_ft": diagnostics["freezing_lower_crossing_ft"],
+        "freezing_upper_crossing_ft": diagnostics["freezing_upper_crossing_ft"],
+
+        "wet_bulb_zero_ft": diagnostics["wet_bulb_zero_ft"],
+        "wet_bulb_zero_status": diagnostics["wet_bulb_zero_status"],
+        "wet_bulb_lower_crossing_ft": diagnostics["wet_bulb_lower_crossing_ft"],
+        "wet_bulb_upper_crossing_ft": diagnostics["wet_bulb_upper_crossing_ft"],
+        
         "mean_lapse_rate_C_km": (
             round(float(diagnostics["mean_lapse_rate_C_km"]), 1)
             if diagnostics["mean_lapse_rate_C_km"] is not None else None
@@ -3456,6 +4580,15 @@ def export_diagnostics_status(diagnostics, profile):
             round(float(diagnostics["bulk_shear_kt"]), 0)
             if diagnostics["bulk_shear_kt"] is not None else None
         ),
+        "mountain_wave_category": diagnostics["mountain_wave"]["category"],
+        "mountain_wave_score": diagnostics["mountain_wave"]["score"],
+        "mountain_wave_max_score": diagnostics["mountain_wave"]["max_score"],
+        "mountain_wave_reasons": diagnostics["mountain_wave"]["reasons"],
+        "mountain_wave_critical_level": diagnostics["mountain_wave"]["critical_level"],
+        "rime_icing_category": diagnostics["rime_icing"]["category"],
+        "rime_icing_score": diagnostics["rime_icing"]["score"],
+        "rime_icing_max_score": diagnostics["rime_icing"]["max_score"],
+        "rime_icing_reasons": diagnostics["rime_icing"]["reasons"],
         "observed_at": max(latest_times).isoformat() if latest_times else None,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -3474,6 +4607,13 @@ def main():
 
     observations = fetch_all()
 
+    # Network call, so it belongs here in the fetch phase alongside
+    # fetch_all() - not inside build_diagnostics(), which is
+    # otherwise a pure transformation of already-fetched data. None
+    # on failure is fine; mountain_wave_potential() just reports the
+    # critical-level component as unavailable.
+    rap_wind_profile = fetch_rap_wind_profile()
+
     profile = build_profile(
         observations
     )
@@ -3491,7 +4631,8 @@ def main():
     )
 
     diagnostics = build_diagnostics(
-        profile
+        profile,
+        rap_wind_profile,
     )
 
     print_diagnostics(
