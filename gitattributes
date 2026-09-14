@@ -1,0 +1,16 @@
+# Generated dashboard outputs (PNGs from tempprofile.py, JSON status
+# files, etc.) are regenerated fresh every workflow run - nobody hand-
+# edits these, so there's nothing meaningful to "merge" if two commits
+# happen to touch the same file. Without this, a binary file (PNG)
+# touched by two overlapping commits produces an unresolvable conflict
+# that stops an unattended workflow dead, since there's no human
+# available to pick a side mid-Action.
+#
+# merge=ours here means: on conflict, keep whichever version is
+# already being applied in the current commit/rebase, discard the
+# incoming one. Requires "git config merge.ours.driver true" to be run
+# once in the workflow before any merge/rebase/pull step - see the
+# accompanying workflow snippet.
+
+outputs/*.png merge=ours
+outputs/*.json merge=ours
