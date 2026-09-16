@@ -10,56 +10,75 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-53820",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e24108f43160317e71811637e10ccc5e43375b29.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-53820",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e24108f43160317e71811637e10ccc5e43375b29.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-53820",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.e24108f43160317e71811637e10ccc5e43375b29.001.1",
+                "areaDesc": "Kuskokwim Delta Coast and Nunivak Island",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "002050"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "AKZ755"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/AKZ755"
                 ],
-                "references": [],
-                "sent": "2026-09-16T11:23:09+00:00",
-                "effective": "2026-09-16T11:23:09+00:00",
-                "onset": null,
-                "expires": "2026-09-16T11:33:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.746d74e14cd0e0323348df6a16b7646d2fb08b87.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.746d74e14cd0e0323348df6a16b7646d2fb08b87.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-15T15:12:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-16T03:32:00-08:00",
+                "effective": "2026-09-16T03:32:00-08:00",
+                "onset": "2026-09-16T03:32:00-08:00",
+                "expires": "2026-09-16T10:00:00-08:00",
+                "ends": "2026-09-16T10:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Coastal Flood Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Anchorage AK",
+                "headline": "Coastal Flood Advisory issued September 16 at 3:32AM AKDT until September 16 at 10:00AM AKDT by NWS Anchorage AK",
+                "description": "* WHAT...Water levels as high as 1.5 to 4.0 feet above the\nnormal highest tide line.\n\n* WHERE...Kuskokwim Delta Coast, including Kwigillingok,\nKongiganak, Kipnuk, Toksook Bay, and Tununak.\n\n* WHEN...Until 10 AM Today.\n\n* IMPACTS...Coastal flooding of low lying areas and erosion are\npossible.\n\n* ADDITIONAL DETAILS...Conditions will gradually improve through\ntoday as southwest winds and southwest fetch along the coast\ncome down further.",
+                "instruction": "A coastal flood advisory indicates that onshore winds and tides\nwill combine to generate flooding of low areas along the shore.",
+                "response": "Monitor",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "CFWALU"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 161123"
+                        "WHAK42 PAFC 161132"
+                    ],
+                    "NWSheadline": [
+                        "COASTAL FLOOD ADVISORY REMAINS IN EFFECT UNTIL 10 AM AKDT THIS MORNING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAFC.CF.Y.0002.000000T0000Z-260916T1800Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-16T10:00:00-08:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3e15ed73759ba44d4c33c274129e8ee3776f17bb.001.1,2026-09-15T02:05:00-08:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.7625bdc62d9d4a019b589fac6f706e0df337cb17.001.2,2026-09-14T08:26:00-08:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +90,7 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "CFY"
                     ]
                 }
             }
@@ -1652,114 +1671,6 @@
                     ],
                     "NationalWeatherService": [
                         "FAY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.268f84b338f58deb6e01b28728dafe91e11391d1.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -109.72,
-                            40.08
-                        ],
-                        [
-                            -109.83,
-                            40.24
-                        ],
-                        [
-                            -109.3,
-                            40.52
-                        ],
-                        [
-                            -109.13,
-                            40.29
-                        ],
-                        [
-                            -109.72,
-                            40.08
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.268f84b338f58deb6e01b28728dafe91e11391d1.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.268f84b338f58deb6e01b28728dafe91e11391d1.001.1",
-                "areaDesc": "Eastern Uinta Basin",
-                "geocode": {
-                    "SAME": [
-                        "049047"
-                    ],
-                    "UGC": [
-                        "UTZ024"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/UTZ024"
-                ],
-                "references": [],
-                "sent": "2026-09-16T04:38:00-06:00",
-                "effective": "2026-09-16T04:38:00-06:00",
-                "onset": "2026-09-16T04:38:00-06:00",
-                "expires": "2026-09-16T05:30:00-06:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Grand Junction CO",
-                "headline": "Special Weather Statement issued September 16 at 4:38AM MDT by NWS Grand Junction CO",
-                "description": "At 438 AM MDT, Doppler radar was tracking a strong thunderstorm 13\nmiles south of Vernal, moving northeast at 45 mph.\n\nHAZARD...Wind gusts up to 50 mph and penny size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects. Minor hail damage to vegetation and\noutdoor objects is possible.\n\nLocations impacted include...\nNaples and Randlett.\n\nThis includes U.S. Highway 40 in Utah between mile markers 133 and\n134, and between mile markers 149 and 169.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.\n\nTorrential rainfall is also occurring with this storm and may lead to\nlocalized flooding. Do not drive your vehicle through flooded\nroadways.\n\nFrequent cloud to ground lightning is occurring with this storm.\nLightning can strike 10 miles away from a thunderstorm. Seek a safe\nshelter inside a building or vehicle.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSGJT"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS85 KGJT 161038"
-                    ],
-                    "NWSheadline": [
-                        "A STRONG THUNDERSTORM WILL IMPACT CENTRAL UINTAH COUNTY THROUGH 530 AM MDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-09-16T10:38:00-00:00...storm...236DEG...38KT...40.26,-109.57"
-                    ],
-                    "maxWindGust": [
-                        "50 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.75"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
                     ]
                 }
             }
@@ -18851,92 +18762,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.746d74e14cd0e0323348df6a16b7646d2fb08b87.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.746d74e14cd0e0323348df6a16b7646d2fb08b87.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.746d74e14cd0e0323348df6a16b7646d2fb08b87.001.1",
-                "areaDesc": "Kuskokwim Delta Coast and Nunivak Island",
-                "geocode": {
-                    "SAME": [
-                        "002050"
-                    ],
-                    "UGC": [
-                        "AKZ755"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ755"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.3e15ed73759ba44d4c33c274129e8ee3776f17bb.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.3e15ed73759ba44d4c33c274129e8ee3776f17bb.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-15T02:05:00-08:00"
-                    }
-                ],
-                "sent": "2026-09-15T15:12:00-08:00",
-                "effective": "2026-09-15T15:12:00-08:00",
-                "onset": "2026-09-15T15:12:00-08:00",
-                "expires": "2026-09-16T07:00:00-08:00",
-                "ends": "2026-09-16T10:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Coastal Flood Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Anchorage AK",
-                "headline": "Coastal Flood Advisory issued September 15 at 3:12PM AKDT until September 16 at 10:00AM AKDT by NWS Anchorage AK",
-                "description": "* WHAT...Water levels as high as 1.5 to 4.0 feet above the\nnormal highest tide line.\n\n* WHERE...Kuskokwim Delta Coast, including Kwigillingok,\nKongiganak, Kipnuk, Toksook Bay, and Tununak.\n\n* WHEN...From 1 PM Monday to 10 PM Tuesday.\n\n* IMPACTS...Coastal flooding of low lying areas and erosion are\npossible.\n\n* ADDITIONAL DETAILS...A low pressure system in the eastern\nBering will continue to bring a strong fetch of\nsouthwesterlies into the Kuskokwim Delta Coast today and\ntonight. The highest water level increases will coincide with\nhigh tides this morning and this afternoon. Conditions will\nbegin to improve overnight tonight into Wednesday morning as a\nstrong low pressure system exits the region.",
-                "instruction": "A coastal flood advisory indicates that onshore winds and tides\nwill combine to generate flooding of low areas along the shore.",
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWALU"
-                    ],
-                    "WMOidentifier": [
-                        "WHAK42 PAFC 152312"
-                    ],
-                    "NWSheadline": [
-                        "COASTAL FLOOD ADVISORY REMAINS IN EFFECT UNTIL 10 AM AKDT WEDNESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.PAFC.CF.Y.0002.000000T0000Z-260916T1800Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-16T10:00:00-08:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.7625bdc62d9d4a019b589fac6f706e0df337cb17.001.2,2026-09-14T08:26:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "CFY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6d8c2aa845e1eb7004b773da024513d7ac100c61.002.1",
             "type": "Feature",
             "geometry": null,
@@ -31581,5 +31406,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-16T11:23:14+00:00"
+    "updated": "2026-09-16T11:33:16+00:00"
 }
