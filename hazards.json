@@ -10,56 +10,98 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-47927",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8582ca21f81009ac3c8cab5c2fc86692ea13df30.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -80.03,
+                            26.66
+                        ],
+                        [
+                            -80.21,
+                            26.66
+                        ],
+                        [
+                            -80.2,
+                            26.51
+                        ],
+                        [
+                            -80.02,
+                            26.51
+                        ],
+                        [
+                            -80.03,
+                            26.66
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-47927",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8582ca21f81009ac3c8cab5c2fc86692ea13df30.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-47927",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.8582ca21f81009ac3c8cab5c2fc86692ea13df30.001.1",
+                "areaDesc": "Palm Beach, FL",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "012099"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "FLC099"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/FLC099"
                 ],
-                "references": [],
-                "sent": "2026-09-17T15:03:09+00:00",
-                "effective": "2026-09-17T15:03:09+00:00",
-                "onset": null,
-                "expires": "2026-09-17T15:13:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fa368a804f3437b445e79d4dd9c04dc07d4fd5b3.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.fa368a804f3437b445e79d4dd9c04dc07d4fd5b3.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-17T09:12:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-17T11:12:00-04:00",
+                "effective": "2026-09-17T11:12:00-04:00",
+                "onset": "2026-09-17T11:12:00-04:00",
+                "expires": "2026-09-17T12:30:00-04:00",
+                "ends": "2026-09-17T12:30:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Miami FL",
+                "headline": "Flood Advisory issued September 17 at 11:12AM EDT until September 17 at 12:30PM EDT by NWS Miami FL",
+                "description": "* WHAT...Flooding caused by excessive rainfall continues.\n\n* WHERE...Eastern Palm Beach County in southeastern Florida...\n\n* WHEN...Until 1230 PM EDT.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 1112 AM EDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 2 and 3 inches of rain have\nfallen.\n- Additional rainfall amounts of 1 to 2 inches are expected over\nthe area. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nBoynton Beach, Lake Worth, Palm Beach, Ocean Ridge, Greenacres,\nPalm Springs, Lantana, Atlantis, Village Of Golf, Lake Clarke\nShores, Hypoluxo, South Palm Beach, Briny Breezes, Manalapan,\nSeminole Manor, Lake Worth Corridor, Aberdeen and Aberdeen Golf\nCourse.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe aware of your surroundings and do not drive on flooded roads.\n\nPlease report observed flooding to local emergency services or law\nenforcement and request they pass this information to the National\nWeather Service when you can do so safely.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FLSMFL"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 171503"
+                        "WGUS82 KMFL 171512"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY NOW IN EFFECT UNTIL 1230 PM EDT THIS AFTERNOON"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KMFL.FA.Y.0107.000000T0000Z-260917T1630Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T12:30:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +113,232 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FAY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c8f970ab60e0619d6b0a621d7b51ff4756e5c9e0.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c8f970ab60e0619d6b0a621d7b51ff4756e5c9e0.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c8f970ab60e0619d6b0a621d7b51ff4756e5c9e0.001.1",
+                "areaDesc": "Howard; Tipton; Madison; Delaware; Randolph",
+                "geocode": {
+                    "SAME": [
+                        "018067",
+                        "018159",
+                        "018095",
+                        "018035",
+                        "018135"
+                    ],
+                    "UGC": [
+                        "INZ031",
+                        "INZ038",
+                        "INZ040",
+                        "INZ041",
+                        "INZ042"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/INZ031",
+                    "https://api.weather.gov/zones/forecast/INZ038",
+                    "https://api.weather.gov/zones/forecast/INZ040",
+                    "https://api.weather.gov/zones/forecast/INZ041",
+                    "https://api.weather.gov/zones/forecast/INZ042"
+                ],
+                "references": [],
+                "sent": "2026-09-17T11:06:00-04:00",
+                "effective": "2026-09-17T11:06:00-04:00",
+                "onset": "2026-09-17T11:06:00-04:00",
+                "expires": "2026-09-17T14:00:00-04:00",
+                "ends": "2026-09-17T14:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Indianapolis IN",
+                "headline": "Flood Watch issued September 17 at 11:06AM EDT until September 17 at 2:00PM EDT by NWS Indianapolis IN",
+                "description": "* WHAT...Flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...Portions of central and east central Indiana, including the\nfollowing counties, in central Indiana, Howard, Madison and Tipton.\nIn east central Indiana, Delaware and Randolph.\n\n* WHEN...Until 2 PM EDT this afternoon.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Narrow bands of 1 to 2 inches of rain will be possible this\nmorning within rounds of thunderstorms. Locally higher amounts\ncannot be ruled out.\n- http://www.weather.gov/safety/flood",
+                "instruction": "You should monitor later forecasts and be alert for possible Flood\nWarnings. Those living in areas prone to flooding should be prepared\nto take action should flooding develop.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFAIND"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS63 KIND 171506"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH REMAINS IN EFFECT UNTIL 2 PM EDT THIS AFTERNOON"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KIND.FA.A.0014.000000T0000Z-260917T1800Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T14:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.438c265190d154e7f5e3a257f30991539dc2164a.002.1,2026-09-17T02:48:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.26a877efd36a0789390907bc19e295cbbddee66b.001.1,2026-09-16T22:09:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.147d9a4f1f78ddd25a9dc15dd5ce75c65766c00d.001.1,2026-09-16T15:28:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9bcfbf45c50531edb0866f4bd4f501ac0baf62ea.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9bcfbf45c50531edb0866f4bd4f501ac0baf62ea.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.9bcfbf45c50531edb0866f4bd4f501ac0baf62ea.001.1",
+                "areaDesc": "Scott; Morgan; Sangamon; Christian; Shelby; Cumberland; Effingham; Jasper; Crawford; Clay; Richland; Lawrence",
+                "geocode": {
+                    "SAME": [
+                        "017171",
+                        "017137",
+                        "017167",
+                        "017021",
+                        "017173",
+                        "017035",
+                        "017049",
+                        "017079",
+                        "017033",
+                        "017025",
+                        "017159",
+                        "017101"
+                    ],
+                    "UGC": [
+                        "ILZ049",
+                        "ILZ050",
+                        "ILZ051",
+                        "ILZ052",
+                        "ILZ061",
+                        "ILZ062",
+                        "ILZ066",
+                        "ILZ067",
+                        "ILZ068",
+                        "ILZ071",
+                        "ILZ072",
+                        "ILZ073"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ILZ049",
+                    "https://api.weather.gov/zones/forecast/ILZ050",
+                    "https://api.weather.gov/zones/forecast/ILZ051",
+                    "https://api.weather.gov/zones/forecast/ILZ052",
+                    "https://api.weather.gov/zones/forecast/ILZ061",
+                    "https://api.weather.gov/zones/forecast/ILZ062",
+                    "https://api.weather.gov/zones/forecast/ILZ066",
+                    "https://api.weather.gov/zones/forecast/ILZ067",
+                    "https://api.weather.gov/zones/forecast/ILZ068",
+                    "https://api.weather.gov/zones/forecast/ILZ071",
+                    "https://api.weather.gov/zones/forecast/ILZ072",
+                    "https://api.weather.gov/zones/forecast/ILZ073"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d334bc411aec8756989e68a2b522b7d8fc6b17b2.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.d334bc411aec8756989e68a2b522b7d8fc6b17b2.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-16T20:30:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-17T00:16:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-17T00:16:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-17T10:05:00-05:00",
+                "effective": "2026-09-17T10:05:00-05:00",
+                "onset": "2026-09-17T10:05:00-05:00",
+                "expires": "2026-09-17T19:00:00-05:00",
+                "ends": "2026-09-17T19:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Heat Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Lincoln IL",
+                "headline": "Heat Advisory issued September 17 at 10:05AM CDT until September 17 at 7:00PM CDT by NWS Lincoln IL",
+                "description": "* WHAT...Heat index values up to 103.\n\n* WHERE...Portions of central, east central, southeast, and west\ncentral Illinois.\n\n* WHEN...Until 7 PM CDT this evening.\n\n* IMPACTS...Hot temperatures and high humidity may cause heat\nillnesses.",
+                "instruction": "Drink plenty of fluids, stay in an air-conditioned room, stay out of\nthe sun, and check up on relatives and neighbors.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWILX"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS73 KILX 171505"
+                    ],
+                    "NWSheadline": [
+                        "HEAT ADVISORY REMAINS IN EFFECT UNTIL 7 PM CDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KILX.HT.Y.0012.000000T0000Z-260918T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T19:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b497000e8349b1c5bdf44ff983db9a51a266a04f.001.1,2026-09-16T12:20:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "HTY"
                     ]
                 }
             }
@@ -5948,108 +6215,6 @@
                     ],
                     "NationalWeatherService": [
                         "FAA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fa368a804f3437b445e79d4dd9c04dc07d4fd5b3.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -80.2,
-                            26.51
-                        ],
-                        [
-                            -80.21,
-                            26.66
-                        ],
-                        [
-                            -80.03,
-                            26.66
-                        ],
-                        [
-                            -80.02,
-                            26.51
-                        ],
-                        [
-                            -80.2,
-                            26.51
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fa368a804f3437b445e79d4dd9c04dc07d4fd5b3.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.fa368a804f3437b445e79d4dd9c04dc07d4fd5b3.001.1",
-                "areaDesc": "Palm Beach, FL",
-                "geocode": {
-                    "SAME": [
-                        "012099"
-                    ],
-                    "UGC": [
-                        "FLC099"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/FLC099"
-                ],
-                "references": [],
-                "sent": "2026-09-17T09:12:00-04:00",
-                "effective": "2026-09-17T09:12:00-04:00",
-                "onset": "2026-09-17T09:12:00-04:00",
-                "expires": "2026-09-17T11:15:00-04:00",
-                "ends": "2026-09-17T11:15:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Miami FL",
-                "headline": "Flood Advisory issued September 17 at 9:12AM EDT until September 17 at 11:15AM EDT by NWS Miami FL",
-                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...Eastern Palm Beach County in southeastern Florida...\n\n* WHEN...Until 1115 AM EDT.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 912 AM EDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 1 and 2 inches of rain have\nfallen.\n- Additional rainfall amounts of 1 to 3 inches are expected over\nthe area. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nBoynton Beach, Lake Worth, Palm Beach, Ocean Ridge, Greenacres,\nPalm Springs, Lantana, Atlantis, Village Of Golf, Lake Clarke\nShores, Hypoluxo, South Palm Beach, Briny Breezes, Manalapan,\nSeminole Manor, Lake Worth Corridor, Aberdeen and Aberdeen Golf\nCourse.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe aware of your surroundings and do not drive on flooded roads.\n\nPlease report observed flooding to local emergency services or law\nenforcement and request they pass this information to the National\nWeather Service when you can do so safely.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSMFL"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS82 KMFL 171312"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD ADVISORY IN EFFECT UNTIL 1115 AM EDT THIS MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMFL.FA.Y.0107.260917T1312Z-260917T1515Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T11:15:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FAY"
                     ]
                 }
             }
@@ -12114,107 +12279,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.438c265190d154e7f5e3a257f30991539dc2164a.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.438c265190d154e7f5e3a257f30991539dc2164a.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.438c265190d154e7f5e3a257f30991539dc2164a.002.1",
-                "areaDesc": "Howard; Tipton; Madison; Delaware; Randolph",
-                "geocode": {
-                    "SAME": [
-                        "018067",
-                        "018159",
-                        "018095",
-                        "018035",
-                        "018135"
-                    ],
-                    "UGC": [
-                        "INZ031",
-                        "INZ038",
-                        "INZ040",
-                        "INZ041",
-                        "INZ042"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/INZ031",
-                    "https://api.weather.gov/zones/forecast/INZ038",
-                    "https://api.weather.gov/zones/forecast/INZ040",
-                    "https://api.weather.gov/zones/forecast/INZ041",
-                    "https://api.weather.gov/zones/forecast/INZ042"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.26a877efd36a0789390907bc19e295cbbddee66b.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.26a877efd36a0789390907bc19e295cbbddee66b.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-16T22:09:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-17T02:48:00-04:00",
-                "effective": "2026-09-17T02:48:00-04:00",
-                "onset": "2026-09-17T02:48:00-04:00",
-                "expires": "2026-09-17T11:00:00-04:00",
-                "ends": "2026-09-17T14:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Flood Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Indianapolis IN",
-                "headline": "Flood Watch issued September 17 at 2:48AM EDT until September 17 at 2:00PM EDT by NWS Indianapolis IN",
-                "description": "* WHAT...Flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...Portions of central and east central Indiana, including the\nfollowing counties, in central Indiana, Howard, Madison and Tipton.\nIn east central Indiana, Delaware and Randolph.\n\n* WHEN...Until 2 PM EDT this afternoon.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Narrow bands of 1 to 3 inches of rain will be possible this\nmorning within rounds of thunderstorms. Locally higher amounts\ncannot be ruled out.\n- http://www.weather.gov/safety/flood",
-                "instruction": "You should monitor later forecasts and be alert for possible Flood\nWarnings. Those living in areas prone to flooding should be prepared\nto take action should flooding develop.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFAIND"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS63 KIND 170648"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WATCH REMAINS IN EFFECT UNTIL 2 PM EDT THIS AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KIND.FA.A.0014.000000T0000Z-260917T1800Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T14:00:00-04:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.147d9a4f1f78ddd25a9dc15dd5ce75c65766c00d.001.1,2026-09-16T15:28:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFA"
-                    ],
-                    "NationalWeatherService": [
-                        "FAA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.15a2c9d3a0b537eb036936c7c22a9674524affdf.001.1",
             "type": "Feature",
             "geometry": null,
@@ -13923,201 +13987,6 @@
                     ],
                     "NationalWeatherService": [
                         "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.002.1",
-                "areaDesc": "Effingham; Jasper; Crawford; Clay; Richland; Lawrence",
-                "geocode": {
-                    "SAME": [
-                        "017049",
-                        "017079",
-                        "017033",
-                        "017025",
-                        "017159",
-                        "017101"
-                    ],
-                    "UGC": [
-                        "ILZ066",
-                        "ILZ067",
-                        "ILZ068",
-                        "ILZ071",
-                        "ILZ072",
-                        "ILZ073"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ILZ066",
-                    "https://api.weather.gov/zones/forecast/ILZ067",
-                    "https://api.weather.gov/zones/forecast/ILZ068",
-                    "https://api.weather.gov/zones/forecast/ILZ071",
-                    "https://api.weather.gov/zones/forecast/ILZ072",
-                    "https://api.weather.gov/zones/forecast/ILZ073"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b497000e8349b1c5bdf44ff983db9a51a266a04f.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.b497000e8349b1c5bdf44ff983db9a51a266a04f.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-16T12:20:00-05:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d334bc411aec8756989e68a2b522b7d8fc6b17b2.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.d334bc411aec8756989e68a2b522b7d8fc6b17b2.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-16T20:30:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-17T00:16:00-05:00",
-                "effective": "2026-09-17T00:16:00-05:00",
-                "onset": "2026-09-17T00:16:00-05:00",
-                "expires": "2026-09-17T10:15:00-05:00",
-                "ends": "2026-09-17T19:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Heat Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Lincoln IL",
-                "headline": "Heat Advisory issued September 17 at 12:16AM CDT until September 17 at 7:00PM CDT by NWS Lincoln IL",
-                "description": "* WHAT...Heat index values up to 105.\n\n* WHERE...Clay, Crawford, Effingham, Jasper, Lawrence, and Richland\nCounties.\n\n* WHEN...Until 7 PM CDT this evening.\n\n* IMPACTS...Hot temperatures and high humidity may cause heat\nillnesses.",
-                "instruction": "Drink plenty of fluids, stay in an air-conditioned room, stay out of\nthe sun, and check up on relatives and neighbors.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWILX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KILX 170516"
-                    ],
-                    "NWSheadline": [
-                        "HEAT ADVISORY REMAINS IN EFFECT UNTIL 7 PM CDT THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KILX.HT.Y.0012.000000T0000Z-260918T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T19:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "HTY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.94e23e00eefa502a0394eadc1000883052b6e434.001.1",
-                "areaDesc": "Scott; Morgan; Sangamon; Christian; Shelby; Cumberland",
-                "geocode": {
-                    "SAME": [
-                        "017171",
-                        "017137",
-                        "017167",
-                        "017021",
-                        "017173",
-                        "017035"
-                    ],
-                    "UGC": [
-                        "ILZ049",
-                        "ILZ050",
-                        "ILZ051",
-                        "ILZ052",
-                        "ILZ061",
-                        "ILZ062"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ILZ049",
-                    "https://api.weather.gov/zones/forecast/ILZ050",
-                    "https://api.weather.gov/zones/forecast/ILZ051",
-                    "https://api.weather.gov/zones/forecast/ILZ052",
-                    "https://api.weather.gov/zones/forecast/ILZ061",
-                    "https://api.weather.gov/zones/forecast/ILZ062"
-                ],
-                "references": [],
-                "sent": "2026-09-17T00:16:00-05:00",
-                "effective": "2026-09-17T00:16:00-05:00",
-                "onset": "2026-09-17T00:16:00-05:00",
-                "expires": "2026-09-17T10:15:00-05:00",
-                "ends": "2026-09-17T19:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Heat Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Lincoln IL",
-                "headline": "Heat Advisory issued September 17 at 12:16AM CDT until September 17 at 7:00PM CDT by NWS Lincoln IL",
-                "description": "* WHAT...Heat index values up to 105.\n\n* WHERE...Christian, Sangamon, Shelby, Cumberland, Morgan, and Scott\nCounties.\n\n* WHEN...Until 7 PM CDT this evening.\n\n* IMPACTS...Hot temperatures and high humidity may cause heat\nillnesses.",
-                "instruction": "Drink plenty of fluids, stay in an air-conditioned room, stay out of\nthe sun, and check up on relatives and neighbors.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWILX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KILX 170516"
-                    ],
-                    "NWSheadline": [
-                        "HEAT ADVISORY IN EFFECT UNTIL 7 PM CDT THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXA.KILX.HT.Y.0012.000000T0000Z-260918T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T19:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "HTY"
                     ]
                 }
             }
@@ -17281,5 +17150,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-17T15:03:17+00:00"
+    "updated": "2026-09-17T15:13:26+00:00"
 }
