@@ -10,56 +10,90 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-59234",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.002.2",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-59234",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.002.2",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-59234",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.002.2",
+                "areaDesc": "Northwest Plateau; Chuska Mountains; Far Northwest Highlands; Northwest Highlands; South Central Mountains",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "035031",
+                        "035045",
+                        "035039",
+                        "035043",
+                        "035027"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "NMZ201",
+                        "NMZ202",
+                        "NMZ203",
+                        "NMZ204",
+                        "NMZ226"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/NMZ201",
+                    "https://api.weather.gov/zones/forecast/NMZ202",
+                    "https://api.weather.gov/zones/forecast/NMZ203",
+                    "https://api.weather.gov/zones/forecast/NMZ204",
+                    "https://api.weather.gov/zones/forecast/NMZ226"
                 ],
-                "references": [],
-                "sent": "2026-09-17T08:23:09+00:00",
-                "effective": "2026-09-17T08:23:09+00:00",
-                "onset": null,
-                "expires": "2026-09-17T08:33:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-16T20:07:00-06:00"
+                    }
+                ],
+                "sent": "2026-09-17T02:24:00-06:00",
+                "effective": "2026-09-17T02:24:00-06:00",
+                "onset": "2026-09-17T02:24:00-06:00",
+                "expires": "2026-09-17T06:00:00-06:00",
+                "ends": "2026-09-17T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Albuquerque NM",
+                "headline": "Flood Watch issued September 17 at 2:24AM MDT until September 17 at 6:00AM MDT by NWS Albuquerque NM",
+                "description": "* WHAT...Flash flooding caused by excessive rainfall is possible.\n\n* WHERE...Northwest New Mexico and the South Central Mountains,\nincluding Farmington, Shiprock, and the Ruidoso area burn scars.\n\n* WHEN...From 11 AM MDT this morning through late tonight.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Additional rounds of showers and storms are likely Thursday\nafternoon through the overnight hours. Rainfall rates of 1 to 2\ninches per hour may occur with storms during the afternoon and\nevening, with lighter rainfall overnight. Wildfire burn scars,\nurban areas, communities with underdeveloped infrastructure,\ncomplex terrain, and areas where the ground is already saturated\nwill be favored for rapid runoff and flash flooding.\n- http://www.weather.gov/abq/EmergencyPrepFlood",
+                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.\n\n\nYou should monitor later forecasts and be alert for possible Flash\nFlood Warnings. Those living in areas prone to flooding should be\nprepared to take action should flooding develop.",
+                "response": "Prepare",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FFAABQ"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 170823"
+                        "WGUS65 KABQ 170824"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH IN EFFECT FROM 11 AM MDT THIS MORNING THROUGH LATE TONIGHT"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KABQ.FA.A.0021.000000T0000Z-260917T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.8b62edd378516a0cf8690b0fe522a55ea30bc684.002.1,2026-09-16T12:34:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e05cde3fd89da7d0d83010529f17acfd4bab1a46.001.1,2026-09-16T11:03:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.66c9a8017f447866c30ff4431e478b0b23cf3640.001.1,2026-09-16T03:05:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.66c9a8017f447866c30ff4431e478b0b23cf3640.002.1,2026-09-16T03:05:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3dd833a9d665460f92603b004810dc549e95fd0f.002.1,2026-09-15T23:51:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.11f23c63bf9685104f800bd194bd80586893f588.002.1,2026-09-15T11:07:00-06:00"
                     ]
                 },
                 "scope": "Public",
@@ -68,10 +102,487 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "NWS"
+                        "FFA"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.002.1",
+                "areaDesc": "Northwest Plateau; Chuska Mountains; Far Northwest Highlands; Northwest Highlands; South Central Mountains",
+                "geocode": {
+                    "SAME": [
+                        "035031",
+                        "035045",
+                        "035039",
+                        "035043",
+                        "035027"
+                    ],
+                    "UGC": [
+                        "NMZ201",
+                        "NMZ202",
+                        "NMZ203",
+                        "NMZ204",
+                        "NMZ226"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NMZ201",
+                    "https://api.weather.gov/zones/forecast/NMZ202",
+                    "https://api.weather.gov/zones/forecast/NMZ203",
+                    "https://api.weather.gov/zones/forecast/NMZ204",
+                    "https://api.weather.gov/zones/forecast/NMZ226"
+                ],
+                "references": [],
+                "sent": "2026-09-17T02:24:00-06:00",
+                "effective": "2026-09-17T02:24:00-06:00",
+                "onset": "2026-09-17T11:00:00-06:00",
+                "expires": "2026-09-17T06:00:00-06:00",
+                "ends": "2026-09-18T03:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Albuquerque NM",
+                "headline": "Flood Watch issued September 17 at 2:24AM MDT until September 18 at 3:00AM MDT by NWS Albuquerque NM",
+                "description": "* WHAT...Flash flooding caused by excessive rainfall is possible.\n\n* WHERE...Northwest New Mexico and the South Central Mountains,\nincluding Farmington, Shiprock, and the Ruidoso area burn scars.\n\n* WHEN...From 11 AM MDT this morning through late tonight.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Additional rounds of showers and storms are likely Thursday\nafternoon through the overnight hours. Rainfall rates of 1 to 2\ninches per hour may occur with storms during the afternoon and\nevening, with lighter rainfall overnight. Wildfire burn scars,\nurban areas, communities with underdeveloped infrastructure,\ncomplex terrain, and areas where the ground is already saturated\nwill be favored for rapid runoff and flash flooding.\n- http://www.weather.gov/abq/EmergencyPrepFlood",
+                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.\n\n\nYou should monitor later forecasts and be alert for possible Flash\nFlood Warnings. Those living in areas prone to flooding should be\nprepared to take action should flooding develop.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFAABQ"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS65 KABQ 170824"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH IN EFFECT FROM 11 AM MDT THIS MORNING THROUGH LATE TONIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KABQ.FA.A.0022.260917T1700Z-260918T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-18T03:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.001.2",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.001.2",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.001.2",
+                "areaDesc": "Southern Sangre de Cristo Mountains; Espanola Valley",
+                "geocode": {
+                    "SAME": [
+                        "035007",
+                        "035033",
+                        "035039",
+                        "035047",
+                        "035049",
+                        "035055"
+                    ],
+                    "UGC": [
+                        "NMZ214",
+                        "NMZ217"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NMZ214",
+                    "https://api.weather.gov/zones/forecast/NMZ217"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-16T20:07:00-06:00"
+                    }
+                ],
+                "sent": "2026-09-17T02:24:00-06:00",
+                "effective": "2026-09-17T02:24:00-06:00",
+                "onset": "2026-09-17T02:24:00-06:00",
+                "expires": "2026-09-17T06:00:00-06:00",
+                "ends": "2026-09-17T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Albuquerque NM",
+                "headline": "Flood Watch issued September 17 at 2:24AM MDT until September 17 at 6:00AM MDT by NWS Albuquerque NM",
+                "description": "* WHAT...Flash flooding caused by excessive rainfall is possible.\n\n* WHERE...A portion of north central New Mexico, including the\nfollowing areas, Espanola Valley and Southern Sangre de Cristo\nMountains.\n\n* WHEN...From 11 AM MDT this morning through late tonight.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Additional rounds of showers and storms are likely again\nThursday. Storms with heavy rainfall rates of 1 to 2 inches per\nhour may occur during the afternoon and evening then another\nbatch of showers with light to moderate rates is expected during\nthe overnight hours. Recent wildfire burn scars, urban areas,\ncommunities with underdeveloped infrastructure, complex terrain,\nand locations where the ground is already saturated will be\nfavored for rapid runoff and flash flooding.\n- http://www.weather.gov/abq/EmergencyPrepFlood",
+                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.\n\n\nYou should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFAABQ"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS65 KABQ 170824"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH IN EFFECT FROM 11 AM MDT THIS MORNING THROUGH LATE TONIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KABQ.FA.A.0021.000000T0000Z-260917T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.8b62edd378516a0cf8690b0fe522a55ea30bc684.001.1,2026-09-16T12:34:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.003.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.003.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.003.1",
+                "areaDesc": "Tusas Mountains Including Chama; Jemez Mountains; Glorieta Mesa Including Glorieta Pass; Northern Sangre de Cristo Mountains; East Slopes Sangre de Cristo Mountains; Upper Rio Grande Valley; Santa Fe Metro Area",
+                "geocode": {
+                    "SAME": [
+                        "035039",
+                        "035055",
+                        "035028",
+                        "035043",
+                        "035047",
+                        "035049",
+                        "035007",
+                        "035033",
+                        "035001"
+                    ],
+                    "UGC": [
+                        "NMZ210",
+                        "NMZ211",
+                        "NMZ212",
+                        "NMZ213",
+                        "NMZ215",
+                        "NMZ216",
+                        "NMZ218"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NMZ210",
+                    "https://api.weather.gov/zones/forecast/NMZ211",
+                    "https://api.weather.gov/zones/forecast/NMZ212",
+                    "https://api.weather.gov/zones/forecast/NMZ213",
+                    "https://api.weather.gov/zones/forecast/NMZ215",
+                    "https://api.weather.gov/zones/forecast/NMZ216",
+                    "https://api.weather.gov/zones/forecast/NMZ218"
+                ],
+                "references": [],
+                "sent": "2026-09-17T02:24:00-06:00",
+                "effective": "2026-09-17T02:24:00-06:00",
+                "onset": "2026-09-17T11:00:00-06:00",
+                "expires": "2026-09-17T06:00:00-06:00",
+                "ends": "2026-09-18T03:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Albuquerque NM",
+                "headline": "Flood Watch issued September 17 at 2:24AM MDT until September 18 at 3:00AM MDT by NWS Albuquerque NM",
+                "description": "* WHAT...Flash flooding caused by excessive rainfall is possible.\n\n* WHERE...A portion of north central New Mexico, including the Sangre\nde Cristo Mountains, Tusas Mountains, Jemez Mountains, and Santa\nFe.\n\n* WHEN...From 11 AM MDT this morning through late tonight.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Additional rounds of showers and storms are likely Thursday\nafternoon through the overnight hours. Rainfall rates of 1 to 2\ninches per hour may occur with storms during the afternoon and\nevening, with lighter rainfall overnight. Wildfire burn scars,\nurban areas, communities with underdeveloped infrastructure,\ncomplex terrain, and areas where the ground is already saturated\nwill be favored for rapid runoff and flash flooding.\n- http://www.weather.gov/safety/flood",
+                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFAABQ"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS65 KABQ 170824"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH IN EFFECT FROM 11 AM MDT THIS MORNING THROUGH LATE TONIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KABQ.FA.A.0022.260917T1700Z-260918T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-18T03:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.001.1",
+                "areaDesc": "Southern Sangre de Cristo Mountains; Espanola Valley",
+                "geocode": {
+                    "SAME": [
+                        "035007",
+                        "035033",
+                        "035039",
+                        "035047",
+                        "035049",
+                        "035055"
+                    ],
+                    "UGC": [
+                        "NMZ214",
+                        "NMZ217"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NMZ214",
+                    "https://api.weather.gov/zones/forecast/NMZ217"
+                ],
+                "references": [],
+                "sent": "2026-09-17T02:24:00-06:00",
+                "effective": "2026-09-17T02:24:00-06:00",
+                "onset": "2026-09-17T11:00:00-06:00",
+                "expires": "2026-09-17T06:00:00-06:00",
+                "ends": "2026-09-18T03:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Albuquerque NM",
+                "headline": "Flood Watch issued September 17 at 2:24AM MDT until September 18 at 3:00AM MDT by NWS Albuquerque NM",
+                "description": "* WHAT...Flash flooding caused by excessive rainfall is possible.\n\n* WHERE...A portion of north central New Mexico, including the\nfollowing areas, Espanola Valley and Southern Sangre de Cristo\nMountains.\n\n* WHEN...From 11 AM MDT this morning through late tonight.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Additional rounds of showers and storms are likely again\nThursday. Storms with heavy rainfall rates of 1 to 2 inches per\nhour may occur during the afternoon and evening then another\nbatch of showers with light to moderate rates is expected during\nthe overnight hours. Recent wildfire burn scars, urban areas,\ncommunities with underdeveloped infrastructure, complex terrain,\nand locations where the ground is already saturated will be\nfavored for rapid runoff and flash flooding.\n- http://www.weather.gov/abq/EmergencyPrepFlood",
+                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.\n\n\nYou should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFAABQ"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS65 KABQ 170824"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH IN EFFECT FROM 11 AM MDT THIS MORNING THROUGH LATE TONIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KABQ.FA.A.0022.260917T1700Z-260918T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-18T03:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.004.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.004.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.fbb8b06230bad1fb9bf4df52ade028275c36eedc.004.1",
+                "areaDesc": "West Central Plateau; West Central Mountains; West Central Highlands; Southwest Mountains; San Francisco River Valley; San Agustin Plains and Adjacent Lowlands",
+                "geocode": {
+                    "SAME": [
+                        "035003",
+                        "035006",
+                        "035031",
+                        "035043",
+                        "035053",
+                        "035001",
+                        "035061"
+                    ],
+                    "UGC": [
+                        "NMZ205",
+                        "NMZ206",
+                        "NMZ207",
+                        "NMZ208",
+                        "NMZ209",
+                        "NMZ241"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NMZ205",
+                    "https://api.weather.gov/zones/forecast/NMZ206",
+                    "https://api.weather.gov/zones/forecast/NMZ207",
+                    "https://api.weather.gov/zones/forecast/NMZ208",
+                    "https://api.weather.gov/zones/forecast/NMZ209",
+                    "https://api.weather.gov/zones/forecast/NMZ241"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-16T20:07:00-06:00"
+                    }
+                ],
+                "sent": "2026-09-17T02:24:00-06:00",
+                "effective": "2026-09-17T02:24:00-06:00",
+                "onset": "2026-09-17T02:24:00-06:00",
+                "expires": "2026-09-17T06:00:00-06:00",
+                "ends": "2026-09-17T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Albuquerque NM",
+                "headline": "Flood Watch issued September 17 at 2:24AM MDT until September 17 at 6:00AM MDT by NWS Albuquerque NM",
+                "description": "* WHAT...Flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...Portions of central and west central New Mexico, including\nthe following areas, in central New Mexico, San Agustin Plains and\nAdjacent Lowlands. In west central New Mexico, San Francisco River\nValley, Southwest Mountains, West Central Highlands, West Central\nMountains and West Central Plateau.\n\n* WHEN...Until 6 AM MDT early this morning.\n\n* IMPACTS...Excessive runoff may result in flooding of creeks,\nstreams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Showers with moderate to briefly heavy rainfall will continue\nthrough the early morning hours. Rapid runoff may occur with\nstronger storms given the very saturated soils. Rises are likely\nin area creeks and streams.\n- http://www.weather.gov/abq/EmergencyPrepFlood",
+                "instruction": "You should monitor later forecasts and be alert for possible Flash\nFlood Warnings. Those living in areas prone to flooding should be\nprepared to take action should flooding develop.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFAABQ"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS65 KABQ 170824"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH REMAINS IN EFFECT UNTIL 6 AM MDT EARLY THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KABQ.FA.A.0021.000000T0000Z-260917T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-17T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.8b62edd378516a0cf8690b0fe522a55ea30bc684.002.1,2026-09-16T12:34:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e05cde3fd89da7d0d83010529f17acfd4bab1a46.001.1,2026-09-16T11:03:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.66c9a8017f447866c30ff4431e478b0b23cf3640.002.1,2026-09-16T03:05:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3dd833a9d665460f92603b004810dc549e95fd0f.002.1,2026-09-15T23:51:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3dd833a9d665460f92603b004810dc549e95fd0f.001.2,2026-09-15T23:51:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.11f23c63bf9685104f800bd194bd80586893f588.002.1,2026-09-15T11:07:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.11f23c63bf9685104f800bd194bd80586893f588.001.1,2026-09-15T11:07:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
                     ]
                 }
             }
@@ -8032,206 +8543,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.001.1",
-                "areaDesc": "Southern Sangre de Cristo Mountains; Espanola Valley",
-                "geocode": {
-                    "SAME": [
-                        "035007",
-                        "035033",
-                        "035039",
-                        "035047",
-                        "035049",
-                        "035055"
-                    ],
-                    "UGC": [
-                        "NMZ214",
-                        "NMZ217"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/NMZ214",
-                    "https://api.weather.gov/zones/forecast/NMZ217"
-                ],
-                "references": [],
-                "sent": "2026-09-16T20:07:00-06:00",
-                "effective": "2026-09-16T20:07:00-06:00",
-                "onset": "2026-09-16T20:07:00-06:00",
-                "expires": "2026-09-17T06:00:00-06:00",
-                "ends": "2026-09-17T06:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Flood Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Albuquerque NM",
-                "headline": "Flood Watch issued September 16 at 8:07PM MDT until September 17 at 6:00AM MDT by NWS Albuquerque NM",
-                "description": "* WHAT...Flash flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...Espanola Valley and Southern Sangre de Cristo Mountains.\nThis includes areas near and downstream of the Frijoles wildfire\nburn scar.\n\n* WHEN...Until 6 AM MDT Thursday.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\nCreeks and streams may rise out of their banks. Flooding may occur\nin poor drainage and urban areas. Low-water crossings may be\nflooded. Storm drains and ditches may become clogged with debris.\n\n* ADDITIONAL DETAILS...\n- Deep monsoon moisture will continue to produce numerous showers\nand thunderstorms. Stronger storms will be capable of producing\nheavy rain at rates of one to two inches per hour. Some locations\nwill receive multiple rounds of storms. Recent wildfire burn\nscars, urban areas, communities with underdeveloped\ninfrastructure, complex terrain, and locations where the ground\nis already saturated will be favored for rapid runoff and flash\nflooding.  This includes the Frijoles wildfire burn scar, as well\nas the Pueblos of Chimayo, Nambe, and San Ildefonso.\n- http://www.weather.gov/abq/EmergencyPrepFlood",
-                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFAABQ"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS65 KABQ 170207"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WATCH REMAINS IN EFFECT UNTIL 6 AM MDT THURSDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KABQ.FA.A.0021.000000T0000Z-260917T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T06:00:00-06:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.8b62edd378516a0cf8690b0fe522a55ea30bc684.001.1,2026-09-16T12:34:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFA"
-                    ],
-                    "NationalWeatherService": [
-                        "FAA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.88fe15e98f861b3ee62a981ee18ac51ab736a26a.002.1",
-                "areaDesc": "Northwest Plateau; Chuska Mountains; Far Northwest Highlands; Northwest Highlands; West Central Plateau; West Central Mountains; West Central Highlands; Southwest Mountains; San Francisco River Valley; South Central Mountains; San Agustin Plains and Adjacent Lowlands",
-                "geocode": {
-                    "SAME": [
-                        "035031",
-                        "035045",
-                        "035039",
-                        "035043",
-                        "035003",
-                        "035006",
-                        "035053",
-                        "035001",
-                        "035061",
-                        "035027"
-                    ],
-                    "UGC": [
-                        "NMZ201",
-                        "NMZ202",
-                        "NMZ203",
-                        "NMZ204",
-                        "NMZ205",
-                        "NMZ206",
-                        "NMZ207",
-                        "NMZ208",
-                        "NMZ209",
-                        "NMZ226",
-                        "NMZ241"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/NMZ201",
-                    "https://api.weather.gov/zones/forecast/NMZ202",
-                    "https://api.weather.gov/zones/forecast/NMZ203",
-                    "https://api.weather.gov/zones/forecast/NMZ204",
-                    "https://api.weather.gov/zones/forecast/NMZ205",
-                    "https://api.weather.gov/zones/forecast/NMZ206",
-                    "https://api.weather.gov/zones/forecast/NMZ207",
-                    "https://api.weather.gov/zones/forecast/NMZ208",
-                    "https://api.weather.gov/zones/forecast/NMZ209",
-                    "https://api.weather.gov/zones/forecast/NMZ226",
-                    "https://api.weather.gov/zones/forecast/NMZ241"
-                ],
-                "references": [],
-                "sent": "2026-09-16T20:07:00-06:00",
-                "effective": "2026-09-16T20:07:00-06:00",
-                "onset": "2026-09-16T20:07:00-06:00",
-                "expires": "2026-09-17T06:00:00-06:00",
-                "ends": "2026-09-17T06:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Flood Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Albuquerque NM",
-                "headline": "Flood Watch issued September 16 at 8:07PM MDT until September 17 at 6:00AM MDT by NWS Albuquerque NM",
-                "description": "* WHAT...Flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...Western and south central New Mexico, including Farmington,\nShiprock, Aztec, Bloomfield, Gallup, Zuni Pueblo, Grants, Quemado,\nPietown, Magdalena, Datil, and Glenwood.\n\n* WHEN...Until 6 AM MDT Thursday.\n\n* IMPACTS...Excessive runoff may result in flooding of creeks,\nstreams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Deep monsoon moisture will continue to produce numerous showers\nand thunderstorms. Stronger storms will be capable of producing\nheavy rain at rates of one to two inches per hour. Some locations\nwill receive multiple rounds of storms. Recent wildfire burn\nscars, urban areas, locations with complex terrain, and areas\nwhere the ground is already saturated from recent heavy rain will\nbe favored for rapid runoff and flash flooding.\n- http://www.weather.gov/safety/flood",
-                "instruction": "You should monitor later forecasts and be alert for possible Flash\nFlood Warnings. Those living in areas prone to flooding should be\nprepared to take action should flooding develop.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFAABQ"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS65 KABQ 170207"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WATCH REMAINS IN EFFECT UNTIL 6 AM MDT THURSDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KABQ.FA.A.0021.000000T0000Z-260917T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-17T06:00:00-06:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.8b62edd378516a0cf8690b0fe522a55ea30bc684.002.1,2026-09-16T12:34:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e05cde3fd89da7d0d83010529f17acfd4bab1a46.001.1,2026-09-16T11:03:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.66c9a8017f447866c30ff4431e478b0b23cf3640.001.1,2026-09-16T03:05:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.66c9a8017f447866c30ff4431e478b0b23cf3640.002.1,2026-09-16T03:05:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3dd833a9d665460f92603b004810dc549e95fd0f.002.1,2026-09-15T23:51:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3dd833a9d665460f92603b004810dc549e95fd0f.001.2,2026-09-15T23:51:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.11f23c63bf9685104f800bd194bd80586893f588.002.1,2026-09-15T11:07:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.11f23c63bf9685104f800bd194bd80586893f588.001.1,2026-09-15T11:07:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFA"
-                    ],
-                    "NationalWeatherService": [
-                        "FAA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d8bc638afc871d56e798251bf1d7eb99baae2ab4.001.1",
             "type": "Feature",
             "geometry": {
@@ -15825,5 +16136,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-17T08:23:14+00:00"
+    "updated": "2026-09-17T08:33:17+00:00"
 }
