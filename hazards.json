@@ -10,56 +10,104 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-43167",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9e7d80f5b01b76732d7ca116f24c006fd728a136.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -93.79,
+                            41.43
+                        ],
+                        [
+                            -93.46,
+                            41.55
+                        ],
+                        [
+                            -93.44,
+                            41.51
+                        ],
+                        [
+                            -93.79,
+                            41.38
+                        ],
+                        [
+                            -93.79,
+                            41.43
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-43167",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9e7d80f5b01b76732d7ca116f24c006fd728a136.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-43167",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.9e7d80f5b01b76732d7ca116f24c006fd728a136.001.1",
+                "areaDesc": "Polk, IA; Warren, IA",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "019153",
+                        "019181"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "IAC153",
+                        "IAC181"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/IAC153",
+                    "https://api.weather.gov/zones/county/IAC181"
                 ],
-                "references": [],
-                "sent": "2026-09-18T10:23:09+00:00",
-                "effective": "2026-09-18T10:23:09+00:00",
-                "onset": null,
-                "expires": "2026-09-18T10:33:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.858df2049c9693847cf695aa844d1f083d596d09.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.858df2049c9693847cf695aa844d1f083d596d09.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-17T21:35:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-18T05:28:00-05:00",
+                "effective": "2026-09-18T05:28:00-05:00",
+                "onset": "2026-09-18T05:28:00-05:00",
+                "expires": "2026-09-18T17:30:00-05:00",
+                "ends": "2026-09-19T17:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Flood Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Des Moines IA",
+                "headline": "Flood Warning issued September 18 at 5:28AM CDT until September 19 at 5:00PM CDT by NWS Des Moines IA",
+                "description": "...The Flood Warning continues for the following rivers in Iowa...\n\nNorth River near Norwalk Hwy R57 affecting Warren and Polk\nCounties.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...North River near Norwalk Hwy R57, or from the\nMadison-Warren County line to the Des Moines River.\n\n* WHEN...Until Saturday afternoon.\n\n* IMPACTS...At 22.0 feet, Water is over Iowa 28 immediately south of\nNorwalk and threatens several rural gravel roads.\n\n* ADDITIONAL DETAILS...\n- At 5:15 AM CDT Friday the stage was 21.7 feet, and rising.\n- Forecast...The river is expected to rise above flood stage this\nmorning to a crest of 22.2 feet this afternoon. It will then fall\nbelow flood stage late tomorrow morning.\n- Flood stage is 22.0 feet.",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nFor the latest stream observations and forecasts refer to\nweather.gov/desmoines/water.\n\nRiver forecasts include observed precipitation plus forecast\nprecipitation over the next 24 hours.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FLSDMX"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 181023"
+                        "WGUS83 KDMX 181028"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING REMAINS IN EFFECT UNTIL SATURDAY AFTERNOON"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KDMX.FL.W.0022.000000T0000Z-260919T2200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-19T17:00:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -68,10 +116,10 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "NWS"
+                        "FLS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FLW"
                     ]
                 }
             }
@@ -779,143 +827,6 @@
                     ],
                     "NationalWeatherService": [
                         "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.36ea8b8e9dc43867bab0f5141ba69f8a9b1490ac.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -81.39,
-                            38.84
-                        ],
-                        [
-                            -81.63,
-                            38.46
-                        ],
-                        [
-                            -82.09,
-                            38.42
-                        ],
-                        [
-                            -82.38,
-                            38.7
-                        ],
-                        [
-                            -82.02,
-                            38.74
-                        ],
-                        [
-                            -81.81,
-                            39.05
-                        ],
-                        [
-                            -81.39,
-                            38.84
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.36ea8b8e9dc43867bab0f5141ba69f8a9b1490ac.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.36ea8b8e9dc43867bab0f5141ba69f8a9b1490ac.001.1",
-                "areaDesc": "Meigs; Gallia; Cabell; Mason; Jackson; Putnam; Kanawha; Roane",
-                "geocode": {
-                    "SAME": [
-                        "039105",
-                        "039053",
-                        "054011",
-                        "054053",
-                        "054035",
-                        "054079",
-                        "054039",
-                        "054087"
-                    ],
-                    "UGC": [
-                        "OHZ085",
-                        "OHZ086",
-                        "WVZ006",
-                        "WVZ007",
-                        "WVZ008",
-                        "WVZ014",
-                        "WVZ015",
-                        "WVZ016"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/OHZ085",
-                    "https://api.weather.gov/zones/forecast/OHZ086",
-                    "https://api.weather.gov/zones/forecast/WVZ006",
-                    "https://api.weather.gov/zones/forecast/WVZ007",
-                    "https://api.weather.gov/zones/forecast/WVZ008",
-                    "https://api.weather.gov/zones/forecast/WVZ014",
-                    "https://api.weather.gov/zones/forecast/WVZ015",
-                    "https://api.weather.gov/zones/forecast/WVZ016"
-                ],
-                "references": [],
-                "sent": "2026-09-18T05:42:00-04:00",
-                "effective": "2026-09-18T05:42:00-04:00",
-                "onset": "2026-09-18T05:42:00-04:00",
-                "expires": "2026-09-18T06:30:00-04:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Charleston WV",
-                "headline": "Special Weather Statement issued September 18 at 5:42AM EDT by NWS Charleston WV",
-                "description": "At 542 AM EDT, Doppler radar was tracking strong thunderstorms along\na line extending from near Ravenswood to 6 miles north of Buffalo to\n10 miles south of Gallipolis. Movement was southeast at 30 mph.\n\nHAZARD...Wind gusts up to 40 mph.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects.\n\nLocations impacted include...\nRipley, Winfield, Hurricane, Ravenswood, Sissonville, Eleanor,\nBuffalo, Poca, Sandyville, Kenna, Teays Valley, Culloden, Cross\nLanes, Bancroft, Leon, Portland, Statts Mills, Given, Kentuck, and\nLiberty.\n\nThis includes the following highways...\nInterstate 77 in West Virginia between mile markers 110 and 150.\nInterstate 64 in West Virginia near mile marker 30, and between mile\nmarkers 32 and 44.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.\n\nTorrential rainfall is also occurring with these storms and may lead\nto localized flooding. Do not drive your vehicle through flooded\nroadways.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSRLX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS81 KRLX 180942"
-                    ],
-                    "NWSheadline": [
-                        "STRONG THUNDERSTORMS WILL IMPACT SOUTHEASTERN MEIGS...SOUTHEASTERN GALLIA...CENTRAL MASON...NORTHEASTERN CABELL...NORTHWESTERN KANAWHA...PUTNAM...NORTHWESTERN ROANE AND JACKSON COUNTIES THROUGH 630 AM EDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-09-18T09:42:00-00:00...storm...312DEG...25KT...38.95,-81.8 38.7,-81.96 38.67,-82.23"
-                    ],
-                    "maxWindGust": [
-                        "40 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
                     ]
                 }
             }
@@ -9802,114 +9713,6 @@
                     ],
                     "NationalWeatherService": [
                         "HTY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.858df2049c9693847cf695aa844d1f083d596d09.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -93.79,
-                            41.43
-                        ],
-                        [
-                            -93.46,
-                            41.55
-                        ],
-                        [
-                            -93.44,
-                            41.51
-                        ],
-                        [
-                            -93.79,
-                            41.38
-                        ],
-                        [
-                            -93.79,
-                            41.43
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.858df2049c9693847cf695aa844d1f083d596d09.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.858df2049c9693847cf695aa844d1f083d596d09.001.1",
-                "areaDesc": "Polk, IA; Warren, IA",
-                "geocode": {
-                    "SAME": [
-                        "019153",
-                        "019181"
-                    ],
-                    "UGC": [
-                        "IAC153",
-                        "IAC181"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/IAC153",
-                    "https://api.weather.gov/zones/county/IAC181"
-                ],
-                "references": [],
-                "sent": "2026-09-17T21:35:00-05:00",
-                "effective": "2026-09-17T21:35:00-05:00",
-                "onset": "2026-09-18T01:00:00-05:00",
-                "expires": "2026-09-18T09:45:00-05:00",
-                "ends": "2026-09-19T17:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Des Moines IA",
-                "headline": "Flood Warning issued September 17 at 9:35PM CDT until September 19 at 5:00PM CDT by NWS Des Moines IA",
-                "description": "...The National Weather Service in Des Moines has issued a Flood\nWarning for the following rivers in Iowa...\n\nNorth River near Norwalk Hwy R57 affecting Warren and Polk\nCounties.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...North River near Norwalk Hwy R57, or from the\nMadison-Warren County line to the Des Moines River.\n\n* WHEN...From late tonight to Saturday afternoon.\n\n* IMPACTS...At 22.0 feet, Water is over Iowa 28 immediately south of\nNorwalk and threatens several rural gravel roads.\n\n* ADDITIONAL DETAILS...\n- At 9:15 PM CDT Thursday the stage was 21.9 feet, and falling.\n- Forecast...The river is expected to rise above flood stage just\nafter midnight tonight to a crest of 22.2 feet early tomorrow\nafternoon. It will then fall below flood stage late Saturday\nmorning.\n- Flood stage is 22.0 feet.",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nFor the latest stream observations and forecasts refer to\nweather.gov/desmoines/water.\n\nRiver forecasts include observed precipitation plus forecast\nprecipitation over the next 24 hours.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLWDMX"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS43 KDMX 180235"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING IN EFFECT FROM LATE TONIGHT TO SATURDAY AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KDMX.FL.W.0022.260918T0600Z-260919T2200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-19T17:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLW"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
                     ]
                 }
             }
@@ -19968,5 +19771,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-18T10:23:14+00:00"
+    "updated": "2026-09-18T10:33:14+00:00"
 }
