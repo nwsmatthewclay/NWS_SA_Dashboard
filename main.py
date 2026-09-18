@@ -1518,9 +1518,27 @@ def glwu_render_frame(swh, u, v, forecast_hour):
             color="black", transform=ccrs.PlateCarree(), zorder=6,
             va="center", ha="right")
 
-    label = "Analysis (current)" if forecast_hour == 0 else f"+{forecast_hour}h forecast"
-    ax.set_title(f"GLWU ({GLWU_GRID}) wave height (ft) + wind barbs (kt)\n"
-                 f"{label} — Valid {valid:%Y-%m-%d %H:%M} UTC")
+    # ============================================================
+    # FRAME TITLE / VALID TIME
+    # ============================================================
+    # Keep the title identical on every animation frame. The second
+    # line shows the valid time in both Eastern local time and UTC.
+    # No "Analysis" or "+Xh forecast" wording is used.
+    local_tz = ZoneInfo("America/New_York")
+    valid_local = valid.astimezone(local_tz)
+
+    title_line = "LAKE CHAMPLAIN WAVE HEIGHT AND WIND FORECAST"
+    time_line = (
+        f"{valid_local:%-I %p %Z}  |  "
+        f"{valid:%-I %p UTC}"
+    )
+
+    ax.set_title(
+        f"{title_line}\n{time_line}",
+        fontsize=15,
+        fontweight="bold",
+        pad=12,
+    )
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png", dpi=110, bbox_inches="tight")
