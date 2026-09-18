@@ -1458,7 +1458,9 @@ def glwu_render_frame(swh, u, v, forecast_hour):
     extent = [lon_min, lon_max, lat_min, lat_max]
     lat_span = lat_max - lat_min
     lon_span = lon_max - lon_min
-    fig_h = 10
+    # Make the exported animation taller so it fills more of the
+    # dashboard's vertical space.  Width scales with the map aspect ratio.
+    fig_h = 12.5
     fig_w = max(3.5, fig_h * (lon_span / lat_span) * 1.8)
 
     fig = plt.figure(figsize=(fig_w, fig_h))
