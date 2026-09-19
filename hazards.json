@@ -10,56 +10,75 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-21810",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.684902884ac6c19f0dfc571f717ac58b3fb95d96.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-21810",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.684902884ac6c19f0dfc571f717ac58b3fb95d96.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-21810",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.684902884ac6c19f0dfc571f717ac58b3fb95d96.001.1",
+                "areaDesc": "City and Borough of Yakutat",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "002282"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "AKZ317"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/AKZ317"
                 ],
-                "references": [],
-                "sent": "2026-09-19T06:03:09+00:00",
-                "effective": "2026-09-19T06:03:09+00:00",
-                "onset": null,
-                "expires": "2026-09-19T06:13:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-18T14:14:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-18T22:07:00-08:00",
+                "effective": "2026-09-18T22:07:00-08:00",
+                "onset": "2026-09-20T04:00:00-08:00",
+                "expires": "2026-09-19T08:15:00-08:00",
+                "ends": "2026-09-20T16:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "High Wind Watch",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Juneau AK",
+                "headline": "High Wind Watch issued September 18 at 10:07PM AKDT until September 20 at 4:00PM AKDT by NWS Juneau AK",
+                "description": "* WHAT...Southeast winds 20 to 30 mph with gusts up to 60 mph\npossible.\n\n* WHERE...City and Borough of Yakutat.\n\n* WHEN...From late Saturday night through Sunday afternoon.\n\n* IMPACTS...High winds could blow around unsecured objects, damage\nproperty and cause power outages. Travel could be difficult.\n\n* ADDITIONAL DETAILS...Winds will quickly increase as a strong low\npressure system moves into the northern gulf. Confidence is high\nthat wind gusts will reach near 40 to 50 mph, but confidence\nremains lower that the Yakutat will experience wind gusts as high\nas 60 mph, although still possible.",
+                "instruction": "People are urged to secure vessels and loose objects that could be\nblown around or damaged by the wind.\n\nMonitor the latest forecasts and warnings for updates.",
+                "response": "Prepare",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "NPWAJK"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 190603"
+                        "WWAK77 PAJK 190607"
+                    ],
+                    "NWSheadline": [
+                        "HIGH WIND WATCH REMAINS IN EFFECT FROM LATE SATURDAY NIGHT THROUGH SUNDAY AFTERNOON"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAJK.HW.A.0007.260920T1200Z-260921T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-20T16:00:00-08:00"
                     ]
                 },
                 "scope": "Public",
@@ -68,10 +87,229 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "NWS"
+                        "HWA"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "HWA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.684902884ac6c19f0dfc571f717ac58b3fb95d96.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.684902884ac6c19f0dfc571f717ac58b3fb95d96.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.684902884ac6c19f0dfc571f717ac58b3fb95d96.002.1",
+                "areaDesc": "Municipality of Skagway; Haines Borough and Klukwan",
+                "geocode": {
+                    "SAME": [
+                        "002230",
+                        "002100"
+                    ],
+                    "UGC": [
+                        "AKZ318",
+                        "AKZ319"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AKZ318",
+                    "https://api.weather.gov/zones/forecast/AKZ319"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-18T14:14:00-08:00"
+                    }
+                ],
+                "sent": "2026-09-18T22:07:00-08:00",
+                "effective": "2026-09-18T22:07:00-08:00",
+                "onset": "2026-09-20T04:00:00-08:00",
+                "expires": "2026-09-19T08:15:00-08:00",
+                "ends": "2026-09-21T07:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "High Wind Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Juneau AK",
+                "headline": "High Wind Watch issued September 18 at 10:07PM AKDT until September 21 at 7:00AM AKDT by NWS Juneau AK",
+                "description": "* WHAT...Southeast winds 25 to 35 mph with gusts up to 60 mph\npossible.\n\n* WHERE...Haines Borough and Klukwan and Municipality of Skagway.\n\n* WHEN...From late Saturday night through Monday morning.\n\n* IMPACTS...High winds could blow around unsecured objects, damage\nproperty and cause power outages. Travel could be difficult.\n\n* ADDITIONAL DETAILS...Winds will quickly increase as a strong low\npressure system moves into the northern gulf. Confidence has\nincreased on strong wind gusts around 50 to 60 mph occurring near\nSkagway and Haines.",
+                "instruction": "People are urged to secure vessels and loose objects that could be\nblown around or damaged by the wind.\n\nMonitor the latest forecasts and warnings for updates.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWAJK"
+                    ],
+                    "WMOidentifier": [
+                        "WWAK77 PAJK 190607"
+                    ],
+                    "NWSheadline": [
+                        "HIGH WIND WATCH REMAINS IN EFFECT FROM LATE SATURDAY NIGHT THROUGH MONDAY MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.PAJK.HW.A.0007.260920T1200Z-260921T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-21T07:00:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "HWA"
+                    ],
+                    "NationalWeatherService": [
+                        "HWA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd1b220477d55a6174e58c65c830957b235c4f97.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -93.77,
+                            43.91
+                        ],
+                        [
+                            -93.57,
+                            43.94
+                        ],
+                        [
+                            -93.46,
+                            43.94
+                        ],
+                        [
+                            -93.05,
+                            43.89
+                        ],
+                        [
+                            -93.05,
+                            43.78
+                        ],
+                        [
+                            -93.12,
+                            43.77
+                        ],
+                        [
+                            -93.4,
+                            43.8
+                        ],
+                        [
+                            -93.77,
+                            43.8
+                        ],
+                        [
+                            -93.77,
+                            43.91
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dd1b220477d55a6174e58c65c830957b235c4f97.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.dd1b220477d55a6174e58c65c830957b235c4f97.001.1",
+                "areaDesc": "Faribault, MN; Freeborn, MN; Steele, MN; Waseca, MN",
+                "geocode": {
+                    "SAME": [
+                        "027043",
+                        "027047",
+                        "027147",
+                        "027161"
+                    ],
+                    "UGC": [
+                        "MNC043",
+                        "MNC047",
+                        "MNC147",
+                        "MNC161"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MNC043",
+                    "https://api.weather.gov/zones/county/MNC047",
+                    "https://api.weather.gov/zones/county/MNC147",
+                    "https://api.weather.gov/zones/county/MNC161"
+                ],
+                "references": [],
+                "sent": "2026-09-19T01:07:00-05:00",
+                "effective": "2026-09-19T01:07:00-05:00",
+                "onset": "2026-09-19T01:07:00-05:00",
+                "expires": "2026-09-19T05:00:00-05:00",
+                "ends": "2026-09-19T05:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Flash Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Twin Cities/Chanhassen MN",
+                "headline": "Flash Flood Warning issued September 19 at 1:07AM CDT until September 19 at 5:00AM CDT by NWS Twin Cities/Chanhassen MN",
+                "description": "FFWMPX\n\nThe National Weather Service in the Twin Cities has issued a\n\n* Flash Flood Warning for...\nNortheastern Faribault County in south central Minnesota...\nNorthern Freeborn County in south central Minnesota...\nSouthern Steele County in south central Minnesota...\nSouthern Waseca County in south central Minnesota...\n\n* Until 500 AM CDT.\n\n* At 107 AM CDT, local law enforcement reported thunderstorms\nproducing heavy rain in southern Waseca county along the MN Highway\n30 corridor. Between 5 and 9 inches of rain have fallen. Additional\nrainfall amounts up to 1 inch are possible in the warned area.\nFlash flooding is already occurring.\n\nHAZARD...Flash flooding caused by thunderstorms.\n\nSOURCE...Law enforcement reported.\n\nIMPACT...Flash flooding of small creeks and streams, urban areas,\nhighways, streets and underpasses as well as other poor\ndrainage and low-lying areas.\n\n* Some locations that will experience flash flooding include...\nBlooming Prairie, New Richland, Ellendale, Geneva, Hartland, Otisco\nand Matawan.",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFWMPX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS53 KMPX 190607"
+                    ],
+                    "flashFloodDetection": [
+                        "OBSERVED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KMPX.FF.W.0011.260919T0607Z-260919T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-19T05:00:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFW"
+                    ],
+                    "NationalWeatherService": [
+                        "FFW"
                     ]
                 }
             }
@@ -18125,167 +18363,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.001.1",
-                "areaDesc": "City and Borough of Yakutat",
-                "geocode": {
-                    "SAME": [
-                        "002282"
-                    ],
-                    "UGC": [
-                        "AKZ317"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ317"
-                ],
-                "references": [],
-                "sent": "2026-09-18T14:14:00-08:00",
-                "effective": "2026-09-18T14:14:00-08:00",
-                "onset": "2026-09-20T04:00:00-08:00",
-                "expires": "2026-09-18T22:15:00-08:00",
-                "ends": "2026-09-20T16:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "High Wind Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Juneau AK",
-                "headline": "High Wind Watch issued September 18 at 2:14PM AKDT until September 20 at 4:00PM AKDT by NWS Juneau AK",
-                "description": "* WHAT...Southeast winds 20 to 30 mph with gusts up to 60 mph\npossible.\n\n* WHERE...City and Borough of Yakutat.\n\n* WHEN...From late Saturday night through Sunday afternoon.\n\n* IMPACTS...High winds could blow around unsecured objects, damage\nproperty and cause power outages. Travel could be difficult.\n\n* ADDITIONAL DETAILS...Winds will quickly increase as a strong low\npressure system moves into the northern gulf. Confidence is high\nthat wind gusts will reach near 40 to 50 mph, but confidence\nremains lower that the Yakutat will experience wind gusts as high\nas 60 mph, although still possible.",
-                "instruction": "People are urged to secure vessels and loose objects that could be\nblown around or damaged by the wind.\n\nMonitor the latest forecasts and warnings for updates.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWAJK"
-                    ],
-                    "WMOidentifier": [
-                        "WWAK77 PAJK 182214"
-                    ],
-                    "NWSheadline": [
-                        "HIGH WIND WATCH IN EFFECT FROM LATE SATURDAY NIGHT THROUGH SUNDAY AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.PAJK.HW.A.0007.260920T1200Z-260921T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-20T16:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HWA"
-                    ],
-                    "NationalWeatherService": [
-                        "HWA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.c55a1c296f3b9f2f4003835188d4eabacb4e19a5.002.1",
-                "areaDesc": "Municipality of Skagway; Haines Borough and Klukwan",
-                "geocode": {
-                    "SAME": [
-                        "002230",
-                        "002100"
-                    ],
-                    "UGC": [
-                        "AKZ318",
-                        "AKZ319"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AKZ318",
-                    "https://api.weather.gov/zones/forecast/AKZ319"
-                ],
-                "references": [],
-                "sent": "2026-09-18T14:14:00-08:00",
-                "effective": "2026-09-18T14:14:00-08:00",
-                "onset": "2026-09-20T04:00:00-08:00",
-                "expires": "2026-09-18T22:15:00-08:00",
-                "ends": "2026-09-21T07:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "High Wind Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Juneau AK",
-                "headline": "High Wind Watch issued September 18 at 2:14PM AKDT until September 21 at 7:00AM AKDT by NWS Juneau AK",
-                "description": "* WHAT...Southeast winds 25 to 35 mph with gusts up to 60 mph\npossible.\n\n* WHERE...Haines Borough and Klukwan and Municipality of Skagway.\n\n* WHEN...From late Saturday night through Monday morning.\n\n* IMPACTS...High winds could blow around unsecured objects, damage\nproperty and cause power outages. Travel could be difficult.\n\n* ADDITIONAL DETAILS...Winds will quickly increase as a strong low\npressure system moves into the northern gulf. Confidence has\nincreased on strong wind gusts around 50 to 60 mph occurring near\nSkagway and Haines.",
-                "instruction": "People are urged to secure vessels and loose objects that could be\nblown around or damaged by the wind.\n\nMonitor the latest forecasts and warnings for updates.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWAJK"
-                    ],
-                    "WMOidentifier": [
-                        "WWAK77 PAJK 182214"
-                    ],
-                    "NWSheadline": [
-                        "HIGH WIND WATCH IN EFFECT FROM LATE SATURDAY NIGHT THROUGH MONDAY MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.PAJK.HW.A.0007.260920T1200Z-260921T1500Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-21T07:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HWA"
-                    ],
-                    "NationalWeatherService": [
-                        "HWA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8c4685bbb5315a88589a66bed15babc6af594547.001.1",
             "type": "Feature",
             "geometry": null,
@@ -30713,5 +30790,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-19T06:03:15+00:00"
+    "updated": "2026-09-19T06:13:17+00:00"
 }
