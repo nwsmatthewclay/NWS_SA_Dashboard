@@ -10,56 +10,75 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-38257",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-38257",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-38257",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.001.1",
+                "areaDesc": "Coastal Waters from Pigeon Point to Point Pinos California out to 10 nm",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "057560"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "PZZ560"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/PZZ560"
                 ],
-                "references": [],
-                "sent": "2026-09-20T09:23:09+00:00",
-                "effective": "2026-09-20T09:23:09+00:00",
-                "onset": null,
-                "expires": "2026-09-20T09:33:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-20T03:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 20 at 3:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 10 to 20 kt expected.\n\n* WHERE...Coastal Waters from Pigeon Point to Point Pinos\nCalifornia out to 10 NM.\n\n* WHEN...From 3 PM this afternoon to 9 PM PDT this evening.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "MWWMTR"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 200923"
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 3 PM THIS AFTERNOON TO 9 PM PDT THIS EVENING... ...SMALL CRAFT ADVISORY WILL EXPIRE AT 3 AM PDT EARLY THIS MORNING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXP.KMTR.SC.Y.0114.000000T0000Z-260920T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-20T03:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.001.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.001.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.001.2,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.001.2,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.001.2,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.001.2,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.001.2,2026-09-18T02:12:00-07:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +90,1050 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.006.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.006.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.006.1",
+                "areaDesc": "Coastal Waters from Point Arena to Point Reyes California out to 10 nm",
+                "geocode": {
+                    "SAME": [
+                        "057540"
+                    ],
+                    "UGC": [
+                        "PZZ540"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ540"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.006.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.006.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T09:00:00-07:00",
+                "ends": "2026-09-20T09:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 20 at 9:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 10 to 20 kt.\n\n* WHERE...Coastal Waters from Point Arena to Point Reyes\nCalifornia out to 10 NM.\n\n* WHEN...Until 9 AM PDT this morning.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260920T1600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-20T09:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.006.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.006.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.008.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.007.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.007.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.007.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.007.1,2026-09-18T02:12:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.01261cd9e1c60ff1a76c9a92fb1bd9613c96a5eb.003.1,2026-09-17T20:50:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.002.1",
+                "areaDesc": "Waters from Point Arena to Point Reyes 10-60 NM",
+                "geocode": {
+                    "SAME": [
+                        "057570"
+                    ],
+                    "UGC": [
+                        "PZZ570"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ570"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-21T09:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 21 at 9:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 15 to 25 kt with gusts up to 30 kt.\n\n* WHERE...Waters from Point Arena to Point Reyes 10-60 NM.\n\n* WHEN...Until 9 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-21T09:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.002.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.002.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.004.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.003.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.003.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.003.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.005.1,2026-09-18T02:12:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.01261cd9e1c60ff1a76c9a92fb1bd9613c96a5eb.001.1,2026-09-17T20:50:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.004.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.004.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.004.1",
+                "areaDesc": "Waters from Pigeon Point to Point Pinos 10-60 NM",
+                "geocode": {
+                    "SAME": [
+                        "057575"
+                    ],
+                    "UGC": [
+                        "PZZ575"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ575"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.004.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.004.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-21T03:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 21 at 3:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 15 to 20 kt.\n\n* WHERE...Waters from Pigeon Point to Point Pinos 10-60 NM.\n\n* WHEN...Until 3 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-21T03:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.004.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.004.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.006.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.005.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.005.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.005.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.003.1,2026-09-18T02:12:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.003.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.003.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.003.1",
+                "areaDesc": "Waters from Point Reyes to Pigeon Point 10-60 NM",
+                "geocode": {
+                    "SAME": [
+                        "057571"
+                    ],
+                    "UGC": [
+                        "PZZ571"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ571"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-21T09:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 21 at 9:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 15 to 25 kt with gusts up to 30 kt.\n\n* WHERE...Waters from Point Reyes to Pigeon Point 10-60 NM.\n\n* WHEN...Until 9 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-21T09:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.003.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.003.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.005.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.004.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.004.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.004.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.006.1,2026-09-18T02:12:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.01261cd9e1c60ff1a76c9a92fb1bd9613c96a5eb.002.1,2026-09-17T20:50:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.007.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.007.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.007.1",
+                "areaDesc": "Coastal Waters from Point Pinos to Point Piedras Blancas California out to 10 nm",
+                "geocode": {
+                    "SAME": [
+                        "057565"
+                    ],
+                    "UGC": [
+                        "PZZ565"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ565"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.007.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.007.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-21T03:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 21 at 3:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 10 to 20 kt.\n\n* WHERE...Coastal Waters from Point Pinos to Point Piedras\nBlancas California out to 10 NM.\n\n* WHEN...Until 3 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0114.000000T0000Z-260921T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-21T03:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.007.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.007.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.002.2,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.002.2,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.002.2,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.002.2,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.002.2,2026-09-18T02:12:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.001.2",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.001.2",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.001.2",
+                "areaDesc": "Coastal Waters from Pigeon Point to Point Pinos California out to 10 nm",
+                "geocode": {
+                    "SAME": [
+                        "057560"
+                    ],
+                    "UGC": [
+                        "PZZ560"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ560"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T15:00:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-20T21:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 20 at 9:00PM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 10 to 20 kt expected.\n\n* WHERE...Coastal Waters from Pigeon Point to Point Pinos\nCalifornia out to 10 NM.\n\n* WHEN...From 3 PM this afternoon to 9 PM PDT this evening.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 3 PM THIS AFTERNOON TO 9 PM PDT THIS EVENING... ...SMALL CRAFT ADVISORY WILL EXPIRE AT 3 AM PDT EARLY THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0115.260920T2200Z-260921T0400Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-20T21:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.001.2,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.001.2,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.001.3,2026-09-19T02:33:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.005.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.005.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d22b475cb0a536d19d96497d0d9fba993e43d236.005.1",
+                "areaDesc": "Waters from Point Pinos to Point Piedras Blancas 10-60 NM",
+                "geocode": {
+                    "SAME": [
+                        "057576"
+                    ],
+                    "UGC": [
+                        "PZZ576"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ576"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.005.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.005.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-19T20:01:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-20T02:31:00-07:00",
+                "effective": "2026-09-20T02:31:00-07:00",
+                "onset": "2026-09-20T02:31:00-07:00",
+                "expires": "2026-09-20T10:45:00-07:00",
+                "ends": "2026-09-21T03:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Francisco CA",
+                "headline": "Small Craft Advisory issued September 20 at 2:31AM PDT until September 21 at 3:00AM PDT by NWS San Francisco CA",
+                "description": "* WHAT...Northwest winds 15 to 20 kt.\n\n* WHERE...Waters from Point Pinos to Point Piedras Blancas 10-\n60 NM.\n\n* WHEN...Until 3 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMTR"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KMTR 200931"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-21T03:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.005.1,2026-09-19T14:07:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.005.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.007.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.006.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.006.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.006.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.004.1,2026-09-18T02:12:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.685d5347b8c4663fd0e212ad21c45fb68570fc11.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.82,
+                            38.57
+                        ],
+                        [
+                            -82.74,
+                            38.6
+                        ],
+                        [
+                            -82.77,
+                            38.64
+                        ],
+                        [
+                            -82.76,
+                            38.68
+                        ],
+                        [
+                            -82.71,
+                            38.68
+                        ],
+                        [
+                            -82.7,
+                            38.75
+                        ],
+                        [
+                            -82.66,
+                            38.75
+                        ],
+                        [
+                            -82.65,
+                            38.81
+                        ],
+                        [
+                            -82.06,
+                            38.59
+                        ],
+                        [
+                            -82.02,
+                            38.6
+                        ],
+                        [
+                            -81.7,
+                            38.96
+                        ],
+                        [
+                            -81.27,
+                            38.67
+                        ],
+                        [
+                            -81.16,
+                            38.56
+                        ],
+                        [
+                            -81.41,
+                            38.47
+                        ],
+                        [
+                            -81.94,
+                            38.41
+                        ],
+                        [
+                            -82.75,
+                            38.38
+                        ],
+                        [
+                            -82.86,
+                            38.6
+                        ],
+                        [
+                            -82.85,
+                            38.61
+                        ],
+                        [
+                            -82.82,
+                            38.57
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.685d5347b8c4663fd0e212ad21c45fb68570fc11.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.685d5347b8c4663fd0e212ad21c45fb68570fc11.001.1",
+                "areaDesc": "Boyd, KY; Greenup, KY; Gallia, OH; Lawrence, OH; Cabell, WV; Jackson, WV; Kanawha, WV; Mason, WV; Putnam, WV; Roane, WV; Wayne, WV",
+                "geocode": {
+                    "SAME": [
+                        "021019",
+                        "021089",
+                        "039053",
+                        "039087",
+                        "054011",
+                        "054035",
+                        "054039",
+                        "054053",
+                        "054079",
+                        "054087",
+                        "054099"
+                    ],
+                    "UGC": [
+                        "KYC019",
+                        "KYC089",
+                        "OHC053",
+                        "OHC087",
+                        "WVC011",
+                        "WVC035",
+                        "WVC039",
+                        "WVC053",
+                        "WVC079",
+                        "WVC087",
+                        "WVC099"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/KYC019",
+                    "https://api.weather.gov/zones/county/KYC089",
+                    "https://api.weather.gov/zones/county/OHC053",
+                    "https://api.weather.gov/zones/county/OHC087",
+                    "https://api.weather.gov/zones/county/WVC011",
+                    "https://api.weather.gov/zones/county/WVC035",
+                    "https://api.weather.gov/zones/county/WVC039",
+                    "https://api.weather.gov/zones/county/WVC053",
+                    "https://api.weather.gov/zones/county/WVC079",
+                    "https://api.weather.gov/zones/county/WVC087",
+                    "https://api.weather.gov/zones/county/WVC099"
+                ],
+                "references": [],
+                "sent": "2026-09-20T05:30:00-04:00",
+                "effective": "2026-09-20T05:30:00-04:00",
+                "onset": "2026-09-20T05:30:00-04:00",
+                "expires": "2026-09-20T09:30:00-04:00",
+                "ends": "2026-09-20T09:30:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Flash Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Charleston WV",
+                "headline": "Flash Flood Warning issued September 20 at 5:30AM EDT until September 20 at 9:30AM EDT by NWS Charleston WV",
+                "description": "FFWRLX\n\nThe National Weather Service in Charleston has issued a\n\n* Flash Flood Warning for...\nNorthern Boyd County in northeastern Kentucky...\nSoutheastern Greenup County in northeastern Kentucky...\nSouthwestern Gallia County in southeastern Ohio...\nLawrence County in southeastern Ohio...\nNorthern Cabell County in central West Virginia...\nNorthern Kanawha County in central West Virginia...\nSouthwestern Roane County in central West Virginia...\nJackson County in northwestern West Virginia...\nSouthern Mason County in western West Virginia...\nPutnam County in western West Virginia...\nNorthern Wayne County in western West Virginia...\n\n* Until 930 AM EDT.\n\n* At 530 AM EDT, Doppler radar indicated thunderstorms producing\nheavy rain across the warned area. Between 1 and 1.5 inches of rain\nhave fallen. Additional rainfall amounts of 0.5 to 1.5 inches are\npossible in the warned area. Flash flooding is ongoing or expected\nto begin shortly.\n\nHAZARD...Flash flooding caused by thunderstorms.\n\nSOURCE...Radar indicated.\n\nIMPACT...Flash flooding of small creeks and streams, urban areas,\nhighways, streets and underpasses as well as other poor\ndrainage and low-lying areas.\n\nThis includes the following highways...\nInterstate 77 in West Virginia between mile markers 109 and 148.\nInterstate 64 in West Virginia between mile markers 1 and 8...and\nbetween mile markers 10 and 46. Interstate 79 between mile markers 11\nand 30.",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nReport flooding to the National Weather Service by calling toll free,\n800 401 9535, when you can do so safely.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFWRLX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS51 KRLX 200930"
+                    ],
+                    "flashFloodDetection": [
+                        "RADAR INDICATED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KRLX.FF.W.0220.260920T0930Z-260920T1330Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-20T09:30:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFW"
+                    ],
+                    "NationalWeatherService": [
+                        "FFW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6ef72082cf405d32fc52fa7f501c5b96ed7d324c.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -89.37,
+                            42.5
+                        ],
+                        [
+                            -88.99,
+                            42.5
+                        ],
+                        [
+                            -88.8,
+                            42.49
+                        ],
+                        [
+                            -88.63,
+                            42.5
+                        ],
+                        [
+                            -88.3,
+                            42.49
+                        ],
+                        [
+                            -88.2,
+                            42.5
+                        ],
+                        [
+                            -88.2,
+                            42.15
+                        ],
+                        [
+                            -89.17,
+                            42.15
+                        ],
+                        [
+                            -89.17,
+                            42.2
+                        ],
+                        [
+                            -89.4,
+                            42.2
+                        ],
+                        [
+                            -89.4,
+                            42.5
+                        ],
+                        [
+                            -89.37,
+                            42.5
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6ef72082cf405d32fc52fa7f501c5b96ed7d324c.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.6ef72082cf405d32fc52fa7f501c5b96ed7d324c.001.1",
+                "areaDesc": "Boone, IL; McHenry, IL; Winnebago, IL",
+                "geocode": {
+                    "SAME": [
+                        "017007",
+                        "017111",
+                        "017201"
+                    ],
+                    "UGC": [
+                        "ILC007",
+                        "ILC111",
+                        "ILC201"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/ILC007",
+                    "https://api.weather.gov/zones/county/ILC111",
+                    "https://api.weather.gov/zones/county/ILC201"
+                ],
+                "references": [],
+                "sent": "2026-09-20T04:30:00-05:00",
+                "effective": "2026-09-20T04:30:00-05:00",
+                "onset": "2026-09-20T04:30:00-05:00",
+                "expires": "2026-09-20T08:00:00-05:00",
+                "ends": "2026-09-20T08:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Chicago IL",
+                "headline": "Flood Advisory issued September 20 at 4:30AM CDT until September 20 at 8:00AM CDT by NWS Chicago IL",
+                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...Boone County in north central Illinois...\nWinnebago County in north central Illinois...\nMcHenry County in northeastern Illinois...\n\n* WHEN...Until 800 AM CDT.\n\n* IMPACTS...Creeks and streams may rise out of their banks. Flooding\nmay occur in poor drainage and urban areas. Roads and streets may\nbe flooded.\n\n* ADDITIONAL DETAILS...\n- At 428 AM CDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Up to 1 inch of rain has fallen.\n- Additional rainfall amounts of 1 to 2 inches are expected over\nthe area. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nRockford, Crystal Lake, Algonquin, Lake in the Hills, McHenry,\nBelvidere, Woodstock, Huntley, Loves Park, Machesney Park,\nRoscoe, Fox Lake, Harvard, Island Lake, South Beloit, Rockton,\nMarengo, Poplar Grove, Rockford Airport, Cary, Johnsburg,\nLakemoor, Spring Grove and Candlewick Lake.\n- http://www.weather.gov/safety/flood",
+                "instruction": "A Flood Advisory means minor flooding along waterways and other poor\ndrainage areas is imminent or may already be occurring. Persons in\nthe advisory area should use caution and avoid flood waters.\n\nTurn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSLOT"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS83 KLOT 200930"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY IN EFFECT UNTIL 8 AM CDT THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KLOT.FA.Y.0123.260920T0930Z-260920T1300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-20T08:00:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FAY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2003708816bea15cebf27f6b10ecba1c47733945.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -99.95,
+                            31.74
+                        ],
+                        [
+                            -99.82,
+                            31.87
+                        ],
+                        [
+                            -99.53,
+                            31.71
+                        ],
+                        [
+                            -99.75,
+                            31.51
+                        ],
+                        [
+                            -99.95,
+                            31.74
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2003708816bea15cebf27f6b10ecba1c47733945.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.2003708816bea15cebf27f6b10ecba1c47733945.001.1",
+                "areaDesc": "Runnels; Concho; Coleman",
+                "geocode": {
+                    "SAME": [
+                        "048399",
+                        "048095",
+                        "048083"
+                    ],
+                    "UGC": [
+                        "TXZ066",
+                        "TXZ073",
+                        "TXZ139"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/TXZ066",
+                    "https://api.weather.gov/zones/forecast/TXZ073",
+                    "https://api.weather.gov/zones/forecast/TXZ139"
+                ],
+                "references": [],
+                "sent": "2026-09-20T04:26:00-05:00",
+                "effective": "2026-09-20T04:26:00-05:00",
+                "onset": "2026-09-20T04:26:00-05:00",
+                "expires": "2026-09-20T05:00:00-05:00",
+                "ends": null,
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Observed",
+                "urgency": "Expected",
+                "event": "Special Weather Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Angelo TX",
+                "headline": "Special Weather Statement issued September 20 at 4:26AM CDT by NWS San Angelo TX",
+                "description": "At 426 AM CDT, Doppler radar was tracking a strong thunderstorm over\nBenoit, moving southeast at 10 mph.\n\nHAZARD...Wind gusts up to 45 mph and pea size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects. Minor hail damage to vegetation is\npossible.\n\nLocations impacted include...\nBallinger, Ivie Reservoir Near Concho Park Marina, Talpa, Benoit, and\nThe Intersection Of Ranch Road 1929 And Ranch Road 2134.",
+                "instruction": "If outdoors, consider seeking shelter inside a building.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SPSSJT"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS84 KSJT 200926"
+                    ],
+                    "NWSheadline": [
+                        "A STRONG THUNDERSTORM WILL IMPACT WEST CENTRAL COLEMAN... SOUTHEASTERN RUNNELS AND NORTH CENTRAL CONCHO COUNTIES THROUGH 500 AM CDT"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-09-20T09:26:00-00:00...storm...313DEG...7KT...31.76,-99.83"
+                    ],
+                    "maxWindGust": [
+                        "40 MPH"
+                    ],
+                    "maxHailSize": [
+                        "0.25"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SPS"
+                    ],
+                    "NationalWeatherService": [
+                        "SPS"
                     ]
                 }
             }
@@ -1261,114 +2323,6 @@
                     ],
                     "NationalWeatherService": [
                         "FAY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.686eaffc3c7230570ca9bb55813b63f244a5e8d3.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -146.99,
-                            59.72
-                        ],
-                        [
-                            -147.11,
-                            59.55
-                        ],
-                        [
-                            -147.78,
-                            59.62
-                        ],
-                        [
-                            -147.6,
-                            59.87
-                        ],
-                        [
-                            -146.99,
-                            59.72
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.686eaffc3c7230570ca9bb55813b63f244a5e8d3.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.686eaffc3c7230570ca9bb55813b63f244a5e8d3.001.1",
-                "areaDesc": "Gravel Point to Cape Cleare out to 15 NM; Cape Suckling to Cape Cleare from 15 to 75 NM",
-                "geocode": {
-                    "SAME": [
-                        "058711",
-                        "058712"
-                    ],
-                    "UGC": [
-                        "PKZ711",
-                        "PKZ712"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PKZ711",
-                    "https://api.weather.gov/zones/forecast/PKZ712"
-                ],
-                "references": [],
-                "sent": "2026-09-20T01:09:00-08:00",
-                "effective": "2026-09-20T01:07:00-08:00",
-                "onset": "2026-09-20T01:09:00-08:00",
-                "expires": "2026-09-20T01:30:00-08:00",
-                "ends": "2026-09-20T01:30:00-08:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Immediate",
-                "event": "Special Marine Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Anchorage AK",
-                "headline": "Special Marine Warning issued September 20 at 1:07AM AKDT until September 20 at 1:30AM AKDT by NWS Anchorage AK",
-                "description": "SMWAFC\n\nThe National Weather Service in Anchorage has issued a\n\n* Special Marine Warning for...\nCape Suckling to Cape Cleare from 15 to 75 NM...\nGravel Point to Cape Cleare out to 15 NM...\n\n* Until 130 AM AKDT/1130 PM HST/.\n\n* At 107 AM AKDT/1107 PM HST/, Doppler radar indicated a severe\nthunderstorm capable of producing waterspouts, winds 34 knots or\ngreater, and small hail. This storm was located 33 nm northwest of\nMiddleton Island, moving west at 20 knots.",
-                "instruction": "Mariners can expect gusty winds, high waves, and heavy rains.\nBoaters should seek safe harbor immediately until this storm passes.\n\nThunderstorms can produce sudden waterspouts. Waterspouts can easily\noverturn boats and create locally hazardous seas. Seek safe harbor\nimmediately.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SMWAFC"
-                    ],
-                    "WMOidentifier": [
-                        "WHAK58 PAFC 200909"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-09-20T09:07:00-00:00...storm...109DEG...21KT...59.66,-147.2"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.PAFC.MA.W.0005.260920T0909Z-260920T0930Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-20T01:30:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SMW"
-                    ],
-                    "NationalWeatherService": [
-                        "MAW"
                     ]
                 }
             }
@@ -15753,694 +16707,6 @@
                     ],
                     "NationalWeatherService": [
                         "FLA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.2",
-                "areaDesc": "Coastal Waters from Pigeon Point to Point Pinos California out to 10 nm",
-                "geocode": {
-                    "SAME": [
-                        "057560"
-                    ],
-                    "UGC": [
-                        "PZZ560"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ560"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-20T15:00:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-20T21:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 20 at 9:00PM PDT by NWS San Francisco CA",
-                "description": "* WHAT...For the first Small Craft Advisory, northwest winds 10\nto 20 kt. For the second Small Craft Advisory, northwest winds\n15 to 20 kt expected.\n\n* WHERE...Coastal Waters from Pigeon Point to Point Pinos\nCalifornia out to 10 NM.\n\n* WHEN...For the first Small Craft Advisory, until 3 AM PDT\nSunday. For the second Small Craft Advisory, from 3 PM to 9 PM\nPDT Sunday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT SUNDAY... ...SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 3 PM TO 9 PM PDT SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0115.260920T2200Z-260921T0400Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-20T21:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.001.2,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.001.3,2026-09-19T02:33:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.001.1",
-                "areaDesc": "Coastal Waters from Pigeon Point to Point Pinos California out to 10 nm",
-                "geocode": {
-                    "SAME": [
-                        "057560"
-                    ],
-                    "UGC": [
-                        "PZZ560"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ560"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-20T03:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 20 at 3:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...For the first Small Craft Advisory, northwest winds 10\nto 20 kt. For the second Small Craft Advisory, northwest winds\n15 to 20 kt expected.\n\n* WHERE...Coastal Waters from Pigeon Point to Point Pinos\nCalifornia out to 10 NM.\n\n* WHEN...For the first Small Craft Advisory, until 3 AM PDT\nSunday. For the second Small Craft Advisory, from 3 PM to 9 PM\nPDT Sunday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT SUNDAY... ...SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 3 PM TO 9 PM PDT SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0114.000000T0000Z-260920T1000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-20T03:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.001.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.001.2,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.001.2,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.001.2,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.001.2,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.001.2,2026-09-18T02:12:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.004.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.004.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.004.1",
-                "areaDesc": "Waters from Pigeon Point to Point Pinos 10-60 NM",
-                "geocode": {
-                    "SAME": [
-                        "057575"
-                    ],
-                    "UGC": [
-                        "PZZ575"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ575"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.004.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.004.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-21T03:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 21 at 3:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...Northwest winds 15 to 20 kt.\n\n* WHERE...Waters from Pigeon Point to Point Pinos 10-60 NM.\n\n* WHEN...Until 3 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-21T03:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.004.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.006.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.005.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.005.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.005.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.003.1,2026-09-18T02:12:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.005.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.005.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.005.1",
-                "areaDesc": "Waters from Point Pinos to Point Piedras Blancas 10-60 NM",
-                "geocode": {
-                    "SAME": [
-                        "057576"
-                    ],
-                    "UGC": [
-                        "PZZ576"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ576"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.005.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.005.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-21T03:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 21 at 3:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...Northwest winds 15 to 20 kt.\n\n* WHERE...Waters from Point Pinos to Point Piedras Blancas 10-\n60 NM.\n\n* WHEN...Until 3 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-21T03:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.005.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.007.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.006.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.006.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.006.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.004.1,2026-09-18T02:12:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.007.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.007.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.007.1",
-                "areaDesc": "Coastal Waters from Point Pinos to Point Piedras Blancas California out to 10 nm",
-                "geocode": {
-                    "SAME": [
-                        "057565"
-                    ],
-                    "UGC": [
-                        "PZZ565"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ565"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.007.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.007.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-21T03:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 21 at 3:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...Northwest winds 10 to 20 kt.\n\n* WHERE...Coastal Waters from Point Pinos to Point Piedras\nBlancas California out to 10 NM.\n\n* WHEN...Until 3 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0114.000000T0000Z-260921T1000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-21T03:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.007.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.002.2,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.002.2,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.002.2,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.002.2,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.002.2,2026-09-18T02:12:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.003.1",
-                "areaDesc": "Waters from Point Reyes to Pigeon Point 10-60 NM",
-                "geocode": {
-                    "SAME": [
-                        "057571"
-                    ],
-                    "UGC": [
-                        "PZZ571"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ571"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.003.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.003.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-21T09:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 21 at 9:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...Northwest winds 15 to 25 kt with gusts up to 30 kt.\n\n* WHERE...Waters from Point Reyes to Pigeon Point 10-60 NM.\n\n* WHEN...Until 9 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-21T09:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.003.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.005.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.004.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.004.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.004.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.006.1,2026-09-18T02:12:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.01261cd9e1c60ff1a76c9a92fb1bd9613c96a5eb.002.1,2026-09-17T20:50:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.002.1",
-                "areaDesc": "Waters from Point Arena to Point Reyes 10-60 NM",
-                "geocode": {
-                    "SAME": [
-                        "057570"
-                    ],
-                    "UGC": [
-                        "PZZ570"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ570"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-21T09:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 21 at 9:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...Northwest winds 15 to 25 kt with gusts up to 30 kt.\n\n* WHERE...Waters from Point Arena to Point Reyes 10-60 NM.\n\n* WHEN...Until 9 AM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260921T1600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-21T09:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.002.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.004.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.003.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.003.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.003.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.005.1,2026-09-18T02:12:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.01261cd9e1c60ff1a76c9a92fb1bd9613c96a5eb.001.1,2026-09-17T20:50:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.006.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.006.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.90efffe7fbb7de937c2657358e54b02daa48bec2.006.1",
-                "areaDesc": "Coastal Waters from Point Arena to Point Reyes California out to 10 nm",
-                "geocode": {
-                    "SAME": [
-                        "057540"
-                    ],
-                    "UGC": [
-                        "PZZ540"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ540"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.006.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.a5e13ae2bb9be0edd5e6969e91d7660a9835b6a5.006.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-19T14:07:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-19T20:01:00-07:00",
-                "effective": "2026-09-19T20:01:00-07:00",
-                "onset": "2026-09-19T20:01:00-07:00",
-                "expires": "2026-09-20T04:15:00-07:00",
-                "ends": "2026-09-20T09:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Francisco CA",
-                "headline": "Small Craft Advisory issued September 19 at 8:01PM PDT until September 20 at 9:00AM PDT by NWS San Francisco CA",
-                "description": "* WHAT...Northwest winds 10 to 20 kt with gusts up to 30 kt.\n\n* WHERE...Coastal Waters from Point Arena to Point Reyes\nCalifornia out to 10 NM.\n\n* WHEN...Until 9 AM PDT Sunday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMTR"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KMTR 200301"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMTR.SC.Y.0113.000000T0000Z-260920T1600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-20T09:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1432deee371d94247cf408c24af3a450740020f2.006.1,2026-09-19T08:24:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ae22453e8c61a6a9b9d145ddec625108ae0a83e3.008.1,2026-09-19T02:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.418f44b3a95641555d6c92d78efe8503bfe0a654.007.1,2026-09-18T20:35:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.618bb55daeca2542c987b3867a5e7e497d47e063.007.1,2026-09-18T14:52:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.27046677b2b74bcd717dd20996faeee1af8cd828.007.1,2026-09-18T08:54:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65ea9272198fb3cff3dc6d6b73b790e940007b0d.007.1,2026-09-18T02:12:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.01261cd9e1c60ff1a76c9a92fb1bd9613c96a5eb.003.1,2026-09-17T20:50:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
                     ]
                 }
             }
@@ -38862,5 +39128,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-20T09:23:14+00:00"
+    "updated": "2026-09-20T09:33:15+00:00"
 }
