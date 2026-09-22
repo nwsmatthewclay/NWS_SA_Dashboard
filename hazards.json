@@ -10,56 +10,103 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-30526",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d1ad533160518f1275a6da543fbebae8d77d1601.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.82,
+                            35.32
+                        ],
+                        [
+                            -82.74,
+                            35.4
+                        ],
+                        [
+                            -82.64,
+                            35.32
+                        ],
+                        [
+                            -82.76,
+                            35.17
+                        ],
+                        [
+                            -82.79,
+                            35.08
+                        ],
+                        [
+                            -82.96,
+                            35.04
+                        ],
+                        [
+                            -82.92,
+                            35.24
+                        ],
+                        [
+                            -82.82,
+                            35.32
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-30526",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d1ad533160518f1275a6da543fbebae8d77d1601.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-30526",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.d1ad533160518f1275a6da543fbebae8d77d1601.001.1",
+                "areaDesc": "Transylvania, NC",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "037175"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "NCC175"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/NCC175"
                 ],
                 "references": [],
-                "sent": "2026-09-22T06:23:09+00:00",
-                "effective": "2026-09-22T06:23:09+00:00",
-                "onset": null,
-                "expires": "2026-09-22T06:33:09+00:00",
-                "ends": null,
-                "status": "Test",
+                "sent": "2026-09-22T02:30:00-04:00",
+                "effective": "2026-09-22T02:30:00-04:00",
+                "onset": "2026-09-22T02:30:00-04:00",
+                "expires": "2026-09-22T05:30:00-04:00",
+                "ends": "2026-09-22T05:30:00-04:00",
+                "status": "Actual",
                 "messageType": "Alert",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Greenville-Spartanburg SC",
+                "headline": "Flood Advisory issued September 22 at 2:30AM EDT until September 22 at 5:30AM EDT by NWS Greenville-Spartanburg SC",
+                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...Central Transylvania County in western North Carolina...\n\n* WHEN...Until 530 AM EDT.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 230 AM EDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 1 and 2 inches of rain have\nfallen.\n- Some locations that will experience flooding include...\nBrevard, Rosman, Looking Glass, Lake Toxaway, Gorges State Park,\nJocassee Gorges, Lake Jocassee, Balsam Grove, Connestee and\nPenrose.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Only when it is safe to do so, please report flooding or landslides\nthreatening roads or property to the National Weather Service\nGreenville-Spartanburg by calling 1...800...2 6 7...8 1 0 1, by\nposting on our Facebook page, or by posting on X using hashtag\nNWSGSP. Your message should describe the specific location, address,\nor intersection where impacts occurred and the depth of flooding\nobserved.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FLSGSP"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 220623"
+                        "WGUS82 KGSP 220630"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY IN EFFECT UNTIL 530 AM EDT EARLY THIS MORNING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KGSP.FA.Y.0110.260922T0630Z-260922T0930Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-22T05:30:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +118,264 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FAY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.cd16bb3af6666aaa4107153f7498660fedbe66ca.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -84.25,
+                            35.88
+                        ],
+                        [
+                            -84.23,
+                            35.81
+                        ],
+                        [
+                            -84.26,
+                            35.71
+                        ],
+                        [
+                            -84.31,
+                            35.69
+                        ],
+                        [
+                            -84.36,
+                            35.72
+                        ],
+                        [
+                            -84.37,
+                            35.79
+                        ],
+                        [
+                            -84.29,
+                            35.87
+                        ],
+                        [
+                            -84.26,
+                            35.89
+                        ],
+                        [
+                            -84.25,
+                            35.88
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.cd16bb3af6666aaa4107153f7498660fedbe66ca.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.cd16bb3af6666aaa4107153f7498660fedbe66ca.001.1",
+                "areaDesc": "Loudon, TN",
+                "geocode": {
+                    "SAME": [
+                        "047105"
+                    ],
+                    "UGC": [
+                        "TNC105"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/TNC105"
+                ],
+                "references": [],
+                "sent": "2026-09-22T02:28:00-04:00",
+                "effective": "2026-09-22T02:28:00-04:00",
+                "onset": "2026-09-22T02:28:00-04:00",
+                "expires": "2026-09-22T04:30:00-04:00",
+                "ends": "2026-09-22T04:30:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Morristown TN",
+                "headline": "Flood Advisory issued September 22 at 2:28AM EDT until September 22 at 4:30AM EDT by NWS Morristown TN",
+                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...Central Loudon County in east Tennessee...\n\n* WHEN...Until 430 AM EDT.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 228 AM EDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 1 and 1.5 inches of rain\nhave fallen.\n- Additional rainfall amounts of 0.5 to 1 inch are expected over\nthe area. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nLenoir City, Loudon and Tellico Village.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSMRX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS84 KMRX 220628"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY IN EFFECT UNTIL 430 AM EDT EARLY THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KMRX.FA.Y.0209.260922T0628Z-260922T0830Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-22T04:30:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FAY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6926d5add5f7acbac8b3dcd914466f5a6a9248df.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -81.4,
+                            39.58
+                        ],
+                        [
+                            -81.4,
+                            39.49
+                        ],
+                        [
+                            -81.38,
+                            39.47
+                        ],
+                        [
+                            -81.42,
+                            39.4
+                        ],
+                        [
+                            -81.44,
+                            39.41
+                        ],
+                        [
+                            -81.45,
+                            39.41
+                        ],
+                        [
+                            -81.44,
+                            39.46
+                        ],
+                        [
+                            -81.44,
+                            39.53
+                        ],
+                        [
+                            -81.45,
+                            39.55
+                        ],
+                        [
+                            -81.43,
+                            39.56
+                        ],
+                        [
+                            -81.4,
+                            39.58
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6926d5add5f7acbac8b3dcd914466f5a6a9248df.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.6926d5add5f7acbac8b3dcd914466f5a6a9248df.001.1",
+                "areaDesc": "Washington, OH",
+                "geocode": {
+                    "SAME": [
+                        "039167"
+                    ],
+                    "UGC": [
+                        "OHC167"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/OHC167"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.79eb5e6fbb9f7693665cb507a80b0e9e5e12cde2.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.79eb5e6fbb9f7693665cb507a80b0e9e5e12cde2.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-22T01:23:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-22T02:24:00-04:00",
+                "effective": "2026-09-22T02:24:00-04:00",
+                "onset": "2026-09-22T02:24:00-04:00",
+                "expires": "2026-09-22T14:00:00-04:00",
+                "ends": "2026-09-22T14:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Charleston WV",
+                "headline": "Flood Warning issued September 22 at 2:24AM EDT until September 22 at 2:00PM EDT by NWS Charleston WV",
+                "description": "* WHAT...Flooding caused by excessive rainfall continues.\n\n* WHERE...Central Washington County in southeastern Ohio...\n\n* WHEN...Until 200 PM EDT Tuesday.\n\n* IMPACTS...Flooding of rivers, creeks, streams, and other low-lying\nand flood-prone locations is imminent or occurring.\n\n* ADDITIONAL DETAILS...\n- At 224 AM EDT, gauge reports indicated heavy rain due to\nFlooding. Flooding is ongoing or expected to begin shortly in the\nwarned area.\n- Some locations that will experience flooding include...\nMarietta, Williamstown and Devola.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nReport flooding to the National Weather Service by calling toll free,\n800 401 9535, when you can do so safely.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLWRLX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS41 KRLX 220624"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING NOW IN EFFECT UNTIL 2 PM EDT THIS AFTERNOON"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KRLX.FA.W.0145.000000T0000Z-260922T1800Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-22T14:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.77ee6b0c0cc25799cb9ed0792a0ffb4a0b49966f.001.1,2026-09-21T23:41:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.bff3514709a346ccfcda7b7168a8b25164cff9f6.001.1,2026-09-21T16:47:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.affa913680f8dcb1fe6bbef8809b428657c72c25.001.1,2026-09-21T13:56:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FLW"
+                    ],
+                    "NationalWeatherService": [
+                        "FAW"
                     ]
                 }
             }
@@ -11528,145 +11832,6 @@
                     ],
                     "NationalWeatherService": [
                         "FFW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.79eb5e6fbb9f7693665cb507a80b0e9e5e12cde2.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -81.4,
-                            39.58
-                        ],
-                        [
-                            -81.4,
-                            39.49
-                        ],
-                        [
-                            -81.38,
-                            39.47
-                        ],
-                        [
-                            -81.42,
-                            39.4
-                        ],
-                        [
-                            -81.44,
-                            39.41
-                        ],
-                        [
-                            -81.45,
-                            39.41
-                        ],
-                        [
-                            -81.44,
-                            39.46
-                        ],
-                        [
-                            -81.44,
-                            39.53
-                        ],
-                        [
-                            -81.45,
-                            39.55
-                        ],
-                        [
-                            -81.43,
-                            39.56
-                        ],
-                        [
-                            -81.4,
-                            39.58
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.79eb5e6fbb9f7693665cb507a80b0e9e5e12cde2.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.79eb5e6fbb9f7693665cb507a80b0e9e5e12cde2.001.1",
-                "areaDesc": "Washington, OH",
-                "geocode": {
-                    "SAME": [
-                        "039167"
-                    ],
-                    "UGC": [
-                        "OHC167"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/OHC167"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.77ee6b0c0cc25799cb9ed0792a0ffb4a0b49966f.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.77ee6b0c0cc25799cb9ed0792a0ffb4a0b49966f.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-21T23:41:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-22T01:23:00-04:00",
-                "effective": "2026-09-22T01:23:00-04:00",
-                "onset": "2026-09-22T01:23:00-04:00",
-                "expires": "2026-09-22T08:00:00-04:00",
-                "ends": "2026-09-22T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Charleston WV",
-                "headline": "Flood Warning issued September 22 at 1:23AM EDT until September 22 at 8:00AM EDT by NWS Charleston WV",
-                "description": "* WHAT...Flooding caused by excessive rainfall continues.\n\n* WHERE...Central Washington County in southeastern Ohio...\n\n* WHEN...Until 800 AM EDT Tuesday.\n\n* IMPACTS...Flooding of rivers, creeks, streams, and other low-lying\nand flood-prone locations is imminent or occurring.\n\n* ADDITIONAL DETAILS...\n- At 123 AM EDT, gauge reports indicated heavy rain due to\nFlooding. Flooding is ongoing or expected to begin shortly in the\nwarned area.\n- Some locations that will experience flooding include...\nMarietta, Williamstown and Devola.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nReport flooding to the National Weather Service by calling toll free,\n800 401 9535, when you can do so safely.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLWRLX"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS41 KRLX 220523"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING NOW IN EFFECT UNTIL 8 AM EDT THIS MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KRLX.FA.W.0145.000000T0000Z-260922T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-22T08:00:00-04:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.bff3514709a346ccfcda7b7168a8b25164cff9f6.001.1,2026-09-21T16:47:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.affa913680f8dcb1fe6bbef8809b428657c72c25.001.1,2026-09-21T13:56:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLW"
-                    ],
-                    "NationalWeatherService": [
-                        "FAW"
                     ]
                 }
             }
@@ -35007,5 +35172,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-22T06:23:15+00:00"
+    "updated": "2026-09-22T06:33:16+00:00"
 }
