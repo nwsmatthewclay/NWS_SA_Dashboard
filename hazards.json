@@ -10,56 +10,77 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-22437",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b9493701595f70c98740a2d021ddc62d4f9ee818.003.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-22437",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b9493701595f70c98740a2d021ddc62d4f9ee818.003.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-22437",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.b9493701595f70c98740a2d021ddc62d4f9ee818.003.1",
+                "areaDesc": "Northern Cook; Central Cook",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "017031"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "ILZ103",
+                        "ILZ104"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/ILZ103",
+                    "https://api.weather.gov/zones/forecast/ILZ104"
                 ],
-                "references": [],
-                "sent": "2026-09-23T14:53:09+00:00",
-                "effective": "2026-09-23T14:53:09+00:00",
-                "onset": null,
-                "expires": "2026-09-23T15:03:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T03:23:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-23T10:01:00-05:00",
+                "effective": "2026-09-23T10:01:00-05:00",
+                "onset": "2026-09-23T10:01:00-05:00",
+                "expires": "2026-09-23T18:15:00-05:00",
+                "ends": "2026-09-23T22:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Beach Hazards Statement",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Chicago IL",
+                "headline": "Beach Hazards Statement issued September 23 at 10:01AM CDT until September 23 at 10:00PM CDT by NWS Chicago IL",
+                "description": "* WHAT...High wave action and dangerous currents expected at Lake\nMichigan beaches. Waves 3 to 6 ft expected.\n\n* WHERE...Northern Cook and Central Cook Counties.\n\n* WHEN...Through this evening.\n\n* IMPACTS...Swimming conditions will be life threatening,\nespecially for inexperienced swimmers.",
+                "instruction": "Remain out of the water to avoid dangerous swimming conditions\nand do not venture out onto piers, jetties, breakwalls, or other\nshoreline structures.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "CFWLOT"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 231453"
+                        "WHUS43 KLOT 231501"
+                    ],
+                    "NWSheadline": [
+                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT THROUGH THIS EVENING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KLOT.BH.S.0017.000000T0000Z-260924T0300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-23T22:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.001.1,2026-09-22T21:44:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.29741b402bc4e134174211b962df8729388058d1.001.1,2026-09-22T14:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b97386e3a68249d85c8d4d5d09b2ea670197bd6.001.1,2026-09-22T03:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dbda416fbb9dd500c81eb8c894d64bc75fcf6eb2.001.1,2026-09-21T22:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9b7c11ce9585db62481d1522fbb56691cc848967.001.1,2026-09-21T16:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b5456d2e1d810377b826879aefc8199e44351b33.002.1,2026-09-21T09:25:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c8d53b23261b30e300c0db3e9fe833927c95b0f9.002.1,2026-09-21T03:20:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.addd328dc64574db3e04d93fe5f483b664beb3ab.001.1,2026-09-20T21:43:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.97f76372252a10ae3e638f636048ea9242e9ce19.001.1,2026-09-20T14:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.89a501aba11f7102434f5f9225642965aee9f5f6.001.1,2026-09-20T10:23:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.be3d207cebbaa4863c74bbcdeb0b0585143bfe9e.001.1,2026-09-20T03:17:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f9bf8c8706d22c0d00e6dea240c728a905060b49.001.1,2026-09-19T22:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10a485a6e88f5d21391e967144cb58bfc90c5c54.001.2,2026-09-19T14:50:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +92,363 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "BHS"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b9493701595f70c98740a2d021ddc62d4f9ee818.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b9493701595f70c98740a2d021ddc62d4f9ee818.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.b9493701595f70c98740a2d021ddc62d4f9ee818.002.1",
+                "areaDesc": "Lake",
+                "geocode": {
+                    "SAME": [
+                        "017097"
+                    ],
+                    "UGC": [
+                        "ILZ006"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ILZ006"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T03:23:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-23T10:01:00-05:00",
+                "effective": "2026-09-23T10:01:00-05:00",
+                "onset": "2026-09-23T10:01:00-05:00",
+                "expires": "2026-09-23T18:15:00-05:00",
+                "ends": "2026-09-24T12:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Beach Hazards Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Chicago IL",
+                "headline": "Beach Hazards Statement issued September 23 at 10:01AM CDT until September 24 at 12:00PM CDT by NWS Chicago IL",
+                "description": "* WHAT...High wave action and dangerous currents expected at Lake\nMichigan beaches. Waves 4 to 6 ft expected.\n\n* WHERE...Lake County IL.\n\n* WHEN...Through Thursday morning.\n\n* IMPACTS...Swimming conditions will be life threatening,\nespecially for inexperienced swimmers.",
+                "instruction": "Remain out of the water to avoid dangerous swimming conditions\nand do not venture out onto piers, jetties, breakwalls, or other\nshoreline structures.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CFWLOT"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS43 KLOT 231501"
+                    ],
+                    "NWSheadline": [
+                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT THROUGH THURSDAY MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KLOT.BH.S.0017.000000T0000Z-260924T1700Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-24T12:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.001.1,2026-09-22T21:44:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.29741b402bc4e134174211b962df8729388058d1.001.1,2026-09-22T14:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b97386e3a68249d85c8d4d5d09b2ea670197bd6.001.1,2026-09-22T03:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dbda416fbb9dd500c81eb8c894d64bc75fcf6eb2.001.1,2026-09-21T22:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9b7c11ce9585db62481d1522fbb56691cc848967.001.1,2026-09-21T16:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b5456d2e1d810377b826879aefc8199e44351b33.002.1,2026-09-21T09:25:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c8d53b23261b30e300c0db3e9fe833927c95b0f9.002.1,2026-09-21T03:20:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.addd328dc64574db3e04d93fe5f483b664beb3ab.001.1,2026-09-20T21:43:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.97f76372252a10ae3e638f636048ea9242e9ce19.001.1,2026-09-20T14:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.89a501aba11f7102434f5f9225642965aee9f5f6.001.1,2026-09-20T10:23:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.be3d207cebbaa4863c74bbcdeb0b0585143bfe9e.001.1,2026-09-20T03:17:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f9bf8c8706d22c0d00e6dea240c728a905060b49.001.1,2026-09-19T22:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10a485a6e88f5d21391e967144cb58bfc90c5c54.002.1,2026-09-19T14:50:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "BHS"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0aae372364b81be37bbe958b5ad4fd1054ab7101.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0aae372364b81be37bbe958b5ad4fd1054ab7101.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.0aae372364b81be37bbe958b5ad4fd1054ab7101.002.1",
+                "areaDesc": "Winthrop Harbor to Wilmette Harbor IL; Wilmette Harbor to Northerly Island IL; Northerly Island to Calumet Harbor IL",
+                "geocode": {
+                    "SAME": [
+                        "092740",
+                        "092741",
+                        "092742"
+                    ],
+                    "UGC": [
+                        "LMZ740",
+                        "LMZ741",
+                        "LMZ742"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/LMZ740",
+                    "https://api.weather.gov/zones/forecast/LMZ741",
+                    "https://api.weather.gov/zones/forecast/LMZ742"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T03:11:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-23T09:55:00-05:00",
+                "effective": "2026-09-23T09:55:00-05:00",
+                "onset": "2026-09-23T09:55:00-05:00",
+                "expires": "2026-09-23T18:00:00-05:00",
+                "ends": "2026-09-23T22:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Chicago IL",
+                "headline": "Small Craft Advisory issued September 23 at 9:55AM CDT until September 23 at 10:00PM CDT by NWS Chicago IL",
+                "description": "* WHAT...Significant waves 4 to 6 ft occasionally to 8 ft ongoing.\n\n* WHERE...Winthrop Harbor to Calumet Harbor IL.\n\n* WHEN...Until 10 PM CDT this evening.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWLOT"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS73 KLOT 231455"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 10 PM CDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KLOT.SC.Y.0083.000000T0000Z-260924T0300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-23T22:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dba92587078ccbf04f1091ce9c11238b452d68f5.001.1,2026-09-22T21:44:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e95f5fec49efa0572fe91508d2f5292741da41e1.001.1,2026-09-22T14:46:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65c284bcc478d4aef8d995e68ae05589ac61b186.001.1,2026-09-22T10:00:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9ddec9da22b19c262da3f91140367d175bf4c3cf.001.1,2026-09-22T02:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b8fd3ff0990a3dba931a77aba4a5ea9762b3f65c.002.1,2026-09-21T21:59:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b7457c662de61b559c92ba977656487cdb102878.002.1,2026-09-21T18:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b95a2ee79235b88aba61b53d898e424d019efa9c.002.1,2026-09-21T13:49:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cbcb9d63bd75f238e06e89b5e527ba900077bb95.002.1,2026-09-21T10:15:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a88eee5232332ebfdae74b81381c49d7b34599f1.002.1,2026-09-21T03:15:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e4c60a5ef30924cee1363985cc4ba626d1326183.001.1,2026-09-20T21:32:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc8a27fa906e9f847a00746ad8670a329af3e8af.001.1,2026-09-20T14:52:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b7d215e362576ad82e4a4700f1ba00489b2c2ec.001.1,2026-09-20T10:22:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d3a155fb2b849f868971dff6357e9c477fcf3d9d.001.2,2026-09-20T03:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.008cd0457904a69b1a025792165a2f3f7ab8772f.001.2,2026-09-20T00:07:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dfb557806d861d452fd95e70823e7fe0bf47e7f5.001.1,2026-09-19T21:57:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ee5d9fad2a9488014e676119ebc3706561d89171.002.1,2026-09-19T14:56:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ee5d9fad2a9488014e676119ebc3706561d89171.001.2,2026-09-19T14:56:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f0a2c61be20cfc5f649085d4d5057e7c2fa38173.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f0a2c61be20cfc5f649085d4d5057e7c2fa38173.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.f0a2c61be20cfc5f649085d4d5057e7c2fa38173.002.1",
+                "areaDesc": "Coastal Horry; Coastal Georgetown",
+                "geocode": {
+                    "SAME": [
+                        "045051",
+                        "045043"
+                    ],
+                    "UGC": [
+                        "SCZ054",
+                        "SCZ056"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/SCZ054",
+                    "https://api.weather.gov/zones/forecast/SCZ056"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T02:59:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-23T10:55:00-04:00",
+                "effective": "2026-09-23T10:55:00-04:00",
+                "onset": "2026-09-23T10:55:00-04:00",
+                "expires": "2026-09-23T20:00:00-04:00",
+                "ends": "2026-09-23T20:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Beach Hazards Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Wilmington NC",
+                "headline": "Beach Hazards Statement issued September 23 at 10:55AM EDT until September 23 at 8:00PM EDT by NWS Wilmington NC",
+                "description": "* WHAT...Strong north to south longshore current. There is also a\nModerate Risk of rip currents.\n\n* WHERE...Coastal Horry and Coastal Georgetown Counties.\n\n* WHEN...Today.\n\n* IMPACTS...Longshore currents can sweep swimmers and surfers\ninto rip currents, piers, jetties, and other hazardous areas.\nIt may sweep swimmers off their feet, making it difficult to\nreturn to shore.",
+                "instruction": "Caution should be used when in or near the water. Check with\nlifeguards before entering the ocean for possible hazards you may\nbe swept into.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CFWILM"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS42 KILM 231455"
+                    ],
+                    "NWSheadline": [
+                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT UNTIL 8 PM EDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KILM.BH.S.0048.000000T0000Z-260924T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-23T20:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc81015aca3a9e9ca0b097e32d8e6ee26c847755.001.1,2026-09-22T19:49:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "BHS"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f0a2c61be20cfc5f649085d4d5057e7c2fa38173.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f0a2c61be20cfc5f649085d4d5057e7c2fa38173.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.f0a2c61be20cfc5f649085d4d5057e7c2fa38173.001.1",
+                "areaDesc": "Coastal Pender; Coastal New Hanover",
+                "geocode": {
+                    "SAME": [
+                        "037141",
+                        "037129"
+                    ],
+                    "UGC": [
+                        "NCZ106",
+                        "NCZ108"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NCZ106",
+                    "https://api.weather.gov/zones/forecast/NCZ108"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T02:59:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-23T10:55:00-04:00",
+                "effective": "2026-09-23T10:55:00-04:00",
+                "onset": "2026-09-23T10:55:00-04:00",
+                "expires": "2026-09-23T20:00:00-04:00",
+                "ends": "2026-09-23T20:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Beach Hazards Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Wilmington NC",
+                "headline": "Beach Hazards Statement issued September 23 at 10:55AM EDT until September 23 at 8:00PM EDT by NWS Wilmington NC",
+                "description": "* WHAT...Strong north to south longshore current. There is also a\nModerate Risk of rip currents.\n\n* WHERE...Coastal Pender and Coastal New Hanover Counties.\n\n* WHEN...Today.\n\n* IMPACTS...Longshore currents can sweep swimmers and surfers\ninto rip currents, piers, jetties, and other hazardous areas.\nIt may sweep swimmers off their feet, making it difficult to\nreturn to shore.",
+                "instruction": "Caution should be used when in or near the water. Check with\nlifeguards before entering the ocean for possible hazards you may\nbe swept into.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CFWILM"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS42 KILM 231455"
+                    ],
+                    "NWSheadline": [
+                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT UNTIL 8 PM EDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KILM.BH.S.0048.000000T0000Z-260924T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-23T20:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc81015aca3a9e9ca0b097e32d8e6ee26c847755.001.1,2026-09-22T19:49:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "BHS"
                     ]
                 }
             }
@@ -10011,124 +10388,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.80be3e04fbc9522f89a8d2eb0068832d54210b0c.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -106.93,
-                            32.81
-                        ],
-                        [
-                            -107.09,
-                            32.8
-                        ],
-                        [
-                            -107.12,
-                            32.89
-                        ],
-                        [
-                            -107.12,
-                            33.12
-                        ],
-                        [
-                            -107.07,
-                            33.38
-                        ],
-                        [
-                            -106.74,
-                            33.42
-                        ],
-                        [
-                            -106.72,
-                            33.12
-                        ],
-                        [
-                            -106.71,
-                            32.93
-                        ],
-                        [
-                            -106.93,
-                            32.81
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.80be3e04fbc9522f89a8d2eb0068832d54210b0c.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.80be3e04fbc9522f89a8d2eb0068832d54210b0c.001.1",
-                "areaDesc": "Sierra, NM",
-                "geocode": {
-                    "SAME": [
-                        "035051"
-                    ],
-                    "UGC": [
-                        "NMC051"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/NMC051"
-                ],
-                "references": [],
-                "sent": "2026-09-23T05:53:00-06:00",
-                "effective": "2026-09-23T05:53:00-06:00",
-                "onset": "2026-09-23T05:53:00-06:00",
-                "expires": "2026-09-23T09:00:00-06:00",
-                "ends": "2026-09-23T09:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS El Paso Tx/Santa Teresa NM",
-                "headline": "Flood Advisory issued September 23 at 5:53AM MDT until September 23 at 9:00AM MDT by NWS El Paso Tx/Santa Teresa NM",
-                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...Eastern Sierra County in south central New Mexico...\n\n* WHEN...Until 900 AM MDT.\n\n* IMPACTS...Rises in small streams and normally dry arroyos. Water\nover roadways.\n\n* ADDITIONAL DETAILS...\n- At 553 AM MDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 1 and 2 inches of rain have\nfallen.\n- Additional rainfall of up to 0.5 to 1 inch is expected over the\narea. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nUpham, Engle, Cutter and Spaceport America.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding. Be aware of your surroundings and do not drive\non flooded roads.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSEPZ"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS84 KEPZ 231153"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD ADVISORY IN EFFECT UNTIL 9 AM MDT THIS MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KEPZ.FA.Y.0354.260923T1153Z-260923T1500Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T09:00:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FAY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c727eef13c5dbd005a3c49be06830701242e37e7.005.1",
             "type": "Feature",
             "geometry": null,
@@ -17353,450 +17612,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.001.1",
-                "areaDesc": "Lake",
-                "geocode": {
-                    "SAME": [
-                        "017097"
-                    ],
-                    "UGC": [
-                        "ILZ006"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ILZ006"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T21:44:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-23T03:23:00-05:00",
-                "effective": "2026-09-23T03:23:00-05:00",
-                "onset": "2026-09-23T03:23:00-05:00",
-                "expires": "2026-09-23T11:30:00-05:00",
-                "ends": "2026-09-24T12:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Beach Hazards Statement issued September 23 at 3:23AM CDT until September 24 at 12:00PM CDT by NWS Chicago IL",
-                "description": "* WHAT...High waves of 4 to 6 feet and dangerous currents\nexpected at Lake Michigan beaches.\n\n* WHERE...Lake IL, Northern Cook and Central Cook Counties.\n\n* WHEN...Through Thursday morning.\n\n* IMPACTS...Swimming conditions will be life threatening,\nespecially for inexperienced swimmers.",
-                "instruction": "Remain out of the water to avoid dangerous swimming conditions\nand do not venture out onto piers, jetties, breakwalls, or other\nshoreline structures.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS43 KLOT 230823"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT NOW IN EFFECT THROUGH THURSDAY MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KLOT.BH.S.0017.000000T0000Z-260924T1700Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-24T12:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.29741b402bc4e134174211b962df8729388058d1.001.1,2026-09-22T14:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b97386e3a68249d85c8d4d5d09b2ea670197bd6.001.1,2026-09-22T03:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dbda416fbb9dd500c81eb8c894d64bc75fcf6eb2.001.1,2026-09-21T22:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9b7c11ce9585db62481d1522fbb56691cc848967.001.1,2026-09-21T16:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b5456d2e1d810377b826879aefc8199e44351b33.002.1,2026-09-21T09:25:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c8d53b23261b30e300c0db3e9fe833927c95b0f9.002.1,2026-09-21T03:20:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.addd328dc64574db3e04d93fe5f483b664beb3ab.001.1,2026-09-20T21:43:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.97f76372252a10ae3e638f636048ea9242e9ce19.001.1,2026-09-20T14:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.89a501aba11f7102434f5f9225642965aee9f5f6.001.1,2026-09-20T10:23:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.be3d207cebbaa4863c74bbcdeb0b0585143bfe9e.001.1,2026-09-20T03:17:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f9bf8c8706d22c0d00e6dea240c728a905060b49.001.1,2026-09-19T22:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10a485a6e88f5d21391e967144cb58bfc90c5c54.002.1,2026-09-19T14:50:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.003.1",
-                "areaDesc": "Lake; Porter",
-                "geocode": {
-                    "SAME": [
-                        "018089",
-                        "018127"
-                    ],
-                    "UGC": [
-                        "INZ001",
-                        "INZ002"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/INZ001",
-                    "https://api.weather.gov/zones/forecast/INZ002"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T21:44:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-23T03:23:00-05:00",
-                "effective": "2026-09-23T03:23:00-05:00",
-                "onset": "2026-09-23T03:23:00-05:00",
-                "expires": "2026-09-23T10:00:00-05:00",
-                "ends": "2026-09-23T10:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Beach Hazards Statement issued September 23 at 3:23AM CDT until September 23 at 10:00AM CDT by NWS Chicago IL",
-                "description": "* WHAT...High waves of 3 to 6 feet and dangerous currents\nexpected at Lake Michigan beaches.\n\n* WHERE...Lake IN and Porter Counties.\n\n* WHEN...Through Wednesday morning.\n\n* IMPACTS...Swimming conditions will be life threatening,\nespecially for inexperienced swimmers.",
-                "instruction": "Remain out of the water to avoid dangerous swimming conditions\nand do not venture out onto piers, jetties, breakwalls, or other\nshoreline structures.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS43 KLOT 230823"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT UNTIL 10 AM CDT THIS MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KLOT.BH.S.0017.000000T0000Z-260923T1500Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T10:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.29741b402bc4e134174211b962df8729388058d1.002.1,2026-09-22T14:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b97386e3a68249d85c8d4d5d09b2ea670197bd6.002.1,2026-09-22T03:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dbda416fbb9dd500c81eb8c894d64bc75fcf6eb2.002.1,2026-09-21T22:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9b7c11ce9585db62481d1522fbb56691cc848967.002.1,2026-09-21T16:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b5456d2e1d810377b826879aefc8199e44351b33.003.1,2026-09-21T09:25:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b5456d2e1d810377b826879aefc8199e44351b33.001.1,2026-09-21T09:25:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c8d53b23261b30e300c0db3e9fe833927c95b0f9.003.1,2026-09-21T03:20:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c8d53b23261b30e300c0db3e9fe833927c95b0f9.001.1,2026-09-21T03:20:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.addd328dc64574db3e04d93fe5f483b664beb3ab.003.1,2026-09-20T21:43:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.addd328dc64574db3e04d93fe5f483b664beb3ab.002.1,2026-09-20T21:43:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.97f76372252a10ae3e638f636048ea9242e9ce19.003.1,2026-09-20T14:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.97f76372252a10ae3e638f636048ea9242e9ce19.002.1,2026-09-20T14:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.89a501aba11f7102434f5f9225642965aee9f5f6.003.1,2026-09-20T10:23:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.89a501aba11f7102434f5f9225642965aee9f5f6.002.1,2026-09-20T10:23:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.be3d207cebbaa4863c74bbcdeb0b0585143bfe9e.003.1,2026-09-20T03:17:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.be3d207cebbaa4863c74bbcdeb0b0585143bfe9e.002.1,2026-09-20T03:17:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f9bf8c8706d22c0d00e6dea240c728a905060b49.003.1,2026-09-19T22:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f9bf8c8706d22c0d00e6dea240c728a905060b49.002.1,2026-09-19T22:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10a485a6e88f5d21391e967144cb58bfc90c5c54.004.1,2026-09-19T14:50:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10a485a6e88f5d21391e967144cb58bfc90c5c54.003.1,2026-09-19T14:50:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.33121c38473cc11b30112f3b1ed3e0d473b3c9b0.002.1",
-                "areaDesc": "Northern Cook; Central Cook",
-                "geocode": {
-                    "SAME": [
-                        "017031"
-                    ],
-                    "UGC": [
-                        "ILZ103",
-                        "ILZ104"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ILZ103",
-                    "https://api.weather.gov/zones/forecast/ILZ104"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.6911ebd6a7333e0e924251d6ebcf11dc632b4d7a.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T21:44:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-23T03:23:00-05:00",
-                "effective": "2026-09-23T03:23:00-05:00",
-                "onset": "2026-09-23T03:23:00-05:00",
-                "expires": "2026-09-23T11:30:00-05:00",
-                "ends": "2026-09-23T22:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Beach Hazards Statement issued September 23 at 3:23AM CDT until September 23 at 10:00PM CDT by NWS Chicago IL",
-                "description": "* WHAT...High waves of 4 to 6 feet and dangerous currents\nexpected at Lake Michigan beaches.\n\n* WHERE...Lake IL, Northern Cook and Central Cook Counties.\n\n* WHEN...Through Wednesday evening.\n\n* IMPACTS...Swimming conditions will be life threatening,\nespecially for inexperienced swimmers.",
-                "instruction": "Remain out of the water to avoid dangerous swimming conditions\nand do not venture out onto piers, jetties, breakwalls, or other\nshoreline structures.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS43 KLOT 230823"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT THROUGH THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KLOT.BH.S.0017.000000T0000Z-260924T0300Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T22:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.29741b402bc4e134174211b962df8729388058d1.001.1,2026-09-22T14:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b97386e3a68249d85c8d4d5d09b2ea670197bd6.001.1,2026-09-22T03:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dbda416fbb9dd500c81eb8c894d64bc75fcf6eb2.001.1,2026-09-21T22:04:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9b7c11ce9585db62481d1522fbb56691cc848967.001.1,2026-09-21T16:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b5456d2e1d810377b826879aefc8199e44351b33.002.1,2026-09-21T09:25:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c8d53b23261b30e300c0db3e9fe833927c95b0f9.002.1,2026-09-21T03:20:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.addd328dc64574db3e04d93fe5f483b664beb3ab.001.1,2026-09-20T21:43:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.97f76372252a10ae3e638f636048ea9242e9ce19.001.1,2026-09-20T14:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.89a501aba11f7102434f5f9225642965aee9f5f6.001.1,2026-09-20T10:23:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.be3d207cebbaa4863c74bbcdeb0b0585143bfe9e.001.1,2026-09-20T03:17:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f9bf8c8706d22c0d00e6dea240c728a905060b49.001.1,2026-09-19T22:06:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10a485a6e88f5d21391e967144cb58bfc90c5c54.001.2,2026-09-19T14:50:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.002.1",
-                "areaDesc": "Calumet Harbor IL to Gary IN; Gary to Burns Harbor IN",
-                "geocode": {
-                    "SAME": [
-                        "092743",
-                        "092744"
-                    ],
-                    "UGC": [
-                        "LMZ743",
-                        "LMZ744"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/LMZ743",
-                    "https://api.weather.gov/zones/forecast/LMZ744"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dba92587078ccbf04f1091ce9c11238b452d68f5.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.dba92587078ccbf04f1091ce9c11238b452d68f5.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T21:44:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-23T03:11:00-05:00",
-                "effective": "2026-09-23T03:11:00-05:00",
-                "onset": "2026-09-23T03:11:00-05:00",
-                "expires": "2026-09-23T10:00:00-05:00",
-                "ends": "2026-09-23T10:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Small Craft Advisory issued September 23 at 3:11AM CDT until September 23 at 10:00AM CDT by NWS Chicago IL",
-                "description": "* WHAT...Significant waves to 6 ft  occasionally to 8 ft.\n\n* WHERE...Calumet Harbor IL to Burns Harbor IN.\n\n* WHEN...Until 10 AM CDT this morning.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS73 KLOT 230811"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 10 AM CDT THIS MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KLOT.SC.Y.0083.000000T0000Z-260923T1500Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T10:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e95f5fec49efa0572fe91508d2f5292741da41e1.002.1,2026-09-22T14:46:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65c284bcc478d4aef8d995e68ae05589ac61b186.002.1,2026-09-22T10:00:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9ddec9da22b19c262da3f91140367d175bf4c3cf.002.1,2026-09-22T02:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b8fd3ff0990a3dba931a77aba4a5ea9762b3f65c.003.1,2026-09-21T21:59:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b7457c662de61b559c92ba977656487cdb102878.003.1,2026-09-21T18:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b95a2ee79235b88aba61b53d898e424d019efa9c.003.1,2026-09-21T13:49:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cbcb9d63bd75f238e06e89b5e527ba900077bb95.003.1,2026-09-21T10:15:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a88eee5232332ebfdae74b81381c49d7b34599f1.003.1,2026-09-21T03:15:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e4c60a5ef30924cee1363985cc4ba626d1326183.002.1,2026-09-20T21:32:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc8a27fa906e9f847a00746ad8670a329af3e8af.002.1,2026-09-20T14:52:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b7d215e362576ad82e4a4700f1ba00489b2c2ec.002.1,2026-09-20T10:22:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d3a155fb2b849f868971dff6357e9c477fcf3d9d.002.2,2026-09-20T03:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.008cd0457904a69b1a025792165a2f3f7ab8772f.002.2,2026-09-20T00:07:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dfb557806d861d452fd95e70823e7fe0bf47e7f5.002.1,2026-09-19T21:57:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ee5d9fad2a9488014e676119ebc3706561d89171.003.1,2026-09-19T14:56:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.9a095604720e66d60e8e4ab58bc1dcf6737d851d.001.1",
-                "areaDesc": "Winthrop Harbor to Wilmette Harbor IL; Wilmette Harbor to Northerly Island IL; Northerly Island to Calumet Harbor IL",
-                "geocode": {
-                    "SAME": [
-                        "092740",
-                        "092741",
-                        "092742"
-                    ],
-                    "UGC": [
-                        "LMZ740",
-                        "LMZ741",
-                        "LMZ742"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/LMZ740",
-                    "https://api.weather.gov/zones/forecast/LMZ741",
-                    "https://api.weather.gov/zones/forecast/LMZ742"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dba92587078ccbf04f1091ce9c11238b452d68f5.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.dba92587078ccbf04f1091ce9c11238b452d68f5.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T21:44:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-23T03:11:00-05:00",
-                "effective": "2026-09-23T03:11:00-05:00",
-                "onset": "2026-09-23T03:11:00-05:00",
-                "expires": "2026-09-23T11:15:00-05:00",
-                "ends": "2026-09-23T22:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Small Craft Advisory issued September 23 at 3:11AM CDT until September 23 at 10:00PM CDT by NWS Chicago IL",
-                "description": "* WHAT...Northeast winds to 25 kt and significant waves to 6 ft\noccasionally to 8 ft.\n\n* WHERE...Winthrop Harbor to Calumet Harbor IL.\n\n* WHEN...Until 10 PM CDT this evening.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS73 KLOT 230811"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 10 PM CDT THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KLOT.SC.Y.0083.000000T0000Z-260924T0300Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T22:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e95f5fec49efa0572fe91508d2f5292741da41e1.001.1,2026-09-22T14:46:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.65c284bcc478d4aef8d995e68ae05589ac61b186.001.1,2026-09-22T10:00:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9ddec9da22b19c262da3f91140367d175bf4c3cf.001.1,2026-09-22T02:55:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b8fd3ff0990a3dba931a77aba4a5ea9762b3f65c.002.1,2026-09-21T21:59:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b7457c662de61b559c92ba977656487cdb102878.002.1,2026-09-21T18:48:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b95a2ee79235b88aba61b53d898e424d019efa9c.002.1,2026-09-21T13:49:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cbcb9d63bd75f238e06e89b5e527ba900077bb95.002.1,2026-09-21T10:15:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a88eee5232332ebfdae74b81381c49d7b34599f1.002.1,2026-09-21T03:15:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e4c60a5ef30924cee1363985cc4ba626d1326183.001.1,2026-09-20T21:32:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc8a27fa906e9f847a00746ad8670a329af3e8af.001.1,2026-09-20T14:52:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.0b7d215e362576ad82e4a4700f1ba00489b2c2ec.001.1,2026-09-20T10:22:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d3a155fb2b849f868971dff6357e9c477fcf3d9d.001.2,2026-09-20T03:09:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.008cd0457904a69b1a025792165a2f3f7ab8772f.001.2,2026-09-20T00:07:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.dfb557806d861d452fd95e70823e7fe0bf47e7f5.001.1,2026-09-19T21:57:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ee5d9fad2a9488014e676119ebc3706561d89171.002.1,2026-09-19T14:56:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ee5d9fad2a9488014e676119ebc3706561d89171.001.2,2026-09-19T14:56:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dbaee8625ce1bdb22363dccfe6556d08b3c98906.001.1",
             "type": "Feature",
             "geometry": null,
@@ -19240,178 +19055,6 @@
                     ],
                     "NationalWeatherService": [
                         "SPS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.002.1",
-                "areaDesc": "Coastal Horry; Coastal Georgetown",
-                "geocode": {
-                    "SAME": [
-                        "045051",
-                        "045043"
-                    ],
-                    "UGC": [
-                        "SCZ054",
-                        "SCZ056"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/SCZ054",
-                    "https://api.weather.gov/zones/forecast/SCZ056"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fc81015aca3a9e9ca0b097e32d8e6ee26c847755.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.fc81015aca3a9e9ca0b097e32d8e6ee26c847755.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T19:49:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-23T02:59:00-04:00",
-                "effective": "2026-09-23T02:59:00-04:00",
-                "onset": "2026-09-23T06:00:00-04:00",
-                "expires": "2026-09-23T20:00:00-04:00",
-                "ends": "2026-09-23T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Wilmington NC",
-                "headline": "Beach Hazards Statement issued September 23 at 2:59AM EDT until September 23 at 8:00PM EDT by NWS Wilmington NC",
-                "description": "* WHAT...Strong north to south longshore current.\n\n* WHERE...Coastal Horry and Coastal Georgetown Counties.\n\n* WHEN...Today.\n\n* IMPACTS...Longshore currents can sweep swimmers and surfers\ninto rip currents, piers, jetties, and other hazardous areas.\nIt may sweep swimmers off their feet, making it difficult to\nreturn to shore.",
-                "instruction": "Caution should be used when in or near the water. Check with\nlifeguards before entering the ocean for possible hazards you may\nbe swept into.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWILM"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS42 KILM 230659"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT FROM 6 AM EDT THIS MORNING THROUGH THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KILM.BH.S.0048.260923T1000Z-260924T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T20:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.048a75f478f3c819bebb7465ab521d7e579609ff.001.1",
-                "areaDesc": "Coastal Pender; Coastal New Hanover",
-                "geocode": {
-                    "SAME": [
-                        "037141",
-                        "037129"
-                    ],
-                    "UGC": [
-                        "NCZ106",
-                        "NCZ108"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/NCZ106",
-                    "https://api.weather.gov/zones/forecast/NCZ108"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fc81015aca3a9e9ca0b097e32d8e6ee26c847755.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.fc81015aca3a9e9ca0b097e32d8e6ee26c847755.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-22T19:49:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-23T02:59:00-04:00",
-                "effective": "2026-09-23T02:59:00-04:00",
-                "onset": "2026-09-23T06:00:00-04:00",
-                "expires": "2026-09-23T20:00:00-04:00",
-                "ends": "2026-09-23T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Beach Hazards Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Wilmington NC",
-                "headline": "Beach Hazards Statement issued September 23 at 2:59AM EDT until September 23 at 8:00PM EDT by NWS Wilmington NC",
-                "description": "* WHAT...Strong north to south longshore current. There is also a\nModerate Risk of rip currents expected.\n\n* WHERE...Coastal Pender and Coastal New Hanover Counties.\n\n* WHEN...Today.\n\n* IMPACTS...Longshore currents can sweep swimmers and surfers\ninto rip currents, piers, jetties, and other hazardous areas.\nIt may sweep swimmers off their feet, making it difficult to\nreturn to shore.",
-                "instruction": "Caution should be used when in or near the water. Check with\nlifeguards before entering the ocean for possible hazards you may\nbe swept into.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWILM"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS42 KILM 230659"
-                    ],
-                    "NWSheadline": [
-                        "BEACH HAZARDS STATEMENT REMAINS IN EFFECT FROM 6 AM EDT THIS MORNING THROUGH THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KILM.BH.S.0048.260923T1000Z-260924T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-23T20:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "BHS"
                     ]
                 }
             }
@@ -38592,5 +38235,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-23T14:53:36+00:00"
+    "updated": "2026-09-23T15:03:13+00:00"
 }
