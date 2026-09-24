@@ -10,56 +10,87 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-55472",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e348febcb61fc009ba178d84c01621427c0af480.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-55472",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e348febcb61fc009ba178d84c01621427c0af480.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-55472",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.e348febcb61fc009ba178d84c01621427c0af480.001.1",
+                "areaDesc": "Cimarron; Texas; Dallam; Sherman; Hartley",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "040025",
+                        "040139",
+                        "048111",
+                        "048421",
+                        "048205"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "OKZ001",
+                        "OKZ002",
+                        "TXZ001",
+                        "TXZ002",
+                        "TXZ006"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/OKZ001",
+                    "https://api.weather.gov/zones/forecast/OKZ002",
+                    "https://api.weather.gov/zones/forecast/TXZ001",
+                    "https://api.weather.gov/zones/forecast/TXZ002",
+                    "https://api.weather.gov/zones/forecast/TXZ006"
                 ],
-                "references": [],
-                "sent": "2026-09-24T04:03:09+00:00",
-                "effective": "2026-09-24T04:03:09+00:00",
-                "onset": null,
-                "expires": "2026-09-24T04:13:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.24d2bd17865c52f9442732d35243b23883465114.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.24d2bd17865c52f9442732d35243b23883465114.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T13:16:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-23T23:07:00-05:00",
+                "effective": "2026-09-23T23:07:00-05:00",
+                "onset": "2026-09-23T23:07:00-05:00",
+                "expires": "2026-09-24T12:00:00-05:00",
+                "ends": "2026-09-25T07:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Amarillo TX",
+                "headline": "Flood Watch issued September 23 at 11:07PM CDT until September 25 at 7:00AM CDT by NWS Amarillo TX",
+                "description": "* WHAT...Flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...The western Oklahoma Panhandle and the northwest Texas\nPanhandle.\n\n* WHEN...Through Friday morning.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Repeat rounds of heavy rain will cause the potential for flooding\nand flash flooding.\n- http://www.weather.gov/safety/flood",
+                "instruction": "You should monitor later forecasts and be alert for possible Flood\nWarnings. Those living in areas prone to flooding should be prepared\nto take action should flooding develop.",
+                "response": "Prepare",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FFAAMA"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 240403"
+                        "WGUS64 KAMA 240407"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH REMAINS IN EFFECT THROUGH FRIDAY MORNING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KAMA.FA.A.0002.000000T0000Z-260925T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-25T07:00:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -68,10 +99,135 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "NWS"
+                        "FFA"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.af338169110d75a62046ac8fbf18be410486377c.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -83.53,
+                            36.94
+                        ],
+                        [
+                            -83.39,
+                            36.94
+                        ],
+                        [
+                            -83.4,
+                            36.89
+                        ],
+                        [
+                            -83.41,
+                            36.79
+                        ],
+                        [
+                            -83.49,
+                            36.85
+                        ],
+                        [
+                            -83.53,
+                            36.94
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.af338169110d75a62046ac8fbf18be410486377c.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.af338169110d75a62046ac8fbf18be410486377c.001.1",
+                "areaDesc": "Bell, KY; Harlan, KY; Leslie, KY",
+                "geocode": {
+                    "SAME": [
+                        "021013",
+                        "021095",
+                        "021131"
+                    ],
+                    "UGC": [
+                        "KYC013",
+                        "KYC095",
+                        "KYC131"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/KYC013",
+                    "https://api.weather.gov/zones/county/KYC095",
+                    "https://api.weather.gov/zones/county/KYC131"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bb62f8a244fc96688d5217cd458bb7d9eab091c1.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.bb62f8a244fc96688d5217cd458bb7d9eab091c1.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-23T23:03:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-24T00:06:00-04:00",
+                "effective": "2026-09-24T00:06:00-04:00",
+                "onset": "2026-09-24T00:06:00-04:00",
+                "expires": "2026-09-24T00:16:00-04:00",
+                "ends": "2026-09-24T00:15:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Flash Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Jackson KY",
+                "headline": "Flash Flood Warning issued September 24 at 12:06AM EDT until September 24 at 12:15AM EDT by NWS Jackson KY",
+                "description": "The heavy rain has ended, and any previous flood waters are likely\nreceding. Flooding is no longer expected to pose an imminent threat.\nPlease continue to heed any remaining road closures.",
+                "instruction": null,
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFSJKL"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS73 KJKL 240406"
+                    ],
+                    "NWSheadline": [
+                        "FLASH FLOOD WARNING WILL EXPIRE AT 1215 AM EDT EARLY THIS MORNING FOR NORTHEASTERN BELL, WEST CENTRAL HARLAN AND SOUTHWESTERN LESLIE COUNTIES"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXP.KJKL.FF.W.0079.000000T0000Z-260924T0415Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-24T00:15:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b4b6be0328452fa63d28e17347133b3feb627366.001.1,2026-09-23T21:48:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9156bc8dc7a9005ac3c7c503b261129df7b9f197.001.1,2026-09-23T21:48:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.06ccfc878657b699f5043355761833155a8a3645.001.1,2026-09-23T20:22:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFS"
+                    ],
+                    "NationalWeatherService": [
+                        "FFW"
                     ]
                 }
             }
@@ -3435,131 +3591,6 @@
                     ],
                     "NationalWeatherService": [
                         "FLW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bb62f8a244fc96688d5217cd458bb7d9eab091c1.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -83.53,
-                            36.94
-                        ],
-                        [
-                            -83.39,
-                            36.94
-                        ],
-                        [
-                            -83.4,
-                            36.89
-                        ],
-                        [
-                            -83.41,
-                            36.79
-                        ],
-                        [
-                            -83.49,
-                            36.85
-                        ],
-                        [
-                            -83.53,
-                            36.94
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bb62f8a244fc96688d5217cd458bb7d9eab091c1.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.bb62f8a244fc96688d5217cd458bb7d9eab091c1.001.1",
-                "areaDesc": "Bell, KY; Harlan, KY; Leslie, KY",
-                "geocode": {
-                    "SAME": [
-                        "021013",
-                        "021095",
-                        "021131"
-                    ],
-                    "UGC": [
-                        "KYC013",
-                        "KYC095",
-                        "KYC131"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/KYC013",
-                    "https://api.weather.gov/zones/county/KYC095",
-                    "https://api.weather.gov/zones/county/KYC131"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b4b6be0328452fa63d28e17347133b3feb627366.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.b4b6be0328452fa63d28e17347133b3feb627366.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-23T21:48:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-23T23:03:00-04:00",
-                "effective": "2026-09-23T23:03:00-04:00",
-                "onset": "2026-09-23T23:03:00-04:00",
-                "expires": "2026-09-24T00:15:00-04:00",
-                "ends": "2026-09-24T00:15:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Immediate",
-                "event": "Flash Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Jackson KY",
-                "headline": "Flash Flood Warning issued September 23 at 11:03PM EDT until September 24 at 12:15AM EDT by NWS Jackson KY",
-                "description": "FFWJKL\n\nThe National Weather Service in Jackson has extended the\n\n* Flash Flood Warning for...\nNortheastern Bell County in southeastern Kentucky...\nWest Central Harlan County in southeastern Kentucky...\nSouthwestern Leslie County in southeastern Kentucky...\n\n* Until 1215 AM EDT.\n\n* At 1103 PM EDT, Doppler radar indicated thunderstorms producing\nheavy rain across the warned area. Between 1.5 and 3 inches of rain\nhave fallen. Flooding impacts will continue, but no additional\nrainfall is expected. Flash flooding is ongoing or expected to\nbegin shortly.\n\nHAZARD...Flash flooding caused by thunderstorms.\n\nSOURCE...Radar indicated.\n\nIMPACT...Flash flooding of small creeks and streams, urban areas,\nhighways, streets and underpasses as well as other poor\ndrainage and low-lying areas.\n\n* Some locations that will experience flash flooding include...\nWallins Creek, Saylor, Spruce Pine, Tacky Town, Coldiron and Sandy\nFork.",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.\n\nPlease report observed flooding to local emergency services or law\nenforcement and request they pass this information to the National\nWeather Service when you can do so safely.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFWJKL"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS53 KJKL 240303"
-                    ],
-                    "flashFloodDetection": [
-                        "RADAR INDICATED"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KJKL.FF.W.0079.000000T0000Z-260924T0415Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-24T00:15:00-04:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.9156bc8dc7a9005ac3c7c503b261129df7b9f197.001.1,2026-09-23T21:48:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.06ccfc878657b699f5043355761833155a8a3645.001.1,2026-09-23T20:22:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFW"
-                    ],
-                    "NationalWeatherService": [
-                        "FFW"
                     ]
                 }
             }
@@ -32421,97 +32452,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.24d2bd17865c52f9442732d35243b23883465114.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.24d2bd17865c52f9442732d35243b23883465114.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.24d2bd17865c52f9442732d35243b23883465114.001.1",
-                "areaDesc": "Cimarron; Texas; Dallam; Sherman; Hartley",
-                "geocode": {
-                    "SAME": [
-                        "040025",
-                        "040139",
-                        "048111",
-                        "048421",
-                        "048205"
-                    ],
-                    "UGC": [
-                        "OKZ001",
-                        "OKZ002",
-                        "TXZ001",
-                        "TXZ002",
-                        "TXZ006"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/OKZ001",
-                    "https://api.weather.gov/zones/forecast/OKZ002",
-                    "https://api.weather.gov/zones/forecast/TXZ001",
-                    "https://api.weather.gov/zones/forecast/TXZ002",
-                    "https://api.weather.gov/zones/forecast/TXZ006"
-                ],
-                "references": [],
-                "sent": "2026-09-23T13:16:00-05:00",
-                "effective": "2026-09-23T13:16:00-05:00",
-                "onset": "2026-09-23T13:16:00-05:00",
-                "expires": "2026-09-24T00:15:00-05:00",
-                "ends": "2026-09-25T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Flood Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Amarillo TX",
-                "headline": "Flood Watch issued September 23 at 1:16PM CDT until September 25 at 7:00AM CDT by NWS Amarillo TX",
-                "description": "* WHAT...Flooding caused by excessive rainfall is possible.\n\n* WHERE...Portions of the Panhandle of Oklahoma, including the\nfollowing counties, Cimarron and Texas and the Panhandle of Texas,\nincluding the following counties, Dallam, Hartley and Sherman.\n\n* WHEN...Through Friday morning.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- Heavy rainfall over the next 48 hours will lead to potential\nflooding concerns over the watch area.\n- http://www.weather.gov/safety/flood",
-                "instruction": "You should monitor later forecasts and be alert for possible Flood\nWarnings. Those living in areas prone to flooding should be prepared\nto take action should flooding develop.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFAAMA"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS64 KAMA 231816"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WATCH IN EFFECT THROUGH FRIDAY MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KAMA.FA.A.0002.260923T1816Z-260925T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-25T07:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFA"
-                    ],
-                    "NationalWeatherService": [
-                        "FAA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.81b35a4471393e2181e3c66ed3f9901ad3332af0.001.1",
             "type": "Feature",
             "geometry": null,
@@ -41305,5 +41245,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-24T04:03:18+00:00"
+    "updated": "2026-09-24T04:13:17+00:00"
 }
