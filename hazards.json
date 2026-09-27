@@ -10,56 +10,90 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-20440",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-20440",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-20440",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.001.1",
+                "areaDesc": "Coastal waters east of Ipswich Bay and the Stellwagen Bank National Marine Sanctuary; Massachusetts Bay and Ipswich Bay; Ocean Waters from the Merrimack River to Plymouth from 40 to 60 NM",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "073250",
+                        "073251",
+                        "073280"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "ANZ250",
+                        "ANZ251",
+                        "ANZ280"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/ANZ250",
+                    "https://api.weather.gov/zones/forecast/ANZ251",
+                    "https://api.weather.gov/zones/forecast/ANZ280"
                 ],
-                "references": [],
-                "sent": "2026-09-27T19:03:09+00:00",
-                "effective": "2026-09-27T19:03:09+00:00",
-                "onset": null,
-                "expires": "2026-09-27T19:13:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.004.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.004.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T02:21:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.007.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.007.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T12:18:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-27T21:00:00-04:00",
+                "ends": "2026-09-27T21:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Gale Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Gale Warning issued September 27 at 3:09PM EDT until September 27 at 9:00PM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...East winds 20 to 25 kt with gusts up to 35 kt and seas\n8 to 11 feet.\n\n* WHERE...In Massachusetts coastal waters, Coastal waters east\nof Ipswich Bay and the Stellwagen Bank National Marine\nSanctuary and Massachusetts Bay and Ipswich Bay. In Atlantic\ncoastal waters, Ocean Waters from the Merrimack River to\nPlymouth from 40 to 60 NM.\n\n* WHEN...Until 9 PM EDT this evening.\n\n* IMPACTS...Strong winds will cause hazardous seas which could\ncapsize or damage vessels and reduce visibility.",
+                "instruction": "Mariners should alter plans to avoid these hazardous conditions.\nRemain in port, seek safe harbor, alter course, and/or secure the\nvessel for hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "MWWBOX"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 271903"
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "GALE WARNING NOW IN EFFECT UNTIL 9 PM EDT THIS EVENING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KBOX.GL.W.0023.000000T0000Z-260928T0100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-27T21:00:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +105,790 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "GLW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.002.1",
+                "areaDesc": "Boston Harbor",
+                "geocode": {
+                    "SAME": [
+                        "073230"
+                    ],
+                    "UGC": [
+                        "ANZ230"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ANZ230"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.001.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.001.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T02:21:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.008.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.008.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T12:18:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-27T21:00:00-04:00",
+                "ends": "2026-09-27T21:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Gale Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Gale Warning issued September 27 at 3:09PM EDT until September 27 at 9:00PM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...Northeast winds 20 to 25 kt with gusts up to 30 kt and\nwaves 2 to 4 feet.\n\n* WHERE...Boston Harbor.\n\n* WHEN...Until 9 PM EDT this evening.\n\n* IMPACTS...Strong winds will cause hazardous waves which could\ncapsize or damage vessels and reduce visibility.",
+                "instruction": "Mariners should alter plans to avoid these hazardous conditions.\nRemain in port, seek safe harbor, alter course, and/or secure the\nvessel for hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWBOX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "GALE WARNING NOW IN EFFECT UNTIL 9 PM EDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KBOX.GL.W.0023.000000T0000Z-260928T0100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-27T21:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "GLW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.004.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.004.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.004.1",
+                "areaDesc": "Nantucket Sound",
+                "geocode": {
+                    "SAME": [
+                        "073232"
+                    ],
+                    "UGC": [
+                        "ANZ232"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ANZ232"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.002.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.002.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T12:18:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.006.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.006.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-28T08:00:00-04:00",
+                "ends": "2026-09-28T08:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Small Craft Advisory issued September 27 at 3:09PM EDT until September 28 at 8:00AM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 25 kt and seas\n4 to 6 feet.\n\n* WHERE...Nantucket Sound.\n\n* WHEN...Until 8 AM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWBOX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 AM EDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260928T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T08:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.006.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.006.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.006.1",
+                "areaDesc": "Coastal waters from Provincetown MA to Chatham MA to Nantucket MA out 20 NM",
+                "geocode": {
+                    "SAME": [
+                        "073254"
+                    ],
+                    "UGC": [
+                        "ANZ254"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ANZ254"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.004.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.004.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T12:18:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.008.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.008.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-28T08:00:00-04:00",
+                "ends": "2026-09-28T20:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Small Craft Advisory issued September 27 at 3:09PM EDT until September 28 at 8:00PM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 30 kt and seas\n6 to 9 feet.\n\n* WHERE...Coastal waters from Provincetown MA to Chatham MA to\nNantucket MA out 20 NM.\n\n* WHEN...Until 8 PM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWBOX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 PM EDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260929T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T20:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.005.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.005.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.005.1",
+                "areaDesc": "Coastal Waters extending out to 25 NM South of Marthas Vineyard and Nantucket; Coastal Waters from Montauk NY to Marthas Vineyard extending out to 20 NM South of Block Island",
+                "geocode": {
+                    "SAME": [
+                        "073255",
+                        "073256"
+                    ],
+                    "UGC": [
+                        "ANZ255",
+                        "ANZ256"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ANZ255",
+                    "https://api.weather.gov/zones/forecast/ANZ256"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.003.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.003.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T12:18:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.007.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.007.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-28T08:00:00-04:00",
+                "ends": "2026-09-28T20:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Small Craft Advisory issued September 27 at 3:09PM EDT until September 28 at 8:00PM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...East winds 10 to 15 kt with gusts up to 25 kt and seas\n6 to 9 feet.\n\n* WHERE...In Massachusetts coastal waters, Coastal Waters\nextending out to 25 NM South of Marthas Vineyard and\nNantucket. In Rhode Island coastal waters, Coastal Waters from\nMontauk NY to Marthas Vineyard extending out to 20 NM South of\nBlock Island.\n\n* WHEN...Until 8 PM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWBOX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 PM EDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260929T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T20:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.007.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.007.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.007.1",
+                "areaDesc": "Cape Cod Bay",
+                "geocode": {
+                    "SAME": [
+                        "073231"
+                    ],
+                    "UGC": [
+                        "ANZ231"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ANZ231"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.001.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.001.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-28T08:00:00-04:00",
+                "ends": "2026-09-28T14:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Small Craft Advisory issued September 27 at 3:09PM EDT until September 28 at 2:00PM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 30 kt and seas\n4 to 6 feet.\n\n* WHERE...Cape Cod Bay.\n\n* WHEN...Until 2 PM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWBOX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 2 PM EDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260928T1800Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T14:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.003.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.003.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.c0efc3b02866697d0b6ff44d6c82979f34163078.003.1",
+                "areaDesc": "Vineyard Sound; Buzzards Bay; Rhode Island Sound; Block Island Sound",
+                "geocode": {
+                    "SAME": [
+                        "073233",
+                        "073234",
+                        "073235",
+                        "073237"
+                    ],
+                    "UGC": [
+                        "ANZ233",
+                        "ANZ234",
+                        "ANZ235",
+                        "ANZ237"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ANZ233",
+                    "https://api.weather.gov/zones/forecast/ANZ234",
+                    "https://api.weather.gov/zones/forecast/ANZ235",
+                    "https://api.weather.gov/zones/forecast/ANZ237"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.001.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.001.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T12:18:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.005.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.005.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T13:04:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:09:00-04:00",
+                "effective": "2026-09-27T15:09:00-04:00",
+                "onset": "2026-09-27T15:09:00-04:00",
+                "expires": "2026-09-28T08:00:00-04:00",
+                "ends": "2026-09-28T08:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Boston/Norton MA",
+                "headline": "Small Craft Advisory issued September 27 at 3:09PM EDT until September 28 at 8:00AM EDT by NWS Boston/Norton MA",
+                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 25 kt and seas\n5 to 8 feet.\n\n* WHERE...In Massachusetts coastal waters, Vineyard Sound and\nBuzzards Bay. In Rhode Island coastal waters, Rhode Island\nSound and Block Island Sound.\n\n* WHEN...Until 8 AM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWBOX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS71 KBOX 271909"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 AM EDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260928T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T08:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.29da8a3f413b09e8fe381ae0e1a13e0c47696ed3.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.29da8a3f413b09e8fe381ae0e1a13e0c47696ed3.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.29da8a3f413b09e8fe381ae0e1a13e0c47696ed3.002.1",
+                "areaDesc": "S of Currituck Beach Light NC to Oregon Inlet NC out to 20 NM",
+                "geocode": {
+                    "SAME": [
+                        "075150"
+                    ],
+                    "UGC": [
+                        "AMZ150"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AMZ150"
+                ],
+                "references": [],
+                "sent": "2026-09-27T15:06:00-04:00",
+                "effective": "2026-09-27T15:06:00-04:00",
+                "onset": "2026-09-27T15:06:00-04:00",
+                "expires": "2026-09-27T15:21:36-04:00",
+                "ends": "2026-09-27T20:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Observed",
+                "urgency": "Past",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Newport/Morehead City NC",
+                "headline": "The Small Craft Advisory has been cancelled.",
+                "description": "The Small Craft Advisory has been cancelled and is no longer in effect.",
+                "instruction": null,
+                "response": "AllClear",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMHX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS72 KMHX 271906"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY IS CANCELLED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CAN.KMHX.SC.Y.0085.000000T0000Z-260928T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-27T20:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.002.1,2026-09-27T02:24:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.055e42b0380363f0d4d129919c3ed636a6013099.002.1,2026-09-26T18:16:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3f21889ae6988a595b2f20a605726f598027cedd.001.2,2026-09-26T14:03:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.29da8a3f413b09e8fe381ae0e1a13e0c47696ed3.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.29da8a3f413b09e8fe381ae0e1a13e0c47696ed3.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.29da8a3f413b09e8fe381ae0e1a13e0c47696ed3.001.1",
+                "areaDesc": "S of Oregon Inlet NC to Cape Hatteras NC out to 20 NM; S of Cape Hatteras NC to Ocracoke Inlet NC out to 20 NM",
+                "geocode": {
+                    "SAME": [
+                        "075152",
+                        "075154"
+                    ],
+                    "UGC": [
+                        "AMZ152",
+                        "AMZ154"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/AMZ152",
+                    "https://api.weather.gov/zones/forecast/AMZ154"
+                ],
+                "references": [],
+                "sent": "2026-09-27T15:06:00-04:00",
+                "effective": "2026-09-27T15:06:00-04:00",
+                "onset": "2026-09-27T15:06:00-04:00",
+                "expires": "2026-09-27T15:21:36-04:00",
+                "ends": "2026-09-27T17:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Observed",
+                "urgency": "Past",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Newport/Morehead City NC",
+                "headline": "The Small Craft Advisory has been cancelled.",
+                "description": "The Small Craft Advisory has been cancelled and is no longer in effect.",
+                "instruction": null,
+                "response": "AllClear",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWMHX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS72 KMHX 271906"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY IS CANCELLED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CAN.KMHX.SC.Y.0085.000000T0000Z-260927T2100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-27T17:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.003.1,2026-09-27T02:24:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.055e42b0380363f0d4d129919c3ed636a6013099.004.1,2026-09-26T18:16:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3f21889ae6988a595b2f20a605726f598027cedd.006.1,2026-09-26T14:03:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10099bed6defbca877e678ceb398590345a85c93.008.1,2026-09-26T08:55:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed1a186a04ef5b57d46e934b6439aa4e92ad8603.004.1,2026-09-26T06:10:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed1a186a04ef5b57d46e934b6439aa4e92ad8603.001.2,2026-09-26T06:10:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c6edd0fb3028c08ba530088ba0447e4e8824bba0.009.1,2026-09-26T02:28:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.15489335f5d2c9b97a3fab5e9b649b2694f5364f.001.2,2026-09-25T20:07:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6f90a7785df2214dfb3e8cecdb61ac0d80a7ddf1.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6f90a7785df2214dfb3e8cecdb61ac0d80a7ddf1.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.6f90a7785df2214dfb3e8cecdb61ac0d80a7ddf1.001.1",
+                "areaDesc": "Waters from San Mateo point to the Mexican Border Extending 10 to 60 nm out including San Clemente Island",
+                "geocode": {
+                    "SAME": [
+                        "057745"
+                    ],
+                    "UGC": [
+                        "PZZ745"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ745"
+                ],
+                "references": [],
+                "sent": "2026-09-27T12:06:00-07:00",
+                "effective": "2026-09-27T12:06:00-07:00",
+                "onset": "2026-09-28T11:00:00-07:00",
+                "expires": "2026-09-27T20:15:00-07:00",
+                "ends": "2026-09-28T23:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Diego CA",
+                "headline": "Small Craft Advisory issued September 27 at 12:06PM PDT until September 28 at 11:00PM PDT by NWS San Diego CA",
+                "description": "* WHAT...Northwesterly wind gusts of 20 to 25 knots in addition to\nmixed, choppy, and locally steep seas 6 to 7 ft expected.\n\n* WHERE...Waters from San Mateo Point to the Mexican Border\nExtending 10 to 60 nm out including San Clemente Island.\n\n* WHEN...From 11 AM to 11 PM PDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWSGX"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KSGX 271906"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY IN EFFECT FROM 11 AM TO 11 PM PDT MONDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KSGX.SC.Y.0012.260928T1800Z-260929T0600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T23:00:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
                     ]
                 }
             }
@@ -7319,610 +8136,6 @@
                     ],
                     "NationalWeatherService": [
                         "CFY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.001.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.001.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.001.2",
-                "areaDesc": "Cape Cod Bay",
-                "geocode": {
-                    "SAME": [
-                        "073231"
-                    ],
-                    "UGC": [
-                        "ANZ231"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ231"
-                ],
-                "references": [],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-28T02:15:00-04:00",
-                "ends": "2026-09-28T14:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Small Craft Advisory issued September 27 at 1:04PM EDT until September 28 at 2:00PM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 30 kt and seas\n4 to 6 feet.\n\n* WHERE...Cape Cod Bay.\n\n* WHEN...Until 2 PM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY IN EFFECT UNTIL 2 PM EDT MONDAY... ...GALE WARNING IS CANCELLED"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXB.KBOX.SC.Y.0089.000000T0000Z-260928T1800Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-28T14:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.006.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.006.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.006.1",
-                "areaDesc": "Nantucket Sound",
-                "geocode": {
-                    "SAME": [
-                        "073232"
-                    ],
-                    "UGC": [
-                        "ANZ232"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ232"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.002.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.002.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T12:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-28T02:15:00-04:00",
-                "ends": "2026-09-28T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Small Craft Advisory issued September 27 at 1:04PM EDT until September 28 at 8:00AM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 25 kt and seas\n4 to 6 feet.\n\n* WHERE...Nantucket Sound.\n\n* WHEN...Until 8 AM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 AM EDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260928T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-28T08:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.003.1",
-                "areaDesc": "Boston Harbor",
-                "geocode": {
-                    "SAME": [
-                        "073230"
-                    ],
-                    "UGC": [
-                        "ANZ230"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ230"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:21:00-04:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.008.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.008.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T12:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-27T20:00:00-04:00",
-                "ends": "2026-09-27T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Gale Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Gale Warning issued September 27 at 1:04PM EDT until September 27 at 8:00PM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...Northeast winds 20 to 25 kt with gusts up to 35 kt and\nwaves 2 to 4 feet.\n\n* WHERE...Boston Harbor.\n\n* WHEN...Until 8 PM EDT this evening.\n\n* IMPACTS...Strong winds will cause hazardous waves which could\ncapsize or damage vessels and reduce visibility.",
-                "instruction": "Mariners should alter plans to avoid these hazardous conditions.\nRemain in port, seek safe harbor, alter course, and/or secure the\nvessel for hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "GALE WARNING REMAINS IN EFFECT UNTIL 8 PM EDT THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KBOX.GL.W.0023.000000T0000Z-260928T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-27T20:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "GLW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.007.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.007.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.007.1",
-                "areaDesc": "Coastal Waters extending out to 25 NM South of Marthas Vineyard and Nantucket; Coastal Waters from Montauk NY to Marthas Vineyard extending out to 20 NM South of Block Island",
-                "geocode": {
-                    "SAME": [
-                        "073255",
-                        "073256"
-                    ],
-                    "UGC": [
-                        "ANZ255",
-                        "ANZ256"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ255",
-                    "https://api.weather.gov/zones/forecast/ANZ256"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.003.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.003.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T12:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-28T02:15:00-04:00",
-                "ends": "2026-09-28T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Small Craft Advisory issued September 27 at 1:04PM EDT until September 28 at 8:00PM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 25 kt and seas\n7 to 10 feet.\n\n* WHERE...In Massachusetts coastal waters, Coastal Waters\nextending out to 25 NM South of Marthas Vineyard and\nNantucket. In Rhode Island coastal waters, Coastal Waters from\nMontauk NY to Marthas Vineyard extending out to 20 NM South of\nBlock Island.\n\n* WHEN...Until 8 PM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 PM EDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260929T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-28T20:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.002.1",
-                "areaDesc": "Coastal waters east of Ipswich Bay and the Stellwagen Bank National Marine Sanctuary; Massachusetts Bay and Ipswich Bay; Ocean Waters from the Merrimack River to Plymouth from 40 to 60 NM",
-                "geocode": {
-                    "SAME": [
-                        "073250",
-                        "073251",
-                        "073280"
-                    ],
-                    "UGC": [
-                        "ANZ250",
-                        "ANZ251",
-                        "ANZ280"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ250",
-                    "https://api.weather.gov/zones/forecast/ANZ251",
-                    "https://api.weather.gov/zones/forecast/ANZ280"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.004.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.fe991633a4dce7bc02c570975ae39e0bb5c95201.004.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:21:00-04:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.007.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.007.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T12:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-27T20:00:00-04:00",
-                "ends": "2026-09-27T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Gale Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Gale Warning issued September 27 at 1:04PM EDT until September 27 at 8:00PM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...East winds 20 to 30 kt with gusts up to 40 kt and seas\n9 to 12 feet.\n\n* WHERE...In Massachusetts coastal waters, Coastal waters east\nof Ipswich Bay and the Stellwagen Bank National Marine\nSanctuary and Massachusetts Bay and Ipswich Bay. In Atlantic\ncoastal waters, Ocean Waters from the Merrimack River to\nPlymouth from 40 to 60 NM.\n\n* WHEN...Until 8 PM EDT this evening.\n\n* IMPACTS...Strong winds will cause hazardous seas which could\ncapsize or damage vessels and reduce visibility.",
-                "instruction": "Mariners should alter plans to avoid these hazardous conditions.\nRemain in port, seek safe harbor, alter course, and/or secure the\nvessel for hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "GALE WARNING REMAINS IN EFFECT UNTIL 8 PM EDT THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KBOX.GL.W.0023.000000T0000Z-260928T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-27T20:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "GLW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.008.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.008.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.008.1",
-                "areaDesc": "Coastal waters from Provincetown MA to Chatham MA to Nantucket MA out 20 NM",
-                "geocode": {
-                    "SAME": [
-                        "073254"
-                    ],
-                    "UGC": [
-                        "ANZ254"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ254"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.004.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.004.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T12:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-28T02:15:00-04:00",
-                "ends": "2026-09-28T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Small Craft Advisory issued September 27 at 1:04PM EDT until September 28 at 8:00PM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 30 kt and seas\n7 to 10 feet.\n\n* WHERE...Coastal waters from Provincetown MA to Chatham MA to\nNantucket MA out 20 NM.\n\n* WHEN...Until 8 PM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 PM EDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260929T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-28T20:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.005.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.005.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.7788e574162b59846ba6bb1630511fd94d9b4c8f.005.1",
-                "areaDesc": "Vineyard Sound; Buzzards Bay; Rhode Island Sound; Block Island Sound",
-                "geocode": {
-                    "SAME": [
-                        "073233",
-                        "073234",
-                        "073235",
-                        "073237"
-                    ],
-                    "UGC": [
-                        "ANZ233",
-                        "ANZ234",
-                        "ANZ235",
-                        "ANZ237"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ANZ233",
-                    "https://api.weather.gov/zones/forecast/ANZ234",
-                    "https://api.weather.gov/zones/forecast/ANZ235",
-                    "https://api.weather.gov/zones/forecast/ANZ237"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.9053165b8fdbf0b265a4bd202866fdbfe5b8baa5.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T12:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T13:04:00-04:00",
-                "effective": "2026-09-27T13:04:00-04:00",
-                "onset": "2026-09-27T13:04:00-04:00",
-                "expires": "2026-09-28T02:15:00-04:00",
-                "ends": "2026-09-28T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Boston/Norton MA",
-                "headline": "Small Craft Advisory issued September 27 at 1:04PM EDT until September 28 at 8:00AM EDT by NWS Boston/Norton MA",
-                "description": "* WHAT...East winds 10 to 20 kt with gusts up to 30 kt and seas\n6 to 9 feet.\n\n* WHERE...In Massachusetts coastal waters, Vineyard Sound and\nBuzzards Bay. In Rhode Island coastal waters, Rhode Island\nSound and Block Island Sound.\n\n* WHEN...Until 8 AM EDT Monday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWBOX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS71 KBOX 271704"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 AM EDT MONDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KBOX.SC.Y.0089.000000T0000Z-260928T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-28T08:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
                     ]
                 }
             }
@@ -23010,181 +23223,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.002.1",
-                "areaDesc": "S of Currituck Beach Light NC to Oregon Inlet NC out to 20 NM",
-                "geocode": {
-                    "SAME": [
-                        "075150"
-                    ],
-                    "UGC": [
-                        "AMZ150"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AMZ150"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.055e42b0380363f0d4d129919c3ed636a6013099.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.055e42b0380363f0d4d129919c3ed636a6013099.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-26T18:16:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T02:24:00-04:00",
-                "effective": "2026-09-27T02:24:00-04:00",
-                "onset": "2026-09-27T02:24:00-04:00",
-                "expires": "2026-09-27T15:00:00-04:00",
-                "ends": "2026-09-27T20:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Newport/Morehead City NC",
-                "headline": "Small Craft Advisory issued September 27 at 2:24AM EDT until September 27 at 8:00PM EDT by NWS Newport/Morehead City NC",
-                "description": "* WHAT...Seas 5 to 8 ft.\n\n* WHERE...The coastal waters from Duck to Oregon Inlet.\n\n* WHEN...Until 8 PM EDT this evening.\n\n* IMPACTS...Conditions will be hazardous to small craft.\n\n* ADDITIONAL DETAILS...Seas will remain elevated through this\nevening in the wake of this past week's Nor'easter.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMHX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS72 KMHX 270624"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 8 PM EDT THIS EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMHX.SC.Y.0085.000000T0000Z-260928T0000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-27T20:00:00-04:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3f21889ae6988a595b2f20a605726f598027cedd.001.2,2026-09-26T14:03:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.5254cc988bddb6bb48c5591cf50994209eea7247.003.1",
-                "areaDesc": "S of Oregon Inlet NC to Cape Hatteras NC out to 20 NM; S of Cape Hatteras NC to Ocracoke Inlet NC out to 20 NM",
-                "geocode": {
-                    "SAME": [
-                        "075152",
-                        "075154"
-                    ],
-                    "UGC": [
-                        "AMZ152",
-                        "AMZ154"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AMZ152",
-                    "https://api.weather.gov/zones/forecast/AMZ154"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.055e42b0380363f0d4d129919c3ed636a6013099.004.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.055e42b0380363f0d4d129919c3ed636a6013099.004.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-26T18:16:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-27T02:24:00-04:00",
-                "effective": "2026-09-27T02:24:00-04:00",
-                "onset": "2026-09-27T02:24:00-04:00",
-                "expires": "2026-09-27T15:00:00-04:00",
-                "ends": "2026-09-27T17:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Newport/Morehead City NC",
-                "headline": "Small Craft Advisory issued September 27 at 2:24AM EDT until September 27 at 5:00PM EDT by NWS Newport/Morehead City NC",
-                "description": "* WHAT...Seas 5 to 8 ft.\n\n* WHERE...The coastal waters from Oregon Inlet to Ocracoke Inlet.\n\n* WHEN...Until 5 PM EDT this afternoon.\n\n* IMPACTS...Conditions will be hazardous to small craft.\n\n* ADDITIONAL DETAILS...Seas will remain elevated through this\nevening in the wake of this past week's Nor'easter.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWMHX"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS72 KMHX 270624"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 5 PM EDT THIS AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KMHX.SC.Y.0085.000000T0000Z-260927T2100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-27T17:00:00-04:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3f21889ae6988a595b2f20a605726f598027cedd.006.1,2026-09-26T14:03:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.10099bed6defbca877e678ceb398590345a85c93.008.1,2026-09-26T08:55:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed1a186a04ef5b57d46e934b6439aa4e92ad8603.004.1,2026-09-26T06:10:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed1a186a04ef5b57d46e934b6439aa4e92ad8603.001.2,2026-09-26T06:10:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c6edd0fb3028c08ba530088ba0447e4e8824bba0.009.1,2026-09-26T02:28:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.15489335f5d2c9b97a3fab5e9b649b2694f5364f.001.2,2026-09-25T20:07:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.73304bb0be784914e4426a27961a591ebe2d6bbe.001.1",
             "type": "Feature",
             "geometry": null,
@@ -30399,5 +30437,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-27T19:03:13+00:00"
+    "updated": "2026-09-27T19:13:25+00:00"
 }
