@@ -10,56 +10,168 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-25918",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d5e7e988a3954ac1b0119ac2efc13727fdc568cd.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-25918",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d5e7e988a3954ac1b0119ac2efc13727fdc568cd.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-25918",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.d5e7e988a3954ac1b0119ac2efc13727fdc568cd.001.1",
+                "areaDesc": "Upper Rio Grande Valley/Eastern San Juan Mountains Below 10000 Ft; Eastern San Juan Mountains Above 10000 Ft",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "008021",
+                        "008079",
+                        "008105"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "COZ067",
+                        "COZ068"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/COZ067",
+                    "https://api.weather.gov/zones/forecast/COZ068"
                 ],
-                "references": [],
-                "sent": "2026-09-27T21:13:09+00:00",
-                "effective": "2026-09-27T21:13:09+00:00",
-                "onset": null,
-                "expires": "2026-09-27T21:23:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.652de6e789df76f07b2675be12643ca489f102c4.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.652de6e789df76f07b2675be12643ca489f102c4.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T08:13:00-06:00"
+                    }
+                ],
+                "sent": "2026-09-27T15:21:00-06:00",
+                "effective": "2026-09-27T15:21:00-06:00",
+                "onset": "2026-09-28T06:00:00-06:00",
+                "expires": "2026-09-27T23:30:00-06:00",
+                "ends": "2026-09-30T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Flood Watch",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Pueblo CO",
+                "headline": "Flood Watch issued September 27 at 3:21PM MDT until September 30 at 6:00AM MDT by NWS Pueblo CO",
+                "description": "* WHAT...Flash flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...The Eastern San Juan Mountains.\n\n* WHEN...From Monday morning through late Tuesday night.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\nCreeks and streams may rise out of their banks.\n\n* ADDITIONAL DETAILS...\n- Periods of heavy rainfall associated with a remnant tropical\nstorm system will spread across southwest Colorado beginning\nMonday.\n- Creede, South Fork and Wolf Creek Pass.\n- http://www.weather.gov/safety/flood",
+                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
+                "response": "Prepare",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FFAPUB"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 272113"
+                        "WGUS65 KPUB 272121"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WATCH REMAINS IN EFFECT FROM MONDAY MORNING THROUGH LATE TUESDAY NIGHT"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KPUB.FA.A.0008.260928T1200Z-260930T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-30T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed13e94394bc5add2bd3cb8c391b8366392efda9.001.1,2026-09-27T00:01:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFA"
+                    ],
+                    "NationalWeatherService": [
+                        "FAA"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.003.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.003.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.003.1",
+                "areaDesc": "Coastal waters from Cape Mendocino to Pt. Arena CA out 10 nm",
+                "geocode": {
+                    "SAME": [
+                        "057455"
+                    ],
+                    "UGC": [
+                        "PZZ455"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ455"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T09:07:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-27T14:19:00-07:00",
+                "effective": "2026-09-27T14:19:00-07:00",
+                "onset": "2026-09-27T14:19:00-07:00",
+                "expires": "2026-09-27T22:30:00-07:00",
+                "ends": "2026-09-29T09:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Eureka CA",
+                "headline": "Small Craft Advisory issued September 27 at 2:19PM PDT until September 29 at 9:00AM PDT by NWS Eureka CA",
+                "description": "* WHAT...Northwest winds 15 to 25 kt with gusts up to 35 kt and\nseas 7 to 12 feet.\n\n* WHERE...Coastal waters from Cape Mendocino to Pt. Arena CA out\n10 nm.\n\n* WHEN...Until 9 AM PDT Tuesday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWEKA"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KEKA 272119"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KEKA.SC.Y.0085.000000T0000Z-260929T1600Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-29T09:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.004.1,2026-09-27T02:46:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.07f067646c4dbd643a990d5f059398e041066c39.003.1,2026-09-26T21:25:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fb5e913f8868f890b7d2ef67bc1d2ebfac478a98.002.1,2026-09-26T14:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.25b907dcea0816280f9274ed7d9c0e55baa21aef.003.1,2026-09-26T08:59:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6817fe221d13642f84bd335d39db75c1401373b4.003.1,2026-09-26T03:56:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.804863faf3021715b215012040d25413aeadc076.004.1,2026-09-25T21:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5dc263614b2e5a5d5426c688fa946a5ce1e85f94.004.1,2026-09-25T14:40:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e7a6d06d6b5da2a08afb41caba031c68401174db.004.1,2026-09-25T08:50:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d479bcf98f8ef67bdbc65eb580c1cbcd52882a03.004.1,2026-09-25T08:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.eee529826d12f9e1d28a81485e44c6feeddf38fd.003.1,2026-09-25T03:08:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.373253ebd2515314b151ec14c2e12525ce87f460.004.1,2026-09-24T21:15:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1df8808bc864fcf856bca608bef9cf7b98dcb060.001.1,2026-09-24T14:34:00-07:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +183,568 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.002.1",
+                "areaDesc": "Waters from Pt. St. George to Cape Mendocino CA from 10 to 60 nm",
+                "geocode": {
+                    "SAME": [
+                        "057470"
+                    ],
+                    "UGC": [
+                        "PZZ470"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ470"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T09:07:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-27T14:19:00-07:00",
+                "effective": "2026-09-27T14:19:00-07:00",
+                "onset": "2026-09-27T14:19:00-07:00",
+                "expires": "2026-09-27T22:30:00-07:00",
+                "ends": "2026-09-29T03:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Eureka CA",
+                "headline": "Small Craft Advisory issued September 27 at 2:19PM PDT until September 29 at 3:00AM PDT by NWS Eureka CA",
+                "description": "* WHAT...North winds 15 to 25 kt with gusts up to 35 kt and seas\n9 to 13 feet.\n\n* WHERE...Waters from Pt. St. George to Cape Mendocino CA from\n10 to 60 nm.\n\n* WHEN...Until 3 AM PDT Tuesday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWEKA"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KEKA 272119"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KEKA.SC.Y.0085.000000T0000Z-260929T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-29T03:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.003.1,2026-09-27T02:46:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.07f067646c4dbd643a990d5f059398e041066c39.001.1,2026-09-26T21:25:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fb5e913f8868f890b7d2ef67bc1d2ebfac478a98.003.1,2026-09-26T14:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.25b907dcea0816280f9274ed7d9c0e55baa21aef.001.1,2026-09-26T08:59:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6817fe221d13642f84bd335d39db75c1401373b4.002.1,2026-09-26T03:56:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.804863faf3021715b215012040d25413aeadc076.002.1,2026-09-25T21:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5dc263614b2e5a5d5426c688fa946a5ce1e85f94.002.1,2026-09-25T14:40:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e7a6d06d6b5da2a08afb41caba031c68401174db.002.1,2026-09-25T08:50:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d479bcf98f8ef67bdbc65eb580c1cbcd52882a03.001.1,2026-09-25T08:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.eee529826d12f9e1d28a81485e44c6feeddf38fd.004.1,2026-09-25T03:08:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.373253ebd2515314b151ec14c2e12525ce87f460.001.1,2026-09-24T21:15:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1df8808bc864fcf856bca608bef9cf7b98dcb060.002.1,2026-09-24T14:34:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.461ac051830166abaf51126f20c525e63381c12a.001.1,2026-09-24T09:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.753dac45ee86e070456a7bffc49f23138d2c6566.002.1,2026-09-24T03:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc8c029bdd9d09e621d2c39a47e4bf8c15087cba.003.1,2026-09-23T20:57:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.49eb52f5c0d054f095df7c9091c99f42a55f4589.001.2,2026-09-23T14:31:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.001.1",
+                "areaDesc": "Waters from Cape Mendocino to Pt. Arena CA from 10 to 60 nm",
+                "geocode": {
+                    "SAME": [
+                        "057475"
+                    ],
+                    "UGC": [
+                        "PZZ475"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ475"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T09:07:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-27T14:19:00-07:00",
+                "effective": "2026-09-27T14:19:00-07:00",
+                "onset": "2026-09-27T14:19:00-07:00",
+                "expires": "2026-09-27T22:30:00-07:00",
+                "ends": "2026-09-28T15:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Eureka CA",
+                "headline": "Small Craft Advisory issued September 27 at 2:19PM PDT until September 28 at 3:00PM PDT by NWS Eureka CA",
+                "description": "* WHAT...For the Gale Warning, north winds 20 to 30 kt with\ngusts up to 40 kt and seas 11 to 15 feet expected. For the\nSmall Craft Advisory, north winds 20 to 25 kt with gusts up to\n35 kt and seas 10 to 14 feet.\n\n* WHERE...Waters from Cape Mendocino to Pt. Arena CA from 10 to\n60 nm.\n\n* WHEN...For the Gale Warning, from 3 PM Monday to 3 PM PDT\nTuesday. For the Small Craft Advisory, until 3 PM PDT Monday.\n\n* IMPACTS...Strong winds will cause hazardous seas which could\ncapsize or damage vessels and reduce visibility.",
+                "instruction": "Mariners should alter plans to avoid these hazardous conditions.\nRemain in port, seek safe harbor, alter course, and/or secure the\nvessel for severe conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWEKA"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KEKA 272119"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 PM PDT MONDAY... ...GALE WARNING IN EFFECT FROM 3 PM MONDAY TO 3 PM PDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KEKA.SC.Y.0086.000000T0000Z-260928T2200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-28T15:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.002.1,2026-09-27T02:46:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.07f067646c4dbd643a990d5f059398e041066c39.004.1,2026-09-26T21:25:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fb5e913f8868f890b7d2ef67bc1d2ebfac478a98.004.1,2026-09-26T14:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.25b907dcea0816280f9274ed7d9c0e55baa21aef.004.1,2026-09-26T08:59:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6817fe221d13642f84bd335d39db75c1401373b4.001.2,2026-09-26T03:56:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.004.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.004.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.004.1",
+                "areaDesc": "Coastal waters from Pt. St. George to Cape Mendocino CA out 10 nm",
+                "geocode": {
+                    "SAME": [
+                        "057450"
+                    ],
+                    "UGC": [
+                        "PZZ450"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ450"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.004.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.004.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-27T09:07:00-07:00"
+                    }
+                ],
+                "sent": "2026-09-27T14:19:00-07:00",
+                "effective": "2026-09-27T14:19:00-07:00",
+                "onset": "2026-09-27T21:00:00-07:00",
+                "expires": "2026-09-27T22:30:00-07:00",
+                "ends": "2026-09-29T03:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Eureka CA",
+                "headline": "Small Craft Advisory issued September 27 at 2:19PM PDT until September 29 at 3:00AM PDT by NWS Eureka CA",
+                "description": "* WHAT...North winds 10 to 20 kt with gusts up to 35 kt and seas\n7 to 10 feet expected.\n\n* WHERE...Coastal waters from Pt. St. George to Cape Mendocino\nCA out 10 nm.\n\n* WHEN...From 9 PM this evening to 3 AM PDT Tuesday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWEKA"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KEKA 272119"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 9 PM THIS EVENING TO 3 AM PDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KEKA.SC.Y.0087.260928T0400Z-260929T1000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-29T03:00:00-07:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.001.2,2026-09-27T02:46:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.001.3",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.001.3",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.767168457c9367f25af2fb95ca30a6ea39a171ea.001.3",
+                "areaDesc": "Waters from Cape Mendocino to Pt. Arena CA from 10 to 60 nm",
+                "geocode": {
+                    "SAME": [
+                        "057475"
+                    ],
+                    "UGC": [
+                        "PZZ475"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PZZ475"
+                ],
+                "references": [],
+                "sent": "2026-09-27T14:19:00-07:00",
+                "effective": "2026-09-27T14:19:00-07:00",
+                "onset": "2026-09-28T15:00:00-07:00",
+                "expires": "2026-09-27T22:30:00-07:00",
+                "ends": "2026-09-29T15:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Gale Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Eureka CA",
+                "headline": "Gale Warning issued September 27 at 2:19PM PDT until September 29 at 3:00PM PDT by NWS Eureka CA",
+                "description": "* WHAT...For the Gale Warning, north winds 20 to 30 kt with\ngusts up to 40 kt and seas 11 to 15 feet expected. For the\nSmall Craft Advisory, north winds 20 to 25 kt with gusts up to\n35 kt and seas 10 to 14 feet.\n\n* WHERE...Waters from Cape Mendocino to Pt. Arena CA from 10 to\n60 nm.\n\n* WHEN...For the Gale Warning, from 3 PM Monday to 3 PM PDT\nTuesday. For the Small Craft Advisory, until 3 PM PDT Monday.\n\n* IMPACTS...Strong winds will cause hazardous seas which could\ncapsize or damage vessels and reduce visibility.",
+                "instruction": "Mariners should alter plans to avoid these hazardous conditions.\nRemain in port, seek safe harbor, alter course, and/or secure the\nvessel for severe conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWEKA"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS76 KEKA 272119"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 PM PDT MONDAY... ...GALE WARNING IN EFFECT FROM 3 PM MONDAY TO 3 PM PDT TUESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KEKA.GL.W.0031.260928T2200Z-260929T2200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-09-29T15:00:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "GLW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ae4e192e6ff074a56fa991681b71aabd9851132d.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -99.66,
+                            30.44
+                        ],
+                        [
+                            -99.46,
+                            30.62
+                        ],
+                        [
+                            -99.08,
+                            30.5
+                        ],
+                        [
+                            -99.3,
+                            30.5
+                        ],
+                        [
+                            -99.3,
+                            30.29
+                        ],
+                        [
+                            -99.59,
+                            30.29
+                        ],
+                        [
+                            -99.66,
+                            30.44
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ae4e192e6ff074a56fa991681b71aabd9851132d.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ae4e192e6ff074a56fa991681b71aabd9851132d.001.1",
+                "areaDesc": "Kimble; Mason",
+                "geocode": {
+                    "SAME": [
+                        "048267",
+                        "048319"
+                    ],
+                    "UGC": [
+                        "TXZ169",
+                        "TXZ170"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/TXZ169",
+                    "https://api.weather.gov/zones/forecast/TXZ170"
+                ],
+                "references": [],
+                "sent": "2026-09-27T16:16:00-05:00",
+                "effective": "2026-09-27T16:16:00-05:00",
+                "onset": "2026-09-27T16:16:00-05:00",
+                "expires": "2026-09-27T17:00:00-05:00",
+                "ends": null,
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Observed",
+                "urgency": "Expected",
+                "event": "Special Weather Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Angelo TX",
+                "headline": "Special Weather Statement issued September 27 at 4:16PM CDT by NWS San Angelo TX",
+                "description": "At 415 PM CDT, Doppler radar was tracking a strong thunderstorm 11\nmiles north of I-10 Near The Kimble-Kerr County Line, or 11 miles\neast of Segovia, moving southeast at 20 mph.\n\nHAZARD...Wind gusts of 50 to 55 mph and nickel size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects. Minor hail damage to vegetation is\npossible.\n\nLocations impacted include...\nThe Intersection Of I-10 And Us 290 and I-10 Near The Kimble-Kerr\nCounty Line.\n\nThis includes Interstate 10 between Mile Markers 467 and 477.",
+                "instruction": "If outdoors, consider seeking shelter inside a building.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SPSSJT"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS84 KSJT 272116"
+                    ],
+                    "NWSheadline": [
+                        "A STRONG THUNDERSTORM WILL IMPACT SOUTHEASTERN KIMBLE AND SOUTHWESTERN MASON COUNTIES THROUGH 500 PM CDT"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-09-27T21:15:00-00:00...storm...312DEG...16KT...30.45,-99.47"
+                    ],
+                    "maxWindGust": [
+                        "55 MPH"
+                    ],
+                    "maxHailSize": [
+                        "0.88"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SPS"
+                    ],
+                    "NationalWeatherService": [
+                        "SPS"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f2da99335f626997b2b24b308e3cf9bd9ebd4475.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -101.79,
+                            42.56
+                        ],
+                        [
+                            -101.84,
+                            42.7
+                        ],
+                        [
+                            -101.49,
+                            42.84
+                        ],
+                        [
+                            -101.4,
+                            42.59
+                        ],
+                        [
+                            -101.79,
+                            42.56
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f2da99335f626997b2b24b308e3cf9bd9ebd4475.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.f2da99335f626997b2b24b308e3cf9bd9ebd4475.001.1",
+                "areaDesc": "Western Cherry",
+                "geocode": {
+                    "SAME": [
+                        "031031"
+                    ],
+                    "UGC": [
+                        "NEZ094"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NEZ094"
+                ],
+                "references": [],
+                "sent": "2026-09-27T16:16:00-05:00",
+                "effective": "2026-09-27T16:16:00-05:00",
+                "onset": "2026-09-27T16:16:00-05:00",
+                "expires": "2026-09-27T17:00:00-05:00",
+                "ends": null,
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Observed",
+                "urgency": "Expected",
+                "event": "Special Weather Statement",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS North Platte NE",
+                "headline": "Special Weather Statement issued September 27 at 4:16PM CDT by NWS North Platte NE",
+                "description": "At 416 PM CDT, Doppler radar was tracking a strong thunderstorm 15\nmiles west of Medicine Lake, or 26 miles east of Gordon, moving east\nat 20 mph.\n\nHAZARD...Wind gusts up to 40 mph and penny size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects. Minor hail damage to vegetation is\npossible.\n\nLocations impacted include...\nIndian Hill, Intersection of Highway 61 and Shadbolt Road, and\nHighway 61 crossing the Snake River.\n\nThis includes Highway 61 between mile markers 200 and 212.",
+                "instruction": "If outdoors, consider seeking shelter inside a building.\n\nTo report severe weather, contact your nearest law enforcement\nagency. They will relay your report to the National Weather Service\noffice in North Platte.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SPSLBF"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS83 KLBF 272116"
+                    ],
+                    "NWSheadline": [
+                        "A STRONG THUNDERSTORM WILL IMPACT NORTHWESTERN CHERRY COUNTY THROUGH 500 PM CDT"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-09-27T21:16:00-00:00...storm...253DEG...16KT...42.66,-101.73"
+                    ],
+                    "maxWindGust": [
+                        "40 MPH"
+                    ],
+                    "maxHailSize": [
+                        "0.75"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SPS"
+                    ],
+                    "NationalWeatherService": [
+                        "SPS"
                     ]
                 }
             }
@@ -2709,114 +3382,6 @@
                     ],
                     "NationalWeatherService": [
                         "RPS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e9bf071d0f0f515a43626498e68ba487365b010b.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -100.11,
-                            30.69
-                        ],
-                        [
-                            -99.79,
-                            30.58
-                        ],
-                        [
-                            -99.67,
-                            30.29
-                        ],
-                        [
-                            -100.11,
-                            30.29
-                        ],
-                        [
-                            -100.11,
-                            30.69
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e9bf071d0f0f515a43626498e68ba487365b010b.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.e9bf071d0f0f515a43626498e68ba487365b010b.001.1",
-                "areaDesc": "Kimble",
-                "geocode": {
-                    "SAME": [
-                        "048267"
-                    ],
-                    "UGC": [
-                        "TXZ169"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TXZ169"
-                ],
-                "references": [],
-                "sent": "2026-09-27T15:16:00-05:00",
-                "effective": "2026-09-27T15:16:00-05:00",
-                "onset": "2026-09-27T15:16:00-05:00",
-                "expires": "2026-09-27T16:15:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Angelo TX",
-                "headline": "Special Weather Statement issued September 27 at 3:16PM CDT by NWS San Angelo TX",
-                "description": "At 315 PM CDT, Doppler radar was tracking a strong thunderstorm near\nSouth Llano River State Park, moving southeast at 10 mph.\n\nHAZARD...Wind gusts of 50 to 55 mph and pea size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects. Minor hail damage to vegetation is\npossible.\n\nLocations impacted include...\nJunction, Telegraph, South Llano River State Park, Roosevelt, Cleo,\nUs-83 Near The Kerr-Kimble County Line, and Us-377 Near The Kimble-\nEdwards County Line.\n\nThis includes Interstate 10 between Mile Markers 435 and 456.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSSJT"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS84 KSJT 272016"
-                    ],
-                    "NWSheadline": [
-                        "A STRONG THUNDERSTORM WILL IMPACT WESTERN KIMBLE COUNTY THROUGH 415 PM CDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-09-27T20:15:00-00:00...storm...336DEG...7KT...30.47,-99.87"
-                    ],
-                    "maxWindGust": [
-                        "55 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.25"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
                     ]
                 }
             }
@@ -16092,430 +16657,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.002.1",
-                "areaDesc": "Waters from Pt. St. George to Cape Mendocino CA from 10 to 60 nm",
-                "geocode": {
-                    "SAME": [
-                        "057470"
-                    ],
-                    "UGC": [
-                        "PZZ470"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ470"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.003.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.003.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:46:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-27T09:07:00-07:00",
-                "effective": "2026-09-27T09:07:00-07:00",
-                "onset": "2026-09-27T09:07:00-07:00",
-                "expires": "2026-09-27T17:15:00-07:00",
-                "ends": "2026-09-29T03:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Eureka CA",
-                "headline": "Small Craft Advisory issued September 27 at 9:07AM PDT until September 29 at 3:00AM PDT by NWS Eureka CA",
-                "description": "* WHAT...North winds 15 to 25 kt with gusts up to 30 kt and seas\n7 to 11 feet.\n\n* WHERE...Waters from Pt. St. George to Cape Mendocino CA from\n10 to 60 nm.\n\n* WHEN...Until 3 AM PDT Tuesday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWEKA"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KEKA 271607"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 AM PDT TUESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KEKA.SC.Y.0085.000000T0000Z-260929T1000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-29T03:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.07f067646c4dbd643a990d5f059398e041066c39.001.1,2026-09-26T21:25:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fb5e913f8868f890b7d2ef67bc1d2ebfac478a98.003.1,2026-09-26T14:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.25b907dcea0816280f9274ed7d9c0e55baa21aef.001.1,2026-09-26T08:59:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6817fe221d13642f84bd335d39db75c1401373b4.002.1,2026-09-26T03:56:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.804863faf3021715b215012040d25413aeadc076.002.1,2026-09-25T21:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5dc263614b2e5a5d5426c688fa946a5ce1e85f94.002.1,2026-09-25T14:40:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e7a6d06d6b5da2a08afb41caba031c68401174db.002.1,2026-09-25T08:50:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d479bcf98f8ef67bdbc65eb580c1cbcd52882a03.001.1,2026-09-25T08:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.eee529826d12f9e1d28a81485e44c6feeddf38fd.004.1,2026-09-25T03:08:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.373253ebd2515314b151ec14c2e12525ce87f460.001.1,2026-09-24T21:15:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1df8808bc864fcf856bca608bef9cf7b98dcb060.002.1,2026-09-24T14:34:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.461ac051830166abaf51126f20c525e63381c12a.001.1,2026-09-24T09:33:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.753dac45ee86e070456a7bffc49f23138d2c6566.002.1,2026-09-24T03:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fc8c029bdd9d09e621d2c39a47e4bf8c15087cba.003.1,2026-09-23T20:57:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.49eb52f5c0d054f095df7c9091c99f42a55f4589.001.2,2026-09-23T14:31:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.003.1",
-                "areaDesc": "Coastal waters from Cape Mendocino to Pt. Arena CA out 10 nm",
-                "geocode": {
-                    "SAME": [
-                        "057455"
-                    ],
-                    "UGC": [
-                        "PZZ455"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ455"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.004.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.004.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:46:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-27T09:07:00-07:00",
-                "effective": "2026-09-27T09:07:00-07:00",
-                "onset": "2026-09-27T09:07:00-07:00",
-                "expires": "2026-09-27T17:15:00-07:00",
-                "ends": "2026-09-29T09:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Eureka CA",
-                "headline": "Small Craft Advisory issued September 27 at 9:07AM PDT until September 29 at 9:00AM PDT by NWS Eureka CA",
-                "description": "* WHAT...Northwest winds 15 to 25 kt with gusts up to 35 kt and\nseas 6 to 11 feet.\n\n* WHERE...Coastal waters from Cape Mendocino to Pt. Arena CA out\n10 nm.\n\n* WHEN...Until 9 AM PDT Tuesday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWEKA"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KEKA 271607"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM PDT TUESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KEKA.SC.Y.0085.000000T0000Z-260929T1600Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-29T09:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.07f067646c4dbd643a990d5f059398e041066c39.003.1,2026-09-26T21:25:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fb5e913f8868f890b7d2ef67bc1d2ebfac478a98.002.1,2026-09-26T14:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.25b907dcea0816280f9274ed7d9c0e55baa21aef.003.1,2026-09-26T08:59:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6817fe221d13642f84bd335d39db75c1401373b4.003.1,2026-09-26T03:56:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.804863faf3021715b215012040d25413aeadc076.004.1,2026-09-25T21:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5dc263614b2e5a5d5426c688fa946a5ce1e85f94.004.1,2026-09-25T14:40:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e7a6d06d6b5da2a08afb41caba031c68401174db.004.1,2026-09-25T08:50:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d479bcf98f8ef67bdbc65eb580c1cbcd52882a03.004.1,2026-09-25T08:30:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.eee529826d12f9e1d28a81485e44c6feeddf38fd.003.1,2026-09-25T03:08:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.373253ebd2515314b151ec14c2e12525ce87f460.004.1,2026-09-24T21:15:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1df8808bc864fcf856bca608bef9cf7b98dcb060.001.1,2026-09-24T14:34:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.004.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.004.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.004.1",
-                "areaDesc": "Coastal waters from Pt. St. George to Cape Mendocino CA out 10 nm",
-                "geocode": {
-                    "SAME": [
-                        "057450"
-                    ],
-                    "UGC": [
-                        "PZZ450"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ450"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:46:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-27T09:07:00-07:00",
-                "effective": "2026-09-27T09:07:00-07:00",
-                "onset": "2026-09-27T21:00:00-07:00",
-                "expires": "2026-09-27T17:15:00-07:00",
-                "ends": "2026-09-29T03:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Eureka CA",
-                "headline": "Small Craft Advisory issued September 27 at 9:07AM PDT until September 29 at 3:00AM PDT by NWS Eureka CA",
-                "description": "* WHAT...North winds 5 to 15 kt with gusts up to 25 kt and seas\n6 to 9 feet expected.\n\n* WHERE...Coastal waters from Pt. St. George to Cape Mendocino\nCA out 10 nm.\n\n* WHEN...From 9 PM this evening to 3 AM PDT Tuesday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWEKA"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KEKA 271607"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 9 PM THIS EVENING TO 3 AM PDT TUESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KEKA.SC.Y.0087.260928T0400Z-260929T1000Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-29T03:00:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.1",
-                "areaDesc": "Waters from Cape Mendocino to Pt. Arena CA from 10 to 60 nm",
-                "geocode": {
-                    "SAME": [
-                        "057475"
-                    ],
-                    "UGC": [
-                        "PZZ475"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ475"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:46:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-27T09:07:00-07:00",
-                "effective": "2026-09-27T09:07:00-07:00",
-                "onset": "2026-09-27T09:07:00-07:00",
-                "expires": "2026-09-27T17:15:00-07:00",
-                "ends": "2026-09-28T15:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Eureka CA",
-                "headline": "Small Craft Advisory issued September 27 at 9:07AM PDT until September 28 at 3:00PM PDT by NWS Eureka CA",
-                "description": "* WHAT...For the Small Craft Advisory, north winds 20 to 30 kt\nwith gusts up to 35 kt and seas 7 to 12 feet. For the Gale\nWatch, north winds 20 to 30 kt with gusts up to 35 kt and seas\n10 to 12 feet possible.\n\n* WHERE...Waters from Cape Mendocino to Pt. Arena CA from 10 to\n60 nm.\n\n* WHEN...For the Small Craft Advisory, until 3 PM PDT Monday.\nFor the Gale Watch, from Monday afternoon through Tuesday\nafternoon.\n\n* IMPACTS...Strong winds can cause hazardous seas which could\ncapsize or damage vessels and reduce visibility.",
-                "instruction": "Mariners should consider altering plans to avoid possible\nhazardous conditions.  Remain in port, seek safe harbor, alter\ncourse, and/or secure the vessel for severe wind and seas.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWEKA"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KEKA 271607"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 PM PDT MONDAY... ...GALE WATCH REMAINS IN EFFECT FROM MONDAY AFTERNOON THROUGH TUESDAY AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KEKA.SC.Y.0086.000000T0000Z-260928T2200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-28T15:00:00-07:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.07f067646c4dbd643a990d5f059398e041066c39.004.1,2026-09-26T21:25:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fb5e913f8868f890b7d2ef67bc1d2ebfac478a98.004.1,2026-09-26T14:13:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.25b907dcea0816280f9274ed7d9c0e55baa21aef.004.1,2026-09-26T08:59:00-07:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6817fe221d13642f84bd335d39db75c1401373b4.001.2,2026-09-26T03:56:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.aac40a81b24b1c92c95ab0a4c007f9401d1586d5.001.2",
-                "areaDesc": "Waters from Cape Mendocino to Pt. Arena CA from 10 to 60 nm",
-                "geocode": {
-                    "SAME": [
-                        "057475"
-                    ],
-                    "UGC": [
-                        "PZZ475"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PZZ475"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.002.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.ba820fb134e63173f28de1d3b9aae9be6de508c1.002.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-27T02:46:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-27T09:07:00-07:00",
-                "effective": "2026-09-27T09:07:00-07:00",
-                "onset": "2026-09-28T15:00:00-07:00",
-                "expires": "2026-09-27T17:15:00-07:00",
-                "ends": "2026-09-29T15:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Gale Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Eureka CA",
-                "headline": "Gale Watch issued September 27 at 9:07AM PDT until September 29 at 3:00PM PDT by NWS Eureka CA",
-                "description": "* WHAT...For the Small Craft Advisory, north winds 20 to 30 kt\nwith gusts up to 35 kt and seas 7 to 12 feet. For the Gale\nWatch, north winds 20 to 30 kt with gusts up to 35 kt and seas\n10 to 12 feet possible.\n\n* WHERE...Waters from Cape Mendocino to Pt. Arena CA from 10 to\n60 nm.\n\n* WHEN...For the Small Craft Advisory, until 3 PM PDT Monday.\nFor the Gale Watch, from Monday afternoon through Tuesday\nafternoon.\n\n* IMPACTS...Strong winds can cause hazardous seas which could\ncapsize or damage vessels and reduce visibility.",
-                "instruction": "Mariners should consider altering plans to avoid possible\nhazardous conditions.  Remain in port, seek safe harbor, alter\ncourse, and/or secure the vessel for severe wind and seas.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWEKA"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS76 KEKA 271607"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 PM PDT MONDAY... ...GALE WATCH REMAINS IN EFFECT FROM MONDAY AFTERNOON THROUGH TUESDAY AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KEKA.GL.A.0027.260928T2200Z-260929T2200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-29T15:00:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "GLA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e8581addc2273a79cfdd3ee79e75debbb6390504.001.2",
             "type": "Feature",
             "geometry": null,
@@ -19265,92 +19406,6 @@
                     ],
                     "NationalWeatherService": [
                         "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.652de6e789df76f07b2675be12643ca489f102c4.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.652de6e789df76f07b2675be12643ca489f102c4.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.652de6e789df76f07b2675be12643ca489f102c4.001.1",
-                "areaDesc": "Upper Rio Grande Valley/Eastern San Juan Mountains Below 10000 Ft; Eastern San Juan Mountains Above 10000 Ft",
-                "geocode": {
-                    "SAME": [
-                        "008021",
-                        "008079",
-                        "008105"
-                    ],
-                    "UGC": [
-                        "COZ067",
-                        "COZ068"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/COZ067",
-                    "https://api.weather.gov/zones/forecast/COZ068"
-                ],
-                "references": [],
-                "sent": "2026-09-27T08:13:00-06:00",
-                "effective": "2026-09-27T08:13:00-06:00",
-                "onset": "2026-09-28T06:00:00-06:00",
-                "expires": "2026-09-27T16:15:00-06:00",
-                "ends": "2026-09-30T06:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Flood Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Pueblo CO",
-                "headline": "Flood Watch issued September 27 at 8:13AM MDT until September 30 at 6:00AM MDT by NWS Pueblo CO",
-                "description": "* WHAT...Flash flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...The Eastern San Juan Mountains.\n\n* WHEN...From Monday morning through late Tuesday night.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\nCreeks and streams may rise out of their banks.\n\n* ADDITIONAL DETAILS...\n- Periods of heavy rainfall associated with a remnant tropical\nstorm system will spread across southwest Colorado beginning\nMonday.\n- Creede, South Fork and Wolf Creek Pass.\n- http://www.weather.gov/safety/flood",
-                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFAPUB"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS65 KPUB 271413"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WATCH REMAINS IN EFFECT FROM MONDAY MORNING THROUGH LATE TUESDAY NIGHT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KPUB.FA.A.0008.260928T1200Z-260930T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-30T06:00:00-06:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ed13e94394bc5add2bd3cb8c391b8366392efda9.001.1,2026-09-27T00:01:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFA"
-                    ],
-                    "NationalWeatherService": [
-                        "FAA"
                     ]
                 }
             }
@@ -30978,5 +31033,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-27T21:13:28+00:00"
+    "updated": "2026-09-27T21:23:12+00:00"
 }
