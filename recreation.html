@@ -336,7 +336,7 @@
       <div class="source-item">
         <h4>Valcour Buoy</h4>
         <p>Primary: SUNY Plattsburgh Lake Champlain Research Institute's Valcour buoy 7-day CSV feed (<a href="https://lcri99.github.io/" target="_blank">LCRI buoy data</a>). NOAA National Data Buoy Center station 45178 (<a href="https://www.ndbc.noaa.gov/station_page.php?station=45178" target="_blank">ndbc.noaa.gov</a>) is retained as the automatic fallback if the LCRI feed is unavailable.</p>
-         <span class="src-tag">SUNY Plattsburgh LCRI + NOAA NDBC fallback &mdash; LCRI wind in kt, temperatures in &deg;C, waves in m</span>
+         <span class="src-tag">SUNY Plattsburgh LCRI + NOAA NDBC fallback &mdash; LCRI wind in m/s &rarr; kt &rarr; mph, temperatures in &deg;C, waves in m</span>
       </div>
 
       <div class="source-item">
@@ -1198,7 +1198,7 @@ async function fetchLcriValcourObservation_() {
     if (!timestamp) continue;
 
     // IMPORTANT: LCRI's public Valcour CSV has a fixed schema and units.
-    //   windSpd = knots
+    //   windSpd = meters per second (m/s)
     //   windDir = degrees
     //   airTemp = degrees Celsius
     //   T1m    = degrees Celsius (1 m water temperature)
@@ -1206,7 +1206,7 @@ async function fetchLcriValcourObservation_() {
     // Do NOT infer units from alternate field-name aliases.
     var observation = {
       timestamp: timestamp,
-      sustainedMph: knotsToMph_(parseLcriFieldNumber_(record, 'windspd')),
+      sustainedMph: msToMphViaKnots_(parseLcriFieldNumber_(record, 'windspd')),
       gustMph: null,
       directionDeg: parseLcriFieldNumber_(record, 'winddir'),
       tempF: cToFExact_(parseLcriFieldNumber_(record, 'airtemp')),
@@ -1271,6 +1271,18 @@ function parseLcriFieldNumber_(record, fieldName) {
   if (v == null || v === '' || v === 'NA' || v === 'N/A' || v === 'null' || v === 'MM') return null;
   var n = Number(String(v).trim());
   return isFinite(n) ? n : null;
+}
+
+function msToKnots_(mps) {
+  return mps == null ? null : mps * 1.94384449;
+}
+
+function msToMphViaKnots_(mps) {
+  if (mps == null) return null;
+  // LCRI's public Valcour windSpd is m/s. Convert m/s -> knots -> mph
+  // so the unit chain is explicit and agrees with NDBC's archived convention.
+  var knots = msToKnots_(mps);
+  return Math.round(knots * 1.15078 * 10) / 10;
 }
 
 function knotsToMph_(knots) {
