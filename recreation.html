@@ -336,7 +336,7 @@
       <div class="source-item">
         <h4>Valcour Buoy</h4>
         <p>Primary: SUNY Plattsburgh Lake Champlain Research Institute's Valcour buoy 7-day CSV feed (<a href="https://lcri99.github.io/" target="_blank">LCRI buoy data</a>). NOAA National Data Buoy Center station 45178 (<a href="https://www.ndbc.noaa.gov/station_page.php?station=45178" target="_blank">ndbc.noaa.gov</a>) is retained as the automatic fallback if the LCRI feed is unavailable.</p>
-         <span class="src-tag">SUNY Plattsburgh LCRI + NOAA NDBC fallback</span>
+         <span class="src-tag">SUNY Plattsburgh LCRI + NOAA NDBC fallback &mdash; LCRI wind in kt, temperatures in &deg;C, waves in m</span>
       </div>
 
       <div class="source-item">
@@ -1197,14 +1197,21 @@ async function fetchLcriValcourObservation_() {
     var timestamp = parseLcriTimestamp_(record);
     if (!timestamp) continue;
 
+    // IMPORTANT: LCRI's public Valcour CSV has a fixed schema and units.
+    //   windSpd = knots
+    //   windDir = degrees
+    //   airTemp = degrees Celsius
+    //   T1m    = degrees Celsius (1 m water temperature)
+    //   Hs     = meters (significant wave height)
+    // Do NOT infer units from alternate field-name aliases.
     var observation = {
       timestamp: timestamp,
-      sustainedMph: parseLcriSpeedMph_(record, ['windspeedmph','windspeed','windmph','wind_speed_mph','wind_speed']),
-      gustMph: parseLcriSpeedMph_(record, ['windgustmph','windgust','gustmph','gust','wind_gust_mph','wind_gust']),
-      directionDeg: parseLcriNumber_(record, ['winddirectiondeg','winddirection','winddirdeg','winddir','wind_direction_deg','wind_direction']),
-      tempF: parseLcriTemperatureF_(record, ['airtemperaturef','airtemperature','airtempf','airtemp','temperaturef','temperature','temp']),
-      waterTempF: parseLcriTemperatureF_(record, ['watertemperaturef','watertemperature','watertempf','watertemp','water_temperature_f','water_temperature']),
-      waveHeightFt: parseLcriLengthFt_(record, ['waveheightft','waveheight','wave_height_ft','wave_height'])
+      sustainedMph: knotsToMph_(parseLcriFieldNumber_(record, 'windspd')),
+      gustMph: null,
+      directionDeg: parseLcriFieldNumber_(record, 'winddir'),
+      tempF: cToFExact_(parseLcriFieldNumber_(record, 'airtemp')),
+      waterTempF: cToFExact_(parseLcriFieldNumber_(record, 't1m')),
+      waveHeightFt: metersToFeetExact_(parseLcriFieldNumber_(record, 'hs'))
     };
 
     if (observation.sustainedMph == null && observation.gustMph == null &&
@@ -1259,51 +1266,48 @@ function firstCsvValue_(record, aliases) {
   return null;
 }
 
-function parseLcriNumber_(record, aliases) {
-  var v = firstCsvValue_(record, aliases);
-  if (v == null) return null;
-  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
+function parseLcriFieldNumber_(record, fieldName) {
+  var v = record[normalizeCsvHeader_(fieldName)];
+  if (v == null || v === '' || v === 'NA' || v === 'N/A' || v === 'null' || v === 'MM') return null;
+  var n = Number(String(v).trim());
   return isFinite(n) ? n : null;
 }
 
-function parseLcriSpeedMph_(record, aliases) {
-  var v = firstCsvValue_(record, aliases);
-  if (v == null) return null;
-  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
-  if (!isFinite(n)) return null;
-  var key = aliases.join(' ').toLowerCase();
-  if (key.indexOf('mph') >= 0) return Math.round(n);
-  if (key.indexOf('kt') >= 0 || key.indexOf('knot') >= 0) return Math.round(n * 1.15078);
-  return Math.round(n * 2.23694);
+function knotsToMph_(knots) {
+  return knots == null ? null : Math.round(knots * 1.15078 * 10) / 10;
 }
 
-function parseLcriTemperatureF_(record, aliases) {
-  var v = firstCsvValue_(record, aliases);
-  if (v == null) return null;
-  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
-  if (!isFinite(n)) return null;
-  var matched = aliases.find(function(a) { return /f$/i.test(a); });
-  return matched ? Math.round(n) : Math.round(n * 9 / 5 + 32);
+function cToFExact_(celsius) {
+  return celsius == null ? null : Math.round((celsius * 9 / 5 + 32) * 10) / 10;
 }
 
-function parseLcriLengthFt_(record, aliases) {
-  var v = firstCsvValue_(record, aliases);
-  if (v == null) return null;
-  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
-  if (!isFinite(n)) return null;
-  var matched = aliases.find(function(a) { return /ft$/i.test(a); });
-  return matched ? Math.round(n * 10) / 10 : Math.round(n * 3.28084 * 10) / 10;
+function metersToFeetExact_(meters) {
+  return meters == null ? null : Math.round(meters * 3.28084 * 100) / 100;
 }
 
 function parseLcriTimestamp_(record) {
-  var v = firstCsvValue_(record, ['timestamp','datetime','datetimeutc','timestamputc','date_time','date','time']);
+  var v = firstCsvValue_(record, ['date']);
   if (v == null) return null;
+
+  // LCRI writes the public `date` column as America/New_York local time,
+  // e.g. "2026-09-28 14:00:00". Treating this as the browser's local time
+  // can shift the observation by several hours, so convert it explicitly.
   var raw = String(v).trim();
+  var m = raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (m) {
+    var year = Number(m[1]);
+    var month = Number(m[2]);
+    var day = Number(m[3]);
+    var hour = Number(m[4] || 0);
+    var minute = Number(m[5] || 0);
+    var second = Number(m[6] || 0);
+    var offsetHours = usEasternOffsetHours_(year, month, day);
+    return new Date(Date.UTC(year, month - 1, day, hour, minute, second) - offsetHours * 3600000).toISOString();
+  }
+
+  // Conservative fallback for an explicitly-zoned timestamp.
   var d = new Date(raw);
-  if (!isNaN(d.getTime())) return d.toISOString();
-  var m = raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
-  if (m) return new Date(Date.UTC(Number(m[1]), Number(m[2])-1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6] || 0))).toISOString();
-  return null;
+  return isNaN(d.getTime()) ? null : d.toISOString();
 }
 
 // Legacy NDBC builder retained for any future station configured with source:'ndbc'.
