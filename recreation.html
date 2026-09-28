@@ -335,8 +335,8 @@
 
       <div class="source-item">
         <h4>Valcour Buoy</h4>
-        <p>NOAA National Data Buoy Center, real-time station 45178 (<a href="https://www.ndbc.noaa.gov/station_page.php?station=45178" target="_blank">ndbc.noaa.gov</a>).</p>
-        <span class="src-tag">NOAA NDBC</span>
+        <p>Primary: SUNY Plattsburgh Lake Champlain Research Institute's Valcour buoy 7-day CSV feed (<a href="https://lcri99.github.io/" target="_blank">LCRI buoy data</a>). NOAA National Data Buoy Center station 45178 (<a href="https://www.ndbc.noaa.gov/station_page.php?station=45178" target="_blank">ndbc.noaa.gov</a>) is retained as the automatic fallback if the LCRI feed is unavailable.</p>
+         <span class="src-tag">SUNY Plattsburgh LCRI + NOAA NDBC fallback</span>
       </div>
 
       <div class="source-item">
@@ -431,6 +431,9 @@
 // access-control-allow-origin: * header present.
 var NDBC_PROXY_URL = 'https://ndbc-proxy.jusmessinwityah1.workers.dev/';
 
+// Primary Valcour source: SUNY Plattsburgh Lake Champlain Research Institute.
+var LCRI_VALCOUR_CSV_URL = 'https://lcri99.github.io/last7.valcour.csv';
+
 // ====== CONFIG ==============================================================
 
 var REC_ISSUEDBY = 'BTV';
@@ -439,7 +442,7 @@ var STATIONS = [
   { id: 'colchester_reef', name: 'Colchester Reef', region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM02', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294500', ndbcId: null,    lat: 44.548,  lon: -73.34 },
   { id: 'burton_island',   name: 'Burton Island',    region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM01', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04295000', ndbcId: null,    lat: 44.77,   lon: -73.21 },
   { id: 'diamond_island',  name: 'Diamond Island',   region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM03', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294413', ndbcId: null,    lat: 44.03,   lon: -73.43 },
-  { id: 'valcour_buoy',    name: 'Valcour Buoy',     region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: null,    iemNetwork: null,    iemCoopNetwork: null,      source: 'ndbc', gaugeMax: 50, usgsSite: null,        ndbcId: '45178', staleThresholdMin: 150, lat: 44.603,  lon: -73.394 },
+  { id: 'valcour_buoy',    name: 'Valcour Buoy',     region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: null,    iemNetwork: null,    iemCoopNetwork: null,      source: 'lcri', gaugeMax: 50, usgsSite: null,        ndbcId: '45178', staleThresholdMin: 150, lat: 44.603,  lon: -73.394 },
   { id: 'whiteface',       name: 'Whiteface',        region: 'Adirondacks',    regionColor: 'purple', tempLabel: 'Wind Chill', noaaId: null,    iemNetwork: null,    iemCoopNetwork: null,      source: 'wfms', gaugeMax: 80, usgsSite: null,        ndbcId: null,    lat: 44.3658, lon: -73.9028 },
   { id: 'mt_mansfield',    name: 'Mt. Mansfield',    region: 'Green Mountains', regionColor: 'green', tempLabel: 'Wind Chill', noaaId: 'MMNV1', iemNetwork: null,    iemCoopNetwork: 'VT_COOP', source: null,   gaugeMax: 80, usgsSite: null,        ndbcId: null,    rrsPil: 'RRSBTV', lat: 44.5437, lon: -72.8092 }
 ];
@@ -629,6 +632,7 @@ async function getStationData_() {
 }
 
 async function getOneStationData_(s) {
+  if (s.source === 'lcri') return buildValcourStation_(s);
   if (s.source === 'ndbc') return buildNdbcStation_(s);
 
   var resolvedId = null;
@@ -1110,28 +1114,215 @@ async function fetchUsgsWaterTemp_(siteId) {
   }
 }
 
+async function buildValcourStation_(s) {
+  try {
+    var lcri = await fetchLcriValcourObservation_();
+    if (lcri) {
+      var threshold = s.staleThresholdMin || STALE_OBSERVATION_MINUTES;
+      var ageMinutes = (Date.now() - new Date(lcri.timestamp).getTime()) / 60000;
+      var isStale = ageMinutes > threshold;
+      return Object.assign({}, s, {
+        sustained: lcri.sustainedMph,
+        gust: lcri.gustMph,
+        gustOnly: lcri.sustainedMph == null && lcri.gustMph != null,
+        direction: degreesToCompass_(lcri.directionDeg),
+        directionDeg: lcri.directionDeg,
+        temp: lcri.tempF,
+        feelsLike: lcri.tempF,
+        waterTemp: lcri.waterTempF,
+        waveHeightFt: lcri.waveHeightFt,
+        updated: formatTime12_(new Date(lcri.timestamp), 'America/New_York'),
+        stale: isStale,
+        staleAge: isStale ? humanizeAge_(ageMinutes) : null,
+        dataSource: 'LCRI'
+      });
+    }
+  } catch (err) {
+    console.warn('buildValcourStation_: LCRI fetch failed; trying NDBC fallback:', err);
+  }
+
+  try {
+    var ndbc = await fetchNdbcObservation_(s.ndbcId);
+    if (ndbc) {
+      var ndbcThreshold = s.staleThresholdMin || STALE_OBSERVATION_MINUTES;
+      var ndbcAgeMinutes = (Date.now() - new Date(ndbc.timestamp).getTime()) / 60000;
+      var ndbcIsStale = ndbcAgeMinutes > ndbcThreshold;
+      return Object.assign({}, s, {
+        sustained: ndbc.sustainedMph,
+        gust: ndbc.gustMph,
+        gustOnly: ndbc.sustainedMph == null && ndbc.gustMph != null,
+        direction: degreesToCompass_(ndbc.directionDeg),
+        directionDeg: ndbc.directionDeg,
+        temp: ndbc.tempF,
+        feelsLike: ndbc.tempF,
+        waterTemp: ndbc.waterTempF,
+        waveHeightFt: ndbc.waveHeightFt,
+        updated: formatTime12_(new Date(ndbc.timestamp), 'America/New_York'),
+        stale: ndbcIsStale,
+        staleAge: ndbcIsStale ? humanizeAge_(ndbcAgeMinutes) : null,
+        dataSource: 'NDBC fallback'
+      });
+    }
+  } catch (err) {
+    console.warn('buildValcourStation_: NDBC fallback failed:', err);
+  }
+
+  return Object.assign({}, s, MOCK_STATIONS[s.id] || {});
+}
+
+async function fetchLcriValcourObservation_() {
+  var resp = await fetchWithTimeout_(LCRI_VALCOUR_CSV_URL, {
+    headers: { 'Accept': 'text/csv,text/plain,*/*' }
+  }, 8000);
+  if (!resp.ok) throw new Error('LCRI Valcour CSV HTTP ' + resp.status);
+
+  var rows = parseCsvRows_(await resp.text());
+  if (!rows.length) throw new Error('LCRI Valcour CSV contained no rows');
+
+  var headerIndex = findCsvHeaderIndex_(rows);
+  if (headerIndex < 0) throw new Error('LCRI Valcour CSV header not found');
+
+  var headers = rows[headerIndex].map(normalizeCsvHeader_);
+  var best = null;
+
+  for (var i = headerIndex + 1; i < rows.length; i++) {
+    var row = rows[i];
+    if (!row || row.length < 2) continue;
+
+    var record = {};
+    headers.forEach(function (h, j) {
+      if (h) record[h] = row[j] != null ? String(row[j]).trim() : '';
+    });
+
+    var timestamp = parseLcriTimestamp_(record);
+    if (!timestamp) continue;
+
+    var observation = {
+      timestamp: timestamp,
+      sustainedMph: parseLcriSpeedMph_(record, ['windspeedmph','windspeed','windmph','wind_speed_mph','wind_speed']),
+      gustMph: parseLcriSpeedMph_(record, ['windgustmph','windgust','gustmph','gust','wind_gust_mph','wind_gust']),
+      directionDeg: parseLcriNumber_(record, ['winddirectiondeg','winddirection','winddirdeg','winddir','wind_direction_deg','wind_direction']),
+      tempF: parseLcriTemperatureF_(record, ['airtemperaturef','airtemperature','airtempf','airtemp','temperaturef','temperature','temp']),
+      waterTempF: parseLcriTemperatureF_(record, ['watertemperaturef','watertemperature','watertempf','watertemp','water_temperature_f','water_temperature']),
+      waveHeightFt: parseLcriLengthFt_(record, ['waveheightft','waveheight','wave_height_ft','wave_height'])
+    };
+
+    if (observation.sustainedMph == null && observation.gustMph == null &&
+        observation.tempF == null && observation.waterTempF == null &&
+        observation.waveHeightFt == null) continue;
+
+    if (!best || new Date(observation.timestamp).getTime() > new Date(best.timestamp).getTime()) {
+      best = observation;
+    }
+  }
+
+  if (!best) throw new Error('LCRI Valcour CSV contained no usable observations');
+  return best;
+}
+
+function parseCsvRows_(text) {
+  var rows = [], row = [], field = '', quoted = false;
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (quoted) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else quoted = false;
+      } else field += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ',') { row.push(field); field = ''; }
+    else if (ch === '\n') { row.push(field.replace(/\r$/, '')); rows.push(row); row = []; field = ''; }
+    else field += ch;
+  }
+  if (field.length || row.length) { row.push(field.replace(/\r$/, '')); rows.push(row); }
+  return rows;
+}
+
+function normalizeCsvHeader_(h) {
+  return String(h || '').replace(/^\uFEFF/, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function findCsvHeaderIndex_(rows) {
+  for (var i = 0; i < Math.min(rows.length, 20); i++) {
+    var joined = rows[i].map(normalizeCsvHeader_).join('|');
+    if (/(date|time|timestamp|datetime)/.test(joined) && /(wind|temp|wave|water)/.test(joined)) return i;
+  }
+  return -1;
+}
+
+function firstCsvValue_(record, aliases) {
+  for (var i = 0; i < aliases.length; i++) {
+    var key = normalizeCsvHeader_(aliases[i]);
+    var v = record[key];
+    if (v != null && v !== '' && v !== 'NA' && v !== 'N/A' && v !== 'null' && v !== 'MM') return v;
+  }
+  return null;
+}
+
+function parseLcriNumber_(record, aliases) {
+  var v = firstCsvValue_(record, aliases);
+  if (v == null) return null;
+  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
+  return isFinite(n) ? n : null;
+}
+
+function parseLcriSpeedMph_(record, aliases) {
+  var v = firstCsvValue_(record, aliases);
+  if (v == null) return null;
+  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
+  if (!isFinite(n)) return null;
+  var key = aliases.join(' ').toLowerCase();
+  if (key.indexOf('mph') >= 0) return Math.round(n);
+  if (key.indexOf('kt') >= 0 || key.indexOf('knot') >= 0) return Math.round(n * 1.15078);
+  return Math.round(n * 2.23694);
+}
+
+function parseLcriTemperatureF_(record, aliases) {
+  var v = firstCsvValue_(record, aliases);
+  if (v == null) return null;
+  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
+  if (!isFinite(n)) return null;
+  var matched = aliases.find(function(a) { return /f$/i.test(a); });
+  return matched ? Math.round(n) : Math.round(n * 9 / 5 + 32);
+}
+
+function parseLcriLengthFt_(record, aliases) {
+  var v = firstCsvValue_(record, aliases);
+  if (v == null) return null;
+  var n = parseFloat(String(v).replace(/[^0-9.+-]/g, ''));
+  if (!isFinite(n)) return null;
+  var matched = aliases.find(function(a) { return /ft$/i.test(a); });
+  return matched ? Math.round(n * 10) / 10 : Math.round(n * 3.28084 * 10) / 10;
+}
+
+function parseLcriTimestamp_(record) {
+  var v = firstCsvValue_(record, ['timestamp','datetime','datetimeutc','timestamputc','date_time','date','time']);
+  if (v == null) return null;
+  var raw = String(v).trim();
+  var d = new Date(raw);
+  if (!isNaN(d.getTime())) return d.toISOString();
+  var m = raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (m) return new Date(Date.UTC(Number(m[1]), Number(m[2])-1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6] || 0))).toISOString();
+  return null;
+}
+
+// Legacy NDBC builder retained for any future station configured with source:'ndbc'.
 async function buildNdbcStation_(s) {
   try {
     var ndbc = await fetchNdbcObservation_(s.ndbcId);
     if (!ndbc) return Object.assign({}, s, MOCK_STATIONS[s.id] || {});
-
     var threshold = s.staleThresholdMin || STALE_OBSERVATION_MINUTES;
     var ageMinutes = (Date.now() - new Date(ndbc.timestamp).getTime()) / 60000;
     var isStale = ageMinutes > threshold;
-
     return Object.assign({}, s, {
-      sustained: ndbc.sustainedMph,
-      gust: ndbc.gustMph,
+      sustained: ndbc.sustainedMph, gust: ndbc.gustMph,
       gustOnly: ndbc.sustainedMph == null && ndbc.gustMph != null,
-      direction: degreesToCompass_(ndbc.directionDeg),
-      directionDeg: ndbc.directionDeg,
-      temp: ndbc.tempF,
-      feelsLike: ndbc.tempF,
-      waterTemp: ndbc.waterTempF,
+      direction: degreesToCompass_(ndbc.directionDeg), directionDeg: ndbc.directionDeg,
+      temp: ndbc.tempF, feelsLike: ndbc.tempF, waterTemp: ndbc.waterTempF,
       waveHeightFt: ndbc.waveHeightFt,
       updated: formatTime12_(new Date(ndbc.timestamp), 'America/New_York'),
-      stale: isStale,
-      staleAge: isStale ? humanizeAge_(ageMinutes) : null
+      stale: isStale, staleAge: isStale ? humanizeAge_(ageMinutes) : null,
+      dataSource: 'NDBC'
     });
   } catch (err) {
     console.warn('buildNdbcStation_ NDBC error for ' + s.ndbcId + ':', err);
@@ -1139,52 +1330,29 @@ async function buildNdbcStation_(s) {
   }
 }
 
-// NDBC does not send CORS headers (confirmed), so this fetch will likely fail with
-// a CORS error in the browser console — that's expected, not a bug in this code.
-// Set NDBC_PROXY_URL above to a working proxy to fix; until then this gracefully
-// returns null and the station falls back to mock data, same as any other outage.
 async function fetchNdbcObservation_(ndbcId) {
   try {
     var base = NDBC_PROXY_URL || 'https://www.ndbc.noaa.gov/data/realtime2/';
-    var url = base + ndbcId + '.txt';
-    var resp = await fetchWithTimeout_(url);
+    var resp = await fetchWithTimeout_(base + ndbcId + '.txt');
     if (!resp.ok) { console.warn('NDBC fetch failed for ' + ndbcId + ': HTTP ' + resp.status); return null; }
-    var fullText = await resp.text();
-    var lines = fullText.split('\n');
-    var dataLine = lines[2];
-    if (!dataLine || !dataLine.trim()) {
-      console.warn('NDBC ' + ndbcId + ': no data line at index 2. First 300 chars of response:', fullText.slice(0, 300));
-      return null;
-    }
-
+    var fullText = await resp.text(), lines = fullText.split('\n'), dataLine = lines[2];
+    if (!dataLine || !dataLine.trim()) return null;
     var cols = dataLine.trim().split(/\s+/);
-    var mm = function (v) { return (v == null || v === 'MM') ? null : Number(v); };
-
-    var year = Number(cols[0]), month = Number(cols[1]), day = Number(cols[2]),
-        hour = Number(cols[3]), minute = Number(cols[4]);
-    var wdir = mm(cols[5]);
-    var wspdMs = mm(cols[6]);
-    var gstMs = mm(cols[7]);
-    var wvhtM = mm(cols[8]);
-    var atmpC = mm(cols[13]);
-    var wtmpC = mm(cols[14]);
-
-    if (wspdMs == null && gstMs == null && atmpC == null) {
-      console.warn('NDBC ' + ndbcId + ': parsed dataLine but wind/temp all null. Raw dataLine:', dataLine);
-      return null;
-    }
-
+    var mm = function(v) { return (v == null || v === 'MM') ? null : Number(v); };
+    var year=Number(cols[0]), month=Number(cols[1]), day=Number(cols[2]), hour=Number(cols[3]), minute=Number(cols[4]);
+    var wdir=mm(cols[5]), wspdMs=mm(cols[6]), gstMs=mm(cols[7]), wvhtM=mm(cols[8]), atmpC=mm(cols[13]), wtmpC=mm(cols[14]);
+    if (wspdMs == null && gstMs == null && atmpC == null) return null;
     return {
-      sustainedMph: wspdMs != null ? Math.round(wspdMs * 2.23694) : null,
-      gustMph: gstMs != null ? Math.round(gstMs * 2.23694) : null,
+      sustainedMph: wspdMs != null ? Math.round(wspdMs*2.23694) : null,
+      gustMph: gstMs != null ? Math.round(gstMs*2.23694) : null,
       directionDeg: wdir,
-      tempF: atmpC != null ? Math.round(atmpC * 9 / 5 + 32) : null,
-      waterTempF: wtmpC != null ? Math.round(wtmpC * 9 / 5 + 32) : null,
-      waveHeightFt: wvhtM != null ? Math.round(wvhtM * 3.28084 * 10) / 10 : null,
-      timestamp: new Date(Date.UTC(year, month - 1, day, hour, minute)).toISOString()
+      tempF: atmpC != null ? Math.round(atmpC*9/5+32) : null,
+      waterTempF: wtmpC != null ? Math.round(wtmpC*9/5+32) : null,
+      waveHeightFt: wvhtM != null ? Math.round(wvhtM*3.28084*10)/10 : null,
+      timestamp: new Date(Date.UTC(year,month-1,day,hour,minute)).toISOString()
     };
   } catch (err) {
-    console.warn('fetchNdbcObservation_ error for ' + ndbcId + ' (likely CORS — see notes at top of file):', err);
+    console.warn('fetchNdbcObservation_ error for ' + ndbcId + ':', err);
     return null;
   }
 }
@@ -1448,7 +1616,8 @@ function buildGaugeCard(station) {
     '<div class="temp-row">&#127777;&#65039; <span class="temp">' + fmtVal(station.temp) + '&deg;F</span>' +
     '<span class="feels">' + station.tempLabel + ' ' + fmtVal(station.feelsLike) + '&deg;F</span></div>' +
     waterWaveRow +
-    '<div class="updated-row">Updated: ' + station.updated + '</div>';
+    '<div class="updated-row">Updated: ' + station.updated +
+    (station.dataSource ? ' &middot; ' + station.dataSource : '') + '</div>';
   return card;
 }
 
