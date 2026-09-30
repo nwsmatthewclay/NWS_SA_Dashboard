@@ -10,56 +10,79 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-51540",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b6d09aa2ad2eab531f0236c01e3b94a366f7e7e0.001.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-51540",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b6d09aa2ad2eab531f0236c01e3b94a366f7e7e0.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-51540",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.b6d09aa2ad2eab531f0236c01e3b94a366f7e7e0.001.1",
+                "areaDesc": "Monroe Upper Keys; Monroe Middle Keys; Monroe Lower Keys",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "012087"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "FLZ076",
+                        "FLZ077",
+                        "FLZ078"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/FLZ076",
+                    "https://api.weather.gov/zones/forecast/FLZ077",
+                    "https://api.weather.gov/zones/forecast/FLZ078"
                 ],
-                "references": [],
-                "sent": "2026-09-30T15:33:09+00:00",
-                "effective": "2026-09-30T15:33:09+00:00",
-                "onset": null,
-                "expires": "2026-09-30T15:43:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.15b9d911bdcf0610d7d9af736cbd7790b54dbdb0.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.15b9d911bdcf0610d7d9af736cbd7790b54dbdb0.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-30T03:55:00-04:00"
+                    }
+                ],
+                "sent": "2026-09-30T11:36:00-04:00",
+                "effective": "2026-09-30T11:36:00-04:00",
+                "onset": "2026-09-30T11:36:00-04:00",
+                "expires": "2026-10-01T05:00:00-04:00",
+                "ends": "2026-10-01T05:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Coastal Flood Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Key West FL",
+                "headline": "Coastal Flood Advisory issued September 30 at 11:36AM EDT until October 1 at 5:00AM EDT by NWS Key West FL",
+                "description": "* WHAT...Saltwater flooding.\n\n* WHERE...Florida Keys.\n\n* WHEN...Until 5 AM EDT Thursday.\n\n* IMPACTS...Saltwater flooding of low elevation streets and lots\nis expected. Some storm drains will overflow, and some\nseawalls and docks will be overtopped. Boaters can expect less\nclearance under fixed bridges. Motorists should remember that\npersistent puddles around the times of high tide are almost\ncertain to contain a mix of saltwater.",
+                "instruction": "If travel is required, allow extra time as some roads may be\nclosed. Do not drive around barricades or through water of\nunknown depth. Take the necessary actions to protect flood-prone\nproperty.",
+                "response": "Monitor",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "CFWKEY"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 301533"
+                        "WHUS42 KKEY 301536"
+                    ],
+                    "NWSheadline": [
+                        "COASTAL FLOOD ADVISORY NOW IN EFFECT UNTIL 5 AM EDT THURSDAY"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KKEY.CF.Y.0003.000000T0000Z-261001T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T05:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6c3c932f9130de4b1ce56c5d86e06f73826ec9e7.002.1,2026-09-29T22:42:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6c3c932f9130de4b1ce56c5d86e06f73826ec9e7.001.2,2026-09-29T22:42:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.7fdf1aea71ce8ca3f06f55d2976218c79ec7ce08.002.1,2026-09-29T16:05:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cdf42f6363d6dda45d0ee9d7c5bf691dc4ac42dc.002.1,2026-09-29T13:14:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.78612d59f2b14bd6f07c56c119465a053ba04380.002.1,2026-09-29T03:59:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f61198d5302c13e1e1926403ba022a4a43fa2361.001.1,2026-09-28T15:55:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b202fa7f60066dd00182239a0aac27692f5deafc.002.1,2026-09-28T17:51:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5364e19dae05339bd062766c7fe75e70aa5951c.002.1,2026-09-28T17:41:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5364e19dae05339bd062766c7fe75e70aa5951c.001.1,2026-09-28T17:41:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.378d237818cadb78ddca55f5ada36967577db9b0.002.1,2026-09-28T09:22:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.378d237818cadb78ddca55f5ada36967577db9b0.001.2,2026-09-28T09:22:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.7aa2e1fbe365c9772afab1dfec51647e0aca759a.002.1,2026-09-28T04:07:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5327bc11f12e019747430a642703b1806988df27.002.1,2026-09-27T21:29:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1884f9806ffdda13a55f432c459f35ea4938f3a3.001.2,2026-09-27T13:22:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +94,7 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "CFY"
                     ]
                 }
             }
@@ -13222,102 +13245,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.15b9d911bdcf0610d7d9af736cbd7790b54dbdb0.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.15b9d911bdcf0610d7d9af736cbd7790b54dbdb0.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.15b9d911bdcf0610d7d9af736cbd7790b54dbdb0.001.1",
-                "areaDesc": "Monroe Upper Keys; Monroe Middle Keys; Monroe Lower Keys",
-                "geocode": {
-                    "SAME": [
-                        "012087"
-                    ],
-                    "UGC": [
-                        "FLZ076",
-                        "FLZ077",
-                        "FLZ078"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/FLZ076",
-                    "https://api.weather.gov/zones/forecast/FLZ077",
-                    "https://api.weather.gov/zones/forecast/FLZ078"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6c3c932f9130de4b1ce56c5d86e06f73826ec9e7.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.6c3c932f9130de4b1ce56c5d86e06f73826ec9e7.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-29T22:42:00-04:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6c3c932f9130de4b1ce56c5d86e06f73826ec9e7.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.6c3c932f9130de4b1ce56c5d86e06f73826ec9e7.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-29T22:42:00-04:00"
-                    }
-                ],
-                "sent": "2026-09-30T03:55:00-04:00",
-                "effective": "2026-09-30T03:55:00-04:00",
-                "onset": "2026-09-30T03:55:00-04:00",
-                "expires": "2026-09-30T12:00:00-04:00",
-                "ends": "2026-09-30T17:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Coastal Flood Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Key West FL",
-                "headline": "Coastal Flood Advisory issued September 30 at 3:55AM EDT until September 30 at 5:00PM EDT by NWS Key West FL",
-                "description": "* WHAT...Saltwater flooding.\n\n* WHERE...Upper Keys, particularly along the sounds, Bay side of\nKey Largo, Middle, and Lower Florida Keys.\n\n* WHEN...Through this afternoon.\n\n* IMPACTS...Saltwater flooding of low elevation streets and lots\nis expected. Some storm drains will overflow, and some\nseawalls and docks will be overtopped. Boaters can expect less\nclearance under fixed bridges. Motorists should remember that\npersistent puddles are almost certain to contain a mix of\nsaltwater. Little relief can be expected even outside the\nhours around high tide.",
-                "instruction": "If travel is required, allow extra time as some roads may be\nclosed. Do not drive around barricades or through water of\nunknown depth. Take the necessary actions to protect flood-prone\nproperty.",
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CFWKEY"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS42 KKEY 300755"
-                    ],
-                    "NWSheadline": [
-                        "COASTAL FLOOD ADVISORY REMAINS IN EFFECT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KKEY.CF.Y.0003.000000T0000Z-260930T2100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-30T17:00:00-04:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.7fdf1aea71ce8ca3f06f55d2976218c79ec7ce08.002.1,2026-09-29T16:05:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.cdf42f6363d6dda45d0ee9d7c5bf691dc4ac42dc.002.1,2026-09-29T13:14:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.78612d59f2b14bd6f07c56c119465a053ba04380.002.1,2026-09-29T03:59:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f61198d5302c13e1e1926403ba022a4a43fa2361.001.1,2026-09-28T15:55:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b202fa7f60066dd00182239a0aac27692f5deafc.002.1,2026-09-28T17:51:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5364e19dae05339bd062766c7fe75e70aa5951c.002.1,2026-09-28T17:41:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.a5364e19dae05339bd062766c7fe75e70aa5951c.001.1,2026-09-28T17:41:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.378d237818cadb78ddca55f5ada36967577db9b0.002.1,2026-09-28T09:22:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.378d237818cadb78ddca55f5ada36967577db9b0.001.2,2026-09-28T09:22:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.7aa2e1fbe365c9772afab1dfec51647e0aca759a.002.1,2026-09-28T04:07:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.5327bc11f12e019747430a642703b1806988df27.002.1,2026-09-27T21:29:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.1884f9806ffdda13a55f432c459f35ea4938f3a3.001.2,2026-09-27T13:22:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "CFY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8b23bf5920a9dfa757f9f78d91ad61ae98d95d2b.001.1",
             "type": "Feature",
             "geometry": null,
@@ -13831,103 +13758,6 @@
                     ],
                     "expiredReferences": [
                         "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.43bb3c5dba867a0a757680081c67b9f787c8c804.002.1,2026-09-29T03:42:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.43bb3c5dba867a0a757680081c67b9f787c8c804.001.1,2026-09-29T03:42:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.6847a9201e84d720dfc54b68ba9502f87099e38b.001.1,2026-09-28T22:05:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3056ddb667b188d198a595dbc04ec8d1cbfdeddf.002.1,2026-09-29T09:38:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.3056ddb667b188d198a595dbc04ec8d1cbfdeddf.001.1,2026-09-29T09:38:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.d53b416d9079bd5938d2e70c793dde6aa0c25f88.001.1,2026-09-28T14:51:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.4ebb568209ed345207c619ecaafc9f158caf138b.001.1,2026-09-28T13:42:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FFA"
-                    ],
-                    "NationalWeatherService": [
-                        "FAA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.db060ec9b27ad4f74e1b1ac4bec5d568db0d3769.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.db060ec9b27ad4f74e1b1ac4bec5d568db0d3769.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.db060ec9b27ad4f74e1b1ac4bec5d568db0d3769.001.1",
-                "areaDesc": "South Central Pinal County including Eloy/Picacho Peak State Park; Southeast Pinal County including Kearny/Mammoth/Oracle; Upper Gila River and Aravaipa Valleys including Clifton/Safford; White Mountains of Graham and Greenlee Counties including Hannagan Meadow; Galiuro and Pinaleno Mountains including Mount Graham",
-                "geocode": {
-                    "SAME": [
-                        "004021",
-                        "004009",
-                        "004011",
-                        "004003"
-                    ],
-                    "UGC": [
-                        "AZZ505",
-                        "AZZ506",
-                        "AZZ509",
-                        "AZZ510",
-                        "AZZ511"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AZZ505",
-                    "https://api.weather.gov/zones/forecast/AZZ506",
-                    "https://api.weather.gov/zones/forecast/AZZ509",
-                    "https://api.weather.gov/zones/forecast/AZZ510",
-                    "https://api.weather.gov/zones/forecast/AZZ511"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dc89706ae227483d1f5be8d98900207a4f473b2d.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.dc89706ae227483d1f5be8d98900207a4f473b2d.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-29T22:50:00-07:00"
-                    }
-                ],
-                "sent": "2026-09-29T23:29:00-07:00",
-                "effective": "2026-09-29T23:29:00-07:00",
-                "onset": "2026-09-29T23:29:00-07:00",
-                "expires": "2026-09-30T11:00:00-07:00",
-                "ends": "2026-09-30T11:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Flood Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tucson AZ",
-                "headline": "Flood Watch issued September 29 at 11:29PM MST until September 30 at 11:00AM MST by NWS Tucson AZ",
-                "description": "* WHAT...Flash flooding caused by excessive rainfall continues to be\npossible.\n\n* WHERE...A portion of Southeast Arizona, including the following\nareas, Galiuro and Pinaleno Mountains, South Central Pinal County,\nSoutheast Pinal County, Upper Gila River Valley and White Mountains\nof Graham and Greenlee Counties.\n\n* WHEN...Until 11 AM MST Wednesday.\n\n* IMPACTS...Excessive runoff may result in flooding of rivers,\ncreeks, streams, and other low-lying and flood-prone locations.\n\n* ADDITIONAL DETAILS...\n- A slow moving upper-level weather system will result in a chance\nof showers and thunderstorms into Wednesday morning. Any\nadditional rainfall on already saturated soils will increase the\nrisk for flash flooding.\n- http://www.weather.gov/safety/flood",
-                "instruction": "You should monitor later forecasts and be prepared to take action\nshould Flash Flood Warnings be issued.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FFATWC"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS65 KTWC 300629"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WATCH REMAINS IN EFFECT UNTIL 11 AM MST WEDNESDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KTWC.FA.A.0014.000000T0000Z-260930T1800Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-09-30T11:00:00-07:00"
                     ]
                 },
                 "scope": "Public",
@@ -19828,5 +19658,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-09-30T15:33:35+00:00"
+    "updated": "2026-09-30T15:43:16+00:00"
 }
