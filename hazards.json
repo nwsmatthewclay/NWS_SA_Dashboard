@@ -10,56 +10,113 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-21128",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ddb2ce1d4f551c94a9fc141266cd799f2b3460f8.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -99.48,
+                            30.7
+                        ],
+                        [
+                            -98.97,
+                            30.74
+                        ],
+                        [
+                            -98.97,
+                            30.64
+                        ],
+                        [
+                            -99.48,
+                            30.57
+                        ],
+                        [
+                            -99.48,
+                            30.7
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-21128",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ddb2ce1d4f551c94a9fc141266cd799f2b3460f8.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-21128",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.ddb2ce1d4f551c94a9fc141266cd799f2b3460f8.001.1",
+                "areaDesc": "Mason, TX",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "048319"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "TXC319"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/TXC319"
                 ],
-                "references": [],
-                "sent": "2026-10-01T23:13:09+00:00",
-                "effective": "2026-10-01T23:13:09+00:00",
-                "onset": null,
-                "expires": "2026-10-01T23:23:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bebc9dcf368ed62e5a1d3b1edb522adf9fb68784.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.bebc9dcf368ed62e5a1d3b1edb522adf9fb68784.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-01T08:15:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c01dbe5db5dc3267669fb1a87a51fce4d237c774.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.c01dbe5db5dc3267669fb1a87a51fce4d237c774.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-01T10:18:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e6d716e0f18a3f6e0c0f453fd97e6c180396d355.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.e6d716e0f18a3f6e0c0f453fd97e6c180396d355.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-01T15:15:00-05:00"
+                    }
+                ],
+                "sent": "2026-10-01T18:21:00-05:00",
+                "effective": "2026-10-01T18:21:00-05:00",
+                "onset": "2026-10-01T19:50:00-05:00",
+                "expires": "2026-10-02T06:30:00-05:00",
+                "ends": "2026-10-02T09:30:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Flood Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS San Angelo TX",
+                "headline": "Flood Warning issued October 1 at 6:21PM CDT until October 2 at 9:30AM CDT by NWS San Angelo TX",
+                "description": "...The Flood Warning continues for the following rivers in Texas...\n\nLlano River Near Mason affecting Mason County.\n\nFor the Llano River...including Mason...Minor flooding is forecast.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...Llano River near Mason.\n\n* WHEN...Until Friday morning.\n\n* IMPACTS...At 18.0 feet, Minor lowland flooding will occur.\nSecondary roads and low water crossings will become flooded.\n\n* ADDITIONAL DETAILS...\n- At 6:00 PM CDT Thursday the stage was 15.5 feet.\n- Bankfull stage is 11.0 feet.\n- Forecast...The river will rise above flood stage this evening to\n18.1 feet late this evening. It will then fall below flood stage\nlate this evening to 11.7 feet early tomorrow afternoon and\nremain below flood stage.\n- Flood stage is 18.0 feet.\n- Flood History...This crest compares to a previous crest of 18.4\nfeet on 07/12/1988.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nMotorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nAdditional information is available at www.weather.gov.\n\nThe next statement will be issued Friday morning at 630 AM CDT.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FLSSJT"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 012313"
+                        "WGUS84 KSJT 012321"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING NOW IN EFFECT UNTIL FRIDAY MORNING"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KSJT.FL.W.0007.261002T0050Z-261002T1430Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-02T09:30:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -68,10 +125,10 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "NWS"
+                        "FLS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FLW"
                     ]
                 }
             }
@@ -5558,124 +5615,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.81b00e7931bc6bb815b77d6cb1a92bc0f2c4515d.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -94.46,
-                            31.85
-                        ],
-                        [
-                            -94.7,
-                            31.85
-                        ],
-                        [
-                            -94.73,
-                            32.34
-                        ],
-                        [
-                            -94.26,
-                            32.32
-                        ],
-                        [
-                            -94.35,
-                            31.85
-                        ],
-                        [
-                            -94.46,
-                            31.85
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.81b00e7931bc6bb815b77d6cb1a92bc0f2c4515d.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.81b00e7931bc6bb815b77d6cb1a92bc0f2c4515d.001.1",
-                "areaDesc": "Rusk; Panola; Shelby",
-                "geocode": {
-                    "SAME": [
-                        "048401",
-                        "048365",
-                        "048419"
-                    ],
-                    "UGC": [
-                        "TXZ150",
-                        "TXZ151",
-                        "TXZ153"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TXZ150",
-                    "https://api.weather.gov/zones/forecast/TXZ151",
-                    "https://api.weather.gov/zones/forecast/TXZ153"
-                ],
-                "references": [],
-                "sent": "2026-10-01T17:28:00-05:00",
-                "effective": "2026-10-01T17:28:00-05:00",
-                "onset": "2026-10-01T17:28:00-05:00",
-                "expires": "2026-10-01T18:15:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Shreveport LA",
-                "headline": "Special Weather Statement issued October 1 at 5:28PM CDT by NWS Shreveport LA",
-                "description": "At 528 PM CDT, Doppler radar was tracking a strong thunderstorm 7\nmiles south of Pinehill, or 17 miles southwest of Carthage, moving\nnorth at 30 mph.\n\nHAZARD...Wind gusts up to 40 mph.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects.\n\nLocations impacted include...\nCarthage, Tatum, Timpson, Beckville, Pinehill, Minden, Mount\nEnterprise, Gary City, Fairplay, Dotson, Chapman, Church Hill,\nLawsonville, Stewart, Oak Hill and Monroe.",
-                "instruction": "Monitor the weather situation closely and be alert for threatening\nweather conditions.\n\nThis storm may intensify, so be certain to monitor local radio\nstations and available television stations for additional information\nand possible warnings from the National Weather Service.\n\nFrequent cloud to ground lightning is occurring with this storm.\nLightning can strike 10 miles away from a thunderstorm. Seek a safe\nshelter inside a building or vehicle.\n\nTorrential rainfall is also occurring with this storm and may lead to\nflash flooding. Do not drive your vehicle through flooded roadways.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSSHV"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS84 KSHV 012228"
-                    ],
-                    "NWSheadline": [
-                        "A STRONG THUNDERSTORM WILL IMPACT WESTERN PANOLA...EASTERN RUSK AND NORTHWESTERN SHELBY COUNTIES UNTIL 615 PM CDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-01T22:28:00-00:00...storm...193DEG...23KT...32.0,-94.57"
-                    ],
-                    "maxWindGust": [
-                        "40 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e6a8cd40cb3a25c9690aec47d8c09c0ffdd3a0f3.001.1",
             "type": "Feature",
             "geometry": {
@@ -6028,113 +5967,6 @@
                     ],
                     "NationalWeatherService": [
                         "FAW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.324408b58d5566e67cd1d77eb1ba88de502e0363.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -79.75,
-                            29.16
-                        ],
-                        [
-                            -79.67,
-                            29.01
-                        ],
-                        [
-                            -79.55,
-                            28.68
-                        ],
-                        [
-                            -79.91,
-                            28.61
-                        ],
-                        [
-                            -80.3,
-                            29.18
-                        ],
-                        [
-                            -79.85,
-                            29.27
-                        ],
-                        [
-                            -79.75,
-                            29.16
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.324408b58d5566e67cd1d77eb1ba88de502e0363.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.324408b58d5566e67cd1d77eb1ba88de502e0363.001.1",
-                "areaDesc": "Flagler Beach to Volusia-Brevard County Line 20-60 nm; Volusia-Brevard County Line to Sebastian Inlet 20-60 nm",
-                "geocode": {
-                    "SAME": [
-                        "075570",
-                        "075572"
-                    ],
-                    "UGC": [
-                        "AMZ570",
-                        "AMZ572"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/AMZ570",
-                    "https://api.weather.gov/zones/forecast/AMZ572"
-                ],
-                "references": [],
-                "sent": "2026-10-01T18:16:00-04:00",
-                "effective": "2026-10-01T18:16:00-04:00",
-                "onset": "2026-10-01T18:16:00-04:00",
-                "expires": "2026-10-01T19:15:00-04:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Marine Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Melbourne FL",
-                "headline": "Marine Weather Statement issued October 1 at 6:16PM EDT by NWS Melbourne FL",
-                "description": "The areas affected include...\nFlagler Beach to Volusia-Brevard County Line 20-60 nm...\nVolusia-Brevard County Line to Sebastian Inlet 20-60 nm...\n\nAt 615 PM EDT, Doppler radar indicated a strong thunderstorm, capable\nof producing winds to around 30 knots. This thunderstorm was located\n44 nm east of Playalinda Beach, moving north at 15 knots.",
-                "instruction": "Mariners can expect gusty winds to around 30 knots, locally higher\nwaves, and lightning strikes. Boaters should seek safe harbor\nimmediately until this storm passes.",
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWSMLB"
-                    ],
-                    "WMOidentifier": [
-                        "FZUS72 KMLB 012216"
-                    ],
-                    "NWSheadline": [
-                        "A STRONG THUNDERSTORM OVER THE ATLANTIC WATERS WELL OFFSHORE PLAYALINDA BEACH"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "MWS"
                     ]
                 }
             }
@@ -11873,178 +11705,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c3cba25d5b264037e2096cc88be7df446672b1f8.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            144.78,
-                            13.53
-                        ],
-                        [
-                            145.12,
-                            14.16
-                        ],
-                        [
-                            145.22,
-                            14.22
-                        ],
-                        [
-                            145.29,
-                            14.21
-                        ],
-                        [
-                            145.3,
-                            14.2
-                        ],
-                        [
-                            145.29,
-                            14.14
-                        ],
-                        [
-                            145.21,
-                            14.09
-                        ],
-                        [
-                            145.12,
-                            14.09
-                        ],
-                        [
-                            144.87,
-                            13.68
-                        ],
-                        [
-                            144.97,
-                            13.59
-                        ],
-                        [
-                            144.94,
-                            13.51
-                        ],
-                        [
-                            144.81,
-                            13.41
-                        ],
-                        [
-                            144.79,
-                            13.27
-                        ],
-                        [
-                            144.76,
-                            13.23
-                        ],
-                        [
-                            144.64,
-                            13.21
-                        ],
-                        [
-                            144.65,
-                            13.27
-                        ],
-                        [
-                            144.61,
-                            13.33
-                        ],
-                        [
-                            144.63,
-                            13.4
-                        ],
-                        [
-                            144.6,
-                            13.46
-                        ],
-                        [
-                            144.78,
-                            13.53
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c3cba25d5b264037e2096cc88be7df446672b1f8.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.c3cba25d5b264037e2096cc88be7df446672b1f8.001.1",
-                "areaDesc": "Guam, GU; Rota, MP",
-                "geocode": {
-                    "SAME": [
-                        "066010",
-                        "069100"
-                    ],
-                    "UGC": [
-                        "GUC010",
-                        "MPC100"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/GUC010",
-                    "https://api.weather.gov/zones/county/MPC100"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5d1beb82d5443bcc8be45e412e3e2949bba0cf20.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.5d1beb82d5443bcc8be45e412e3e2949bba0cf20.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-02T04:22:00+10:00"
-                    }
-                ],
-                "sent": "2026-10-02T06:48:00+10:00",
-                "effective": "2026-10-02T06:48:00+10:00",
-                "onset": "2026-10-02T06:48:00+10:00",
-                "expires": "2026-10-02T09:15:00+10:00",
-                "ends": "2026-10-02T09:15:00+10:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tiyan GU",
-                "headline": "Flood Advisory issued October 2 at 6:48AM ChST until October 2 at 9:15AM ChST by NWS Tiyan GU",
-                "description": "* WHAT...Urban area and small stream flooding caused by excessive\nrainfall continues.\n\n* WHERE...Guam...\nRota...\n\n* WHEN...Until 915 AM ChST.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\nWater over roadways. Overflowing poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 648 AM ChST, satellite estimates indicate heavy rain in the\nadvisory area. This  will cause urban and small stream flooding.\nBetween 1.5 and 3.2 inches of rain have fallen.\n- Additional rainfall amounts of 0.8 to 1.6 inches are expected\nover the area. This additional rain will result in minor\nflooding.\n- Some locations that will experience flooding include...\nDededo, Tamuning, Yigo, Mangilao, Chalan Pago-Ordot, Barrigada,\nYona, Hagatna Heights, Andersen AFB, Talofofo,\nMongmong-Toto-Maite, Sinajana, Inarajan, Asan, Merizo, Piti,\nSanta Rita, Umatac, Sinapalo and Songsong.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSGUM"
-                    ],
-                    "WMOidentifier": [
-                        "WGMY80 PGUM 012048"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD ADVISORY NOW IN EFFECT UNTIL 915 AM CHST THIS MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.PGUM.FA.Y.0105.000000T0000Z-261001T2315Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-02T09:15:00+10:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FAY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.be35188bcc84c6cd5aa8c9ca2f0536caccdf5cee.001.1",
             "type": "Feature",
             "geometry": {
@@ -12663,124 +12323,6 @@
                     ],
                     "NationalWeatherService": [
                         "FFW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e6d716e0f18a3f6e0c0f453fd97e6c180396d355.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -99.48,
-                            30.7
-                        ],
-                        [
-                            -98.97,
-                            30.74
-                        ],
-                        [
-                            -98.97,
-                            30.64
-                        ],
-                        [
-                            -99.48,
-                            30.57
-                        ],
-                        [
-                            -99.48,
-                            30.7
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e6d716e0f18a3f6e0c0f453fd97e6c180396d355.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.e6d716e0f18a3f6e0c0f453fd97e6c180396d355.001.1",
-                "areaDesc": "Mason, TX",
-                "geocode": {
-                    "SAME": [
-                        "048319"
-                    ],
-                    "UGC": [
-                        "TXC319"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/TXC319"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bebc9dcf368ed62e5a1d3b1edb522adf9fb68784.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.bebc9dcf368ed62e5a1d3b1edb522adf9fb68784.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-01T08:15:00-05:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c01dbe5db5dc3267669fb1a87a51fce4d237c774.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.c01dbe5db5dc3267669fb1a87a51fce4d237c774.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-01T10:18:00-05:00"
-                    }
-                ],
-                "sent": "2026-10-01T15:15:00-05:00",
-                "effective": "2026-10-01T15:15:00-05:00",
-                "onset": "2026-10-01T20:52:00-05:00",
-                "expires": "2026-10-02T03:15:00-05:00",
-                "ends": "2026-10-02T11:30:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Angelo TX",
-                "headline": "Flood Warning issued October 1 at 3:15PM CDT until October 2 at 11:30AM CDT by NWS San Angelo TX",
-                "description": "...The Flood Warning continues for the following rivers in Texas...\n\nLlano River Near Mason affecting Mason County.\n\nFor the Llano River...including Mason...Minor flooding is forecast.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...Llano River near Mason.\n\n* WHEN...From this evening to Friday morning.\n\n* IMPACTS...At 18.0 feet, Minor lowland flooding will occur.\nSecondary roads and low water crossings will become flooded.\n\n* ADDITIONAL DETAILS...\n- At 3:00 PM CDT Thursday the stage was 11.3 feet.\n- Bankfull stage is 11.0 feet.\n- Forecast...The river is expected to rise to a crest of 18.5 feet\nlate this evening. It will then fall below flood stage by\nMidnight.\n- Flood stage is 18.0 feet.\n- Flood History...This crest compares to a previous crest of 18.5\nfeet on 10/05/1969.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nMotorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nAdditional information is available at www.weather.gov.\n\nThe next statement will be issued late tonight at 315 AM CDT.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSSJT"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS84 KSJT 012015"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING NOW IN EFFECT FROM THIS EVENING TO FRIDAY MORNING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KSJT.FL.W.0007.261002T0152Z-261002T1630Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-02T11:30:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLS"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
                     ]
                 }
             }
@@ -40336,5 +39878,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-10-01T23:13:29+00:00"
+    "updated": "2026-10-01T23:23:14+00:00"
 }
