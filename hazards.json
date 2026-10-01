@@ -10,56 +10,467 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-55270",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5005c8634ab0f83c493faf658e833efce5617d3e.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -99.34,
+                            35.12
+                        ],
+                        [
+                            -99,
+                            35.53
+                        ],
+                        [
+                            -98.64,
+                            35.59
+                        ],
+                        [
+                            -98.63,
+                            35.58
+                        ],
+                        [
+                            -98.63,
+                            35.55
+                        ],
+                        [
+                            -98.6,
+                            35.55
+                        ],
+                        [
+                            -98.47,
+                            35.42
+                        ],
+                        [
+                            -99.08,
+                            34.97
+                        ],
+                        [
+                            -99.27,
+                            34.91
+                        ],
+                        [
+                            -99.35,
+                            35.1
+                        ],
+                        [
+                            -99.34,
+                            35.12
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-55270",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5005c8634ab0f83c493faf658e833efce5617d3e.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-55270",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.5005c8634ab0f83c493faf658e833efce5617d3e.001.1",
+                "areaDesc": "Caddo, OK; Custer, OK; Kiowa, OK; Washita, OK",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "040015",
+                        "040039",
+                        "040075",
+                        "040149"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "OKC015",
+                        "OKC039",
+                        "OKC075",
+                        "OKC149"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/OKC015",
+                    "https://api.weather.gov/zones/county/OKC039",
+                    "https://api.weather.gov/zones/county/OKC075",
+                    "https://api.weather.gov/zones/county/OKC149"
                 ],
                 "references": [],
-                "sent": "2026-10-01T03:23:09+00:00",
-                "effective": "2026-10-01T03:23:09+00:00",
-                "onset": null,
-                "expires": "2026-10-01T03:33:09+00:00",
-                "ends": null,
-                "status": "Test",
+                "sent": "2026-09-30T22:32:00-05:00",
+                "effective": "2026-09-30T22:32:00-05:00",
+                "onset": "2026-09-30T22:32:00-05:00",
+                "expires": "2026-10-01T01:30:00-05:00",
+                "ends": "2026-10-01T01:30:00-05:00",
+                "status": "Actual",
                 "messageType": "Alert",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Flash Flood Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Norman OK",
+                "headline": "Flash Flood Warning issued September 30 at 10:32PM CDT until October 1 at 1:30AM CDT by NWS Norman OK",
+                "description": "FFWOUN\n\nThe National Weather Service in Norman has issued a\n\n* Flash Flood Warning for...\nNorthwestern Caddo County in southwestern Oklahoma...\nNorthwestern Kiowa County in southwestern Oklahoma...\nSoutheastern Custer County in western Oklahoma...\nWashita County in western Oklahoma...\n\n* Until 130 AM CDT.\n\n* At 1032 PM CDT, Doppler radar and automated rain gauges indicated\nthunderstorms producing heavy rain across the warned area. Between\n1 and 2 inches of rain have fallen. Additional rainfall amounts of\n1 to 3 inches are possible in the warned area. Flash flooding is\nongoing or expected to begin shortly.\n\nHAZARD...Flash flooding caused by thunderstorms.\n\nSOURCE...Radar and automated gauges.\n\nIMPACT...Flash flooding of small creeks and streams, urban areas,\nhighways, streets and underpasses as well as other poor\ndrainage and low-lying areas.\n\n* Some locations that will experience flash flooding include...\nWeatherford, Clinton, Hobart, Cordell, Sentinel, Dill City, Corn,\nLone Wolf, Bessie, Rocky, Colony, Cloud Chief and Cowden.",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FFWOUN"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 010323"
+                        "WGUS54 KOUN 010332"
+                    ],
+                    "flashFloodDetection": [
+                        "RADAR AND GAUGE INDICATED"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KOUN.FF.W.0089.261001T0332Z-261001T0630Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T01:30:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFW"
+                    ],
+                    "NationalWeatherService": [
+                        "FFW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a84ef743dce2f01d2af461062f20a3871727e725.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -94.88,
+                            40.13
+                        ],
+                        [
+                            -94.78,
+                            40.13
+                        ],
+                        [
+                            -94.71,
+                            39.77
+                        ],
+                        [
+                            -94.8,
+                            39.77
+                        ],
+                        [
+                            -94.88,
+                            40.13
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a84ef743dce2f01d2af461062f20a3871727e725.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.a84ef743dce2f01d2af461062f20a3871727e725.001.1",
+                "areaDesc": "Andrew, MO; Buchanan, MO",
+                "geocode": {
+                    "SAME": [
+                        "029003",
+                        "029021"
+                    ],
+                    "UGC": [
+                        "MOC003",
+                        "MOC021"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MOC003",
+                    "https://api.weather.gov/zones/county/MOC021"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.19fe3a632bfdbba3345fc502913de18efeeb773f.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.19fe3a632bfdbba3345fc502913de18efeeb773f.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-30T15:17:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-30T22:32:00-05:00",
+                "effective": "2026-09-30T22:32:00-05:00",
+                "onset": "2026-10-01T02:17:00-05:00",
+                "expires": "2026-10-01T22:45:00-05:00",
+                "ends": "2026-10-03T18:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Kansas City/Pleasant Hill MO",
+                "headline": "Flood Warning issued September 30 at 10:32PM CDT until October 3 at 6:00PM CDT by NWS Kansas City/Pleasant Hill MO",
+                "description": "...The Flood Warning is extended for the following rivers in\nMissouri...\n\n102 River at Rosendale affecting Andrew and Buchanan Counties.\n\n* WHAT...Moderate flooding is forecast. This approaches the flood of\nrecord.\n\n* WHERE...102 River at Rosendale.\n\n* WHEN...From late tonight to Saturday evening.\n\n* IMPACTS...At 13.0 feet, Lowland agricultural flooding begins. At\n18.0 feet, State Route 48 on the east side of Rosendale is\novertopped by flood waters. At 19.0 feet, State Route 48 on the\neast and west sides of Rosendale is under water. At 20.0 feet,\nState Route 48 is flooded on the east and west sides of town which\nprevents travel in or out of town. At 23.0 feet, Homes and\nbusinesses in Rosendale are threatened by flood waters. At 24.0\nfeet, Eighty percent of the homes and businesses in Rosendale are\nflooded.\n\n* ADDITIONAL DETAILS...\n- At 9:30 PM CDT Wednesday the stage was 14.9 feet.\n- Forecast...The river is expected to rise above flood stage just\nafter midnight tonight to a crest of 22.4 feet tomorrow evening.\nIt will then fall below flood stage Friday evening.\n- Flood stage is 18.0 feet.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nThis product along with additional weather and stream information is\navailable at www.weather.gov/kc/.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSEAX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS83 KEAX 010332"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING NOW IN EFFECT FROM LATE TONIGHT TO SATURDAY EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KEAX.FL.W.0195.261001T0717Z-261003T2300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-03T18:00:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FLS"
+                    ],
+                    "NationalWeatherService": [
+                        "FLW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.414146d326a8cb3c5ecab85db21d458a84d64795.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -94.77,
+                            40.57
+                        ],
+                        [
+                            -94.78,
+                            40.13
+                        ],
+                        [
+                            -94.88,
+                            40.13
+                        ],
+                        [
+                            -94.88,
+                            40.57
+                        ],
+                        [
+                            -94.77,
+                            40.57
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.414146d326a8cb3c5ecab85db21d458a84d64795.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.414146d326a8cb3c5ecab85db21d458a84d64795.001.1",
+                "areaDesc": "Andrew, MO; Nodaway, MO",
+                "geocode": {
+                    "SAME": [
+                        "029003",
+                        "029147"
+                    ],
+                    "UGC": [
+                        "MOC003",
+                        "MOC147"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MOC003",
+                    "https://api.weather.gov/zones/county/MOC147"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.99c2ef48ea4eb49e01e00b6a92c0d37c2dcf365c.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.99c2ef48ea4eb49e01e00b6a92c0d37c2dcf365c.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-30T15:42:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-30T22:32:00-05:00",
+                "effective": "2026-09-30T22:32:00-05:00",
+                "onset": "2026-09-30T22:32:00-05:00",
+                "expires": "2026-10-01T22:45:00-05:00",
+                "ends": "2026-10-03T04:30:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Kansas City/Pleasant Hill MO",
+                "headline": "Flood Warning issued September 30 at 10:32PM CDT until October 3 at 4:30AM CDT by NWS Kansas City/Pleasant Hill MO",
+                "description": "...Forecast flooding changed from Minor to Moderate severity and\nincreased in duration for the following rivers in Missouri...\n\n102 River at Maryville affecting Andrew and Nodaway Counties.\n\n* WHAT...Minor flooding is occurring and moderate flooding is\nforecast.\n\n* WHERE...102 River at Maryville.\n\n* WHEN...Until late Friday night.\n\n* IMPACTS...At 18.0 feet, The east bank of the river floods. Water\nalso approaches the village of Arkoe.\n\n* ADDITIONAL DETAILS...\n- At 9:30 PM CDT Wednesday the stage was 19.1 feet.\n- Forecast...The river is expected to rise to a crest of 23.9 feet\ntomorrow morning. It will then fall below flood stage early\nFriday morning.\n- Flood stage is 18.0 feet.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nThis product along with additional weather and stream information is\navailable at www.weather.gov/kc/.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLWEAX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS43 KEAX 010332"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING NOW IN EFFECT UNTIL LATE FRIDAY NIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KEAX.FL.W.0197.000000T0000Z-261003T0930Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-03T04:30:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FLW"
+                    ],
+                    "NationalWeatherService": [
+                        "FLW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a4ba2b418aa88b94febc5a3e28723fd78f7efd8c.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -110,
+                            33
+                        ],
+                        [
+                            -110.19,
+                            33.15
+                        ],
+                        [
+                            -110.45,
+                            33.16
+                        ],
+                        [
+                            -110.45,
+                            33.24
+                        ],
+                        [
+                            -110.15,
+                            33.22
+                        ],
+                        [
+                            -109.94,
+                            33.07
+                        ],
+                        [
+                            -110,
+                            33
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a4ba2b418aa88b94febc5a3e28723fd78f7efd8c.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.a4ba2b418aa88b94febc5a3e28723fd78f7efd8c.001.1",
+                "areaDesc": "Graham, AZ",
+                "geocode": {
+                    "SAME": [
+                        "004009"
+                    ],
+                    "UGC": [
+                        "AZC009"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/AZC009"
+                ],
+                "references": [],
+                "sent": "2026-09-30T20:31:00-07:00",
+                "effective": "2026-09-30T20:31:00-07:00",
+                "onset": "2026-09-30T20:31:00-07:00",
+                "expires": "2026-10-01T08:45:00-07:00",
+                "ends": "2026-10-02T17:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Observed",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Tucson AZ",
+                "headline": "Flood Advisory issued September 30 at 8:31PM MST until October 2 at 5:00PM MST by NWS Tucson AZ",
+                "description": "...The National Weather Service in Tucson has issued a Flood Advisory\nfor the following rivers in Arizona...\n\nGila River Near Gila River at Calva affecting Graham County.\n\nFor the Upper Gila...including Gila River at Calva...elevated river\nlevels are forecast.\n\n* WHAT...The Gila River is expected to exceed bankfull levels at 15\nfeet Thursday afternoon into Thursday evening with a secondary\ncrest possible late this week due to excessive rainfall that\noccurred in previous days.\n\n* WHERE...Gila River near Gila River at Calva.\n\n* WHEN...From this evening to Friday afternoon.\n\n* IMPACTS...At 15.0 feet, Low-lying riparian areas flooded.\n\n* ADDITIONAL DETAILS...\n- At 8:00 PM MST Wednesday the stage was 6.3 feet.\n- Bankfull stage is 15.0 feet.\n- Forecast...The river will oscillate below flood stage with a\nmaximum value of 18.5 feet tomorrow afternoon.\n- Action stage is 15.0 feet.\n- Flood stage is 20.0 feet.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Caution is urged when walking near riverbanks.\n\nIf you are in the advisory area, remain alert to possible flooding or\nthe possibility of the advisory being upgraded to a warning.\n\nAdditional information is available at www.weather.gov.\n\nThe next statement will be issued Thursday morning at 845 AM MST.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSTWC"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS85 KTWC 010331"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY IN EFFECT FROM THIS EVENING TO FRIDAY AFTERNOON"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KTWC.FL.Y.0001.261001T0331Z-261003T0000Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-02T17:00:00-07:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +482,411 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FLY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.074126f496e09f85de05d7c0d2d1eeedcf65ffcd.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -101.93,
+                            35.53
+                        ],
+                        [
+                            -101.81,
+                            35.62
+                        ],
+                        [
+                            -101.62,
+                            35.62
+                        ],
+                        [
+                            -101.72,
+                            35.37
+                        ],
+                        [
+                            -102.16,
+                            35.36
+                        ],
+                        [
+                            -102.17,
+                            35.62
+                        ],
+                        [
+                            -101.93,
+                            35.53
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.074126f496e09f85de05d7c0d2d1eeedcf65ffcd.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.074126f496e09f85de05d7c0d2d1eeedcf65ffcd.001.1",
+                "areaDesc": "Potter, TX",
+                "geocode": {
+                    "SAME": [
+                        "048375"
+                    ],
+                    "UGC": [
+                        "TXC375"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/TXC375"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c9c377a43a6dd90291c2e2d1de200681fcc246a5.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.c9c377a43a6dd90291c2e2d1de200681fcc246a5.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-30T15:57:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.64334349999ca3262a6f1963c137ccfe0af4771e.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.64334349999ca3262a6f1963c137ccfe0af4771e.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-30T22:18:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-30T22:31:00-05:00",
+                "effective": "2026-09-30T22:31:00-05:00",
+                "onset": "2026-09-30T22:31:00-05:00",
+                "expires": "2026-10-01T16:00:00-05:00",
+                "ends": "2026-10-03T04:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Amarillo TX",
+                "headline": "Flood Warning issued September 30 at 10:31PM CDT until October 3 at 4:00AM CDT by NWS Amarillo TX",
+                "description": "...The Flood Warning continues for the following rivers in Texas...\n\nCanadian River at Amarillo 19N affecting Potter County.\n\nFor the Canadian River...iCanadian 2NE, Amarillo 19N...Minor flooding\nis forecast.\n\n* WHAT...Minor flooding is occurring and minor flooding is forecast.\n\n* WHERE...Canadian River at Amarillo 19N.\n\n* WHEN...Until late Friday night.\n\n* IMPACTS...At 10.0 feet, Portions of Rosita Creek Flats Recreational\nArea floods. Primitive campers and recreational vehicles are in\nimminent danger. Dirt roads that lead to highway 287 from Rosita\nCreek Flats are impassable.\n\n* ADDITIONAL DETAILS...\n- At 10:00 PM CDT Wednesday the stage was 8.4 feet.\n- Bankfull stage is 7.0 feet.\n- Recent Activity...The maximum river stage in the 24 hours ending\nat 10:00 PM CDT Wednesday was 10.0 feet.\n- Forecast...The river is expected to rise to a crest of 8.9 feet\ntomorrow evening. It will then fall below flood stage Friday\nafternoon.\n- Flood stage is 7.0 feet.\n- Flood History...This crest compares to a previous crest of 9.5\nfeet on 06/24/1996.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nCaution is urged when walking near riverbanks.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.\n\nAdditional information is available at www.weather.gov.\n\nThe next statement will be issued Thursday afternoon at 400 PM CDT.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSAMA"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS84 KAMA 010331"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING REMAINS IN EFFECT UNTIL LATE FRIDAY NIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KAMA.FL.W.0001.000000T0000Z-261003T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-03T04:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.2b6c20efd0b4b04db8bd5f1123c4ff864970403d.001.1,2026-09-30T03:54:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.91fed3686168577d36726832145c0d49d64f1c2d.001.1,2026-09-30T00:19:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FLS"
+                    ],
+                    "NationalWeatherService": [
+                        "FLW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.18ad46f72aed20f6b0a201c4d3dbca39a4024157.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -96.91,
+                            40.75
+                        ],
+                        [
+                            -97.01,
+                            40.7
+                        ],
+                        [
+                            -97.11,
+                            40.73
+                        ],
+                        [
+                            -97.15,
+                            40.76
+                        ],
+                        [
+                            -97.14,
+                            40.82
+                        ],
+                        [
+                            -97.11,
+                            40.87
+                        ],
+                        [
+                            -97.06,
+                            40.92
+                        ],
+                        [
+                            -97.03,
+                            40.97
+                        ],
+                        [
+                            -96.69,
+                            41.17
+                        ],
+                        [
+                            -96.66,
+                            41.18
+                        ],
+                        [
+                            -96.53,
+                            41.16
+                        ],
+                        [
+                            -96.46,
+                            41.1
+                        ],
+                        [
+                            -96.46,
+                            41.02
+                        ],
+                        [
+                            -96.46,
+                            40.99
+                        ],
+                        [
+                            -96.59,
+                            40.91
+                        ],
+                        [
+                            -96.91,
+                            40.75
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.18ad46f72aed20f6b0a201c4d3dbca39a4024157.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.18ad46f72aed20f6b0a201c4d3dbca39a4024157.001.1",
+                "areaDesc": "Lancaster, NE; Saunders, NE; Seward, NE",
+                "geocode": {
+                    "SAME": [
+                        "031109",
+                        "031155",
+                        "031159"
+                    ],
+                    "UGC": [
+                        "NEC109",
+                        "NEC155",
+                        "NEC159"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/NEC109",
+                    "https://api.weather.gov/zones/county/NEC155",
+                    "https://api.weather.gov/zones/county/NEC159"
+                ],
+                "references": [],
+                "sent": "2026-09-30T22:25:00-05:00",
+                "effective": "2026-09-30T22:25:00-05:00",
+                "onset": "2026-09-30T22:25:00-05:00",
+                "expires": "2026-10-01T01:30:00-05:00",
+                "ends": "2026-10-01T01:30:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Flash Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Omaha/Valley NE",
+                "headline": "Flash Flood Warning issued September 30 at 10:25PM CDT until October 1 at 1:30AM CDT by NWS Omaha/Valley NE",
+                "description": "FFWOAX\n\nThe National Weather Service in Omaha/Valley has issued a\n\n* Flash Flood Warning for...\nSouthwestern Saunders County in east central Nebraska...\nNorthern Lancaster County in southeastern Nebraska...\nEastern Seward County in southeastern Nebraska...\n\n* Until 130 AM CDT.\n\n* At 1025 PM CDT, Doppler radar indicated thunderstorms producing\nheavy rain across the warned area. Between 3 and 5 inches of rain\nhave fallen. The expected rainfall rate is 1.5 to 3 inches in 1\nhour. Additional rainfall amounts of 2 to 3 inches are possible in\nthe warned area. Flash flooding is ongoing or expected to begin\nshortly.\n\nHAZARD...Life threatening flash flooding. Thunderstorms producing\nflash flooding.\n\nSOURCE...Radar indicated.\n\nIMPACT...Life threatening flash flooding of creeks and streams,\nurban areas, highways, streets and underpasses.\n\n* Some locations that will experience flash flooding include...\nNorthwestern Lincoln, Milford, Ceresco, Valparaiso, Malcolm,\nGarland, Pleasant Dale, Raymond, Davey, Ithaca, Lincoln Airport,\nEmerald, Branched Oak State Recreation Area and Pawnee State\nRecreation Area.\n\nThis includes Interstate 80 in Nebraska between mile markers 379 and\n395...and between mile markers 399 and 405.\n\nThis also includes Highway 77 between Lincoln and Ceresco.",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FFWOAX"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS53 KOAX 010325"
+                    ],
+                    "flashFloodDetection": [
+                        "RADAR INDICATED"
+                    ],
+                    "flashFloodDamageThreat": [
+                        "CONSIDERABLE"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KOAX.FF.W.0044.261001T0325Z-261001T0630Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T01:30:00-05:00"
+                    ],
+                    "WEAHandling": [
+                        "Imminent Threat"
+                    ],
+                    "CMAMtext": [
+                        "NWS: FLASH FLOOD WARNING this area til 1:30 AM CDT. Avoid flooded areas."
+                    ],
+                    "CMAMlongtext": [
+                        "National Weather Service: A FLASH FLOOD WARNING is in effect for this area until 1:30 AM CDT. This is a dangerous and life-threatening situation. Do not attempt to travel unless you are fleeing an area subject to flooding or under an evacuation order."
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FFW"
+                    ],
+                    "NationalWeatherService": [
+                        "FFW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e0540fa4bf7564f802bac8612a313721885b7f97.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -100.66,
+                            32.53
+                        ],
+                        [
+                            -100.66,
+                            32.73
+                        ],
+                        [
+                            -100.25,
+                            32.7
+                        ],
+                        [
+                            -100.17,
+                            32.1
+                        ],
+                        [
+                            -100.67,
+                            32.1
+                        ],
+                        [
+                            -100.66,
+                            32.53
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e0540fa4bf7564f802bac8612a313721885b7f97.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.e0540fa4bf7564f802bac8612a313721885b7f97.001.1",
+                "areaDesc": "Fisher, TX; Nolan, TX",
+                "geocode": {
+                    "SAME": [
+                        "048151",
+                        "048353"
+                    ],
+                    "UGC": [
+                        "TXC151",
+                        "TXC353"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/TXC151",
+                    "https://api.weather.gov/zones/county/TXC353"
+                ],
+                "references": [],
+                "sent": "2026-09-30T22:23:00-05:00",
+                "effective": "2026-09-30T22:23:00-05:00",
+                "onset": "2026-09-30T22:23:00-05:00",
+                "expires": "2026-10-01T00:30:00-05:00",
+                "ends": "2026-10-01T00:30:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS San Angelo TX",
+                "headline": "Flood Advisory issued September 30 at 10:23PM CDT until October 1 at 12:30AM CDT by NWS San Angelo TX",
+                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...Southern Fisher County in west central Texas...\nNolan County in west central Texas...\n\n* WHEN...Until 1230 AM CDT.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 1023 PM CDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 0.25 and 0.75 inches of\nrain have fallen.\n- Additional rainfall amounts of 0.5 to 1 inch are expected over\nthe area. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nSweetwater, Roscoe, Nolan, Maryneal, Champion, Wastella,\nLongworth, Hylton, Camp Boothe Oaks, The Intersection Of Ranch\nRoad 608 And Highway 147, Lake Sweetwater, The Intersection Of\nHighway 70 And Ranch Road 53, Gannon, I-20 Near The\nNolan-Mitchell County Line, Busby, Capitola, Us-84 Near The\nNolan-Fisher County Line and Us-180 Near The Fisher- Scurry\nCounty Line.\n- This includes Interstate 20 between Mile Markers 229 and 255.\n\nThis includes the following Low Water Crossings...\nIH 20 frontage roads crossing Bitter Creek, IH 20 frontage roads\ncrossing Towd Creek, FM 1170 crossing Eagle Creek, FM 2035\ncrossing Bitter Creek, IH 20 frontage roads crossing Plum Creek,\nIH 20 frontage roads crossing Sweetwater Creek, crossings along\nCounty Road 226, County Road 229 crossing Cottonwood Creek,\nCounty Road 221 crossing Little Stink Creek and County Road 108\ncrossing Kldoogan Creek.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSSJT"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS84 KSJT 010323"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY IN EFFECT UNTIL 1230 AM CDT THURSDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KSJT.FA.Y.0202.261001T0323Z-261001T0530Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T00:30:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FAY"
                     ]
                 }
             }
@@ -1239,129 +2054,6 @@
                     ],
                     "eventEndingTime": [
                         "2026-10-05T13:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLS"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.64334349999ca3262a6f1963c137ccfe0af4771e.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -101.93,
-                            35.53
-                        ],
-                        [
-                            -101.81,
-                            35.62
-                        ],
-                        [
-                            -101.62,
-                            35.62
-                        ],
-                        [
-                            -101.72,
-                            35.37
-                        ],
-                        [
-                            -102.16,
-                            35.36
-                        ],
-                        [
-                            -102.17,
-                            35.62
-                        ],
-                        [
-                            -101.93,
-                            35.53
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.64334349999ca3262a6f1963c137ccfe0af4771e.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.64334349999ca3262a6f1963c137ccfe0af4771e.001.1",
-                "areaDesc": "Potter, TX",
-                "geocode": {
-                    "SAME": [
-                        "048375"
-                    ],
-                    "UGC": [
-                        "TXC375"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/TXC375"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c9c377a43a6dd90291c2e2d1de200681fcc246a5.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.c9c377a43a6dd90291c2e2d1de200681fcc246a5.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-30T15:57:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-30T22:18:00-05:00",
-                "effective": "2026-09-30T22:18:00-05:00",
-                "onset": "2026-09-30T22:18:00-05:00",
-                "expires": "2026-10-01T16:00:00-05:00",
-                "ends": "2026-10-03T04:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Amarillo TX",
-                "headline": "Flood Warning issued September 30 at 10:18PM CDT until October 3 at 4:00AM CDT by NWS Amarillo TX",
-                "description": "...The Flood Warning continues for the following rivers in Texas...\n\nCanadian River at Amarillo 19N affecting Potter County.\n\nFor the Canadian River...including DUMMY SITE, Canadian 2NE, Amarillo\n19N...Minor flooding is forecast.\n\n* WHAT...Minor flooding is occurring and minor flooding is forecast.\n\n* WHERE...Canadian River at Amarillo 19N.\n\n* WHEN...Until late Friday night.\n\n* IMPACTS...At 10.0 feet, Portions of Rosita Creek Flats Recreational\nArea floods. Primitive campers and recreational vehicles are in\nimminent danger. Dirt roads that lead to highway 287 from Rosita\nCreek Flats are impassable.\n\n* ADDITIONAL DETAILS...\n- At 9:45 PM CDT Wednesday the stage was 8.4 feet.\n- Bankfull stage is 7.0 feet.\n- Recent Activity...The maximum river stage in the 24 hours ending\nat 9:45 PM CDT Wednesday was 10.0 feet.\n- Forecast...The river is expected to rise to a crest of 8.9 feet\ntomorrow evening. It will then fall below flood stage Friday\nafternoon.\n- Flood stage is 7.0 feet.\n- Flood History...This crest compares to a previous crest of 9.5\nfeet on 06/24/1996.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nCaution is urged when walking near riverbanks.\n\nBe especially cautious at night when it is harder to recognize the\ndangers of flooding.\n\nAdditional information is available at www.weather.gov.\n\nThe next statement will be issued Thursday afternoon at 400 PM CDT.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSAMA"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS84 KAMA 010318"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING REMAINS IN EFFECT UNTIL LATE FRIDAY NIGHT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KAMA.FL.W.0001.000000T0000Z-261003T0900Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T04:00:00-05:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.2b6c20efd0b4b04db8bd5f1123c4ff864970403d.001.1,2026-09-30T03:54:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.91fed3686168577d36726832145c0d49d64f1c2d.001.1,2026-09-30T00:19:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -4436,118 +5128,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ac89105a31eaefa6c72464dc432b8fae009a3b26.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -100.23,
-                            32.14
-                        ],
-                        [
-                            -100.66,
-                            32.15
-                        ],
-                        [
-                            -100.66,
-                            32.48
-                        ],
-                        [
-                            -100.33,
-                            32.52
-                        ],
-                        [
-                            -100.29,
-                            32.52
-                        ],
-                        [
-                            -100.23,
-                            32.14
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ac89105a31eaefa6c72464dc432b8fae009a3b26.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.ac89105a31eaefa6c72464dc432b8fae009a3b26.001.1",
-                "areaDesc": "Nolan",
-                "geocode": {
-                    "SAME": [
-                        "048353"
-                    ],
-                    "UGC": [
-                        "TXZ054"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TXZ054"
-                ],
-                "references": [],
-                "sent": "2026-09-30T21:49:00-05:00",
-                "effective": "2026-09-30T21:49:00-05:00",
-                "onset": "2026-09-30T21:49:00-05:00",
-                "expires": "2026-09-30T22:30:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS San Angelo TX",
-                "headline": "Special Weather Statement issued September 30 at 9:49PM CDT by NWS San Angelo TX",
-                "description": "At 948 PM CDT, Doppler radar was tracking a strong thunderstorm near\nChampion Creek Reservoir, moving east at 35 mph.\n\nHAZARD...Wind gusts of 50 to 55 mph and nickel size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects. Minor hail damage to vegetation is\npossible.\n\nLocations impacted include...\nSweetwater, Roscoe, Maryneal, Champion, The Intersection Of Highway\n70 And Ranch Road 53, Lake Sweetwater, The Intersection Of Ranch Road\n608 And Highway 147, Camp Boothe Oaks, and I-20 Near The\nNolan-Mitchell County Line.\n\nThis includes Interstate 20 between Mile Markers 229 and 251.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.\n\nA Severe Thunderstorm Watch remains in effect until midnight CDT for\nwest central Texas.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSSJT"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS84 KSJT 010249"
-                    ],
-                    "NWSheadline": [
-                        "A STRONG THUNDERSTORM WILL IMPACT NOLAN COUNTY THROUGH 1030 PM CDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-01T02:48:00-00:00...storm...260DEG...32KT...32.29,-100.78"
-                    ],
-                    "maxWindGust": [
-                        "55 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.88"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2556fd04fe08bfbeb14257525baac71d241f7347.001.1",
             "type": "Feature",
             "geometry": {
@@ -5263,121 +5843,6 @@
                     ],
                     "NationalWeatherService": [
                         "FFW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.08817b9580d25115d030200be39df44dfcbcbbb6.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -101.65,
-                            31.28
-                        ],
-                        [
-                            -101.58,
-                            31.55
-                        ],
-                        [
-                            -101.4,
-                            31.76
-                        ],
-                        [
-                            -101.27,
-                            31.74
-                        ],
-                        [
-                            -101.27,
-                            31.19
-                        ],
-                        [
-                            -101.65,
-                            31.28
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.08817b9580d25115d030200be39df44dfcbcbbb6.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.08817b9580d25115d030200be39df44dfcbcbbb6.001.1",
-                "areaDesc": "Glasscock; Reagan",
-                "geocode": {
-                    "SAME": [
-                        "048173",
-                        "048383"
-                    ],
-                    "UGC": [
-                        "TXZ063",
-                        "TXZ070"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TXZ063",
-                    "https://api.weather.gov/zones/forecast/TXZ070"
-                ],
-                "references": [],
-                "sent": "2026-09-30T21:45:00-05:00",
-                "effective": "2026-09-30T21:45:00-05:00",
-                "onset": "2026-09-30T21:45:00-05:00",
-                "expires": "2026-09-30T22:30:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Midland/Odessa TX",
-                "headline": "Special Weather Statement issued September 30 at 9:45PM CDT by NWS Midland/Odessa TX",
-                "description": "At 945 PM CDT, Doppler radar was tracking strong thunderstorms along\na line extending from 20 miles southeast of Garden City to 20 miles\nnorth of Big Lake to 8 miles north of Reagan County Airport. Movement\nwas east at 25 mph.\n\nHAZARD...Wind gusts up to 50 mph.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects.\n\nLocations impacted include...\nStiles.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.\n\nTorrential rainfall is also occurring with these storms and may lead\nto localized flooding. Do not drive your vehicle through flooded\nroadways.\n\nA Severe Thunderstorm Watch remains in effect until midnight CDT for\nwestern Texas.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSMAF"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS84 KMAF 010245"
-                    ],
-                    "NWSheadline": [
-                        "STRONG THUNDERSTORMS WILL IMPACT SOUTHEASTERN GLASSCOCK AND NORTHEASTERN REAGAN COUNTIES THROUGH 1030 PM CDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-01T02:45:00-00:00...storm...271DEG...21KT...31.6,-101.34 31.49,-101.45 31.32,-101.51"
-                    ],
-                    "maxWindGust": [
-                        "50 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
                     ]
                 }
             }
@@ -10312,6 +10777,122 @@
             }
         },
         {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -97.89,
+                            39.92
+                        ],
+                        [
+                            -97.82,
+                            39.92
+                        ],
+                        [
+                            -97.69,
+                            39.6
+                        ],
+                        [
+                            -97.73,
+                            39.6
+                        ],
+                        [
+                            -97.79,
+                            39.62
+                        ],
+                        [
+                            -97.89,
+                            39.92
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.001.1",
+                "areaDesc": "Republic, KS",
+                "geocode": {
+                    "SAME": [
+                        "020157"
+                    ],
+                    "UGC": [
+                        "KSC157"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/KSC157"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0682243977d16003b0c704ae5fb3d131035a69b6.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.0682243977d16003b0c704ae5fb3d131035a69b6.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-09-30T14:37:00-05:00"
+                    }
+                ],
+                "sent": "2026-09-30T21:07:00-05:00",
+                "effective": "2026-09-30T21:07:00-05:00",
+                "onset": "2026-10-01T00:43:00-05:00",
+                "expires": "2026-10-01T12:15:00-05:00",
+                "ends": "2026-10-02T18:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Flood Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Topeka KS",
+                "headline": "Flood Warning issued September 30 at 9:07PM CDT until October 2 at 6:00PM CDT by NWS Topeka KS",
+                "description": "...The Flood Warning is extended for the following rivers in\nKansas...\n\nRepublican River near Scandia affecting Republic County.\n\nRepublican River at Clay Center affecting Clay County.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...Republican River near Scandia.\n\n* WHEN...From late tonight to Friday evening.\n\n* IMPACTS...At 10.0 feet, Lowlands along the river flood. At 11.0\nfeet, Low lying rural roads flood.\n\n* ADDITIONAL DETAILS...\n- At 8:15 PM CDT Wednesday the stage was 3.3 feet.\n- Forecast...The river is forecast to rise above flood stage just\nafter midnight tonight to 10.4 feet. There is forecast to be a\nsecond crest of 10.4 feet Thursday evening. It will then fall\nbelow flood stage late Thursday night.\n- Flood stage is 10.0 feet.",
+                "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nThis product along with additional weather and stream information is\navailable at www.weather.gov/top/.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSTOP"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS83 KTOP 010207"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING NOW IN EFFECT FROM LATE TONIGHT TO FRIDAY EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KTOP.FL.W.0059.261001T0543Z-261002T2300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-02T18:00:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "FLS"
+                    ],
+                    "NationalWeatherService": [
+                        "FLW"
+                    ]
+                }
+            }
+        },
+        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.002.1",
             "type": "Feature",
             "geometry": {
@@ -10413,122 +10994,6 @@
                     ],
                     "eventEndingTime": [
                         "2026-10-05T14:12:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLS"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -97.89,
-                            39.92
-                        ],
-                        [
-                            -97.82,
-                            39.92
-                        ],
-                        [
-                            -97.69,
-                            39.6
-                        ],
-                        [
-                            -97.73,
-                            39.6
-                        ],
-                        [
-                            -97.79,
-                            39.62
-                        ],
-                        [
-                            -97.89,
-                            39.92
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.47e75f824ac3b1db682544cb09b3544888b8f1c2.001.1",
-                "areaDesc": "Republic, KS",
-                "geocode": {
-                    "SAME": [
-                        "020157"
-                    ],
-                    "UGC": [
-                        "KSC157"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/KSC157"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0682243977d16003b0c704ae5fb3d131035a69b6.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.0682243977d16003b0c704ae5fb3d131035a69b6.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-09-30T14:37:00-05:00"
-                    }
-                ],
-                "sent": "2026-09-30T21:07:00-05:00",
-                "effective": "2026-09-30T21:07:00-05:00",
-                "onset": "2026-10-01T00:43:00-05:00",
-                "expires": "2026-10-01T12:15:00-05:00",
-                "ends": "2026-10-02T18:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Topeka KS",
-                "headline": "Flood Warning issued September 30 at 9:07PM CDT until October 2 at 6:00PM CDT by NWS Topeka KS",
-                "description": "...The Flood Warning is extended for the following rivers in\nKansas...\n\nRepublican River near Scandia affecting Republic County.\n\nRepublican River at Clay Center affecting Clay County.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...Republican River near Scandia.\n\n* WHEN...From late tonight to Friday evening.\n\n* IMPACTS...At 10.0 feet, Lowlands along the river flood. At 11.0\nfeet, Low lying rural roads flood.\n\n* ADDITIONAL DETAILS...\n- At 8:15 PM CDT Wednesday the stage was 3.3 feet.\n- Forecast...The river is forecast to rise above flood stage just\nafter midnight tonight to 10.4 feet. There is forecast to be a\nsecond crest of 10.4 feet Thursday evening. It will then fall\nbelow flood stage late Thursday night.\n- Flood stage is 10.0 feet.",
-                "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nThis product along with additional weather and stream information is\navailable at www.weather.gov/top/.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSTOP"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS83 KTOP 010207"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING NOW IN EFFECT FROM LATE TONIGHT TO FRIDAY EVENING"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KTOP.FL.W.0059.261001T0543Z-261002T2300Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-02T18:00:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -20299,114 +20764,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.99c2ef48ea4eb49e01e00b6a92c0d37c2dcf365c.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -94.77,
-                            40.57
-                        ],
-                        [
-                            -94.78,
-                            40.13
-                        ],
-                        [
-                            -94.88,
-                            40.13
-                        ],
-                        [
-                            -94.88,
-                            40.57
-                        ],
-                        [
-                            -94.77,
-                            40.57
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.99c2ef48ea4eb49e01e00b6a92c0d37c2dcf365c.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.99c2ef48ea4eb49e01e00b6a92c0d37c2dcf365c.001.1",
-                "areaDesc": "Andrew, MO; Nodaway, MO",
-                "geocode": {
-                    "SAME": [
-                        "029003",
-                        "029147"
-                    ],
-                    "UGC": [
-                        "MOC003",
-                        "MOC147"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/MOC003",
-                    "https://api.weather.gov/zones/county/MOC147"
-                ],
-                "references": [],
-                "sent": "2026-09-30T15:42:00-05:00",
-                "effective": "2026-09-30T15:42:00-05:00",
-                "onset": "2026-09-30T18:15:00-05:00",
-                "expires": "2026-10-01T15:45:00-05:00",
-                "ends": "2026-10-03T00:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Kansas City/Pleasant Hill MO",
-                "headline": "Flood Warning issued September 30 at 3:42PM CDT until October 3 at 12:00AM CDT by NWS Kansas City/Pleasant Hill MO",
-                "description": "...The National Weather Service in Kansas City/Pleasant Hill has\nissued a Flood Warning for the following rivers in Missouri...\n\n102 River at Maryville affecting Andrew and Nodaway Counties.\n\n* WHAT...Minor flooding is forecast.\n\n* WHERE...102 River at Maryville.\n\n* WHEN...Until late Friday night.\n\n* IMPACTS...At 18.0 feet, The east bank of the river floods. Water\nalso approaches the village of Arkoe.\n\n* ADDITIONAL DETAILS...\n- At 3:30 PM CDT Wednesday the stage was 14.7 feet.\n- Forecast...The river will rise above flood stage to 18.9 feet\nthis evening. It will then fall just after midnight tonight. It\nwill rise to 22.3 feet early tomorrow afternoon. It will then\nfall below flood stage early Friday morning.\n- Flood stage is 18.0 feet.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nThis product along with additional weather and stream information is\navailable at www.weather.gov/kc/.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLWEAX"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS43 KEAX 302042"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING IN EFFECT UNTIL LATE FRIDAY NIGHT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KEAX.FL.W.0197.260930T2315Z-261003T0500Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T00:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLW"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f498cdd87469e2a1b3a90ffdd69bb780916fbc53.001.1",
             "type": "Feature",
             "geometry": {
@@ -21334,118 +21691,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.19fe3a632bfdbba3345fc502913de18efeeb773f.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -94.88,
-                            40.13
-                        ],
-                        [
-                            -94.78,
-                            40.13
-                        ],
-                        [
-                            -94.71,
-                            39.77
-                        ],
-                        [
-                            -94.8,
-                            39.77
-                        ],
-                        [
-                            -94.86,
-                            40.04
-                        ],
-                        [
-                            -94.88,
-                            40.13
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.19fe3a632bfdbba3345fc502913de18efeeb773f.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.19fe3a632bfdbba3345fc502913de18efeeb773f.001.1",
-                "areaDesc": "Andrew, MO; Buchanan, MO",
-                "geocode": {
-                    "SAME": [
-                        "029003",
-                        "029021"
-                    ],
-                    "UGC": [
-                        "MOC003",
-                        "MOC021"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/MOC003",
-                    "https://api.weather.gov/zones/county/MOC021"
-                ],
-                "references": [],
-                "sent": "2026-09-30T15:17:00-05:00",
-                "effective": "2026-09-30T15:17:00-05:00",
-                "onset": "2026-10-01T06:18:00-05:00",
-                "expires": "2026-10-01T15:30:00-05:00",
-                "ends": "2026-10-03T16:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Kansas City/Pleasant Hill MO",
-                "headline": "Flood Warning issued September 30 at 3:17PM CDT until October 3 at 4:00PM CDT by NWS Kansas City/Pleasant Hill MO",
-                "description": "...The National Weather Service in Kansas City/Pleasant Hill has\nissued a Flood Warning for the following rivers in Missouri...\n\n102 River at Rosendale affecting Andrew and Buchanan Counties.\n\n* WHAT...Moderate flooding is forecast.\n\n* WHERE...102 River at Rosendale.\n\n* WHEN...From Thursday morning to Saturday afternoon.\n\n* IMPACTS...At 13.0 feet, Lowland agricultural flooding begins. At\n18.0 feet, State Route 48 on the east side of Rosendale is\novertopped by flood waters. At 19.0 feet, State Route 48 on the\neast and west sides of Rosendale is under water. At 20.0 feet,\nState Route 48 is flooded on the east and west sides of town which\nprevents travel in or out of town.\n\n* ADDITIONAL DETAILS...\n- At 2:45 PM CDT Wednesday the stage was 11.1 feet.\n- Forecast...The river is expected to rise above flood stage\ntomorrow morning to a crest of 21.2 feet tomorrow evening. It\nwill then fall below flood stage Friday afternoon.\n- Flood stage is 18.0 feet.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Turn around, don't drown when encountering flooded roads. Most flood\ndeaths occur in vehicles.\n\nThis product along with additional weather and stream information is\navailable at www.weather.gov/kc/.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLWEAX"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS43 KEAX 302017"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING IN EFFECT FROM THURSDAY MORNING TO SATURDAY AFTERNOON"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KEAX.FL.W.0195.261001T1118Z-261003T2100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T16:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLW"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.02b1bb54a53c9a99594823b9620ed1877983d12e.001.1",
             "type": "Feature",
             "geometry": {
@@ -22257,79 +22502,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.004.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.004.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.004.1",
-                "areaDesc": "Southern Lynn Canal",
-                "geocode": {
-                    "SAME": [
-                        "058013"
-                    ],
-                    "UGC": [
-                        "PKZ013"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PKZ013"
-                ],
-                "references": [],
-                "sent": "2026-09-30T10:39:00-08:00",
-                "effective": "2026-09-30T10:39:00-08:00",
-                "onset": "2026-09-30T10:00:00-08:00",
-                "expires": "2026-09-30T18:15:00-08:00",
-                "ends": "2026-10-01T17:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Juneau AK",
-                "headline": "Small Craft Advisory issued September 30 at 10:39AM AKDT until October 1 at 5:00PM AKDT by NWS Juneau AK",
-                "description": "Southeast Alaska Inside Waters from Dixon Entrance to Skagway\n\nWind forecasts reflect the predominant speed and direction\nexpected. Sea forecasts represent the average of the highest\none-third of the combined windwave and swell height.\n\nUPDATED\n\n...SMALL CRAFT ADVISORY THROUGH THURSDAY...\n\n.REST OF TODAY...SE wind 10 kt increasing to 20 kt. Seas 4 ft.\nRain showers.\n.TONIGHT...S wind 25 kt. Seas 5 ft. Rain showers.\n.THU...S wind 20 kt. Seas 4 ft. Rain showers.\n.THU NIGHT...SE wind 15 kt. Seas 3 ft. Rain showers.\n.FRI...SE wind 15 kt. Seas 3 ft.\n.SAT...SE wind 20 kt. Seas 4 ft.\n.SUN...SE wind 20 kt. Seas 4 ft.",
-                "instruction": null,
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CWFAJK"
-                    ],
-                    "WMOidentifier": [
-                        "FZAK51 PAJK 301839"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.PAJK.SC.Y.4501.260930T1800Z-261002T0100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-01T17:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.003.1",
             "type": "Feature",
             "geometry": null,
@@ -22383,6 +22555,79 @@
                     ],
                     "VTEC": [
                         "/O.NEW.PAJK.SC.Y.4500.260930T1800Z-261002T0100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T17:00:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.004.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.004.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.1b0b2ef502ee12748f3f77b677c1949678b6445e.004.1",
+                "areaDesc": "Southern Lynn Canal",
+                "geocode": {
+                    "SAME": [
+                        "058013"
+                    ],
+                    "UGC": [
+                        "PKZ013"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PKZ013"
+                ],
+                "references": [],
+                "sent": "2026-09-30T10:39:00-08:00",
+                "effective": "2026-09-30T10:39:00-08:00",
+                "onset": "2026-09-30T10:00:00-08:00",
+                "expires": "2026-09-30T18:15:00-08:00",
+                "ends": "2026-10-01T17:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Juneau AK",
+                "headline": "Small Craft Advisory issued September 30 at 10:39AM AKDT until October 1 at 5:00PM AKDT by NWS Juneau AK",
+                "description": "Southeast Alaska Inside Waters from Dixon Entrance to Skagway\n\nWind forecasts reflect the predominant speed and direction\nexpected. Sea forecasts represent the average of the highest\none-third of the combined windwave and swell height.\n\nUPDATED\n\n...SMALL CRAFT ADVISORY THROUGH THURSDAY...\n\n.REST OF TODAY...SE wind 10 kt increasing to 20 kt. Seas 4 ft.\nRain showers.\n.TONIGHT...S wind 25 kt. Seas 5 ft. Rain showers.\n.THU...S wind 20 kt. Seas 4 ft. Rain showers.\n.THU NIGHT...SE wind 15 kt. Seas 3 ft. Rain showers.\n.FRI...SE wind 15 kt. Seas 3 ft.\n.SAT...SE wind 20 kt. Seas 4 ft.\n.SUN...SE wind 20 kt. Seas 4 ft.",
+                "instruction": null,
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CWFAJK"
+                    ],
+                    "WMOidentifier": [
+                        "FZAK51 PAJK 301839"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.PAJK.SC.Y.4501.260930T1800Z-261002T0100Z/"
                     ],
                     "eventEndingTime": [
                         "2026-10-01T17:00:00-08:00"
@@ -23693,6 +23938,95 @@
             }
         },
         {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.001.1",
+                "areaDesc": "Cuyama Valley; Santa Barbara County Southwestern Coast; Santa Barbara County Southeastern Coast; Santa Ynez Mountains Western Range; Santa Ynez Mountains Eastern Range; Santa Barbara County Interior Mountains; Santa Cruz and Anacapa Islands",
+                "geocode": {
+                    "SAME": [
+                        "006083",
+                        "006111"
+                    ],
+                    "UGC": [
+                        "CAZ038",
+                        "CAZ349",
+                        "CAZ350",
+                        "CAZ351",
+                        "CAZ352",
+                        "CAZ353",
+                        "CAZ550"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/CAZ038",
+                    "https://api.weather.gov/zones/forecast/CAZ349",
+                    "https://api.weather.gov/zones/forecast/CAZ350",
+                    "https://api.weather.gov/zones/forecast/CAZ351",
+                    "https://api.weather.gov/zones/forecast/CAZ352",
+                    "https://api.weather.gov/zones/forecast/CAZ353",
+                    "https://api.weather.gov/zones/forecast/CAZ550"
+                ],
+                "references": [],
+                "sent": "2026-09-30T09:46:00-07:00",
+                "effective": "2026-09-30T09:46:00-07:00",
+                "onset": "2026-10-02T10:00:00-07:00",
+                "expires": "2026-10-02T10:15:00-07:00",
+                "ends": "2026-10-08T20:00:00-07:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Future",
+                "event": "Extreme Heat Watch",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Los Angeles/Oxnard CA",
+                "headline": "Extreme Heat Watch issued September 30 at 9:46AM PDT until October 8 at 8:00PM PDT by NWS Los Angeles/Oxnard CA",
+                "description": "* WHAT...Dangerously hot conditions with temperatures up to 85 at the\ncoast and 100 in the mountains and Cuyama valley.\n\n* WHERE...Cuyama Valley, Santa Barbara County Interior Mountains,\nSanta Barbara County Southeastern Coast, Santa Barbara County\nSouthwestern Coast, Santa Cruz and Anacapa Islands, Santa Ynez\nMountains Eastern Range, and Santa Ynez Mountains Western Range.\n\n* WHEN...From Friday morning through Thursday, October 08.\n\n* IMPACTS...Heat related illnesses increase significantly during\nextreme heat events.\n\n* ADDITIONAL DETAILS...Very hot temperatures are likely to continue\ninto the second week of October, possibly requiring an extension of\nthis product.",
+                "instruction": "Drink plenty of fluids, stay in an air-conditioned room, stay out of\nthe sun, and check up on relatives and neighbors.\n\nDo not leave young children and pets in unattended vehicles. Car\ninteriors will reach lethal temperatures in a matter of minutes.",
+                "response": "Monitor",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWLOX"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS76 KLOX 301646"
+                    ],
+                    "NWSheadline": [
+                        "EXTREME HEAT WATCH IN EFFECT FROM FRIDAY MORNING THROUGH THURSDAY, OCTOBER 08"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KLOX.XH.A.0006.261002T1700Z-261009T0300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-08T20:00:00-07:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "XHA"
+                    ]
+                }
+            }
+        },
+        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.002.1",
             "type": "Feature",
             "geometry": null,
@@ -23766,95 +24100,6 @@
                 "senderName": "NWS Los Angeles/Oxnard CA",
                 "headline": "Extreme Heat Watch issued September 30 at 9:46AM PDT until October 8 at 8:00PM PDT by NWS Los Angeles/Oxnard CA",
                 "description": "* WHAT...Dangerously hot conditions with temperatures up to 90 at the\ncoast and 105 in the valleys.\n\n* WHERE...Coast and valleys of Los Angeles and Ventura Counties.\n\n* WHEN...From Friday morning through Thursday, October 08.\n\n* IMPACTS...Heat related illnesses increase significantly during\nextreme heat events.\n\n* ADDITIONAL DETAILS...Very hot temperatures are likely to continue\ninto the second week of October, possibly requiring an extension of\nthis product.",
-                "instruction": "Drink plenty of fluids, stay in an air-conditioned room, stay out of\nthe sun, and check up on relatives and neighbors.\n\nDo not leave young children and pets in unattended vehicles. Car\ninteriors will reach lethal temperatures in a matter of minutes.",
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWLOX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS76 KLOX 301646"
-                    ],
-                    "NWSheadline": [
-                        "EXTREME HEAT WATCH IN EFFECT FROM FRIDAY MORNING THROUGH THURSDAY, OCTOBER 08"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KLOX.XH.A.0006.261002T1700Z-261009T0300Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-08T20:00:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "XHA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6df8c047e1cbe829627cc92d595584cc92d7c79f.001.1",
-                "areaDesc": "Cuyama Valley; Santa Barbara County Southwestern Coast; Santa Barbara County Southeastern Coast; Santa Ynez Mountains Western Range; Santa Ynez Mountains Eastern Range; Santa Barbara County Interior Mountains; Santa Cruz and Anacapa Islands",
-                "geocode": {
-                    "SAME": [
-                        "006083",
-                        "006111"
-                    ],
-                    "UGC": [
-                        "CAZ038",
-                        "CAZ349",
-                        "CAZ350",
-                        "CAZ351",
-                        "CAZ352",
-                        "CAZ353",
-                        "CAZ550"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/CAZ038",
-                    "https://api.weather.gov/zones/forecast/CAZ349",
-                    "https://api.weather.gov/zones/forecast/CAZ350",
-                    "https://api.weather.gov/zones/forecast/CAZ351",
-                    "https://api.weather.gov/zones/forecast/CAZ352",
-                    "https://api.weather.gov/zones/forecast/CAZ353",
-                    "https://api.weather.gov/zones/forecast/CAZ550"
-                ],
-                "references": [],
-                "sent": "2026-09-30T09:46:00-07:00",
-                "effective": "2026-09-30T09:46:00-07:00",
-                "onset": "2026-10-02T10:00:00-07:00",
-                "expires": "2026-10-02T10:15:00-07:00",
-                "ends": "2026-10-08T20:00:00-07:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Future",
-                "event": "Extreme Heat Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Los Angeles/Oxnard CA",
-                "headline": "Extreme Heat Watch issued September 30 at 9:46AM PDT until October 8 at 8:00PM PDT by NWS Los Angeles/Oxnard CA",
-                "description": "* WHAT...Dangerously hot conditions with temperatures up to 85 at the\ncoast and 100 in the mountains and Cuyama valley.\n\n* WHERE...Cuyama Valley, Santa Barbara County Interior Mountains,\nSanta Barbara County Southeastern Coast, Santa Barbara County\nSouthwestern Coast, Santa Cruz and Anacapa Islands, Santa Ynez\nMountains Eastern Range, and Santa Ynez Mountains Western Range.\n\n* WHEN...From Friday morning through Thursday, October 08.\n\n* IMPACTS...Heat related illnesses increase significantly during\nextreme heat events.\n\n* ADDITIONAL DETAILS...Very hot temperatures are likely to continue\ninto the second week of October, possibly requiring an extension of\nthis product.",
                 "instruction": "Drink plenty of fluids, stay in an air-conditioned room, stay out of\nthe sun, and check up on relatives and neighbors.\n\nDo not leave young children and pets in unattended vehicles. Car\ninteriors will reach lethal temperatures in a matter of minutes.",
                 "response": "Monitor",
                 "note": null,
@@ -24217,82 +24462,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aa4dec6bdd71453421641cf4ed1dc1e0c52a15e6.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aa4dec6bdd71453421641cf4ed1dc1e0c52a15e6.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.aa4dec6bdd71453421641cf4ed1dc1e0c52a15e6.001.1",
-                "areaDesc": "Jackson, MO; Lafayette, MO; Ray, MO",
-                "geocode": {
-                    "SAME": [
-                        "029095",
-                        "029107",
-                        "029177"
-                    ],
-                    "UGC": [
-                        "MOC095",
-                        "MOC107",
-                        "MOC177"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/MOC095",
-                    "https://api.weather.gov/zones/county/MOC107",
-                    "https://api.weather.gov/zones/county/MOC177"
-                ],
-                "references": [],
-                "sent": "2026-09-30T10:30:00-05:00",
-                "effective": "2026-09-30T10:30:00-05:00",
-                "onset": "2026-09-30T10:30:00-05:00",
-                "expires": "2026-10-01T10:30:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Hydrologic Outlook",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Kansas City/Pleasant Hill MO",
-                "headline": "Hydrologic Outlook issued September 30 at 10:30AM CDT by NWS Kansas City/Pleasant Hill MO",
-                "description": "ESFEAX\n\nMissouri River at Napoleon\n\nThis hydrologic outlook is based on the forecast rainfall for the\nnext 48 hours and estimated runoff from earlier rainfall. Crests may\nvary if actual rainfall or runoff is greater or less than\nanticipated.\n\nLocation: Missouri River at Napoleon\nFlood stage: 17.0 feet\nLatest stage: 10.2 feet at 10 AM Wednesday\nMaximum Forecast Stage: 20.1 feet at 7 PM Saturday Oct 03\n\n\nFld   Obs             Forecasts\nLocation        Stg   Stg   Day/Time  Wed   Thu   Fri\n1pm   1pm   1pm\nMissouri River\nNapoleon        17.0  10.2  Wed 10am  10.0  10.4  15.7\n\n\nLater statements, possibly warnings, may be issued as additional\ninformation becomes available.",
-                "instruction": null,
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "ESFEAX"
-                    ],
-                    "WMOidentifier": [
-                        "FGUS73 KEAX 301530"
-                    ],
-                    "NWSheadline": [
-                        "The National Weather Service in Pleasant Hill MO has issued a Hydrologic Outlook for the following rivers"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "ESF"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.69e63be0546e602a311d3ea22442cc4482bde74e.001.1",
             "type": "Feature",
             "geometry": null,
@@ -24420,6 +24589,82 @@
                     ],
                     "WMOidentifier": [
                         "FGUS73 KEAX 301530 RRA"
+                    ],
+                    "NWSheadline": [
+                        "The National Weather Service in Pleasant Hill MO has issued a Hydrologic Outlook for the following rivers"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "ESF"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aa4dec6bdd71453421641cf4ed1dc1e0c52a15e6.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.aa4dec6bdd71453421641cf4ed1dc1e0c52a15e6.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.aa4dec6bdd71453421641cf4ed1dc1e0c52a15e6.001.1",
+                "areaDesc": "Jackson, MO; Lafayette, MO; Ray, MO",
+                "geocode": {
+                    "SAME": [
+                        "029095",
+                        "029107",
+                        "029177"
+                    ],
+                    "UGC": [
+                        "MOC095",
+                        "MOC107",
+                        "MOC177"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MOC095",
+                    "https://api.weather.gov/zones/county/MOC107",
+                    "https://api.weather.gov/zones/county/MOC177"
+                ],
+                "references": [],
+                "sent": "2026-09-30T10:30:00-05:00",
+                "effective": "2026-09-30T10:30:00-05:00",
+                "onset": "2026-09-30T10:30:00-05:00",
+                "expires": "2026-10-01T10:30:00-05:00",
+                "ends": null,
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Unknown",
+                "certainty": "Possible",
+                "urgency": "Future",
+                "event": "Hydrologic Outlook",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Kansas City/Pleasant Hill MO",
+                "headline": "Hydrologic Outlook issued September 30 at 10:30AM CDT by NWS Kansas City/Pleasant Hill MO",
+                "description": "ESFEAX\n\nMissouri River at Napoleon\n\nThis hydrologic outlook is based on the forecast rainfall for the\nnext 48 hours and estimated runoff from earlier rainfall. Crests may\nvary if actual rainfall or runoff is greater or less than\nanticipated.\n\nLocation: Missouri River at Napoleon\nFlood stage: 17.0 feet\nLatest stage: 10.2 feet at 10 AM Wednesday\nMaximum Forecast Stage: 20.1 feet at 7 PM Saturday Oct 03\n\n\nFld   Obs             Forecasts\nLocation        Stg   Stg   Day/Time  Wed   Thu   Fri\n1pm   1pm   1pm\nMissouri River\nNapoleon        17.0  10.2  Wed 10am  10.0  10.4  15.7\n\n\nLater statements, possibly warnings, may be issued as additional\ninformation becomes available.",
+                "instruction": null,
+                "response": "Monitor",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "ESFEAX"
+                    ],
+                    "WMOidentifier": [
+                        "FGUS73 KEAX 301530"
                     ],
                     "NWSheadline": [
                         "The National Weather Service in Pleasant Hill MO has issued a Hydrologic Outlook for the following rivers"
@@ -26763,82 +27008,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.012.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.012.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.012.1",
-                "areaDesc": "Unimak Pass",
-                "geocode": {
-                    "SAME": [
-                        "058768"
-                    ],
-                    "UGC": [
-                        "PKZ768"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PKZ768"
-                ],
-                "references": [],
-                "sent": "2026-09-30T03:43:00-08:00",
-                "effective": "2026-09-30T03:43:00-08:00",
-                "onset": "2026-10-01T05:00:00-08:00",
-                "expires": "2026-09-30T17:00:00-08:00",
-                "ends": "2026-10-01T17:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Gale Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Anchorage AK",
-                "headline": "Gale Warning issued September 30 at 3:43AM AKDT until October 1 at 5:00PM AKDT by NWS Anchorage AK",
-                "description": "Coastal Waters Forecast for Southwest Alaska+Bristol Bay+The\nAlaska Peninsula Waters and the Aleutian Islands up to 100 nm out.\n\nWind forecasts reflect the predominant speed and direction\nexpected. Sea forecasts represent an average of the highest\none-third of the combined wind wave and swell height.\n\n.TODAY...SW wind 15 kt. Seas 5 ft. Rain showers.\n.TONIGHT...E wind 20 kt. Seas 4 ft. Rain.\n.THU...NE wind 35 kt. Seas 6 ft building to 11 ft in the\nafternoon. Rain.\n.THU NIGHT...NE wind 40 kt. Seas 13 ft.\n.FRI...NE wind 30 kt. Seas 13 ft.\n.SAT...S wind 20 kt. Seas 9 ft.\n.SUN...SW wind 30 kt. Seas 15 ft.",
-                "instruction": null,
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CWFALU"
-                    ],
-                    "WMOidentifier": [
-                        "FZAK52 PAFC 301143"
-                    ],
-                    "NWSheadline": [
-                        "GALE WARNING THURSDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.PAFC.GL.W.1406.261001T1300Z-261002T0100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-01T17:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "GLW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.017.1",
             "type": "Feature",
             "geometry": null,
@@ -26910,6 +27079,82 @@
                     ],
                     "NationalWeatherService": [
                         "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.012.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.012.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.a90a37961632e6fde0a477a681a8cab25a570a72.012.1",
+                "areaDesc": "Unimak Pass",
+                "geocode": {
+                    "SAME": [
+                        "058768"
+                    ],
+                    "UGC": [
+                        "PKZ768"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PKZ768"
+                ],
+                "references": [],
+                "sent": "2026-09-30T03:43:00-08:00",
+                "effective": "2026-09-30T03:43:00-08:00",
+                "onset": "2026-10-01T05:00:00-08:00",
+                "expires": "2026-09-30T17:00:00-08:00",
+                "ends": "2026-10-01T17:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Gale Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Anchorage AK",
+                "headline": "Gale Warning issued September 30 at 3:43AM AKDT until October 1 at 5:00PM AKDT by NWS Anchorage AK",
+                "description": "Coastal Waters Forecast for Southwest Alaska+Bristol Bay+The\nAlaska Peninsula Waters and the Aleutian Islands up to 100 nm out.\n\nWind forecasts reflect the predominant speed and direction\nexpected. Sea forecasts represent an average of the highest\none-third of the combined wind wave and swell height.\n\n.TODAY...SW wind 15 kt. Seas 5 ft. Rain showers.\n.TONIGHT...E wind 20 kt. Seas 4 ft. Rain.\n.THU...NE wind 35 kt. Seas 6 ft building to 11 ft in the\nafternoon. Rain.\n.THU NIGHT...NE wind 40 kt. Seas 13 ft.\n.FRI...NE wind 30 kt. Seas 13 ft.\n.SAT...S wind 20 kt. Seas 9 ft.\n.SUN...SW wind 30 kt. Seas 15 ft.",
+                "instruction": null,
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CWFALU"
+                    ],
+                    "WMOidentifier": [
+                        "FZAK52 PAFC 301143"
+                    ],
+                    "NWSheadline": [
+                        "GALE WARNING THURSDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.PAFC.GL.W.1406.261001T1300Z-261002T0100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T17:00:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "GLW"
                     ]
                 }
             }
@@ -28131,82 +28376,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.016.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.016.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.016.1",
-                "areaDesc": "Barren Islands East",
-                "geocode": {
-                    "SAME": [
-                        "058731"
-                    ],
-                    "UGC": [
-                        "PKZ731"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/PKZ731"
-                ],
-                "references": [],
-                "sent": "2026-09-30T03:41:00-08:00",
-                "effective": "2026-09-30T03:41:00-08:00",
-                "onset": "2026-09-30T03:00:00-08:00",
-                "expires": "2026-09-30T16:30:00-08:00",
-                "ends": "2026-10-01T05:00:00-08:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Anchorage AK",
-                "headline": "Small Craft Advisory issued September 30 at 3:41AM AKDT until October 1 at 5:00AM AKDT by NWS Anchorage AK",
-                "description": "Coastal Waters Forecast for the Northern Gulf of Alaska Coast\nup to 100 nm out including Kodiak Island and Cook Inlet.\n\nWind forecasts reflect the predominant speed and direction\nexpected. Sea forecasts represent an average of the highest\none-third of the combined wind wave and swell height.\n\n.TODAY...W wind 25 kt. Seas 5 ft.\n.TONIGHT...NW wind 25 kt. Seas 5 ft.\n.THU...NW wind 20 kt. Seas 4 ft.\n.THU NIGHT...Variable wind 10 kt. Seas 3 ft.\n.FRI THROUGH SAT...NE wind 30 kt. Seas 9 ft.\n.SUN...S wind 15 kt. Seas 7 ft.",
-                "instruction": null,
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "CWFAER"
-                    ],
-                    "WMOidentifier": [
-                        "FZAK51 PAFC 301141"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY THROUGH TONIGHT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.PAFC.SC.Y.2784.260930T1100Z-261001T1300Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-01T05:00:00-08:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.004.1",
             "type": "Feature",
             "geometry": null,
@@ -28263,6 +28432,82 @@
                     ],
                     "VTEC": [
                         "/O.NEW.PAFC.SC.Y.2781.261001T0100Z-261001T1300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-01T05:00:00-08:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.016.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.016.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.6e5280bbba476a1ac9d3ad6158aa1f5c4ae384a1.016.1",
+                "areaDesc": "Barren Islands East",
+                "geocode": {
+                    "SAME": [
+                        "058731"
+                    ],
+                    "UGC": [
+                        "PKZ731"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/PKZ731"
+                ],
+                "references": [],
+                "sent": "2026-09-30T03:41:00-08:00",
+                "effective": "2026-09-30T03:41:00-08:00",
+                "onset": "2026-09-30T03:00:00-08:00",
+                "expires": "2026-09-30T16:30:00-08:00",
+                "ends": "2026-10-01T05:00:00-08:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Anchorage AK",
+                "headline": "Small Craft Advisory issued September 30 at 3:41AM AKDT until October 1 at 5:00AM AKDT by NWS Anchorage AK",
+                "description": "Coastal Waters Forecast for the Northern Gulf of Alaska Coast\nup to 100 nm out including Kodiak Island and Cook Inlet.\n\nWind forecasts reflect the predominant speed and direction\nexpected. Sea forecasts represent an average of the highest\none-third of the combined wind wave and swell height.\n\n.TODAY...W wind 25 kt. Seas 5 ft.\n.TONIGHT...NW wind 25 kt. Seas 5 ft.\n.THU...NW wind 20 kt. Seas 4 ft.\n.THU NIGHT...Variable wind 10 kt. Seas 3 ft.\n.FRI THROUGH SAT...NE wind 30 kt. Seas 9 ft.\n.SUN...S wind 15 kt. Seas 7 ft.",
+                "instruction": null,
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "CWFAER"
+                    ],
+                    "WMOidentifier": [
+                        "FZAK51 PAFC 301141"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY THROUGH TONIGHT"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.PAFC.SC.Y.2784.260930T1100Z-261001T1300Z/"
                     ],
                     "eventEndingTime": [
                         "2026-10-01T05:00:00-08:00"
@@ -30608,5 +30853,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-10-01T03:23:16+00:00"
+    "updated": "2026-10-01T03:33:21+00:00"
 }
