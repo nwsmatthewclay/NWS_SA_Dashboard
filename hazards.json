@@ -10,56 +10,93 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-12679",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d6be3926f2d416f06924a00dd00822985186a41e.002.1",
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-12679",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d6be3926f2d416f06924a00dd00822985186a41e.002.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-12679",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.d6be3926f2d416f06924a00dd00822985186a41e.002.1",
+                "areaDesc": "Northern Cook/Northern Lake; Southern Cook/North Shore; Bayfield; Sawyer; Price",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "027031",
+                        "027075",
+                        "055007",
+                        "055113",
+                        "055099"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "MNZ012",
+                        "MNZ021",
+                        "WIZ002",
+                        "WIZ008",
+                        "WIZ009"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/forecast/MNZ012",
+                    "https://api.weather.gov/zones/forecast/MNZ021",
+                    "https://api.weather.gov/zones/forecast/WIZ002",
+                    "https://api.weather.gov/zones/forecast/WIZ008",
+                    "https://api.weather.gov/zones/forecast/WIZ009"
                 ],
-                "references": [],
-                "sent": "2026-10-03T01:03:09+00:00",
-                "effective": "2026-10-03T01:03:09+00:00",
-                "onset": null,
-                "expires": "2026-10-03T01:13:09+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-02T11:05:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.004.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.004.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-02T11:05:00-05:00"
+                    }
+                ],
+                "sent": "2026-10-02T20:07:00-05:00",
+                "effective": "2026-10-02T20:07:00-05:00",
+                "onset": "2026-10-02T21:00:00-05:00",
+                "expires": "2026-10-03T07:00:00-05:00",
+                "ends": "2026-10-03T07:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Frost Advisory",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Duluth MN",
+                "headline": "Frost Advisory issued October 2 at 8:07PM CDT until October 3 at 7:00AM CDT by NWS Duluth MN",
+                "description": "* WHAT...Temperatures as low as 32 will result in frost formation.\n\n* WHERE...In Minnesota, Northern Cook and Lake and Southern Cook\nCounties. In Wisconsin, Price, Bayfield, and Sawyer Counties.\n\n* WHEN...Until 7 AM CDT Saturday.\n\n* IMPACTS...Frost could harm sensitive outdoor vegetation. Sensitive\noutdoor plants may be killed if left uncovered.",
+                "instruction": "Take steps now to protect tender plants from the cold.",
+                "response": "Prepare",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "NPWDLH"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 030103"
+                        "WWUS73 KDLH 030107"
+                    ],
+                    "NWSheadline": [
+                        "FROST ADVISORY REMAINS IN EFFECT UNTIL 7 AM CDT SATURDAY"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KDLH.FR.Y.0013.261003T0200Z-261003T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-03T07:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.004.1,2026-10-02T00:19:00-05:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.003.1,2026-10-02T00:19:00-05:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +108,216 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FRY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d6be3926f2d416f06924a00dd00822985186a41e.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d6be3926f2d416f06924a00dd00822985186a41e.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d6be3926f2d416f06924a00dd00822985186a41e.001.1",
+                "areaDesc": "Ashland; Iron",
+                "geocode": {
+                    "SAME": [
+                        "055003",
+                        "055051"
+                    ],
+                    "UGC": [
+                        "WIZ003",
+                        "WIZ004"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/WIZ003",
+                    "https://api.weather.gov/zones/forecast/WIZ004"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.001.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.001.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-02T11:05:00-05:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-02T11:05:00-05:00"
+                    }
+                ],
+                "sent": "2026-10-02T20:07:00-05:00",
+                "effective": "2026-10-02T20:07:00-05:00",
+                "onset": "2026-10-02T21:00:00-05:00",
+                "expires": "2026-10-03T07:00:00-05:00",
+                "ends": "2026-10-03T07:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Duluth MN",
+                "headline": "Freeze Warning issued October 2 at 8:07PM CDT until October 3 at 7:00AM CDT by NWS Duluth MN",
+                "description": "* WHAT...Sub-freezing temperatures as low as 28 expected.\n\n* WHERE...Ashland and Iron Counties.\n\n* WHEN...Until 7 AM CDT Saturday.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
+                "instruction": "Take steps now to protect tender plants from the cold.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWDLH"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS73 KDLH 030107"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING REMAINS IN EFFECT UNTIL 7 AM CDT SATURDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KDLH.FZ.W.0004.261003T0200Z-261003T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-03T07:00:00-05:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.001.1,2026-10-02T00:19:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.039890633e5cc1860c37a20dd1a31067edd72832.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -86.75,
+                            30.39
+                        ],
+                        [
+                            -86.73,
+                            30.46
+                        ],
+                        [
+                            -86.65,
+                            30.5
+                        ],
+                        [
+                            -86.52,
+                            30.49
+                        ],
+                        [
+                            -86.49,
+                            30.46
+                        ],
+                        [
+                            -86.46,
+                            30.38
+                        ],
+                        [
+                            -86.63,
+                            30.39
+                        ],
+                        [
+                            -86.75,
+                            30.39
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.039890633e5cc1860c37a20dd1a31067edd72832.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.039890633e5cc1860c37a20dd1a31067edd72832.001.1",
+                "areaDesc": "Okaloosa, FL",
+                "geocode": {
+                    "SAME": [
+                        "012091"
+                    ],
+                    "UGC": [
+                        "FLC091"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/FLC091"
+                ],
+                "references": [],
+                "sent": "2026-10-02T20:06:00-05:00",
+                "effective": "2026-10-02T20:06:00-05:00",
+                "onset": "2026-10-02T20:06:00-05:00",
+                "expires": "2026-10-02T23:00:00-05:00",
+                "ends": "2026-10-02T23:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Flood Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Mobile AL",
+                "headline": "Flood Advisory issued October 2 at 8:06PM CDT until October 2 at 11:00PM CDT by NWS Mobile AL",
+                "description": "* WHAT...Flooding caused by excessive rainfall is expected.\n\n* WHERE...South Central Okaloosa County in northwestern Florida...\n\n* WHEN...Until 1100 PM CDT.\n\n* IMPACTS...Minor flooding in low-lying and poor drainage areas.\n\n* ADDITIONAL DETAILS...\n- At 805 PM CDT, Doppler radar indicated heavy rain due to\nthunderstorms. Minor flooding is ongoing or expected to begin\nshortly in the advisory area. Between 1 and 2 inches of rain have\nfallen.\n- Additional rainfall amounts of 1 to 1.5 inches are expected over\nthe area. This additional rain will result in minor flooding.\n- Some locations that will experience flooding include...\nWright, Fort Walton Beach, Destin, Eglin AFB, Mary Esther, Ocean\nCity, Lake Lorraine, Shalimar, Cinco Bayou, Longwood and Eglin\nVillage.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Be especially cautious at night when it is harder to recognize the\ndangers of flooding.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "FLSMOB"
+                    ],
+                    "WMOidentifier": [
+                        "WGUS84 KMOB 030106"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD ADVISORY IN EFFECT UNTIL 11 PM CDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KMOB.FA.Y.0082.261003T0106Z-261003T0400Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-02T23:00:00-05:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FAY"
                     ]
                 }
             }
@@ -19217,339 +19463,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.004.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.004.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.004.1",
-                "areaDesc": "Northern Cook/Northern Lake; Southern Cook/North Shore; Price",
-                "geocode": {
-                    "SAME": [
-                        "027031",
-                        "027075",
-                        "055099"
-                    ],
-                    "UGC": [
-                        "MNZ012",
-                        "MNZ021",
-                        "WIZ009"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/MNZ012",
-                    "https://api.weather.gov/zones/forecast/MNZ021",
-                    "https://api.weather.gov/zones/forecast/WIZ009"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.003.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.003.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-02T00:19:00-05:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.004.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.004.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-02T00:19:00-05:00"
-                    }
-                ],
-                "sent": "2026-10-02T11:05:00-05:00",
-                "effective": "2026-10-02T11:05:00-05:00",
-                "onset": "2026-10-02T21:00:00-05:00",
-                "expires": "2026-10-02T23:15:00-05:00",
-                "ends": "2026-10-03T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Frost Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Duluth MN",
-                "headline": "Frost Advisory issued October 2 at 11:05AM CDT until October 3 at 7:00AM CDT by NWS Duluth MN",
-                "description": "* WHAT...Temperatures as low as 32 will result in frost formation.\n\n* WHERE...In Minnesota, Northern Cook and Lake and Southern Cook\nCounties. In Wisconsin, Price County.\n\n* WHEN...From 9 PM this evening to 7 AM CDT Saturday.\n\n* IMPACTS...Frost could harm sensitive outdoor vegetation. Sensitive\noutdoor plants may be killed if left uncovered.",
-                "instruction": "Take steps now to protect tender plants from the cold.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWDLH"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KDLH 021605"
-                    ],
-                    "NWSheadline": [
-                        "FROST ADVISORY REMAINS IN EFFECT FROM 9 PM THIS EVENING TO 7 AM CDT SATURDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KDLH.FR.Y.0013.261003T0200Z-261003T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T07:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FRY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.003.1",
-                "areaDesc": "Bayfield; Sawyer",
-                "geocode": {
-                    "SAME": [
-                        "055007",
-                        "055113"
-                    ],
-                    "UGC": [
-                        "WIZ002",
-                        "WIZ008"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/WIZ002",
-                    "https://api.weather.gov/zones/forecast/WIZ008"
-                ],
-                "references": [],
-                "sent": "2026-10-02T11:05:00-05:00",
-                "effective": "2026-10-02T11:05:00-05:00",
-                "onset": "2026-10-02T21:00:00-05:00",
-                "expires": "2026-10-02T23:15:00-05:00",
-                "ends": "2026-10-03T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Frost Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Duluth MN",
-                "headline": "Frost Advisory issued October 2 at 11:05AM CDT until October 3 at 7:00AM CDT by NWS Duluth MN",
-                "description": "* WHAT...Temperatures as low as 32 will result in frost formation.\n\n* WHERE...Bayfield and Sawyer Counties.\n\n* WHEN...From 9 PM this evening to 7 AM CDT Saturday.\n\n* IMPACTS...Frost could harm sensitive outdoor vegetation. Sensitive\noutdoor plants may be killed if left uncovered.",
-                "instruction": "Take steps now to protect tender plants from the cold.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWDLH"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KDLH 021605"
-                    ],
-                    "NWSheadline": [
-                        "FROST ADVISORY IN EFFECT FROM 9 PM THIS EVENING TO 7 AM CDT SATURDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXA.KDLH.FR.Y.0013.261003T0200Z-261003T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T07:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FRY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.001.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.001.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.001.2",
-                "areaDesc": "Ashland",
-                "geocode": {
-                    "SAME": [
-                        "055003"
-                    ],
-                    "UGC": [
-                        "WIZ003"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/WIZ003"
-                ],
-                "references": [],
-                "sent": "2026-10-02T11:05:00-05:00",
-                "effective": "2026-10-02T11:05:00-05:00",
-                "onset": "2026-10-02T21:00:00-05:00",
-                "expires": "2026-10-02T23:15:00-05:00",
-                "ends": "2026-10-03T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Freeze Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Duluth MN",
-                "headline": "Freeze Warning issued October 2 at 11:05AM CDT until October 3 at 7:00AM CDT by NWS Duluth MN",
-                "description": "* WHAT...Sub-freezing temperatures as low as 28 expected.\n\n* WHERE...Ashland County.\n\n* WHEN...From 9 PM this evening to 7 AM CDT Saturday.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
-                "instruction": "Take steps now to protect tender plants from the cold.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWDLH"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KDLH 021605"
-                    ],
-                    "NWSheadline": [
-                        "FREEZE WARNING IN EFFECT FROM 9 PM THIS EVENING TO 7 AM CDT SATURDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.EXA.KDLH.FZ.W.0004.261003T0200Z-261003T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T07:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FZW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.388de9fe05f795dba43b7bc6970969152b70924c.002.1",
-                "areaDesc": "Iron",
-                "geocode": {
-                    "SAME": [
-                        "055051"
-                    ],
-                    "UGC": [
-                        "WIZ004"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/WIZ004"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.4ec0d0943fc4af9cdec5c4e3ab64cfcf778ebe95.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-02T00:19:00-05:00"
-                    }
-                ],
-                "sent": "2026-10-02T11:05:00-05:00",
-                "effective": "2026-10-02T11:05:00-05:00",
-                "onset": "2026-10-02T21:00:00-05:00",
-                "expires": "2026-10-02T23:15:00-05:00",
-                "ends": "2026-10-03T07:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Freeze Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Duluth MN",
-                "headline": "Freeze Warning issued October 2 at 11:05AM CDT until October 3 at 7:00AM CDT by NWS Duluth MN",
-                "description": "* WHAT...Sub-freezing temperatures as low as 28 expected.\n\n* WHERE...Iron County.\n\n* WHEN...From 9 PM this evening to 7 AM CDT Saturday.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
-                "instruction": "Take steps now to protect tender plants from the cold.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWDLH"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS73 KDLH 021605"
-                    ],
-                    "NWSheadline": [
-                        "FREEZE WARNING REMAINS IN EFFECT FROM 9 PM THIS EVENING TO 7 AM CDT SATURDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KDLH.FZ.W.0004.261003T0200Z-261003T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-03T07:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "FZW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ab440baed9a46803bde46acbb0ef3c9d171875a0.002.1",
             "type": "Feature",
             "geometry": {
@@ -33472,5 +33385,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-10-03T01:03:18+00:00"
+    "updated": "2026-10-03T01:13:16+00:00"
 }
