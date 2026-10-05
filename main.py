@@ -542,7 +542,7 @@ GLWU_STATIONS = [
     ("Inland Sea, Buoy 45166", 44.785, -73.258),
     ("Schuyler Reef, Buoy 251", 44.4877, -73.3391),
 ]
-GLWU_STATION_FORECAST_MAX_HOUR = 48  # matches the short-cycle forecast length
+GLWU_STATION_FORECAST_MAX_HOUR = 84  # use the full 0-84h Lake Champlain GRIB2 forecast
 
 
 def _great_circle_distance_km(lat1, lon1, lat2, lon2):
