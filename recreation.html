@@ -343,8 +343,8 @@
 
       <div class="source-item">
         <h4>Mt. Mansfield</h4>
-        <p>Sustained wind, gust, and direction from NWS's hourly "RRS" text product (SHEF-encoded, issued by NWS Burlington), which updates more frequently than the alternative COOP feed. Temperature from the IEM VT_COOP network.</p>
-        <span class="src-tag">NWS text product + IEM COOP</span>
+        <p>Sustained wind, gust, and direction from NWS's hourly "RRS" text product (SHEF-encoded, issued by NWS Burlington). Temperature from the IEM RR2BTV product, using the latest MMNV1 TAIRGZZ observation.</p>
+        <span class="src-tag">NWS RRS + IEM RR2BTV</span>
       </div>
 
       <div class="source-item">
@@ -464,7 +464,7 @@ var mansfieldRr2Failures = 0;
 var mansfieldRr2LastGood = null;
 
 var STATIONS = [
-  { id: 'colchester_reef', name: 'Colchester Reef', region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM02', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294500', ndbcId: null,    lat: 44.548,  lon: -73.34 },
+  { id: 'colchester_reef', name: 'Colchester Reef', region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Wind Chill', noaaId: 'UVM02', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294500', ndbcId: null,    lat: 44.548,  lon: -73.34 },
   { id: 'burton_island',   name: 'Burton Island',    region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM01', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04295000', ndbcId: null,    lat: 44.77,   lon: -73.21 },
   { id: 'diamond_island',  name: 'Diamond Island',   region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM03', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294413', ndbcId: null,    lat: 44.03,   lon: -73.43 },
   { id: 'valcour_buoy',    name: 'Valcour Buoy',     region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: null,    iemNetwork: null,    iemCoopNetwork: null,      source: 'lcri', gaugeMax: 50, usgsSite: null,        ndbcId: '45178', staleThresholdMin: 150, lat: 44.603,  lon: -73.394 },
@@ -691,12 +691,6 @@ async function getOneStationData_(s) {
 
   var merged = mergeObservations_(noaa, iem, coopWind, rr2Temp);
   var result = Object.assign({}, s, merged || MOCK_STATIONS[s.id] || {});
-
-  if (s.id === 'mt_mansfield') {
-    // RR2 temperature + RRS sustained wind are the two inputs used for
-    // the Mansfield wind-chill calculation.
-    result.feelsLike = calculateMansfieldWindChillF_(result.temp, result.sustained);
-  }
 
   if (s.usgsSite) {
     if (usgs) {
@@ -1091,7 +1085,11 @@ function mergeObservations_(noaa, iem, coopWind, rr2Temp) {
   var tempF = tempCandidates.length ? tempCandidates[0].v : null;
   var tempTimestampMs = tempCandidates.length ? tempCandidates[0].t : null;
 
-  var feelsF = (iem && iem.feelsF != null) ? iem.feelsF : (noaa && noaa.feelsF != null ? noaa.feelsF : tempF);
+  // Always calculate the dashboard's "Feels Like" value ourselves from the
+  // same displayed air temperature and sustained wind. Do not inherit
+  // provider-specific apparent-temperature fields because those can be heat
+  // index/apparent-temperature products rather than the NWS wind-chill index.
+  var feelsF = calculateWindChillF_(tempF, sustainedMph);
 
   if (sustainedMph == null && gustMph == null && tempF == null) return null;
 
@@ -1204,8 +1202,7 @@ async function fetchMansfieldRr2Temperature_() {
   }
 }
 
-function calculateMansfieldWindChillF_(tempF, windMph) {
-
+function calculateWindChillF_(tempF, windMph) {
   if (
     tempF === null || tempF === undefined ||
     windMph === null || windMph === undefined ||
@@ -1214,13 +1211,15 @@ function calculateMansfieldWindChillF_(tempF, windMph) {
     return null;
   }
 
-  // NWS wind-chill formula is applicable at temperatures <= 50 F
-  // and wind speeds >= 3 mph.
-  if (tempF > 50 || windMph < 3) {
+  // NWS wind chill is defined only at air temperatures <= 50 F
+  // and wind speeds > 3 mph. At warmer temperatures or light winds,
+  // the dashboard displays no wind-chill value rather than inventing
+  // an apparent-temperature value from a different formula.
+  if (tempF > 50 || windMph <= 3) {
     return null;
   }
 
-  const windFactor = Math.pow(windMph, 0.16);
+  var windFactor = Math.pow(windMph, 0.16);
 
   return (
     35.74 +
