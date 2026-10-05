@@ -458,6 +458,10 @@ var LCRI_VALCOUR_CSV_URL = 'https://lcri99.github.io/last7.valcour.csv';
 
 var REC_ISSUEDBY = 'BTV';
 
+var MANSFIELD_RR2_PIL = 'RR2BTV';
+var MANSFIELD_RR2_MAX_FAILURES = 3;
+var mansfieldRr2Failures = 0;
+
 var STATIONS = [
   { id: 'colchester_reef', name: 'Colchester Reef', region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM02', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294500', ndbcId: null,    lat: 44.548,  lon: -73.34 },
   { id: 'burton_island',   name: 'Burton Island',    region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM01', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04295000', ndbcId: null,    lat: 44.77,   lon: -73.21 },
@@ -668,22 +672,30 @@ async function getOneStationData_(s) {
   var iemP = s.iemNetwork ? fetchIemObservation_(resolvedId, s.iemNetwork) : Promise.resolve(null);
   var coopTempP = s.iemCoopNetwork ? fetchIemCoopObservation_(resolvedId, s.iemCoopNetwork) : Promise.resolve(null);
   var rrsWindP = s.rrsPil ? fetchRrsWindObservation_(s.rrsPil, resolvedId) : Promise.resolve(null);
+  var rr2TempP = s.id === 'mt_mansfield' ? fetchMansfieldRr2Temperature_() : Promise.resolve(null);
   var usgsP = s.usgsSite ? fetchUsgsWaterTemp_(s.usgsSite) : Promise.resolve(null);
 
-  var results = await Promise.allSettled([noaaP, iemP, coopTempP, rrsWindP, usgsP]);
+  var results = await Promise.allSettled([noaaP, iemP, coopTempP, rrsWindP, rr2TempP, usgsP]);
   var noaa = results[0].status === 'fulfilled' ? results[0].value : null;
   var iem = results[1].status === 'fulfilled' ? results[1].value : null;
   var coopTemp = results[2].status === 'fulfilled' ? results[2].value : null;
   var rrsWind = results[3].status === 'fulfilled' ? results[3].value : null;
-  var usgs = results[4].status === 'fulfilled' ? results[4].value : null;
+  var rr2Temp = results[4].status === 'fulfilled' ? results[4].value : null;
+  var usgs = results[5].status === 'fulfilled' ? results[5].value : null;
 
   var coopWind = (coopTemp || rrsWind) ? Object.assign({}, coopTemp, rrsWind) : null;
   if (s.source === 'wfms') {
     try { iem = await fetchWhitefaceObservation_(); } catch (err) { console.warn('Whiteface fetch failed:', err); iem = null; }
   }
 
-  var merged = mergeObservations_(noaa, iem, coopWind);
+  var merged = mergeObservations_(noaa, iem, coopWind, rr2Temp);
   var result = Object.assign({}, s, merged || MOCK_STATIONS[s.id] || {});
+
+  if (s.id === 'mt_mansfield') {
+    // RR2 temperature + RRS sustained wind are the two inputs used for
+    // the Mansfield wind-chill calculation.
+    result.feelsLike = calculateMansfieldWindChillF_(result.temp, result.sustained);
+  }
 
   if (s.usgsSite) {
     if (usgs) {
@@ -1008,7 +1020,7 @@ function findLatestNonNullRow_(rows, fieldNames) {
   return null;
 }
 
-function mergeObservations_(noaa, iem, coopWind) {
+function mergeObservations_(noaa, iem, coopWind, rr2Temp) {
   if (!noaa && !iem && !coopWind) return null;
 
   var sustainedMph = null, sustainedTimestamp = null;
@@ -1055,6 +1067,9 @@ function mergeObservations_(noaa, iem, coopWind) {
                       : (directionDeg != null ? degreesToCompass_(directionDeg) : null);
 
   var tempCandidates = [];
+  if (rr2Temp && rr2Temp.tempF != null && rr2Temp.timestamp) {
+    tempCandidates.push({ v: rr2Temp.tempF, t: new Date(rr2Temp.timestamp).getTime() });
+  }
   if (coopWind && coopWind.tempF != null && coopWind.tempTimestamp) {
     tempCandidates.push({ v: coopWind.tempF, t: new Date(coopWind.tempTimestamp).getTime() });
   }
@@ -1110,6 +1125,100 @@ function degreesToCompass_(deg) {
   var dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
   var idx = Math.round(deg / 22.5) % 16;
   return dirs[idx];
+}
+
+async function fetchMansfieldRr2Temperature_() {
+
+  try {
+    const url =
+      'https://mesonet.agron.iastate.edu/wx/afos/p.php?pil=' +
+      encodeURIComponent(MANSFIELD_RR2_PIL);
+
+    const response = await fetchWithTimeout_(url, { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status);
+    }
+
+    const html = await response.text();
+    const text = extractAfosPreText_(html);
+
+    if (!text) {
+      throw new Error('RR2BTV page contained no AFOS product text');
+    }
+
+    const match = text.match(
+      /\\.A\\s+MMNV1\\s+(\\d{6})\\s+Z\\s+DH(\\d{4})\\/TAIRGZZ\\s+(-?\\d+(?:\\.\\d+)?)/
+    );
+
+    if (!match) {
+      throw new Error('Latest RR2BTV product did not contain an MMNV1 TAIRGZZ observation');
+    }
+
+    const yyMMdd = match[1];
+    const hhmm = match[2];
+    const tempF = Number(match[3]);
+
+    if (!Number.isFinite(tempF)) {
+      throw new Error('RR2BTV returned a non-numeric MMNV1 temperature');
+    }
+
+    const timestamp = new Date(
+      Date.UTC(
+        2000 + Number(yyMMdd.slice(0, 2)),
+        Number(yyMMdd.slice(2, 4)) - 1,
+        Number(yyMMdd.slice(4, 6)),
+        Number(hhmm.slice(0, 2)),
+        Number(hhmm.slice(2, 4))
+      )
+    ).toISOString();
+
+    mansfieldRr2Failures = 0;
+
+    return { tempF: tempF, timestamp: timestamp };
+
+  } catch (error) {
+
+    mansfieldRr2Failures = Math.min(
+      MANSFIELD_RR2_MAX_FAILURES,
+      mansfieldRr2Failures + 1
+    );
+
+    console.warn(
+      'MMNV1 RR2 temperature attempt failed (' +
+      mansfieldRr2Failures + '/' +
+      MANSFIELD_RR2_MAX_FAILURES + '):',
+      error
+    );
+
+    return null;
+  }
+}
+
+function calculateMansfieldWindChillF_(tempF, windMph) {
+
+  if (
+    tempF === null || tempF === undefined ||
+    windMph === null || windMph === undefined ||
+    !Number.isFinite(tempF) || !Number.isFinite(windMph)
+  ) {
+    return null;
+  }
+
+  // NWS wind-chill formula is applicable at temperatures <= 50 F
+  // and wind speeds >= 3 mph.
+  if (tempF > 50 || windMph < 3) {
+    return null;
+  }
+
+  const windFactor = Math.pow(windMph, 0.16);
+
+  return (
+    35.74 +
+    (0.6215 * tempF) -
+    (35.75 * windFactor) +
+    (0.4275 * tempF * windFactor)
+  );
 }
 
 async function fetchUsgsWaterTemp_(siteId) {
