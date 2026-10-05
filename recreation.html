@@ -461,6 +461,7 @@ var REC_ISSUEDBY = 'BTV';
 var MANSFIELD_RR2_PIL = 'RR2BTV';
 var MANSFIELD_RR2_MAX_FAILURES = 3;
 var mansfieldRr2Failures = 0;
+var mansfieldRr2LastGood = null;
 
 var STATIONS = [
   { id: 'colchester_reef', name: 'Colchester Reef', region: 'Lake Champlain', regionColor: 'blue',   tempLabel: 'Feels Like', noaaId: 'UVM02', iemNetwork: 'VTWAC', iemCoopNetwork: null,      source: null,   gaugeMax: 50, usgsSite: '04294500', ndbcId: null,    lat: 44.548,  lon: -73.34 },
@@ -729,7 +730,14 @@ async function discoverNearestStationId_(lat, lon, label) {
     return nearestId;
   } catch (err) {
     console.warn('discoverNearestStationId_ error for ' + label + ':', err);
-    return null;
+    if (mansfieldRr2Failures >= MANSFIELD_RR2_MAX_FAILURES) {
+      mansfieldRr2LastGood = null;
+      return null;
+    }
+
+    // Preserve the last valid RR2 temperature through the first two
+    // failed refreshes. The third consecutive failure makes it missing.
+    return mansfieldRr2LastGood;
   }
 }
 
@@ -1174,8 +1182,9 @@ async function fetchMansfieldRr2Temperature_() {
     ).toISOString();
 
     mansfieldRr2Failures = 0;
+    mansfieldRr2LastGood = { tempF: tempF, timestamp: timestamp };
 
-    return { tempF: tempF, timestamp: timestamp };
+    return mansfieldRr2LastGood;
 
   } catch (error) {
 
