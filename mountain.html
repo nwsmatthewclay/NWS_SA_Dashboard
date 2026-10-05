@@ -1452,6 +1452,7 @@ const MANSFIELD_RRS_PIL = "RRSBTV";
 const MANSFIELD_RR2_PIL = "RR2BTV";
 const MANSFIELD_RR2_MAX_FAILURES = 3;
 let mansfieldRr2Failures = 0;
+let mansfieldRr2LastGood = null;
 
 async function fetchWithTimeout_(url, options = {}, timeoutMs = 8000) {
   const controller = new AbortController();
@@ -1701,13 +1702,14 @@ async function fetchMansfieldTemperature_() {
     ).toISOString();
 
     mansfieldRr2Failures = 0;
-
-    console.log("MMNV1 RR2 temperature:", tempF, timestamp);
-
-    return {
+    mansfieldRr2LastGood = {
       tempF: tempF,
       timestamp: timestamp
     };
+
+    console.log("MMNV1 RR2 temperature:", tempF, timestamp);
+
+    return mansfieldRr2LastGood;
 
   } catch (error) {
 
@@ -1723,12 +1725,13 @@ async function fetchMansfieldTemperature_() {
 
     if (mansfieldRr2Failures >= MANSFIELD_RR2_MAX_FAILURES) {
       console.warn("MMNV1 RR2 temperature marked unavailable after 3 consecutive failures.");
+      mansfieldRr2LastGood = null;
       return null;
     }
 
-    // Preserve the existing displayed value for the first two failed
-    // refreshes rather than replacing a valid observation with a dash.
-    return null;
+    // Preserve the last valid RR2 temperature through the first two
+    // failed refreshes. The third consecutive failure makes it missing.
+    return mansfieldRr2LastGood;
   }
 }
 
