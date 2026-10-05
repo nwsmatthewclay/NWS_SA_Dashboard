@@ -448,9 +448,12 @@ def fetch_rainfall_totals(site_ghcnd: dict) -> dict:
 # ============================================================
 
 GLWU_BASE_URL = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/glwu/prod"
-GLWU_GRID = "grlr_500m_lc"          # Lake Champlain 500m grid; swap for a
-                                     # Great Lakes grid (e.g. grlc_2p5km_lc)
-                                     # if that's what's actually needed
+GLWU_GRID = "grlr_500m_lc"          # Lake Champlain GLWU output grid
+GLWU_MODEL = "NCEP/NOAA GLWU v2.0"  # Operational WAVEWATCH III configuration
+GLWU_MODEL_SOLVER = "explicit"
+GLWU_NATIVE_MESH = "unstructured"
+GLWU_WAVE_PERIOD_SHORTNAME = "mwp"  # Mean wave period, seconds
+GLWU_WAVE_DIRECTION_SHORTNAME = "mwd"  # Mean wave direction, degrees true
 GLWU_OUTPUT_DIR = Path("./glwu_output")
 GLWU_DOWNLOAD_DIR = Path("./glwu_downloads")
 GLWU_BARB_SKIP_ROW = 8                # ~15% density reduction from the original
@@ -542,18 +545,83 @@ GLWU_STATIONS = [
 GLWU_STATION_FORECAST_MAX_HOUR = 48  # matches the short-cycle forecast length
 
 
+def _great_circle_distance_km(lat1, lon1, lat2, lon2):
+    """Vectorized great-circle distance using the haversine formula."""
+    earth_radius_km = 6371.0088
+    lat1 = np.radians(lat1)
+    lat2 = np.radians(lat2)
+    dlat = lat2 - lat1
+    dlon = np.radians((np.asarray(lon2) - np.asarray(lon1) + 180.0) % 360.0 - 180.0)
+    a = (
+        np.sin(dlat / 2.0) ** 2
+        + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2.0) ** 2
+    )
+    return 2.0 * earth_radius_km * np.arcsin(np.sqrt(np.clip(a, 0.0, 1.0)))
+
+
 def find_nearest_water_gridpoints(lats, lons, valid_mask, stations):
-    """For each (name, lat, lon) in stations, find the closest grid index
-    that actually has valid (non-masked/water) data — a naive nearest-point
-    lookup could otherwise land on a masked land cell right next to the
-    real target and silently return NaN forever."""
-    indices = []
+    """Find the nearest valid water node using true geographic distance.
+
+    The GLWU Lake Champlain product is based on an unstructured wave-model
+    mesh. We therefore retain the model's own nearest-water-node approach,
+    but use great-circle distance rather than treating latitude/longitude
+    degrees as Cartesian distances. The selected node metadata is returned
+    so every extracted time series can be traced back to the actual model
+    location used.
+    """
+    lat_grid = np.asarray(lats, dtype=float)
+    lon_grid = np.asarray(lons, dtype=float)
+    valid = np.asarray(valid_mask, dtype=bool)
+
+    valid_positions = np.where(valid)
+    if len(valid_positions[0]) == 0:
+        raise RuntimeError("GLWU grid contains no valid water nodes.")
+
+    water_lats = lat_grid[valid]
+    water_lons = lon_grid[valid]
+
+    nodes = []
+
     for name, slat, slon in stations:
-        dist2 = (lats - slat) ** 2 + (lons - slon) ** 2
-        dist2_masked = np.where(valid_mask, dist2, np.inf)
-        idx = np.unravel_index(np.argmin(dist2_masked), dist2_masked.shape)
-        indices.append(idx)
-    return indices
+        distances_km = _great_circle_distance_km(
+            water_lats,
+            water_lons,
+            slat,
+            slon,
+        )
+        local_idx = int(np.argmin(distances_km))
+
+        grid_idx = (
+            int(valid_positions[0][local_idx]),
+            int(valid_positions[1][local_idx]),
+        )
+
+        nodes.append({
+            "name": name,
+            "target_lat": float(slat),
+            "target_lon": float(slon),
+            "node_lat": float(water_lats[local_idx]),
+            "node_lon": float(water_lons[local_idx]),
+            "distance_km": float(distances_km[local_idx]),
+            "index": grid_idx,
+        })
+
+    return nodes
+
+
+def _select_wave_message(grbs, forecast_time, short_names):
+    """Return the first available wave field from a list of GRIB shortNames."""
+    for short_name in short_names:
+        try:
+            matches = grbs.select(
+                shortName=short_name,
+                forecastTime=forecast_time,
+            )
+            if matches:
+                return matches[0]
+        except Exception:
+            continue
+    return None
 
 
 def glwu_render_station_forecast_panel(
@@ -565,8 +633,10 @@ def glwu_render_station_forecast_panel(
     Extract significant wave-height forecasts at GLWU_STATIONS and render
     a dashboard-style 2-column x 4-row forecast panel.
 
-    The GRIB extraction is unchanged in principle from the original
-    implementation. Only the presentation has been redesigned.
+    The panel extracts the operational NCEP/NOAA GLWU v2.0 WAVEWATCH III
+    fields directly from GRIB2. Station values follow the GLERL-described
+    nearest-wet-node methodology, using the nearest valid water node to
+    each target coordinate. No empirical bias correction is applied.
     """
 
     # ============================================================
@@ -586,7 +656,7 @@ def glwu_render_station_forecast_panel(
         else np.ones_like(wave0, dtype=bool)
     )
 
-    station_idx = find_nearest_water_gridpoints(
+    station_nodes = find_nearest_water_gridpoints(
         lats,
         lons,
         valid_mask,
@@ -604,20 +674,44 @@ def glwu_render_station_forecast_panel(
 
     times = []
     series = {name: [] for name, _, _ in GLWU_STATIONS}
+    period_series = {name: [] for name, _, _ in GLWU_STATIONS}
+    direction_series = {name: [] for name, _, _ in GLWU_STATIONS}
 
     for h in fhours:
         msg = grbs.select(shortName="swh", forecastTime=h)[0]
         wave_h, _, _ = msg.data()
 
+        period_msg = _select_wave_message(
+            grbs, h, [GLWU_WAVE_PERIOD_SHORTNAME, "mp2", "pp1d"]
+        )
+        direction_msg = _select_wave_message(
+            grbs, h, [GLWU_WAVE_DIRECTION_SHORTNAME]
+        )
+
+        period_h = period_msg.data()[0] if period_msg is not None else None
+        direction_h = direction_msg.data()[0] if direction_msg is not None else None
+
         times.append(msg.validDate.replace(tzinfo=timezone.utc))
 
-        for (name, _, _), idx in zip(GLWU_STATIONS, station_idx):
-            val = wave_h[idx]
+        for node in station_nodes:
+            name = node["name"]
+            idx = node["index"]
 
+            val = wave_h[idx]
             if np.ma.is_masked(val):
                 series[name].append(float("nan"))
             else:
                 series[name].append(float(val) * GLWU_M_TO_FT)
+
+            if period_h is None or np.ma.is_masked(period_h[idx]):
+                period_series[name].append(float("nan"))
+            else:
+                period_series[name].append(float(period_h[idx]))
+
+            if direction_h is None or np.ma.is_masked(direction_h[idx]):
+                direction_series[name].append(float("nan"))
+            else:
+                direction_series[name].append(float(direction_h[idx]))
 
     grbs.close()
 
@@ -919,9 +1013,23 @@ def glwu_render_station_forecast_panel(
 
         if np.isfinite(peak_val):
 
+            station_periods = np.asarray(period_series[name], dtype=float)
+            station_directions = np.asarray(direction_series[name], dtype=float)
+
+            peak_period = (
+                float(station_periods[peak_idx])
+                if peak_idx < len(station_periods) and np.isfinite(station_periods[peak_idx])
+                else float("nan")
+            )
+            peak_direction = (
+                float(station_directions[peak_idx])
+                if peak_idx < len(station_directions) and np.isfinite(station_directions[peak_idx])
+                else float("nan")
+            )
+
             ax.text(
                 0.965,
-                0.66,
+                0.70,
                 f"{peak_val:.1f} ft",
                 transform=ax.transAxes,
                 ha="right",
@@ -932,9 +1040,28 @@ def glwu_render_station_forecast_panel(
                 zorder=10,
             )
 
+            wave_detail = []
+            if np.isfinite(peak_period):
+                wave_detail.append(f"{peak_period:.1f} s MWP")
+            if np.isfinite(peak_direction):
+                wave_detail.append(f"{peak_direction:.0f}° MWD")
+
+            if wave_detail:
+                ax.text(
+                    0.965,
+                    0.51,
+                    "  •  ".join(wave_detail),
+                    transform=ax.transAxes,
+                    ha="right",
+                    va="center",
+                    fontsize=8.0,
+                    color=TEXT,
+                    zorder=10,
+                )
+
             ax.text(
                 0.965,
-                0.47,
+                0.34,
                 peak_time_string,
                 transform=ax.transAxes,
                 ha="right",
@@ -1266,8 +1393,9 @@ def glwu_render_station_forecast_panel(
     # ============================================================
 
     footer_text = (
-        f"GLWU {GLWU_GRID}  \u2022  "
-        f"Significant wave height  \u2022  "
+        f"{GLWU_MODEL}  •  WAVEWATCH III  •  "
+        f"{GLWU_NATIVE_MESH} mesh  •  Output: {GLWU_GRID}  •  "
+        f"SWH + MWP + MWD  •  "
         f"Forecast through +{GLWU_STATION_FORECAST_MAX_HOUR}h"
     )
 
@@ -1684,7 +1812,51 @@ def run_glwu_plot():
             station_panel.save(station_panel_path)
             print(f"  Saved {station_panel_path} (8-station forecast, "
                   f"+{GLWU_STATION_FORECAST_MAX_HOUR}h forward)")
-            glwu_upload_to_drive(station_panel_path, "glwu_stations_latest.png", mimetype="image/png")
+            glwu_upload_to_drive(
+                station_panel_path,
+                "glwu_stations_latest.png",
+                mimetype="image/png",
+            )
+
+            # Persist the scientific extraction metadata and the raw station
+            # time series used by the panel. This makes the plotted values
+            # reproducible: each row identifies the target location, the
+            # actual GLWU model node selected, the node separation, and the
+            # wave parameters extracted from the operational GRIB2.
+            station_data_rows = []
+            for node in station_nodes:
+                name = node["name"]
+                for i, valid_time in enumerate(times):
+                    period_val = period_series[name][i]
+                    direction_val = direction_series[name][i]
+                    wave_val = series[name][i]
+
+                    station_data_rows.append({
+                        "MODEL": GLWU_MODEL,
+                        "SOLVER": GLWU_MODEL_SOLVER,
+                        "MESH": GLWU_NATIVE_MESH,
+                        "GRID": GLWU_GRID,
+                        "CYCLE_UTC": f"{date_str}{hour_str}Z",
+                        "VALID_TIME_UTC": valid_time.isoformat(),
+                        "STATION": name,
+                        "TARGET_LAT": round(node["target_lat"], 6),
+                        "TARGET_LON": round(node["target_lon"], 6),
+                        "MODEL_NODE_LAT": round(node["node_lat"], 6),
+                        "MODEL_NODE_LON": round(node["node_lon"], 6),
+                        "NODE_DISTANCE_KM": round(node["distance_km"], 3),
+                        "SWH_FT": round(float(wave_val), 3) if np.isfinite(wave_val) else None,
+                        "MWP_S": round(float(period_val), 3) if np.isfinite(period_val) else None,
+                        "MWD_DEG_TRUE": round(float(direction_val), 1) if np.isfinite(direction_val) else None,
+                    })
+
+            station_csv_path = GLWU_OUTPUT_DIR / "stations_latest.csv"
+            pd.DataFrame(station_data_rows).to_csv(station_csv_path, index=False)
+            glwu_upload_to_drive(
+                station_csv_path,
+                "glwu_stations_latest.csv",
+                mimetype="text/csv",
+            )
+            print(f"  Saved {station_csv_path} ({len(station_data_rows)} station-time records)")
         except Exception as e:
             print(f"  WARNING: 8-station forecast panel failed: {e}")
 
