@@ -1698,7 +1698,9 @@ def glwu_render_frame(swh, u, v, forecast_hour):
 
     title_line = "LAKE CHAMPLAIN WAVE HEIGHT AND WIND FORECAST"
     time_line = (
+        f"{valid_local.month}/{valid_local.day}/{valid_local:%y} "
         f"{valid_local:%-I %p %Z}  |  "
+        f"{valid.month}/{valid.day}/{valid:%y} "
         f"{valid:%-I %p UTC}"
     )
 
