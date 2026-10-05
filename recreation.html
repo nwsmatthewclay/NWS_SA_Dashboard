@@ -199,6 +199,26 @@
     .gauge-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(15,42,74,0.12); }
     .gauge-card.is-stale { background: #fdf8ee; border-color: #f0dfb0; }
     .gauge-card.is-stale .updated-row { color: var(--orange); font-weight: 600; }
+
+    .seasonal-card {
+      border-left: 4px solid #1a7ac9;
+      justify-content: center;
+    }
+    .seasonal-notice {
+      margin: 16px 4px 4px;
+      padding: 16px 12px;
+      border: 1px solid #cfe1f5;
+      border-radius: 8px;
+      background: #f5f9fd;
+      color: var(--navy-dark);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .seasonal-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
     .stale-badge {
       display: inline-flex; align-items: center; gap: 4px;
       background: var(--red); color: #fff; font-size: 9px; font-weight: 800;
@@ -1577,14 +1597,25 @@ function renderGaugeLoading() {
 
   STATIONS.forEach(function(station) {
     var card = document.createElement('div');
-    card.className = 'gauge-card loading-card';
 
-    card.innerHTML =
-      '<div class="gauge-loading">' +
-        '<div class="loading-spinner"></div>' +
-        '<div class="loading-title">' + station.name + '</div>' +
-        '<div class="loading-text">Loading latest observation...</div>' +
-      '</div>';
+    if (station.id === 'valcour_buoy') {
+      card.className = 'gauge-card seasonal-card';
+      card.innerHTML =
+        '<h3>Valcour Island</h3>' +
+        '<div class="region ' + station.regionColor + '">' + station.region + '</div>' +
+        '<div class="seasonal-notice">' +
+          '<div class="seasonal-icon">&#128167;</div>' +
+          '<div>The buoy has been removed for the season. Observations will return in spring 2027</div>' +
+        '</div>';
+    } else {
+      card.className = 'gauge-card loading-card';
+      card.innerHTML =
+        '<div class="gauge-loading">' +
+          '<div class="loading-spinner"></div>' +
+          '<div class="loading-title">' + station.name + '</div>' +
+          '<div class="loading-text">Loading latest observation...</div>' +
+        '</div>';
+    }
 
     wrap.appendChild(card);
   });
@@ -1592,7 +1623,19 @@ function renderGaugeLoading() {
 
 function buildGaugeCard(station) {
   var card = document.createElement('div');
-  card.className = 'gauge-card' + (station.stale ? ' is-stale' : '');
+  card.className = 'gauge-card' + (station.stale || station.id === 'valcour_buoy' ? ' is-stale' : '');
+
+  if (station.id === 'valcour_buoy') {
+    card.className = 'gauge-card seasonal-card';
+    card.innerHTML =
+      '<h3>Valcour Island</h3>' +
+      '<div class="region ' + station.regionColor + '">' + station.region + '</div>' +
+      '<div class="seasonal-notice">' +
+        '<div class="seasonal-icon">&#128167;</div>' +
+        '<div>The buoy has been removed for the season. Observations will return in spring 2027</div>' +
+      '</div>';
+    return card;
+  }
   // Left border matches the barb's own severity color exactly (same function,
   // same thresholds) — lets severity read at a glance without even looking
   // at the barb itself.
