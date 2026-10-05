@@ -718,6 +718,45 @@ def glwu_render_station_forecast_panel(
     if not times:
         raise RuntimeError("No GLWU forecast times found for station panel.")
 
+    # Persist the scientific extraction metadata alongside the PNG. Each
+    # row identifies the target location, the actual operational GLWU model
+    # node selected, the node separation, and the wave parameters extracted
+    # directly from the GRIB2 file.
+    station_data_rows = []
+    for node in station_nodes:
+        name = node["name"]
+        for i, valid_time in enumerate(times):
+            wave_val = series[name][i]
+            period_val = period_series[name][i]
+            direction_val = direction_series[name][i]
+
+            station_data_rows.append({
+                "MODEL": GLWU_MODEL,
+                "SOLVER": GLWU_MODEL_SOLVER,
+                "MESH": GLWU_NATIVE_MESH,
+                "GRID": GLWU_GRID,
+                "CYCLE_UTC": (
+                    f"{cycle_date}{cycle_hour}Z"
+                    if cycle_date and cycle_hour
+                    else None
+                ),
+                "VALID_TIME_UTC": valid_time.isoformat(),
+                "STATION": name,
+                "TARGET_LAT": round(node["target_lat"], 6),
+                "TARGET_LON": round(node["target_lon"], 6),
+                "MODEL_NODE_LAT": round(node["node_lat"], 6),
+                "MODEL_NODE_LON": round(node["node_lon"], 6),
+                "NODE_DISTANCE_KM": round(node["distance_km"], 3),
+                "SWH_FT": round(float(wave_val), 3) if np.isfinite(wave_val) else None,
+                "MWP_S": round(float(period_val), 3) if np.isfinite(period_val) else None,
+                "MWD_DEG_TRUE": round(float(direction_val), 1) if np.isfinite(direction_val) else None,
+            })
+
+    station_csv_path = GLWU_OUTPUT_DIR / "stations_latest.csv"
+    GLWU_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(station_data_rows).to_csv(station_csv_path, index=False)
+    print(f"  Saved {station_csv_path} ({len(station_data_rows)} station-time records)")
+
     # ============================================================
     # TIME HANDLING
     # ============================================================
@@ -1818,45 +1857,12 @@ def run_glwu_plot():
                 mimetype="image/png",
             )
 
-            # Persist the scientific extraction metadata and the raw station
-            # time series used by the panel. This makes the plotted values
-            # reproducible: each row identifies the target location, the
-            # actual GLWU model node selected, the node separation, and the
-            # wave parameters extracted from the operational GRIB2.
-            station_data_rows = []
-            for node in station_nodes:
-                name = node["name"]
-                for i, valid_time in enumerate(times):
-                    period_val = period_series[name][i]
-                    direction_val = direction_series[name][i]
-                    wave_val = series[name][i]
-
-                    station_data_rows.append({
-                        "MODEL": GLWU_MODEL,
-                        "SOLVER": GLWU_MODEL_SOLVER,
-                        "MESH": GLWU_NATIVE_MESH,
-                        "GRID": GLWU_GRID,
-                        "CYCLE_UTC": f"{date_str}{hour_str}Z",
-                        "VALID_TIME_UTC": valid_time.isoformat(),
-                        "STATION": name,
-                        "TARGET_LAT": round(node["target_lat"], 6),
-                        "TARGET_LON": round(node["target_lon"], 6),
-                        "MODEL_NODE_LAT": round(node["node_lat"], 6),
-                        "MODEL_NODE_LON": round(node["node_lon"], 6),
-                        "NODE_DISTANCE_KM": round(node["distance_km"], 3),
-                        "SWH_FT": round(float(wave_val), 3) if np.isfinite(wave_val) else None,
-                        "MWP_S": round(float(period_val), 3) if np.isfinite(period_val) else None,
-                        "MWD_DEG_TRUE": round(float(direction_val), 1) if np.isfinite(direction_val) else None,
-                    })
-
             station_csv_path = GLWU_OUTPUT_DIR / "stations_latest.csv"
-            pd.DataFrame(station_data_rows).to_csv(station_csv_path, index=False)
             glwu_upload_to_drive(
                 station_csv_path,
                 "glwu_stations_latest.csv",
                 mimetype="text/csv",
             )
-            print(f"  Saved {station_csv_path} ({len(station_data_rows)} station-time records)")
         except Exception as e:
             print(f"  WARNING: 8-station forecast panel failed: {e}")
 
