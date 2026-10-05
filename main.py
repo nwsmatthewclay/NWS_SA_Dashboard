@@ -440,7 +440,7 @@ def fetch_rainfall_totals(site_ghcnd: dict) -> dict:
 
 
 # ============================================================
-# GLWU WAVE HEIGHT + WIND BARBS (Lake Champlain 500m grid)
+# GLWU WAVE HEIGHT + WIND BARBS (Lake Champlain operational GLWU output)
 # ============================================================
 # Not site-dependent and not part of the BUFKIT model loop — this is a
 # standalone NOMADS pull + plot, run once per script execution. Wrapped
@@ -682,7 +682,7 @@ def glwu_render_station_forecast_panel(
         wave_h, _, _ = msg.data()
 
         period_msg = _select_wave_message(
-            grbs, h, [GLWU_WAVE_PERIOD_SHORTNAME, "mp2", "pp1d"]
+            grbs, h, [GLWU_WAVE_PERIOD_SHORTNAME]
         )
         direction_msg = _select_wave_message(
             grbs, h, [GLWU_WAVE_DIRECTION_SHORTNAME]
