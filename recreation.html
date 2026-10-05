@@ -1221,7 +1221,7 @@ function calculateWindChillF_(tempF, windMph) {
 
   var windFactor = Math.pow(windMph, 0.16);
 
-  return (
+  return Math.round(
     35.74 +
     (0.6215 * tempF) -
     (35.75 * windFactor) +
