@@ -522,7 +522,7 @@ GLWU_DRIVE_FOLDER_ID = os.environ.get("GLWU_DRIVE_FOLDER_ID", "1InNdENvWv4CZE6-j
 # 8-STATION WAVE HEIGHT FORECAST (vertical stacked chart)
 # ============================================================
 # Forward forecast only, no observed history — the GRIB2 already gives us
-# up to 48h forward from a single already-downloaded cycle, no need to
+# up to 84h forward from a single already-downloaded cycle, no need to
 # accumulate data across runs the way a 10-day observed+forecast chart
 # (like GLERL's own site) would require.
 #
@@ -1370,7 +1370,7 @@ def glwu_render_station_forecast_panel(
             day_end = day_start + timedelta(days=1)
 
             # Only use the portion of this calendar day that actually
-            # falls within the 48-hour forecast.
+            # falls within the 84-hour forecast.
             visible_start = max(
                 mdates.date2num(day_start),
                 xnums[0],
@@ -1739,7 +1739,7 @@ def glwu_build_animation(grib_path: Path, out_gif: Path, n_hours: int = GLWU_N_H
     """
     Build an animated GIF covering the analysis hour plus the next
     (n_hours - 1) forecast hours, all from the single already-downloaded
-    GRIB2 (the file already contains a forecast sequence out to 48h, so
+    GRIB2 (the file already contains a forecast sequence out to 84h, so
     no extra download is needed to get future hours).
     """
     grbs = pygrib.open(str(grib_path))
