@@ -1449,6 +1449,9 @@ body {
 const MANSFIELD_STATION = "MMNV1";
 const MANSFIELD_COOP_NETWORK = "VT_COOP";
 const MANSFIELD_RRS_PIL = "RRSBTV";
+const MANSFIELD_RR2_PIL = "RR2BTV";
+const MANSFIELD_RR2_MAX_FAILURES = 3;
+let mansfieldRr2Failures = 0;
 
 async function fetchWithTimeout_(url, options = {}, timeoutMs = 8000) {
   const controller = new AbortController();
@@ -1645,80 +1648,88 @@ function applyWindColor_(cardEl, sustainedMph, gustMph) {
 
 async function fetchMansfieldTemperature_() {
 
-  const today = formatDateYMD_(
-    new Date(),
-    "America/New_York"
-  );
+  // Temperature source for Mount Mansfield is the BTV RR2 product.
+  // The bare IEM URL resolves to the newest RR2BTV product. We validate
+  // that the returned product actually contains the MMNV1 temperature
+  // observation before accepting it.
+  try {
 
-  let rows = await fetchIemObhistoryRows_(
-    MANSFIELD_STATION,
-    MANSFIELD_COOP_NETWORK,
-    today
-  );
+    const url =
+      "https://mesonet.agron.iastate.edu/wx/afos/p.php" +
+      "?pil=" + encodeURIComponent(MANSFIELD_RR2_PIL);
 
-  let tempRow =
-    rows && rows.length
-      ? findLatestNonNullRow_(rows, ["TAIRGZZ"])
-      : null;
-
-  if (!tempRow) {
-
-    const yesterday = formatDateYMD_(
-      new Date(Date.now() - 86400000),
-      "America/New_York"
+    const response = await fetchWithTimeout_(
+      url,
+      { cache: "no-store" }
     );
 
-    const previousRows =
-      await fetchIemObhistoryRows_(
-        MANSFIELD_STATION,
-        MANSFIELD_COOP_NETWORK,
-        yesterday
-      );
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
 
-    tempRow =
-      previousRows && previousRows.length
-        ? findLatestNonNullRow_(
-            previousRows,
-            ["TAIRGZZ"]
-          )
-        : null;
-  }
+    const html = await response.text();
+    const text = extractAfosPreText_(html);
 
-  if (
-    !tempRow ||
-    tempRow.TAIRGZZ == null
-  ) {
+    if (!text) {
+      throw new Error("RR2BTV page contained no AFOS product text");
+    }
+
+    const match = text.match(
+      /\\.A\\s+MMNV1\\s+(\\d{6})\\s+Z\\s+DH(\\d{4})\\/TAIRGZZ\\s+(-?\\d+(?:\\.\\d+)?)/
+    );
+
+    if (!match) {
+      throw new Error("Latest RR2BTV product did not contain an MMNV1 TAIRGZZ observation");
+    }
+
+    const yyMMdd = match[1];
+    const hhmm = match[2];
+    const tempF = Number(match[3]);
+
+    if (!Number.isFinite(tempF)) {
+      throw new Error("RR2BTV returned a non-numeric MMNV1 temperature");
+    }
+
+    const year = 2000 + Number(yyMMdd.slice(0, 2));
+    const month = Number(yyMMdd.slice(2, 4));
+    const day = Number(yyMMdd.slice(4, 6));
+    const hour = Number(hhmm.slice(0, 2));
+    const minute = Number(hhmm.slice(2, 4));
+
+    const timestamp = new Date(
+      Date.UTC(year, month - 1, day, hour, minute)
+    ).toISOString();
+
+    mansfieldRr2Failures = 0;
+
+    console.log("MMNV1 RR2 temperature:", tempF, timestamp);
+
+    return {
+      tempF: tempF,
+      timestamp: timestamp
+    };
+
+  } catch (error) {
+
+    mansfieldRr2Failures = Math.min(
+      MANSFIELD_RR2_MAX_FAILURES,
+      mansfieldRr2Failures + 1
+    );
 
     console.warn(
-      "MMNV1: no valid TAIRGZZ temperature available."
+      `MMNV1 RR2 temperature attempt failed (${mansfieldRr2Failures}/${MANSFIELD_RR2_MAX_FAILURES}):`,
+      error
     );
 
+    if (mansfieldRr2Failures >= MANSFIELD_RR2_MAX_FAILURES) {
+      console.warn("MMNV1 RR2 temperature marked unavailable after 3 consecutive failures.");
+      return null;
+    }
+
+    // Preserve the existing displayed value for the first two failed
+    // refreshes rather than replacing a valid observation with a dash.
     return null;
   }
-
-  const tempF =
-    Number(tempRow.TAIRGZZ);
-
-  if (!Number.isFinite(tempF)) {
-
-    console.warn(
-      "MMNV1: invalid TAIRGZZ value:",
-      tempRow.TAIRGZZ
-    );
-
-    return null;
-  }
-
-  console.log(
-    "MMNV1 temperature:",
-    tempF,
-    tempRow.utc_valid
-  );
-
-  return {
-    tempF: tempF,
-    timestamp: tempRow.utc_valid
-  };
 }
 
 async function fetchIemCoopRows_(stationId, network) {
