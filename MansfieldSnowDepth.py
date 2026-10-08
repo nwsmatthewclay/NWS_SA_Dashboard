@@ -92,13 +92,13 @@ CHART_OUTPUT_FILE = os.path.join(REPO_OUTPUT_DIR, "vt_snow_depth_chart.png")
 # CHART (NWS feeds - unchanged)
 # =====================================================================
 
-def fetch_depth_series(url):
+def fetch_depth_series(url, timeout=30):
     """
     Download one NWS depth-series file and parse it into a
     {date: depth_inches} dict.
     """
 
-    response = requests.get(url, headers=HEADERS, timeout=30)
+    response = requests.get(url, headers=HEADERS, timeout=timeout)
     response.raise_for_status()
 
     text = response.text
@@ -338,13 +338,25 @@ def fetch_current_season_depth(as_of=None):
 
     url = CURRENT_URL_TEMPLATE.format(season=season)
 
-    try:
-        series = fetch_depth_series(url)
-    except requests.RequestException as error:
-        print(f"NWS current-season snow-depth fetch failed: {error}")
-        return None
-    except (ValueError, TypeError) as error:
-        print(f"NWS current-season snow-depth parse failed: {error}")
+    last_error = None
+
+    for attempt in range(1, 4):
+        try:
+            series = fetch_depth_series(url, timeout=45)
+            break
+        except requests.RequestException as error:
+            last_error = error
+            print(
+                f"NWS current-season snow-depth fetch failed "
+                f"(attempt {attempt}/3): {error}"
+            )
+            if attempt < 3:
+                import time
+                time.sleep(5 * attempt)
+        except (ValueError, TypeError) as error:
+            print(f"NWS current-season snow-depth parse failed: {error}")
+            return None
+    else:
         return None
 
     candidates = [
@@ -363,6 +375,63 @@ def fetch_current_season_depth(as_of=None):
         "depth_in": float(depth),
         "observed": observed_date.isoformat(),
         "source": f"NWS BTV current-season depth ({season})",
+    }
+
+
+def fetch_committed_current_season_depth(as_of=None):
+    """
+    Last-resort operational fallback using the committed current-season
+    row in data/snow-depth.csv.
+
+    This row is maintained with the daily Mount Mansfield stake values.
+    A zero is a valid observation and is intentionally preserved.
+    """
+    as_of = as_of or datetime.now(timezone.utc).date()
+    season = season_label_for_date(as_of)
+    if season is None:
+        return None
+
+    try:
+        day_labels, season_rows = fetch_snow_depth_history()
+    except (OSError, ValueError, csv.Error) as error:
+        print(f"Committed current-season snow-depth fallback failed: {error}")
+        return None
+
+    values = season_rows.get(season)
+    if values is None:
+        return None
+
+    candidates = []
+    for index, label in enumerate(day_labels):
+        try:
+            month, day = (int(part) for part in label.split("/"))
+            year = as_of.year if month >= 9 else as_of.year + 1
+            record_date = date(year, month, day)
+        except (ValueError, TypeError):
+            continue
+
+        if record_date > as_of or index >= len(values):
+            continue
+
+        raw = values[index].strip()
+        if raw == "":
+            continue
+
+        try:
+            depth = float(raw)
+        except ValueError:
+            continue
+
+        candidates.append((record_date, depth))
+
+    if not candidates:
+        return None
+
+    observed_date, depth = max(candidates, key=lambda item: item[0])
+    return {
+        "depth_in": float(depth),
+        "observed": observed_date.isoformat(),
+        "source": f"Committed {season} current-season depth fallback",
     }
 
 
@@ -432,12 +501,14 @@ def fetch_current_mansfield_depth(as_of=None):
     Get the dashboard's current Mount Mansfield snow depth.
 
     Source priority:
-      1. NWS BTV current-season daily depth series.
-      2. IEM MMNV1 COOP as a fallback.
+      1. NWS BTV current-season daily depth series (with retries).
+      2. Committed current-season daily depth row.
+      3. IEM MMNV1 COOP as a final fallback.
 
     The NWS series is checked first so the daily zero values entered into
-    the operational season feed are displayed immediately. Zero is valid
-    data; only a missing/blank/unavailable feed causes fallback.
+    the operational season feed are displayed immediately. If weather.gov
+    is temporarily unavailable, the committed current-season row is used
+    before falling back to IEM. Zero is valid data at every stage.
     """
 
     as_of = as_of or datetime.now(timezone.utc).date()
@@ -452,6 +523,17 @@ def fetch_current_mansfield_depth(as_of=None):
             current_result["source"],
         )
         return current_result
+
+    committed_result = fetch_committed_current_season_depth(as_of)
+
+    if committed_result is not None:
+        print(
+            "Mount Mansfield current snow depth:",
+            committed_result["depth_in"],
+            committed_result["observed"],
+            committed_result["source"],
+        )
+        return committed_result
 
     return fetch_iem_mansfield_depth(as_of)
 
