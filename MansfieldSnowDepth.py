@@ -8,8 +8,9 @@ Two independent data sources, kept separate on purpose:
    maintained by NWS, matching the season chart on
    https://www.weather.gov/btv/recreation.
 
-2. CURRENT DEPTH - MMNV1 Mount Mansfield COOP observation via IEM.
-   This is the live/current snow-depth source used for the status card.
+2. CURRENT DEPTH - the latest reported value in the current-season NWS
+   Mount Mansfield depth feed, with IEM MMNV1 COOP as a fallback.
+   A reported zero is a valid observation and must not be treated as missing.
 
 3. HISTORICAL DEPTH / NORMAL / RANK - committed snow-depth.csv.
    The CSV is the single source of truth for the historical comparison,
@@ -317,15 +318,59 @@ def parse_iem_coop_csv(text):
     return list(reader)
 
 
-def fetch_current_mansfield_depth(as_of=None):
+def fetch_current_season_depth(as_of=None):
     """
-    Get the latest reported snow depth from the MMNV1 Mount Mansfield COOP
-    station. IEM publishes the raw COOP snow-depth observation as ``snowd``.
+    Get the latest reported value from the current-season NWS Mount
+    Mansfield depth series.
 
-    We look back a short window because MMNV1 is a daily COOP observation,
-    not a continuous automated snow-depth sensor. The latest usable MMNV1
-    observation is therefore the correct live/current value available from
-    that station.
+    This is the same NWS feed used to draw the red "Current Depth"
+    line on the chart. It is the authoritative daily series for this
+    dashboard. In particular, 0.0 inches is a real observation and is
+    intentionally preserved as a valid value rather than treated as
+    missing.
+    """
+
+    as_of = as_of or datetime.now(timezone.utc).date()
+    season = season_label_for_date(as_of)
+
+    if season is None:
+        return None
+
+    url = CURRENT_URL_TEMPLATE.format(season=season)
+
+    try:
+        series = fetch_depth_series(url)
+    except requests.RequestException as error:
+        print(f"NWS current-season snow-depth fetch failed: {error}")
+        return None
+    except (ValueError, TypeError) as error:
+        print(f"NWS current-season snow-depth parse failed: {error}")
+        return None
+
+    candidates = [
+        (record_date, depth)
+        for record_date, depth in series.items()
+        if record_date <= as_of
+    ]
+
+    if not candidates:
+        print("NWS current-season snow-depth feed: no reported value at or before as-of date.")
+        return None
+
+    observed_date, depth = max(candidates, key=lambda item: item[0])
+
+    return {
+        "depth_in": float(depth),
+        "observed": observed_date.isoformat(),
+        "source": f"NWS BTV current-season depth ({season})",
+    }
+
+
+def fetch_iem_mansfield_depth(as_of=None):
+    """
+    Fallback current snow depth from the MMNV1 Mount Mansfield COOP
+    station via IEM. This is only used when the NWS current-season
+    depth feed is unavailable or has no usable observation.
     """
 
     as_of = as_of or datetime.now(timezone.utc).date()
@@ -378,8 +423,38 @@ def fetch_current_mansfield_depth(as_of=None):
     return {
         "depth_in": depth,
         "observed": valid,
-        "source": "IEM VT_COOP MMNV1",
+        "source": "IEM VT_COOP MMNV1 (fallback)",
     }
+
+
+def fetch_current_mansfield_depth(as_of=None):
+    """
+    Get the dashboard's current Mount Mansfield snow depth.
+
+    Source priority:
+      1. NWS BTV current-season daily depth series.
+      2. IEM MMNV1 COOP as a fallback.
+
+    The NWS series is checked first so the daily zero values entered into
+    the operational season feed are displayed immediately. Zero is valid
+    data; only a missing/blank/unavailable feed causes fallback.
+    """
+
+    as_of = as_of or datetime.now(timezone.utc).date()
+
+    current_result = fetch_current_season_depth(as_of)
+
+    if current_result is not None:
+        print(
+            "Mount Mansfield current snow depth:",
+            current_result["depth_in"],
+            current_result["observed"],
+            current_result["source"],
+        )
+        return current_result
+
+    return fetch_iem_mansfield_depth(as_of)
+
 
 def build_snow_depth_observation(as_of=None):
     """
@@ -562,7 +637,8 @@ def main():
 
     plot_snow_depth_chart(current_series, average_series, max_series, min_series)
 
-    # Current depth: live MMNV1. Historical normal/rank/records: committed CSV.
+    # Current depth: NWS current-season daily series, with IEM fallback.
+    # Historical normal/rank/records: committed CSV.
 
     status = build_snow_depth_observation()
 
