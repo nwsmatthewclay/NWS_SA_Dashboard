@@ -199,31 +199,53 @@ def locate_history_csv():
     )
 
 
-def fetch_snow_depth_history():
-    """
-    Load the committed full-history CSV: one row per ski season back to
-    1954, one column per day of the season, plus the final ``Average Season``
-    row. This is intentionally local/version-controlled rather than fetched
-    from a remote copy so the dashboard's historical standing cannot change
-    underneath the workflow.
-    """
+SNOW_DEPTH_CSV_URL = "https://s3.amazonaws.com/matthewparrilla.com/snow-depth.csv"
 
-    csv_path = locate_history_csv()
-    with csv_path.open("r", newline="", encoding="utf-8-sig") as handle:
-        reader = csv.reader(handle)
-        rows = list(reader)
+
+def parse_snow_depth_csv(text, source_label):
+    """Parse the Mount Mansfield full-history snow-depth CSV."""
+    reader = csv.reader(io.StringIO(text))
+    rows = list(reader)
 
     if not rows or len(rows[0]) < 2:
-        raise ValueError(f"Historical snow-depth CSV is empty or malformed: {csv_path}")
+        raise ValueError(f"Historical snow-depth CSV is empty or malformed: {source_label}")
 
     day_labels = [label.strip() for label in rows[0][1:]]
-    season_rows = {row[0].strip(): row[1:] for row in rows[1:] if row and row[0].strip()}
+    season_rows = {
+        row[0].strip(): row[1:]
+        for row in rows[1:]
+        if row and row[0].strip()
+    }
 
     if AVERAGE_ROW_LABEL not in season_rows:
-        raise ValueError(f"Historical snow-depth CSV is missing '{AVERAGE_ROW_LABEL}': {csv_path}")
+        raise ValueError(
+            f"Historical snow-depth CSV is missing '{AVERAGE_ROW_LABEL}': {source_label}"
+        )
 
     return day_labels, season_rows
 
+
+def fetch_snow_depth_history():
+    """
+    Load the full Mount Mansfield history from the S3 source.
+
+    S3 is the authoritative operational source. The repository CSV
+    remains available as a fallback if S3 is temporarily unavailable.
+    """
+    try:
+        response = requests.get(
+            SNOW_DEPTH_CSV_URL,
+            headers=HEADERS,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return parse_snow_depth_csv(response.text, SNOW_DEPTH_CSV_URL)
+    except (requests.RequestException, ValueError, csv.Error) as error:
+        print(f"S3 snow-depth CSV fetch failed; using repository fallback: {error}")
+
+    csv_path = locate_history_csv()
+    with csv_path.open("r", newline="", encoding="utf-8-sig") as handle:
+        return parse_snow_depth_csv(handle.read(), str(csv_path))
 
 def season_label_for_date(d):
     """
