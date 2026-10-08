@@ -2541,7 +2541,7 @@ document.querySelectorAll('[data-field="rime-icing-potential"]').forEach((el) =>
 
     async function refreshSnowDepth() {
       try {
-        const res = await fetch(DATA_BASE + "vt_snow_depth_status.json", { cache: "no-store" });
+        const res = await fetch(DATA_BASE + "vt_snow_depth_status.json?cb=" + Date.now(), { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
