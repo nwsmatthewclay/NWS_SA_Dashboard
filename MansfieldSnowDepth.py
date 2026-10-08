@@ -482,7 +482,7 @@ def build_snow_depth_observation(as_of=None):
 
     base_result = {
         "station": "Mount Mansfield Stake",
-        "source": "MMNV1 (IEM) + committed snow-depth.csv",
+        "source": "NWS BTV current-season depth + IEM MMNV1 fallback + committed snow-depth.csv",
         "season": season_label,
         "as_of_date": as_of.isoformat(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -598,7 +598,7 @@ def build_snow_depth_observation(as_of=None):
 
     return {
         **base_result,
-        "observed_date_label": obs_label,
+        "observed_date_label": (current_observation[:10] if current_observation and len(current_observation) >= 10 else obs_label),
         "current_observation": current_observation,
         "current_depth_in": current_depth,
         "current_depth_source": current_depth_source,
