@@ -10,56 +10,657 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-44265",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7fe50156cee1fad20cd46781f2d753a7c5a20f0c.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.71,
+                            29.85
+                        ],
+                        [
+                            -82.73,
+                            29.74
+                        ],
+                        [
+                            -82.83,
+                            29.74
+                        ],
+                        [
+                            -82.87,
+                            29.85
+                        ],
+                        [
+                            -82.71,
+                            29.85
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-44265",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7fe50156cee1fad20cd46781f2d753a7c5a20f0c.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-44265",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.7fe50156cee1fad20cd46781f2d753a7c5a20f0c.001.1",
+                "areaDesc": "Gilchrist, FL",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "012041"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "FLC041"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/FLC041"
                 ],
-                "references": [],
-                "sent": "2026-10-09T20:43:32+00:00",
-                "effective": "2026-10-09T20:43:32+00:00",
-                "onset": null,
-                "expires": "2026-10-09T20:53:32+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.22b907e67ef56b11db4ffe3536ea75c1132eaf4c.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.22b907e67ef56b11db4ffe3536ea75c1132eaf4c.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T16:35:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.4e9c8b861d6dabda6c21459b01ca142bd209f139.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.4e9c8b861d6dabda6c21459b01ca142bd209f139.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T16:45:00-04:00"
+                    }
+                ],
+                "sent": "2026-10-09T16:50:00-04:00",
+                "effective": "2026-10-09T16:50:00-04:00",
+                "onset": "2026-10-09T16:50:00-04:00",
+                "expires": "2026-10-09T17:00:00-04:00",
+                "ends": "2026-10-09T17:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Extreme",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Tornado Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Jacksonville FL",
+                "headline": "Tornado Warning issued October 9 at 4:50PM EDT until October 9 at 5:00PM EDT by NWS Jacksonville FL",
+                "description": "The storm which prompted the warning has weakened below severe\nlimits, and has exited the warned area. Therefore, the warning will\nbe allowed to expire.  However, gusty winds and heavy rain are still\npossible with this thunderstorm.\n\nA Tornado Watch remains in effect until 900 PM EDT for northern\nFlorida.",
+                "instruction": null,
+                "response": "Shelter",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "SVSJAX"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 092043"
+                        "WWUS52 KJAX 092050"
+                    ],
+                    "NWSheadline": [
+                        "THE TORNADO WARNING FOR CENTRAL GILCHRIST COUNTY WILL EXPIRE AT 500 PM EDT"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-10-09T20:50:00-00:00...storm...177DEG...14KT...29.79,-82.78"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXP.KJAX.TO.W.0007.000000T0000Z-261009T2100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-09T17:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SVS"
+                    ],
+                    "NationalWeatherService": [
+                        "TOW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d6b6c749d31ec86e648434847f59410820386d06.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -83.48,
+                            29.18
+                        ],
+                        [
+                            -83.31,
+                            28.87
+                        ],
+                        [
+                            -83.03,
+                            28.74
+                        ],
+                        [
+                            -83.05,
+                            28.45
+                        ],
+                        [
+                            -83.18,
+                            28.23
+                        ],
+                        [
+                            -83.17,
+                            27.71
+                        ],
+                        [
+                            -83.04,
+                            27.38
+                        ],
+                        [
+                            -82.72,
+                            26.86
+                        ],
+                        [
+                            -83.3,
+                            26.71
+                        ],
+                        [
+                            -83.56,
+                            27.17
+                        ],
+                        [
+                            -83.77,
+                            27.85
+                        ],
+                        [
+                            -83.8,
+                            28.5
+                        ],
+                        [
+                            -84.05,
+                            28.85
+                        ],
+                        [
+                            -83.48,
+                            29.18
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d6b6c749d31ec86e648434847f59410820386d06.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d6b6c749d31ec86e648434847f59410820386d06.001.1",
+                "areaDesc": "Waters from Tarpon Springs to Suwannee River FL out 20 to 60 NM; Waters from Englewood to Tarpon Springs FL out 20 to 60 NM",
+                "geocode": {
+                    "SAME": [
+                        "077870",
+                        "077873"
+                    ],
+                    "UGC": [
+                        "GMZ870",
+                        "GMZ873"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/GMZ870",
+                    "https://api.weather.gov/zones/forecast/GMZ873"
+                ],
+                "references": [],
+                "sent": "2026-10-09T16:49:00-04:00",
+                "effective": "2026-10-09T16:49:00-04:00",
+                "onset": "2026-10-09T16:49:00-04:00",
+                "expires": "2026-10-09T17:45:00-04:00",
+                "ends": "2026-10-09T17:45:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Special Marine Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Tampa Bay Ruskin FL",
+                "headline": "Special Marine Warning issued October 9 at 4:49PM EDT until October 9 at 5:45PM EDT by NWS Tampa Bay Ruskin FL",
+                "description": "SMWTBW\n\nThe National Weather Service in Ruskin has issued a\n\n* Special Marine Warning for...\nWaters from Englewood to Tarpon Springs FL out 20 to 60 NM...\nWaters from Tarpon Springs to Suwannee River FL out 20 to 60 NM...\n\n* Until 545 PM EDT.\n\n* At 447 PM EDT, scattered severe thunderstorms capable of producing\nwaterspouts between 20 nm and 60 nm offshore of Venice north to\nwest of Cedar Key, moving north at 30 knots.\n\nHAZARD...Waterspouts and wind gusts 34 knots or greater.\n\nSOURCE...Radar.\n\nIMPACT...Waterspouts can quickly form and capsize boats, damage\nvessels, and create suddenly higher waves. Make sure all\non board are in a secure location and wearing life\njackets. Expect wind gusts in excess of 34 knots,\nsuddenly higher waves, frequent lightning, and heavy\ndownpours. Make sure all on board are wearing life\njackets.\n\n* Locations impacted include...\nD5 Reef, Md3 Reef, D6 Reef, D2 Reef, Md4 Reef, D1 Reef, D4 Reef,\nM13 Reef, and D3 Reef.",
+                "instruction": "Move to safe harbor until hazardous weather passes.\n\nThunderstorms can produce sudden waterspouts. Waterspouts can easily\noverturn boats and create locally hazardous seas. Seek safe harbor\nimmediately.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SMWTBW"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS52 KTBW 092049"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-10-09T20:47:00-00:00...storm...178DEG...28KT...27.74,-83.44"
+                    ],
+                    "waterspoutDetection": [
+                        "POSSIBLE"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KTBW.MA.W.0224.261009T2049Z-261009T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-09T17:45:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SMW"
+                    ],
+                    "NationalWeatherService": [
+                        "MAW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.002.1",
+                "areaDesc": "Johnson; Cocke Smoky Mountains; Southeast Greene; Unicoi; Southeast Carter; Blount Smoky Mountains; Sevier Smoky Mountains; Southeast Monroe; East Polk; Russell; Washington",
+                "geocode": {
+                    "SAME": [
+                        "047091",
+                        "047029",
+                        "047059",
+                        "047171",
+                        "047019",
+                        "047009",
+                        "047155",
+                        "047123",
+                        "047139",
+                        "051167",
+                        "051191",
+                        "051520"
+                    ],
+                    "UGC": [
+                        "TNZ018",
+                        "TNZ041",
+                        "TNZ043",
+                        "TNZ045",
+                        "TNZ047",
+                        "TNZ072",
+                        "TNZ074",
+                        "TNZ087",
+                        "TNZ102",
+                        "VAZ006",
+                        "VAZ008"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/TNZ018",
+                    "https://api.weather.gov/zones/forecast/TNZ041",
+                    "https://api.weather.gov/zones/forecast/TNZ043",
+                    "https://api.weather.gov/zones/forecast/TNZ045",
+                    "https://api.weather.gov/zones/forecast/TNZ047",
+                    "https://api.weather.gov/zones/forecast/TNZ072",
+                    "https://api.weather.gov/zones/forecast/TNZ074",
+                    "https://api.weather.gov/zones/forecast/TNZ087",
+                    "https://api.weather.gov/zones/forecast/TNZ102",
+                    "https://api.weather.gov/zones/forecast/VAZ006",
+                    "https://api.weather.gov/zones/forecast/VAZ008"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.001.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.001.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T12:02:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.002.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.002.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T12:02:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.003.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.003.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T12:02:00-04:00"
+                    }
+                ],
+                "sent": "2026-10-09T16:48:00-04:00",
+                "effective": "2026-10-09T16:48:00-04:00",
+                "onset": "2026-10-10T00:00:00-04:00",
+                "expires": "2026-10-10T08:00:00-04:00",
+                "ends": "2026-10-11T08:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "High Wind Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Morristown TN",
+                "headline": "High Wind Warning issued October 9 at 4:48PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
+                "description": "* WHAT...East winds 20 to 35 mph with gusts up to 70 mph expected,\nespecially in the higher elevations.\n\n* WHERE...Portions of east Tennessee and southwest Virginia.\n\n* WHEN...From midnight tonight to 8 AM EDT Sunday.\n\n* IMPACTS...Damaging winds will blow down trees and power lines.\nWidespread power outages are expected. Travel will be difficult,\nespecially for high profile vehicles.",
+                "instruction": "People are urged to secure loose objects that could be blown around\nor damaged by the wind.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWMRX"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS74 KMRX 092048"
+                    ],
+                    "NWSheadline": [
+                        "HIGH WIND WARNING REMAINS IN EFFECT FROM MIDNIGHT TONIGHT TO 8 AM EDT SUNDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMRX.HW.W.0003.261010T0400Z-261011T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-11T08:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "HWW"
+                    ],
+                    "NationalWeatherService": [
+                        "HWW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.001.2",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.001.2",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.001.2",
+                "areaDesc": "Cherokee; Clay",
+                "geocode": {
+                    "SAME": [
+                        "037039",
+                        "037043"
+                    ],
+                    "UGC": [
+                        "NCZ060",
+                        "NCZ061"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/NCZ060",
+                    "https://api.weather.gov/zones/forecast/NCZ061"
+                ],
+                "references": [],
+                "sent": "2026-10-09T16:48:00-04:00",
+                "effective": "2026-10-09T16:48:00-04:00",
+                "onset": "2026-10-10T00:00:00-04:00",
+                "expires": "2026-10-10T08:00:00-04:00",
+                "ends": "2026-10-11T08:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "High Wind Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Morristown TN",
+                "headline": "High Wind Warning issued October 9 at 4:48PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
+                "description": "* WHAT...East winds 20 to 30 mph with gusts up to 60 mph expected,\nmainly in the higher elevations.\n\n* WHERE...Cherokee and Clay Counties.\n\n* WHEN...From midnight tonight to 8 AM EDT Sunday.\n\n* IMPACTS...Damaging winds will blow down trees and power lines.\nWidespread power outages are expected. Travel will be difficult,\nespecially for high profile vehicles.",
+                "instruction": "People are urged to secure loose objects that could be blown around\nor damaged by the wind.",
+                "response": "Prepare",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWMRX"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS74 KMRX 092048"
+                    ],
+                    "NWSheadline": [
+                        "HIGH WIND WARNING IN EFFECT FROM MIDNIGHT TONIGHT TO 8 AM EDT SUNDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXA.KMRX.HW.W.0003.261010T0400Z-261011T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-11T08:00:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "HWW"
+                    ],
+                    "NationalWeatherService": [
+                        "HWW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.003.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.003.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.a50d595e6bee41a805b10202f1eb3b772664f537.003.1",
+                "areaDesc": "Scott; Campbell; Claiborne; Hancock; Hawkins; Sullivan; Morgan; Anderson; Union; Grainger; Hamblen; Northwest Cocke; Northwest Greene; Washington; Northwest Carter; Roane; Loudon; Knox; Jefferson; NW Blount; North Sevier; Sequatchie; Bledsoe; Rhea; Meigs; McMinn; Northwest Monroe; Marion; Hamilton; Bradley; West Polk; Lee; Wise; Scott",
+                "geocode": {
+                    "SAME": [
+                        "047151",
+                        "047013",
+                        "047025",
+                        "047067",
+                        "047073",
+                        "047163",
+                        "047129",
+                        "047001",
+                        "047173",
+                        "047057",
+                        "047063",
+                        "047029",
+                        "047059",
+                        "047179",
+                        "047019",
+                        "047145",
+                        "047105",
+                        "047093",
+                        "047089",
+                        "047009",
+                        "047155",
+                        "047153",
+                        "047007",
+                        "047143",
+                        "047121",
+                        "047107",
+                        "047123",
+                        "047115",
+                        "047065",
+                        "047011",
+                        "047139",
+                        "051105",
+                        "051195",
+                        "051720",
+                        "051169"
+                    ],
+                    "UGC": [
+                        "TNZ012",
+                        "TNZ013",
+                        "TNZ014",
+                        "TNZ015",
+                        "TNZ016",
+                        "TNZ017",
+                        "TNZ035",
+                        "TNZ036",
+                        "TNZ037",
+                        "TNZ038",
+                        "TNZ039",
+                        "TNZ040",
+                        "TNZ042",
+                        "TNZ044",
+                        "TNZ046",
+                        "TNZ067",
+                        "TNZ068",
+                        "TNZ069",
+                        "TNZ070",
+                        "TNZ071",
+                        "TNZ073",
+                        "TNZ081",
+                        "TNZ082",
+                        "TNZ083",
+                        "TNZ084",
+                        "TNZ085",
+                        "TNZ086",
+                        "TNZ098",
+                        "TNZ099",
+                        "TNZ100",
+                        "TNZ101",
+                        "VAZ001",
+                        "VAZ002",
+                        "VAZ005"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/TNZ012",
+                    "https://api.weather.gov/zones/forecast/TNZ013",
+                    "https://api.weather.gov/zones/forecast/TNZ014",
+                    "https://api.weather.gov/zones/forecast/TNZ015",
+                    "https://api.weather.gov/zones/forecast/TNZ016",
+                    "https://api.weather.gov/zones/forecast/TNZ017",
+                    "https://api.weather.gov/zones/forecast/TNZ035",
+                    "https://api.weather.gov/zones/forecast/TNZ036",
+                    "https://api.weather.gov/zones/forecast/TNZ037",
+                    "https://api.weather.gov/zones/forecast/TNZ038",
+                    "https://api.weather.gov/zones/forecast/TNZ039",
+                    "https://api.weather.gov/zones/forecast/TNZ040",
+                    "https://api.weather.gov/zones/forecast/TNZ042",
+                    "https://api.weather.gov/zones/forecast/TNZ044",
+                    "https://api.weather.gov/zones/forecast/TNZ046",
+                    "https://api.weather.gov/zones/forecast/TNZ067",
+                    "https://api.weather.gov/zones/forecast/TNZ068",
+                    "https://api.weather.gov/zones/forecast/TNZ069",
+                    "https://api.weather.gov/zones/forecast/TNZ070",
+                    "https://api.weather.gov/zones/forecast/TNZ071",
+                    "https://api.weather.gov/zones/forecast/TNZ073",
+                    "https://api.weather.gov/zones/forecast/TNZ081",
+                    "https://api.weather.gov/zones/forecast/TNZ082",
+                    "https://api.weather.gov/zones/forecast/TNZ083",
+                    "https://api.weather.gov/zones/forecast/TNZ084",
+                    "https://api.weather.gov/zones/forecast/TNZ085",
+                    "https://api.weather.gov/zones/forecast/TNZ086",
+                    "https://api.weather.gov/zones/forecast/TNZ098",
+                    "https://api.weather.gov/zones/forecast/TNZ099",
+                    "https://api.weather.gov/zones/forecast/TNZ100",
+                    "https://api.weather.gov/zones/forecast/TNZ101",
+                    "https://api.weather.gov/zones/forecast/VAZ001",
+                    "https://api.weather.gov/zones/forecast/VAZ002",
+                    "https://api.weather.gov/zones/forecast/VAZ005"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.004.2",
+                        "identifier": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.004.2",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T12:02:00-04:00"
+                    },
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.005.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.005.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-09T12:02:00-04:00"
+                    }
+                ],
+                "sent": "2026-10-09T16:48:00-04:00",
+                "effective": "2026-10-09T16:48:00-04:00",
+                "onset": "2026-10-10T00:00:00-04:00",
+                "expires": "2026-10-10T08:00:00-04:00",
+                "ends": "2026-10-11T08:00:00-04:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Wind Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Morristown TN",
+                "headline": "Wind Advisory issued October 9 at 4:48PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
+                "description": "* WHAT...East winds 20 to 30 mph with gusts up to 50 mph expected.\n\n* WHERE...Portions of east Tennessee and southwest Virginia.\n\n* WHEN...From midnight EDT /11 PM CDT/ tonight to 8 AM EDT /7 AM CDT/\nSunday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
+                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWMRX"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS74 KMRX 092048"
+                    ],
+                    "NWSheadline": [
+                        "WIND ADVISORY REMAINS IN EFFECT FROM MIDNIGHT EDT /11 PM CDT/ TONIGHT TO 8 AM EDT /7 AM CDT/ SUNDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KMRX.WI.Y.0014.261010T0400Z-261011T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-11T08:00:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -71,7 +672,180 @@
                         "NWS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "WIY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dce0eea7e5651089b62610cb9a8ab3aac47e787c.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -83.17,
+                            29.29
+                        ],
+                        [
+                            -84.05,
+                            28.85
+                        ],
+                        [
+                            -84.12,
+                            28.94
+                        ],
+                        [
+                            -84.52,
+                            28.69
+                        ],
+                        [
+                            -84.97,
+                            28.6
+                        ],
+                        [
+                            -84.98,
+                            29.6
+                        ],
+                        [
+                            -85.09,
+                            29.62
+                        ],
+                        [
+                            -84.98,
+                            29.61
+                        ],
+                        [
+                            -84.98,
+                            29.72
+                        ],
+                        [
+                            -85.08,
+                            29.67
+                        ],
+                        [
+                            -85.07,
+                            29.75
+                        ],
+                        [
+                            -84.5,
+                            29.95
+                        ],
+                        [
+                            -84.3,
+                            30.16
+                        ],
+                        [
+                            -84.01,
+                            30.17
+                        ],
+                        [
+                            -83.75,
+                            30.04
+                        ],
+                        [
+                            -83.36,
+                            29.69
+                        ],
+                        [
+                            -83.34,
+                            29.53
+                        ],
+                        [
+                            -83.14,
+                            29.41
+                        ],
+                        [
+                            -83.17,
+                            29.29
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.dce0eea7e5651089b62610cb9a8ab3aac47e787c.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.dce0eea7e5651089b62610cb9a8ab3aac47e787c.001.1",
+                "areaDesc": "Apalachee Bay or Coastal Waters From Keaton Beach to Ochlockonee River Fl out to 20 Nm; Coastal Waters From  Ochlockonee River to Apalachicola FL out to 20 Nm; Coastal waters from  Suwannee River to Keaton Beach out 20 NM; Waters from Suwannee River to Apalachicola FL from 20 to 60 NM",
+                "geocode": {
+                    "SAME": [
+                        "077730",
+                        "077755",
+                        "077765",
+                        "077775"
+                    ],
+                    "UGC": [
+                        "GMZ730",
+                        "GMZ755",
+                        "GMZ765",
+                        "GMZ775"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/GMZ730",
+                    "https://api.weather.gov/zones/forecast/GMZ755",
+                    "https://api.weather.gov/zones/forecast/GMZ765",
+                    "https://api.weather.gov/zones/forecast/GMZ775"
+                ],
+                "references": [],
+                "sent": "2026-10-09T16:45:00-04:00",
+                "effective": "2026-10-09T16:45:00-04:00",
+                "onset": "2026-10-09T16:45:00-04:00",
+                "expires": "2026-10-09T18:45:00-04:00",
+                "ends": "2026-10-09T18:45:00-04:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Immediate",
+                "event": "Special Marine Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Tallahassee FL",
+                "headline": "Special Marine Warning issued October 9 at 4:45PM EDT until October 9 at 6:45PM EDT by NWS Tallahassee FL",
+                "description": "SMWTAE\n\nThe National Weather Service in Tallahassee has issued a\n\n* Special Marine Warning for...\nApalachee Bay or Coastal Waters From Keaton Beach to Ochlockonee\nRiver Fl out to 20 Nm...\nCoastal Waters From  Ochlockonee River to Apalachicola FL out to 20\nNm...\nCoastal waters from  Suwannee River to Keaton Beach out 20 NM...\nWaters from Suwannee River to Apalachicola FL from 20 to 60 NM...\n\n* Until 645 PM EDT.\n\n* At 445 PM EDT, severe thunderstorms capable of producing\nwaterspouts were located along a line extending from near Suwannee\nRiver to 10 nm south of S Tower, moving north at 30 knots.\n\nHAZARD...Waterspouts.\n\nSOURCE...Radar indicated.\n\nIMPACT...Waterspouts can quickly form and capsize boats...damage\nvessels...and create suddenly higher waves. Make sure all\non board are in a secure location and wearing life\njackets.\n\n* Locations impacted include...\nBuckeye Reef, O Tower, K Tower, S Tower, V Tower, Horseshoe Beach,\nApalachicola, C Tower, St George Island, Marker 24 Barge, and St.\nMarks.",
+                "instruction": "A Tornado Watch remains in effect until 900 PM EDT for Big Bend\nFlorida...and the adjacent coastal waters.\n\nThunderstorms can produce sudden waterspouts. Waterspouts can easily\noverturn boats and create locally hazardous seas. Seek safe harbor\nimmediately.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SMWTAE"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS52 KTAE 092045"
+                    ],
+                    "eventMotionDescription": [
+                        "2026-10-09T20:45:00-00:00...storm...157DEG...32KT...29.33,-83.24 29.13,-84.68"
+                    ],
+                    "waterspoutDetection": [
+                        "POSSIBLE"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KTAE.MA.W.0456.261009T2045Z-261009T2245Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-09T18:45:00-04:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "SMW"
+                    ],
+                    "NationalWeatherService": [
+                        "MAW"
                     ]
                 }
             }
@@ -312,127 +1086,6 @@
                     ],
                     "NationalWeatherService": [
                         "BHS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.beb067f0181db8a238f460c928e27718a28105f9.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -82.61,
-                            29.22
-                        ],
-                        [
-                            -82.66,
-                            29.07
-                        ],
-                        [
-                            -82.76,
-                            29.07
-                        ],
-                        [
-                            -82.81,
-                            29.23
-                        ],
-                        [
-                            -82.61,
-                            29.22
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.beb067f0181db8a238f460c928e27718a28105f9.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.beb067f0181db8a238f460c928e27718a28105f9.001.1",
-                "areaDesc": "Levy, FL",
-                "geocode": {
-                    "SAME": [
-                        "012075"
-                    ],
-                    "UGC": [
-                        "FLC075"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/FLC075"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b5fb3791613a7120f80074fc793d92ce2565c1d3.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.b5fb3791613a7120f80074fc793d92ce2565c1d3.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-09T16:18:00-04:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b2aef2ffded0f64c986012fba64189651c4a2963.002.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.b2aef2ffded0f64c986012fba64189651c4a2963.002.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-09T16:33:00-04:00"
-                    }
-                ],
-                "sent": "2026-10-09T16:41:00-04:00",
-                "effective": "2026-10-09T16:41:00-04:00",
-                "onset": "2026-10-09T16:41:00-04:00",
-                "expires": "2026-10-09T16:51:00-04:00",
-                "ends": "2026-10-09T16:45:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Extreme",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Tornado Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tampa Bay Ruskin FL",
-                "headline": "Tornado Warning issued October 9 at 4:41PM EDT until October 9 at 4:45PM EDT by NWS Tampa Bay Ruskin FL",
-                "description": "The storm which prompted the warning has weakened below severe\nlimits, and no longer appears capable of producing a tornado.\nTherefore, the warning will be allowed to expire.  However, gusty\nwinds are still possible with this thunderstorm.",
-                "instruction": null,
-                "response": "Shelter",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SVSTBW"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS52 KTBW 092041"
-                    ],
-                    "NWSheadline": [
-                        "THE TORNADO WARNING FOR SOUTH CENTRAL LEVY COUNTY WILL EXPIRE AT 445 PM EDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T20:41:00-00:00...storm...177DEG...21KT...29.18,-82.72"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.EXP.KTBW.TO.W.0004.000000T0000Z-261009T2045Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T16:45:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SVS"
-                    ],
-                    "NationalWeatherService": [
-                        "TOW"
                     ]
                 }
             }
@@ -1078,129 +1731,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.22b907e67ef56b11db4ffe3536ea75c1132eaf4c.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -82.71,
-                            29.85
-                        ],
-                        [
-                            -82.69,
-                            29.83
-                        ],
-                        [
-                            -82.73,
-                            29.68
-                        ],
-                        [
-                            -82.82,
-                            29.68
-                        ],
-                        [
-                            -82.87,
-                            29.85
-                        ],
-                        [
-                            -82.71,
-                            29.85
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.22b907e67ef56b11db4ffe3536ea75c1132eaf4c.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.22b907e67ef56b11db4ffe3536ea75c1132eaf4c.001.1",
-                "areaDesc": "Gilchrist, FL",
-                "geocode": {
-                    "SAME": [
-                        "012041"
-                    ],
-                    "UGC": [
-                        "FLC041"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/FLC041"
-                ],
-                "references": [],
-                "sent": "2026-10-09T16:35:00-04:00",
-                "effective": "2026-10-09T16:35:00-04:00",
-                "onset": "2026-10-09T16:35:00-04:00",
-                "expires": "2026-10-09T17:00:00-04:00",
-                "ends": "2026-10-09T17:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Extreme",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Tornado Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Jacksonville FL",
-                "headline": "Tornado Warning issued October 9 at 4:35PM EDT until October 9 at 5:00PM EDT by NWS Jacksonville FL",
-                "description": "TORJAX\n\nThe National Weather Service in Jacksonville has issued a\n\n* Tornado Warning for...\nCentral Gilchrist County in northern Florida...\n\n* Until 500 PM EDT.\n\n* At 435 PM EDT, a severe thunderstorm capable of producing a tornado\nwas located near Bell, moving north at 15 mph.\n\nHAZARD...Tornado.\n\nSOURCE...Radar indicated rotation.\n\nIMPACT...Flying debris will be dangerous to those caught without\nshelter. Mobile homes will be damaged or destroyed.\nDamage to roofs, windows, and vehicles will occur.  Tree\ndamage is likely.\n\n* This tornadic thunderstorm will remain over mainly rural areas of\ncentral Gilchrist County.",
-                "instruction": "TAKE COVER NOW! Move to a basement or an interior room on the lowest\nfloor of a sturdy building. Avoid windows. If you are outdoors, in a\nmobile home, or in a vehicle, move to the closest substantial shelter\nand protect yourself from flying debris.",
-                "response": "Shelter",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "TORJAX"
-                    ],
-                    "WMOidentifier": [
-                        "WFUS52 KJAX 092035"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T20:35:00-00:00...storm...177DEG...14KT...29.74,-82.78"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "tornadoDetection": [
-                        "RADAR INDICATED"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KJAX.TO.W.0007.261009T2035Z-261009T2100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T17:00:00-04:00"
-                    ],
-                    "WEAHandling": [
-                        "Imminent Threat"
-                    ],
-                    "CMAMtext": [
-                        "NWS: TORNADO WARNING in this area til 5:00 PM EDT. Take shelter now. Check media."
-                    ],
-                    "CMAMlongtext": [
-                        "National Weather Service: TORNADO WARNING in this area until 5:00 PM EDT. Take shelter now in a basement or an interior room on the lowest floor of a sturdy building. If you are outdoors, in a mobile home, or in a vehicle, move to the closest substantial shelter and protect yourself from flying debris. Check media."
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "TOR"
-                    ],
-                    "NationalWeatherService": [
-                        "TOW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.40518fdfee3417fc9347cf8c6b6e7709401dfbfa.001.1",
             "type": "Feature",
             "geometry": {
@@ -1355,127 +1885,6 @@
                     ],
                     "NationalWeatherService": [
                         "FFW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.95473366cd1a4151976857a165637f3a8bb110f7.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -83,
-                            29.64
-                        ],
-                        [
-                            -83.14,
-                            29.6
-                        ],
-                        [
-                            -83.25,
-                            29.73
-                        ],
-                        [
-                            -83.04,
-                            29.8
-                        ],
-                        [
-                            -83,
-                            29.64
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.95473366cd1a4151976857a165637f3a8bb110f7.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.95473366cd1a4151976857a165637f3a8bb110f7.001.1",
-                "areaDesc": "Dixie, FL",
-                "geocode": {
-                    "SAME": [
-                        "012029"
-                    ],
-                    "UGC": [
-                        "FLC029"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/FLC029"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.54fb77571b255b811beac7f1a109350b3b7a83ec.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.54fb77571b255b811beac7f1a109350b3b7a83ec.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-09T16:18:00-04:00"
-                    }
-                ],
-                "sent": "2026-10-09T16:31:00-04:00",
-                "effective": "2026-10-09T16:31:00-04:00",
-                "onset": "2026-10-09T16:31:00-04:00",
-                "expires": "2026-10-09T16:45:00-04:00",
-                "ends": "2026-10-09T16:45:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Extreme",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Tornado Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tallahassee FL",
-                "headline": "Tornado Warning issued October 9 at 4:31PM EDT until October 9 at 4:45PM EDT by NWS Tallahassee FL",
-                "description": "At 431 PM EDT, a severe thunderstorm capable of producing a tornado\nwas located near Cross City, moving northwest at 25 mph.\n\nHAZARD...Tornado.\n\nSOURCE...Radar indicated rotation.\n\nIMPACT...Flying debris will be dangerous to those caught without\nshelter. Mobile homes will be damaged or destroyed. Damage\nto roofs, windows, and vehicles will occur.  Tree damage is\nlikely.\n\nThis tornadic thunderstorm will remain over mainly rural areas of\nnortheastern Dixie County, including the following locations... Cross\nCity Airport and Shamrock.",
-                "instruction": "TAKE COVER NOW! Move to a basement or an interior room on the lowest\nfloor of a sturdy building. Avoid windows. If you are outdoors, in a\nmobile home, or in a vehicle, move to the closest substantial shelter\nand protect yourself from flying debris.\n\nTorrential rainfall is occurring with this storm, and may lead to\nflash flooding. Do not drive your vehicle through flooded roadways.",
-                "response": "Shelter",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SVSTAE"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS52 KTAE 092031"
-                    ],
-                    "NWSheadline": [
-                        "A TORNADO WARNING REMAINS IN EFFECT UNTIL 445 PM EDT FOR NORTHEASTERN DIXIE COUNTY"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T20:31:00-00:00...storm...154DEG...22KT...29.68,-83.13"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "tornadoDetection": [
-                        "RADAR INDICATED"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KTAE.TO.W.0051.000000T0000Z-261009T2045Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T16:45:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SVS"
-                    ],
-                    "NationalWeatherService": [
-                        "TOW"
                     ]
                 }
             }
@@ -1978,202 +2387,6 @@
                     ],
                     "NationalWeatherService": [
                         "TOA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9885806e656808ecf2fd4602188ad0fd7b4a7eba.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -82.27,
-                            30.08
-                        ],
-                        [
-                            -82.1,
-                            29.47
-                        ],
-                        [
-                            -82.41,
-                            29.43
-                        ],
-                        [
-                            -82.41,
-                            29.48
-                        ],
-                        [
-                            -82.55,
-                            29.48
-                        ],
-                        [
-                            -82.56,
-                            29.54
-                        ],
-                        [
-                            -82.65,
-                            29.53
-                        ],
-                        [
-                            -82.66,
-                            29.56
-                        ],
-                        [
-                            -82.75,
-                            29.56
-                        ],
-                        [
-                            -82.78,
-                            29.58
-                        ],
-                        [
-                            -82.95,
-                            29.59
-                        ],
-                        [
-                            -82.97,
-                            29.63
-                        ],
-                        [
-                            -82.96,
-                            29.7
-                        ],
-                        [
-                            -82.94,
-                            29.7
-                        ],
-                        [
-                            -82.96,
-                            29.72
-                        ],
-                        [
-                            -82.95,
-                            29.77
-                        ],
-                        [
-                            -82.87,
-                            29.88
-                        ],
-                        [
-                            -82.92,
-                            29.89
-                        ],
-                        [
-                            -82.92,
-                            29.95
-                        ],
-                        [
-                            -82.97,
-                            30
-                        ],
-                        [
-                            -82.27,
-                            30.08
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9885806e656808ecf2fd4602188ad0fd7b4a7eba.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.9885806e656808ecf2fd4602188ad0fd7b4a7eba.001.1",
-                "areaDesc": "Suwannee; Union; Bradford; Gilchrist; Eastern Alachua; Western Alachua; Central Marion; Western Marion; Southeastern Columbia; Southwestern Columbia",
-                "geocode": {
-                    "SAME": [
-                        "012121",
-                        "012125",
-                        "012007",
-                        "012041",
-                        "012001",
-                        "012083",
-                        "012023"
-                    ],
-                    "UGC": [
-                        "FLZ021",
-                        "FLZ030",
-                        "FLZ031",
-                        "FLZ035",
-                        "FLZ136",
-                        "FLZ236",
-                        "FLZ240",
-                        "FLZ340",
-                        "FLZ422",
-                        "FLZ522"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/FLZ021",
-                    "https://api.weather.gov/zones/forecast/FLZ030",
-                    "https://api.weather.gov/zones/forecast/FLZ031",
-                    "https://api.weather.gov/zones/forecast/FLZ035",
-                    "https://api.weather.gov/zones/forecast/FLZ136",
-                    "https://api.weather.gov/zones/forecast/FLZ236",
-                    "https://api.weather.gov/zones/forecast/FLZ240",
-                    "https://api.weather.gov/zones/forecast/FLZ340",
-                    "https://api.weather.gov/zones/forecast/FLZ422",
-                    "https://api.weather.gov/zones/forecast/FLZ522"
-                ],
-                "references": [],
-                "sent": "2026-10-09T16:12:00-04:00",
-                "effective": "2026-10-09T16:12:00-04:00",
-                "onset": "2026-10-09T16:12:00-04:00",
-                "expires": "2026-10-09T16:45:00-04:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Jacksonville FL",
-                "headline": "Special Weather Statement issued October 9 at 4:12PM EDT by NWS Jacksonville FL",
-                "description": "At 411 PM EDT, Doppler radar was tracking a strong thunderstorm\ncapable of producing a landspout near Archer, or 9 miles north of\nBronson, moving northwest at 25 mph.\n\nHAZARD...Landspouts and wind gusts up to 50 mph.\n\nSOURCE...Radar indicated.\n\nIMPACT...Minor damage to outdoor objects is possible. Gusty winds\ncould knock down tree limbs and blow around unsecured\nobjects.\n\nLocations impacted include...\nGainesville, Trenton, Lake Butler, Bell, Worthington Spring,\nIchetucknee Spring, Alachua, High Springs, Archer, and Fort White.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.\n\nTorrential rainfall is also occurring with this storm and may lead to\nlocalized flooding. Do not drive your vehicle through flooded\nroadways.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSJAX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS82 KJAX 092012"
-                    ],
-                    "NWSheadline": [
-                        "A STRONG THUNDERSTORM WILL IMPACT GILCHRIST...WEST CENTRAL BRADFORD...ALACHUA...NORTHWESTERN MARION...SOUTHWESTERN UNION... SOUTHWESTERN COLUMBIA AND SOUTHEASTERN SUWANNEE COUNTIES THROUGH 445 PM EDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T20:11:00-00:00...storm...155DEG...28KT...29.58,-82.58"
-                    ],
-                    "maxWindGust": [
-                        "50 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
                     ]
                 }
             }
@@ -4812,260 +5025,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e1bdda8e701e30e8e24ad4407e3380459f8d7561.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -82.13,
-                            28.36
-                        ],
-                        [
-                            -82.51,
-                            28.36
-                        ],
-                        [
-                            -82.4,
-                            27.82
-                        ],
-                        [
-                            -82.12,
-                            27.82
-                        ],
-                        [
-                            -82.13,
-                            28.36
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e1bdda8e701e30e8e24ad4407e3380459f8d7561.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.e1bdda8e701e30e8e24ad4407e3380459f8d7561.001.1",
-                "areaDesc": "Coastal Hillsborough; Inland Pasco; Inland Hillsborough",
-                "geocode": {
-                    "SAME": [
-                        "012057",
-                        "012101"
-                    ],
-                    "UGC": [
-                        "FLZ151",
-                        "FLZ249",
-                        "FLZ251"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/FLZ151",
-                    "https://api.weather.gov/zones/forecast/FLZ249",
-                    "https://api.weather.gov/zones/forecast/FLZ251"
-                ],
-                "references": [],
-                "sent": "2026-10-09T15:56:00-04:00",
-                "effective": "2026-10-09T15:56:00-04:00",
-                "onset": "2026-10-09T15:56:00-04:00",
-                "expires": "2026-10-09T16:45:00-04:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Observed",
-                "urgency": "Expected",
-                "event": "Special Weather Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tampa Bay Ruskin FL",
-                "headline": "Special Weather Statement issued October 9 at 3:56PM EDT by NWS Tampa Bay Ruskin FL",
-                "description": "At 356 PM EDT, Doppler radar was tracking strong thunderstorms along\na line extending from near Plant City to near Brandon. Movement was\nnorth at 30 mph.\n\nHAZARD...Wind gusts up to 50 mph.\n\nSOURCE...Radar indicated.\n\nIMPACT...Gusty winds could knock down tree limbs and blow around\nunsecured objects.\n\nLocations impacted include...\nTampa, Plant City, Temple Terrace, Zephyrhills, Dade City, Lutz, Fish\nHawk, Brandon, St. Leo, Hillsborough River State Park, Zephyrhills\nSouth, Palm River-Clair Mel, East Lake-Orient Park, Zephyrhills West,\nLand O Lakes, Pebble Creek, Zephyrhills North, Riverview, University,\nand Wesley Chapel South.",
-                "instruction": "If outdoors, consider seeking shelter inside a building.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SPSTBW"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS82 KTBW 091956"
-                    ],
-                    "NWSheadline": [
-                        "STRONG THUNDERSTORMS WILL IMPACT SOUTHEASTERN PASCO AND NORTHEASTERN HILLSBOROUGH COUNTIES THROUGH 445 PM EDT"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T19:56:00-00:00...storm...175DEG...26KT...27.94,-82.17 27.93,-82.33"
-                    ],
-                    "maxWindGust": [
-                        "50 MPH"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SPS"
-                    ],
-                    "NationalWeatherService": [
-                        "SPS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.477167d04e9853829731e4bda86798d41d077941.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -85.26,
-                            29.82
-                        ],
-                        [
-                            -85.26,
-                            29.72
-                        ],
-                        [
-                            -85.02,
-                            29.76
-                        ],
-                        [
-                            -84.8,
-                            29.31
-                        ],
-                        [
-                            -84.98,
-                            29.26
-                        ],
-                        [
-                            -85.11,
-                            29.26
-                        ],
-                        [
-                            -85.36,
-                            29.36
-                        ],
-                        [
-                            -85.6,
-                            29.42
-                        ],
-                        [
-                            -85.62,
-                            29.46
-                        ],
-                        [
-                            -85.39,
-                            29.92
-                        ],
-                        [
-                            -85.26,
-                            29.82
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.477167d04e9853829731e4bda86798d41d077941.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.477167d04e9853829731e4bda86798d41d077941.001.1",
-                "areaDesc": "Coastal waters from Okaloosa-Walton County Line to Mexico Beach out 20 NM; Coastal Waters from Mexico Beach to Apalachicola out 20 NM; Coastal Waters From  Ochlockonee River to Apalachicola FL out to 20 Nm; Waters from Mexico Beach to Apalachicola FL from 20 to 60 NM",
-                "geocode": {
-                    "SAME": [
-                        "077751",
-                        "077752",
-                        "077755",
-                        "077772"
-                    ],
-                    "UGC": [
-                        "GMZ751",
-                        "GMZ752",
-                        "GMZ755",
-                        "GMZ772"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/GMZ751",
-                    "https://api.weather.gov/zones/forecast/GMZ752",
-                    "https://api.weather.gov/zones/forecast/GMZ755",
-                    "https://api.weather.gov/zones/forecast/GMZ772"
-                ],
-                "references": [],
-                "sent": "2026-10-09T15:51:00-04:00",
-                "effective": "2026-10-09T15:51:00-04:00",
-                "onset": "2026-10-09T15:51:00-04:00",
-                "expires": "2026-10-09T16:45:00-04:00",
-                "ends": "2026-10-09T16:45:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Immediate",
-                "event": "Special Marine Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tallahassee FL",
-                "headline": "Special Marine Warning issued October 9 at 3:51PM EDT until October 9 at 4:45PM EDT by NWS Tallahassee FL",
-                "description": "SMWTAE\n\nThe National Weather Service in Tallahassee has issued a\n\n* Special Marine Warning for...\nCoastal Waters From  Ochlockonee River to Apalachicola FL out to 20\nNm...\nCoastal Waters from Mexico Beach to Apalachicola out 20 NM...\nCoastal waters from Okaloosa-Walton County Line to Mexico Beach out\n20 NM...\nWaters from Mexico Beach to Apalachicola FL from 20 to 60 NM...\n\n* Until 445 PM EDT/345 PM CDT/.\n\n* At 351 PM EDT/251 PM CDT/, a severe thunderstorm capable of\nproducing waterspouts was located 7 nm northeast of Empire Mica\nWreck, moving north at 40 knots.\n\nHAZARD...Waterspouts.\n\nSOURCE...Radar indicated.\n\nIMPACT...Waterspouts can quickly form and capsize boats...damage\nvessels...and create suddenly higher waves. Make sure all\non board are in a secure location and wearing life\njackets.\n\n* Locations impacted include...\nC Tower, Cape San Blas, Port St. Joe, and Apalachicola.",
-                "instruction": "A Tornado Watch remains in effect until 900 PM EDT/800 PM CDT/ for\nBig Bend and the Panhandle of Florida...and the adjacent coastal\nwaters.\n\nThunderstorms can produce sudden waterspouts. Waterspouts can easily\noverturn boats and create locally hazardous seas. Seek safe harbor\nimmediately.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SMWTAE"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS52 KTAE 091951"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T19:51:00-00:00...storm...164DEG...38KT...29.36,-85.22"
-                    ],
-                    "waterspoutDetection": [
-                        "POSSIBLE"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KTAE.MA.W.0454.261009T1951Z-261009T2045Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T16:45:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SMW"
-                    ],
-                    "NationalWeatherService": [
-                        "MAW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c34850413a92dd466f0619b6ea78baa59fdb8265.001.1",
             "type": "Feature",
             "geometry": null,
@@ -5259,183 +5218,6 @@
                     ],
                     "NationalWeatherService": [
                         "LWY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1fdc2ebc45287b07e7ba51de8b91ba97b94e1b42.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -84.05,
-                            28.85
-                        ],
-                        [
-                            -83.54,
-                            29.16
-                        ],
-                        [
-                            -83.13,
-                            29.31
-                        ],
-                        [
-                            -83.02,
-                            29.19
-                        ],
-                        [
-                            -82.75,
-                            29.19
-                        ],
-                        [
-                            -82.8,
-                            29.15
-                        ],
-                        [
-                            -82.72,
-                            28.97
-                        ],
-                        [
-                            -82.62,
-                            28.9
-                        ],
-                        [
-                            -82.65,
-                            28.61
-                        ],
-                        [
-                            -82.62,
-                            28.54
-                        ],
-                        [
-                            -82.79,
-                            28.16
-                        ],
-                        [
-                            -83.18,
-                            28.14
-                        ],
-                        [
-                            -83.18,
-                            27.82
-                        ],
-                        [
-                            -83.05,
-                            27.44
-                        ],
-                        [
-                            -83.32,
-                            26.77
-                        ],
-                        [
-                            -83.52,
-                            27.09
-                        ],
-                        [
-                            -83.72,
-                            27.61
-                        ],
-                        [
-                            -83.77,
-                            27.84
-                        ],
-                        [
-                            -83.8,
-                            28.5
-                        ],
-                        [
-                            -84.05,
-                            28.85
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1fdc2ebc45287b07e7ba51de8b91ba97b94e1b42.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.1fdc2ebc45287b07e7ba51de8b91ba97b94e1b42.001.1",
-                "areaDesc": "Coastal waters from Tarpon Springs to Suwannee River FL out 20 NM; Waters from Tarpon Springs to Suwannee River FL out 20 to 60 NM; Waters from Englewood to Tarpon Springs FL out 20 to 60 NM",
-                "geocode": {
-                    "SAME": [
-                        "077850",
-                        "077870",
-                        "077873"
-                    ],
-                    "UGC": [
-                        "GMZ850",
-                        "GMZ870",
-                        "GMZ873"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/GMZ850",
-                    "https://api.weather.gov/zones/forecast/GMZ870",
-                    "https://api.weather.gov/zones/forecast/GMZ873"
-                ],
-                "references": [],
-                "sent": "2026-10-09T15:45:00-04:00",
-                "effective": "2026-10-09T15:45:00-04:00",
-                "onset": "2026-10-09T15:45:00-04:00",
-                "expires": "2026-10-09T16:45:00-04:00",
-                "ends": "2026-10-09T16:45:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Immediate",
-                "event": "Special Marine Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tampa Bay Ruskin FL",
-                "headline": "Special Marine Warning issued October 9 at 3:45PM EDT until October 9 at 4:45PM EDT by NWS Tampa Bay Ruskin FL",
-                "description": "SMWTBW\n\nThe National Weather Service in Tampa Bay Ruskin has issued a\n\n* Special Marine Warning for...\nCoastal waters from Tarpon Springs to Suwannee River FL out 20\nNM...\nWaters from Tarpon Springs to Suwannee River FL out 20 to 60 NM...\nWaters from Englewood to Tarpon Springs FL out 20 to 60 NM...\n\n* Until 445 PM EDT.\n\n* At 345 PM EDT, strong thunderstorms were located along a line from\n45 NM west of Cedar Key to 38 NM southwest of Egmont Key, or along\na line from 45 NM west of Cedar Key to 38 NM west of Longboat Pass,\nmoving north at 45 knots.\n\nHAZARD...Wind gusts to 34 knots.\n\nSOURCE...Radar indicated.\n\nIMPACT...Small craft could be damaged in briefly higher winds and\nsuddenly higher waves.\n\n* Locations impacted include...\nAnclote Key, Aripeka, Hernando Beach, Bayport, Ozello, Cedar Key,\nYankeetown, D3 Reef, D2 Reef and D1 Reef.",
-                "instruction": "Move to safe harbor until hazardous weather passes.\n\nBoaters should seek safe harbor immediately until these storms pass.\nWind gusts 34 knots or greater, high waves, dangerous lightning, and\nheavy rain are possible with these storms.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "SMWTBW"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS52 KTBW 091945"
-                    ],
-                    "eventMotionDescription": [
-                        "2026-10-09T19:45:00-00:00...storm...183DEG...47KT...28.87,-83.84 27.87,-83.51 27.26,-83.37"
-                    ],
-                    "maxWindGust": [
-                        "34 knots"
-                    ],
-                    "maxHailSize": [
-                        "0.00"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KTBW.MA.W.0223.261009T1945Z-261009T2045Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T16:45:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "SMW"
-                    ],
-                    "NationalWeatherService": [
-                        "MAW"
                     ]
                 }
             }
@@ -33011,170 +32793,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c951c35a0a7bf3a0ee507ca9872ca1291c3f29b7.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c951c35a0a7bf3a0ee507ca9872ca1291c3f29b7.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.c951c35a0a7bf3a0ee507ca9872ca1291c3f29b7.002.1",
-                "areaDesc": "Pensacola Bay Area including Santa Rosa Sound; Western Choctawhatchee Bay; Eastern Choctawhatchee Bay; Coastal waters from Okaloosa-Walton County Line to Pensacola FL out 20 NM",
-                "geocode": {
-                    "SAME": [
-                        "077634",
-                        "077635",
-                        "077636",
-                        "077655"
-                    ],
-                    "UGC": [
-                        "GMZ634",
-                        "GMZ635",
-                        "GMZ636",
-                        "GMZ655"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/GMZ634",
-                    "https://api.weather.gov/zones/forecast/GMZ635",
-                    "https://api.weather.gov/zones/forecast/GMZ636",
-                    "https://api.weather.gov/zones/forecast/GMZ655"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:29:00-05:00",
-                "effective": "2026-10-09T12:29:00-05:00",
-                "onset": "2026-10-09T12:29:00-05:00",
-                "expires": "2026-10-09T20:00:00-05:00",
-                "ends": "2026-10-09T20:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Extreme",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Tornado Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Mobile AL",
-                "headline": "Tornado Watch issued October 9 at 12:29PM CDT until October 9 at 8:00PM CDT by NWS Mobile AL",
-                "description": "THE NATIONAL WEATHER SERVICE HAS ISSUED TORNADO WATCH 677 IN\nEFFECT UNTIL 8 PM CDT THIS EVENING FOR THE FOLLOWING AREAS\n\nTHIS WATCH INCLUDES THE FOLLOWING ADJACENT COASTAL WATERS\n\nPENSACOLA BAY SYSTEM  WESTERN CHOCTAWHATCHEE BAY\nEASTERN CHOCTAWHATCHEE BAY\nCOASTAL WATERS FROM OKALOOSA WALTON COUNTY LINE FL TO PENSACOLA\nFL OUT 20 NM",
-                "instruction": null,
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "WCNMOB"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS64 KMOB 091729"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMOB.TO.A.0677.261009T1729Z-261010T0100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T20:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "TOA"
-                    ],
-                    "NationalWeatherService": [
-                        "TOA"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c951c35a0a7bf3a0ee507ca9872ca1291c3f29b7.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c951c35a0a7bf3a0ee507ca9872ca1291c3f29b7.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.c951c35a0a7bf3a0ee507ca9872ca1291c3f29b7.001.1",
-                "areaDesc": "Okaloosa, FL; Santa Rosa, FL",
-                "geocode": {
-                    "SAME": [
-                        "012091",
-                        "012113"
-                    ],
-                    "UGC": [
-                        "FLC091",
-                        "FLC113"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/FLC091",
-                    "https://api.weather.gov/zones/county/FLC113"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:29:00-05:00",
-                "effective": "2026-10-09T12:29:00-05:00",
-                "onset": "2026-10-09T12:29:00-05:00",
-                "expires": "2026-10-09T20:00:00-05:00",
-                "ends": "2026-10-09T20:00:00-05:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Extreme",
-                "certainty": "Possible",
-                "urgency": "Future",
-                "event": "Tornado Watch",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Mobile AL",
-                "headline": "Tornado Watch issued October 9 at 12:29PM CDT until October 9 at 8:00PM CDT by NWS Mobile AL",
-                "description": "THE NATIONAL WEATHER SERVICE HAS ISSUED TORNADO WATCH 677 IN\nEFFECT UNTIL 8 PM CDT THIS EVENING FOR THE FOLLOWING AREAS\n\nIN FLORIDA THIS WATCH INCLUDES 2 COUNTIES\n\nIN NORTHWEST FLORIDA\n\nOKALOOSA              SANTA ROSA\n\nTHIS INCLUDES THE CITIES OF CRESTVIEW, DESTIN, EGLIN AFB,\nFORT WALTON BEACH, GULF BREEZE, MILTON, NICEVILLE, PACE,\nSEMINOLE, AND WRIGHT.",
-                "instruction": null,
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "WCNMOB"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS64 KMOB 091729"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMOB.TO.A.0677.261009T1729Z-261010T0100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-09T20:00:00-05:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "TOA"
-                    ],
-                    "NationalWeatherService": [
-                        "TOA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6ebabec05fb63982486beac6dc8e66fe5e878320.002.1",
             "type": "Feature",
             "geometry": null,
@@ -36060,523 +35678,6 @@
                     ],
                     "eventEndingTime": [
                         "2026-10-10T07:00:00-07:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.001.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.001.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.001.2",
-                "areaDesc": "Johnson; Cocke Smoky Mountains; Southeast Greene; Unicoi; Southeast Carter; Blount Smoky Mountains; Sevier Smoky Mountains; Southeast Monroe",
-                "geocode": {
-                    "SAME": [
-                        "047091",
-                        "047029",
-                        "047059",
-                        "047171",
-                        "047019",
-                        "047009",
-                        "047155",
-                        "047123"
-                    ],
-                    "UGC": [
-                        "TNZ018",
-                        "TNZ041",
-                        "TNZ043",
-                        "TNZ045",
-                        "TNZ047",
-                        "TNZ072",
-                        "TNZ074",
-                        "TNZ087"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TNZ018",
-                    "https://api.weather.gov/zones/forecast/TNZ041",
-                    "https://api.weather.gov/zones/forecast/TNZ043",
-                    "https://api.weather.gov/zones/forecast/TNZ045",
-                    "https://api.weather.gov/zones/forecast/TNZ047",
-                    "https://api.weather.gov/zones/forecast/TNZ072",
-                    "https://api.weather.gov/zones/forecast/TNZ074",
-                    "https://api.weather.gov/zones/forecast/TNZ087"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:02:00-04:00",
-                "effective": "2026-10-09T12:02:00-04:00",
-                "onset": "2026-10-10T00:00:00-04:00",
-                "expires": "2026-10-10T07:00:00-04:00",
-                "ends": "2026-10-11T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "High Wind Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Morristown TN",
-                "headline": "High Wind Warning issued October 9 at 12:02PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
-                "description": "* WHAT...Southeast winds increasing to 20 to 35 mph with gusts up to\n70 mph possible.\n\n* WHERE...Blount Smoky Mountains, Cocke Smoky Mountains, Johnson,\nSevier Smoky Mountains, Southeast Carter, Southeast Greene,\nSoutheast Monroe, and Unicoi Counties.\n\n* WHEN...From midnight tonight to 8 AM EDT Sunday.\n\n* IMPACTS...Damaging winds will blow down trees and power lines.\nWidespread power outages are expected. Travel will be difficult,\nespecially for high profile vehicles.\n\n* ADDITIONAL DETAILS...This set up is likely to produce high winds\nalong the eastern TN mountains and foothills. Lower terrain will\nlikely see lesser impacts.",
-                "instruction": "People are urged to secure loose objects that could be blown around\nor damaged by the wind.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWMRX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS74 KMRX 091602"
-                    ],
-                    "NWSheadline": [
-                        "HIGH WIND WARNING IN EFFECT FROM MIDNIGHT TONIGHT TO 8 AM EDT SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMRX.HW.W.0003.261010T0400Z-261011T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-11T08:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HWW"
-                    ],
-                    "NationalWeatherService": [
-                        "HWW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.004.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.004.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.004.2",
-                "areaDesc": "Cherokee; Clay; Marion; Hamilton; Bradley; West Polk",
-                "geocode": {
-                    "SAME": [
-                        "037039",
-                        "037043",
-                        "047115",
-                        "047065",
-                        "047011",
-                        "047139"
-                    ],
-                    "UGC": [
-                        "NCZ060",
-                        "NCZ061",
-                        "TNZ098",
-                        "TNZ099",
-                        "TNZ100",
-                        "TNZ101"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/NCZ060",
-                    "https://api.weather.gov/zones/forecast/NCZ061",
-                    "https://api.weather.gov/zones/forecast/TNZ098",
-                    "https://api.weather.gov/zones/forecast/TNZ099",
-                    "https://api.weather.gov/zones/forecast/TNZ100",
-                    "https://api.weather.gov/zones/forecast/TNZ101"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:02:00-04:00",
-                "effective": "2026-10-09T12:02:00-04:00",
-                "onset": "2026-10-10T00:00:00-04:00",
-                "expires": "2026-10-10T07:00:00-04:00",
-                "ends": "2026-10-11T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Morristown TN",
-                "headline": "Wind Advisory issued October 9 at 12:02PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
-                "description": "* WHAT...East winds 20 to 35 mph with gusts up to 50 mph possible.\n\n* WHERE...In North Carolina, Cherokee and Clay Counties. In\nTennessee, Bradley, Hamilton, Marion, and West Polk Counties.\n\n* WHEN...From midnight EDT /11 PM CDT/ tonight to 8 AM EDT /7 AM CDT/\nSunday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...Winds gusts in excess of 60 mph will be\npossible in higher terrain.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWMRX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS74 KMRX 091602"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY IN EFFECT FROM MIDNIGHT EDT /11 PM CDT/ TONIGHT TO 8 AM EDT /7 AM CDT/ SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMRX.WI.Y.0014.261010T0400Z-261011T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-11T08:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "WIY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.003.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.003.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.003.1",
-                "areaDesc": "Russell; Washington",
-                "geocode": {
-                    "SAME": [
-                        "051167",
-                        "051191",
-                        "051520"
-                    ],
-                    "UGC": [
-                        "VAZ006",
-                        "VAZ008"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/VAZ006",
-                    "https://api.weather.gov/zones/forecast/VAZ008"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:02:00-04:00",
-                "effective": "2026-10-09T12:02:00-04:00",
-                "onset": "2026-10-10T00:00:00-04:00",
-                "expires": "2026-10-10T07:00:00-04:00",
-                "ends": "2026-10-11T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "High Wind Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Morristown TN",
-                "headline": "High Wind Warning issued October 9 at 12:02PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
-                "description": "* WHAT...East winds 20 to 35 mph with gusts up to 60 mph expected.\n\n* WHERE...Russell and Washington VA Counties.\n\n* WHEN...From midnight tonight to 8 AM EDT Sunday.\n\n* IMPACTS...Damaging winds will blow down trees and power lines.\nWidespread power outages are expected. Travel will be difficult,\nespecially for high profile vehicles.\n\n* ADDITIONAL DETAILS...Winds gusts in excess of 60 mph will be\npossible in higher terrain.",
-                "instruction": "People are urged to secure loose objects that could be blown around\nor damaged by the wind.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWMRX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS74 KMRX 091602"
-                    ],
-                    "NWSheadline": [
-                        "HIGH WIND WARNING IN EFFECT FROM MIDNIGHT TONIGHT TO 8 AM EDT SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMRX.HW.W.0003.261010T0400Z-261011T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-11T08:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HWW"
-                    ],
-                    "NationalWeatherService": [
-                        "HWW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.002.2",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.002.2",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.002.2",
-                "areaDesc": "East Polk",
-                "geocode": {
-                    "SAME": [
-                        "047139"
-                    ],
-                    "UGC": [
-                        "TNZ102"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TNZ102"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:02:00-04:00",
-                "effective": "2026-10-09T12:02:00-04:00",
-                "onset": "2026-10-10T00:00:00-04:00",
-                "expires": "2026-10-10T07:00:00-04:00",
-                "ends": "2026-10-11T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "High Wind Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Morristown TN",
-                "headline": "High Wind Warning issued October 9 at 12:02PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
-                "description": "* WHAT...East winds 20 to 35 mph with gusts up to 60 mph possible.\n\n* WHERE...East Polk County.\n\n* WHEN...From midnight tonight to 8 AM EDT Sunday.\n\n* IMPACTS...Damaging winds will blow down trees and power lines.\nWidespread power outages are expected. Travel will be difficult,\nespecially for high profile vehicles.\n\n* ADDITIONAL DETAILS...This set up is likely to produce high winds\nalong the eastern TN mountains and foothills. Lower terrain will\nlikely see lesser impacts.",
-                "instruction": "People are urged to secure loose objects that could be blown around\nor damaged by the wind.",
-                "response": "Prepare",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWMRX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS74 KMRX 091602"
-                    ],
-                    "NWSheadline": [
-                        "HIGH WIND WARNING IN EFFECT FROM MIDNIGHT TONIGHT TO 8 AM EDT SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMRX.HW.W.0003.261010T0400Z-261011T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-11T08:00:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HWW"
-                    ],
-                    "NationalWeatherService": [
-                        "HWW"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.005.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.005.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.6fb453eeac89e2f6404eb5e3e473ad54dcd557ac.005.1",
-                "areaDesc": "Scott; Campbell; Claiborne; Hancock; Hawkins; Sullivan; Morgan; Anderson; Union; Grainger; Hamblen; Northwest Cocke; Northwest Greene; Washington; Northwest Carter; Roane; Loudon; Knox; Jefferson; NW Blount; North Sevier; Sequatchie; Bledsoe; Rhea; Meigs; McMinn; Northwest Monroe; Lee; Wise; Scott",
-                "geocode": {
-                    "SAME": [
-                        "047151",
-                        "047013",
-                        "047025",
-                        "047067",
-                        "047073",
-                        "047163",
-                        "047129",
-                        "047001",
-                        "047173",
-                        "047057",
-                        "047063",
-                        "047029",
-                        "047059",
-                        "047179",
-                        "047019",
-                        "047145",
-                        "047105",
-                        "047093",
-                        "047089",
-                        "047009",
-                        "047155",
-                        "047153",
-                        "047007",
-                        "047143",
-                        "047121",
-                        "047107",
-                        "047123",
-                        "051105",
-                        "051195",
-                        "051720",
-                        "051169"
-                    ],
-                    "UGC": [
-                        "TNZ012",
-                        "TNZ013",
-                        "TNZ014",
-                        "TNZ015",
-                        "TNZ016",
-                        "TNZ017",
-                        "TNZ035",
-                        "TNZ036",
-                        "TNZ037",
-                        "TNZ038",
-                        "TNZ039",
-                        "TNZ040",
-                        "TNZ042",
-                        "TNZ044",
-                        "TNZ046",
-                        "TNZ067",
-                        "TNZ068",
-                        "TNZ069",
-                        "TNZ070",
-                        "TNZ071",
-                        "TNZ073",
-                        "TNZ081",
-                        "TNZ082",
-                        "TNZ083",
-                        "TNZ084",
-                        "TNZ085",
-                        "TNZ086",
-                        "VAZ001",
-                        "VAZ002",
-                        "VAZ005"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/TNZ012",
-                    "https://api.weather.gov/zones/forecast/TNZ013",
-                    "https://api.weather.gov/zones/forecast/TNZ014",
-                    "https://api.weather.gov/zones/forecast/TNZ015",
-                    "https://api.weather.gov/zones/forecast/TNZ016",
-                    "https://api.weather.gov/zones/forecast/TNZ017",
-                    "https://api.weather.gov/zones/forecast/TNZ035",
-                    "https://api.weather.gov/zones/forecast/TNZ036",
-                    "https://api.weather.gov/zones/forecast/TNZ037",
-                    "https://api.weather.gov/zones/forecast/TNZ038",
-                    "https://api.weather.gov/zones/forecast/TNZ039",
-                    "https://api.weather.gov/zones/forecast/TNZ040",
-                    "https://api.weather.gov/zones/forecast/TNZ042",
-                    "https://api.weather.gov/zones/forecast/TNZ044",
-                    "https://api.weather.gov/zones/forecast/TNZ046",
-                    "https://api.weather.gov/zones/forecast/TNZ067",
-                    "https://api.weather.gov/zones/forecast/TNZ068",
-                    "https://api.weather.gov/zones/forecast/TNZ069",
-                    "https://api.weather.gov/zones/forecast/TNZ070",
-                    "https://api.weather.gov/zones/forecast/TNZ071",
-                    "https://api.weather.gov/zones/forecast/TNZ073",
-                    "https://api.weather.gov/zones/forecast/TNZ081",
-                    "https://api.weather.gov/zones/forecast/TNZ082",
-                    "https://api.weather.gov/zones/forecast/TNZ083",
-                    "https://api.weather.gov/zones/forecast/TNZ084",
-                    "https://api.weather.gov/zones/forecast/TNZ085",
-                    "https://api.weather.gov/zones/forecast/TNZ086",
-                    "https://api.weather.gov/zones/forecast/VAZ001",
-                    "https://api.weather.gov/zones/forecast/VAZ002",
-                    "https://api.weather.gov/zones/forecast/VAZ005"
-                ],
-                "references": [],
-                "sent": "2026-10-09T12:02:00-04:00",
-                "effective": "2026-10-09T12:02:00-04:00",
-                "onset": "2026-10-10T00:00:00-04:00",
-                "expires": "2026-10-10T07:00:00-04:00",
-                "ends": "2026-10-11T08:00:00-04:00",
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Wind Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Morristown TN",
-                "headline": "Wind Advisory issued October 9 at 12:02PM EDT until October 11 at 8:00AM EDT by NWS Morristown TN",
-                "description": "* WHAT...East winds 20 to 30 mph with gusts up to 50 mph expected.\n\n* WHERE...Portions of east Tennessee and southwest Virginia.\n\n* WHEN...From midnight EDT /11 PM CDT/ tonight to 8 AM EDT /7 AM CDT/\nSunday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n\n* ADDITIONAL DETAILS...Stronger wind gusts will be possible in higher\nelevations.",
-                "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.",
-                "response": "Execute",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "NPWMRX"
-                    ],
-                    "WMOidentifier": [
-                        "WWUS74 KMRX 091602"
-                    ],
-                    "NWSheadline": [
-                        "WIND ADVISORY IN EFFECT FROM MIDNIGHT EDT /11 PM CDT/ TONIGHT TO 8 AM EDT /7 AM CDT/ SUNDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.NEW.KMRX.WI.Y.0014.261010T0400Z-261011T1200Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-11T08:00:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -79700,347 +78801,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bb46d05ab8585cf18b5a83cfa4dc3d36655c825c.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bb46d05ab8585cf18b5a83cfa4dc3d36655c825c.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.bb46d05ab8585cf18b5a83cfa4dc3d36655c825c.001.1",
-                "areaDesc": "Coffee; Dale; Henry; Geneva; Houston; North Walton; Central Walton; Holmes; Washington; Jackson; Inland Bay; Calhoun; Inland Gulf; Inland Franklin; Gadsden; Leon; Inland Jefferson; Inland Wakulla; South Walton; Coastal Bay; Coastal Gulf; Coastal Franklin; Coastal Jefferson; Coastal Wakulla; Coastal Taylor; Coastal Dixie; Northern Liberty; Southern Liberty; Quitman; Clay; Randolph; Calhoun; Terrell; Dougherty; Lee; Worth; Early; Miller; Baker; Mitchell; Colquitt; Seminole; Decatur; Grady; Thomas",
-                "geocode": {
-                    "SAME": [
-                        "001031",
-                        "001045",
-                        "001067",
-                        "001061",
-                        "001069",
-                        "012131",
-                        "012059",
-                        "012133",
-                        "012063",
-                        "012005",
-                        "012013",
-                        "012045",
-                        "012037",
-                        "012039",
-                        "012073",
-                        "012065",
-                        "012129",
-                        "012123",
-                        "012029",
-                        "012077",
-                        "013239",
-                        "013061",
-                        "013243",
-                        "013037",
-                        "013273",
-                        "013095",
-                        "013177",
-                        "013321",
-                        "013099",
-                        "013201",
-                        "013007",
-                        "013205",
-                        "013071",
-                        "013253",
-                        "013087",
-                        "013131",
-                        "013275"
-                    ],
-                    "UGC": [
-                        "ALZ065",
-                        "ALZ066",
-                        "ALZ067",
-                        "ALZ068",
-                        "ALZ069",
-                        "FLZ007",
-                        "FLZ008",
-                        "FLZ009",
-                        "FLZ010",
-                        "FLZ011",
-                        "FLZ012",
-                        "FLZ013",
-                        "FLZ014",
-                        "FLZ015",
-                        "FLZ016",
-                        "FLZ017",
-                        "FLZ018",
-                        "FLZ027",
-                        "FLZ108",
-                        "FLZ112",
-                        "FLZ114",
-                        "FLZ115",
-                        "FLZ118",
-                        "FLZ127",
-                        "FLZ128",
-                        "FLZ134",
-                        "FLZ326",
-                        "FLZ426",
-                        "GAZ120",
-                        "GAZ121",
-                        "GAZ122",
-                        "GAZ123",
-                        "GAZ124",
-                        "GAZ125",
-                        "GAZ126",
-                        "GAZ127",
-                        "GAZ142",
-                        "GAZ143",
-                        "GAZ144",
-                        "GAZ145",
-                        "GAZ146",
-                        "GAZ155",
-                        "GAZ156",
-                        "GAZ157",
-                        "GAZ158"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ALZ065",
-                    "https://api.weather.gov/zones/forecast/ALZ066",
-                    "https://api.weather.gov/zones/forecast/ALZ067",
-                    "https://api.weather.gov/zones/forecast/ALZ068",
-                    "https://api.weather.gov/zones/forecast/ALZ069",
-                    "https://api.weather.gov/zones/forecast/FLZ007",
-                    "https://api.weather.gov/zones/forecast/FLZ008",
-                    "https://api.weather.gov/zones/forecast/FLZ009",
-                    "https://api.weather.gov/zones/forecast/FLZ010",
-                    "https://api.weather.gov/zones/forecast/FLZ011",
-                    "https://api.weather.gov/zones/forecast/FLZ012",
-                    "https://api.weather.gov/zones/forecast/FLZ013",
-                    "https://api.weather.gov/zones/forecast/FLZ014",
-                    "https://api.weather.gov/zones/forecast/FLZ015",
-                    "https://api.weather.gov/zones/forecast/FLZ016",
-                    "https://api.weather.gov/zones/forecast/FLZ017",
-                    "https://api.weather.gov/zones/forecast/FLZ018",
-                    "https://api.weather.gov/zones/forecast/FLZ027",
-                    "https://api.weather.gov/zones/forecast/FLZ108",
-                    "https://api.weather.gov/zones/forecast/FLZ112",
-                    "https://api.weather.gov/zones/forecast/FLZ114",
-                    "https://api.weather.gov/zones/forecast/FLZ115",
-                    "https://api.weather.gov/zones/forecast/FLZ118",
-                    "https://api.weather.gov/zones/forecast/FLZ127",
-                    "https://api.weather.gov/zones/forecast/FLZ128",
-                    "https://api.weather.gov/zones/forecast/FLZ134",
-                    "https://api.weather.gov/zones/forecast/FLZ326",
-                    "https://api.weather.gov/zones/forecast/FLZ426",
-                    "https://api.weather.gov/zones/forecast/GAZ120",
-                    "https://api.weather.gov/zones/forecast/GAZ121",
-                    "https://api.weather.gov/zones/forecast/GAZ122",
-                    "https://api.weather.gov/zones/forecast/GAZ123",
-                    "https://api.weather.gov/zones/forecast/GAZ124",
-                    "https://api.weather.gov/zones/forecast/GAZ125",
-                    "https://api.weather.gov/zones/forecast/GAZ126",
-                    "https://api.weather.gov/zones/forecast/GAZ127",
-                    "https://api.weather.gov/zones/forecast/GAZ142",
-                    "https://api.weather.gov/zones/forecast/GAZ143",
-                    "https://api.weather.gov/zones/forecast/GAZ144",
-                    "https://api.weather.gov/zones/forecast/GAZ145",
-                    "https://api.weather.gov/zones/forecast/GAZ146",
-                    "https://api.weather.gov/zones/forecast/GAZ155",
-                    "https://api.weather.gov/zones/forecast/GAZ156",
-                    "https://api.weather.gov/zones/forecast/GAZ157",
-                    "https://api.weather.gov/zones/forecast/GAZ158"
-                ],
-                "references": [],
-                "sent": "2026-10-09T08:37:00-04:00",
-                "effective": "2026-10-09T08:37:00-04:00",
-                "onset": "2026-10-09T08:37:00-04:00",
-                "expires": "2026-10-09T16:45:00-04:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Tropical Cyclone Local Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tallahassee FL",
-                "headline": "Tropical Cyclone Local Statement issued October 9 at 8:37AM EDT by NWS Tallahassee FL",
-                "description": "HLSTAE\n\nThis product covers eastern Florida panhandle, Florida Big Bend,\nsoutheastern Alabama and southwestern Georgia\n\n**ISAIAS BECOMES A MAJOR HURRICANE**\n\nNEW INFORMATION\n---------------\n\n* CHANGES TO WATCHES AND WARNINGS:\n- None\n\n* CURRENT WATCHES AND WARNINGS:\n- A Storm Surge Warning and Hurricane Warning are in effect for\nCoastal Bay and South Walton\n- A Hurricane Warning is in effect for Central Walton and North\nWalton\n- A Storm Surge Warning and Tropical Storm Warning are in effect\nfor Coastal Franklin, Coastal Gulf, Coastal Jefferson, and\nCoastal Wakulla\n- A Storm Surge Warning is in effect for Coastal Dixie and\nCoastal Taylor\n- A Tropical Storm Warning is in effect for Calhoun, Clay,\nCoffee, Dale, Decatur, Early, Gadsden, Geneva, Henry, Holmes,\nHouston, Inland Bay, Inland Franklin, Inland Gulf, Inland\nWakulla, Jackson, Leon, Miller, Northern Liberty, Seminole,\nSouthern Liberty, and Washington\n- A Tropical Storm Watch is in effect for Baker, Calhoun,\nColquitt, Dougherty, Grady, Inland Jefferson, Lee, Mitchell,\nQuitman, Randolph, Terrell, Thomas, and Worth\n\n* STORM INFORMATION:\n- About 250 miles south-southwest of Panama City or about 250\nmiles southwest of Apalachicola\n- 27.0N 87.7W\n- Storm Intensity 120 mph\n- Movement North-northeast or 20 degrees at 15 mph\n\nSITUATION OVERVIEW\n------------------\n\n...STORM SURGE VALUES HAVE INCREASED FOR THE COASTAL FLORIDA\nPANHANDLE...\n\nAt 8 AM ET, Hurricane Isaias was located over the Central Gulf with\nmaximum sustained winds of 120 mph and moving NNE at 15 mph. There are\noverall no significant changes in the forecast reasoning from the\nprevious advisory. Isaias is forecast to turn northward later today\nand accelerate in forward speed towards the central Gulf coast.\nAdditional strengthening is anticipated to major hurricane status over\nthe next several hours, before increasing vertical wind shear causes\nweakening as Isaias nears the coast. Landfall is anticipated somewhere\nalong the Florida Panhandle or Southern Alabama coast later tonight as\na dangerous hurricane, nonetheless. A considerably large wind field\ncombined with displaced convection east of the track fosters impacts\nare well beyond the forecast cone, particularly east of the\nhurricane's center.\n\nConditions could begin to deteriorate across the Florida Panhandle as\nearly as this morning then inland later this afternoon. Residents\nshould have finalized their preparations by this time.\n\nThe hurricane's fast forward speed following landfall will also lead\nto the wind threat extending farther inland, especially near the core\nof the storm. A Storm Surge Warning remains in effect from the all of\nour Panhandle and Big Bend coast. Life-threatening inundation values\nof 6 to 9 feet above normally dry ground are forecast across the\ncoastal Panhandle to Grayton Beach. From Grayton Beach to Indian Pass,\n4 to 7 feet, 4 to 6 feet from Indian Pass to the Steinhatchee River,\nand 3 to 5 feet from the Steinhatchee River to Suwannee River,\ncoincident with the high tide. The greatest surge risk will be Friday\ninto Saturday. Coastal saltwater flooding may linger through Saturday\nfrom persistent onshore flow.\n\nSoggy conditions across the region from recent rainfall will make much\nof the Tri-state area more sensitive to flooding from additional heavy\nrainfall from Isaias. Forecast rainfall totals of 4 to 8 inches are\nexpected across much of the area. Localized totals up to 15 inches are\npossible, especially within banding across the Florida Panhandle and\nBig Bend. Such values would be capable of producing isolated to\nscattered flash flooding. Localized considerable flash flooding is\nalso possible where bands of heavy rain move repeatedly over the same\narea. Given these factors, the pre-existing Flood Watch has been\nexpanded to cover the remaining counties of the Tri-State from Friday\nafternoon through Saturday evening. Minor to isolated moderate river\nflooding appears likely from the anticipated rain.\n\nIsaias will also bring a heightened tornado risk across the Florida\nPanhandle and Western FL Big Bend on Friday into Saturday and\nSoutheast AL & Southwest GA late Friday into Saturday. Several\ntornadoes are possible from outer and trailing rain bands.\n\nPOTENTIAL IMPACTS\n-----------------\n\n* FLOODING RAIN:\nProtect against life-threatening rainfall flooding having possible\nextensive impacts across the area, especially over the Florida\nPanhandle and Big Bend. Potential impacts include:\n- Major rainfall flooding may prompt many evacuations and rescues.\n- Rivers and tributaries may rapidly overflow their banks in\nmultiple places. Small streams, creeks, and ditches may become\ndangerous rivers. Flood control systems and barriers may become\nstressed.\n- Flood waters can enter many structures within multiple\ncommunities, some structures becoming uninhabitable or washed\naway. Many places where flood waters may cover escape routes.\nStreets and parking lots become rivers of moving water with\nunderpasses submerged. Driving conditions become dangerous.\nMany road and bridge closures with some weakened or washed out.\n\nProtect against dangerous rainfall flooding having possible\nsignificant impacts across the remainder of the area.\n\n* SURGE:\nProtect against life-threatening surge having possible extensive\nimpacts across the Coastal Florida Panhandle and Big Bend. Potential\nimpacts in this area include:\n- Large areas of deep inundation with storm surge flooding\naccentuated by battering waves. Structural damage to buildings,\nwith several washing away. Damage compounded by floating\ndebris. Locations may be uninhabitable for an extended period.\n- Large sections of near-shore escape routes and secondary roads\nwashed out or severely flooded. Flood control systems and\nbarriers may become stressed.\n- Severe beach erosion with significant dune loss.\n- Major damage to marinas, docks, boardwalks, and piers. Many\nsmall craft broken away from moorings, especially in\nunprotected anchorages with some lifted onshore and stranded.\n\nElsewhere across eastern Florida panhandle, Florida Big Bend,\nsoutheastern Alabama and southwestern Georgia, little to no impact is\nanticipated.\n\n* TORNADOES:\nProtect against a dangerous tornado event having possible significant\nimpacts across the area, particularly across the Florida Panhandle,\nFlorida Big Bend, Southeast Alabama, and parts of Southwest Georgia.\nPotential impacts include:\n- The occurrence of scattered tornadoes can hinder the execution\nof emergency plans during tropical events.\n- Several places may experience tornado damage with a few spots\nof considerable damage, power loss, and communications failures.\n- Locations could realize roofs torn off frame houses, mobile\nhomes demolished, boxcars overturned, large trees snapped or\nuprooted, vehicles tumbled, and small boats tossed about.\nDangerous projectiles can add to the toll.\n\nProtect against a tornado event having possible limited impacts across\nlocations east of the I-75 corridor and the Southeast Florida Big\nBend.\n\n* WIND:\nProtect against life-threatening wind having possible extensive impacts\nacross the Florida Panhandle and parts of Southern Alabama. Potential\nimpacts in this area include:\n- Considerable roof damage to sturdy buildings, with some having\nwindow, door, and garage door failures leading to structural\ndamage. Mobile homes severely damaged, with some destroyed.\nDamage accentuated by airborne projectiles. Locations may be\nuninhabitable for weeks.\n- Many large trees snapped or uprooted along with fences and\nroadway signs blown over.\n- Some roads impassable from large debris, and more within urban\nor heavily wooded places. Several bridges, causeways, and\naccess routes impassable.\n- Large areas with power and communications outages.\n\nAlso, protect against dangerous wind having possible limited to\nsignificant impacts across the Western & Southeast Florida Big Bend,\nand portions of Southwest Georgia.\n\nPRECAUTIONARY/PREPAREDNESS ACTIONS\n----------------------------------\n\n* EVACUATIONS:\nFollow the advice of local officials\n\n* OTHER PREPAREDNESS INFORMATION:\nNow is the time to complete all preparations to protect life and\nproperty in accordance with your emergency plan. Ensure you are in a\nsafe location before the onset of strong winds or possible flooding.\n\nIf you are relocating to safe shelter, leave as early as possible.\nAllow extra time to reach your destination. Many roads and bridges\nwill be closed once strong winds arrive. Check the latest weather\nforecast before departing and drive with caution.\n\nIf heading to a community shelter, become familiar with the shelter\nrules before arrival, especially if you have special needs or have\npets. Take essential items with you from your Emergency Supplies Kit.\n\nFailure to adequately shelter may result in serious injury or loss of\nlife. Always heed the advice of local officials and comply with any\norders that are issued. Remember, during the storm 9 1 1 Emergency\nServices may not be able to immediately respond if conditions are\nunsafe. This should be a big factor in your decision making.\n\nKeep cell phones well charged. Cell phone chargers for automobiles\ncan be helpful, but be aware of your risk for deadly carbon monoxide\npoisoning if your car is left idling in a garage or other poorly\nventilated area.\n\nIf you are a visitor, be sure to know the name of the city in which\nyou are staying and the name of the county in which it resides.\nListen for these locations in local news updates. Pay attention for\ninstructions from local authorities.\n\nStorm surge is the leading killer associated with tropical storms and\nhurricanes! Make sure you are in a safe area away from the surge\nzone. Even if you are not in a surge-prone area, you could find\nyourself cutoff by flood waters during and after the storm. Heed\nevacuation orders issued by the local authorities.\n\nRapidly rising flood waters are deadly. If you are in a flood-prone\narea, consider moving to higher ground. Never drive through a flooded\nroadway. Remember, turn around don't drown!\n\nIf a Tornado Warning is issued for your area, be ready to shelter\nquickly, preferably away from windows and in an interior room not\nprone to flooding. If driving, scan the roadside for quick shelter\noptions.\n\nIf in a place that is vulnerable to high wind, such as near large\ntrees, a manufactured home, upper floors of a high-rise building, or\non a boat, consider moving to a safer shelter before the onset of\nstrong winds or flooding.\n\nClosely monitor weather.gov, NOAA Weather radio or local news outlets\nfor official storm information. Be ready to adapt to possible changes\nto the forecast. Ensure you have multiple ways to receive weather\nwarnings.\n\n\n* ADDITIONAL SOURCES OF INFORMATION:\n- For information on appropriate preparations see ready.gov\n- For additional disaster preparedness information see redcross.org\n\nNEXT UPDATE\n-----------\n\nThe next local statement will be issued by the National Weather\nService in Tallahassee FL around 12 PM EDT, or sooner if conditions\nwarrant.",
-                "instruction": null,
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "HLSTAE"
-                    ],
-                    "WMOidentifier": [
-                        "WTUS82 KTAE 091237"
-                    ],
-                    "NWSheadline": [
-                        "ISAIAS BECOMES A MAJOR HURRICANE"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HLS"
-                    ],
-                    "NationalWeatherService": [
-                        "HLS"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.338c5f949af91080e8ef7e4b1731a4fe0caf0724.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.338c5f949af91080e8ef7e4b1731a4fe0caf0724.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.338c5f949af91080e8ef7e4b1731a4fe0caf0724.001.1",
-                "areaDesc": "Choctaw; Washington; Clarke; Wilcox; Monroe; Conecuh; Butler; Crenshaw; Escambia; Covington; Mobile Inland; Baldwin Inland; Mobile Central; Baldwin Central; Mobile Coastal; Baldwin Coastal; Escambia Inland; Escambia Coastal; Santa Rosa Inland; Santa Rosa Coastal; Okaloosa Inland; Okaloosa Coastal; Wayne; Perry; Greene; Stone; George",
-                "geocode": {
-                    "SAME": [
-                        "001023",
-                        "001129",
-                        "001025",
-                        "001131",
-                        "001099",
-                        "001035",
-                        "001013",
-                        "001041",
-                        "001053",
-                        "001039",
-                        "001097",
-                        "001003",
-                        "012033",
-                        "012113",
-                        "012091",
-                        "028153",
-                        "028111",
-                        "028041",
-                        "028131",
-                        "028039"
-                    ],
-                    "UGC": [
-                        "ALZ051",
-                        "ALZ052",
-                        "ALZ053",
-                        "ALZ054",
-                        "ALZ055",
-                        "ALZ056",
-                        "ALZ057",
-                        "ALZ058",
-                        "ALZ059",
-                        "ALZ060",
-                        "ALZ261",
-                        "ALZ262",
-                        "ALZ263",
-                        "ALZ264",
-                        "ALZ265",
-                        "ALZ266",
-                        "FLZ201",
-                        "FLZ202",
-                        "FLZ203",
-                        "FLZ204",
-                        "FLZ205",
-                        "FLZ206",
-                        "MSZ067",
-                        "MSZ075",
-                        "MSZ076",
-                        "MSZ078",
-                        "MSZ079"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/ALZ051",
-                    "https://api.weather.gov/zones/forecast/ALZ052",
-                    "https://api.weather.gov/zones/forecast/ALZ053",
-                    "https://api.weather.gov/zones/forecast/ALZ054",
-                    "https://api.weather.gov/zones/forecast/ALZ055",
-                    "https://api.weather.gov/zones/forecast/ALZ056",
-                    "https://api.weather.gov/zones/forecast/ALZ057",
-                    "https://api.weather.gov/zones/forecast/ALZ058",
-                    "https://api.weather.gov/zones/forecast/ALZ059",
-                    "https://api.weather.gov/zones/forecast/ALZ060",
-                    "https://api.weather.gov/zones/forecast/ALZ261",
-                    "https://api.weather.gov/zones/forecast/ALZ262",
-                    "https://api.weather.gov/zones/forecast/ALZ263",
-                    "https://api.weather.gov/zones/forecast/ALZ264",
-                    "https://api.weather.gov/zones/forecast/ALZ265",
-                    "https://api.weather.gov/zones/forecast/ALZ266",
-                    "https://api.weather.gov/zones/forecast/FLZ201",
-                    "https://api.weather.gov/zones/forecast/FLZ202",
-                    "https://api.weather.gov/zones/forecast/FLZ203",
-                    "https://api.weather.gov/zones/forecast/FLZ204",
-                    "https://api.weather.gov/zones/forecast/FLZ205",
-                    "https://api.weather.gov/zones/forecast/FLZ206",
-                    "https://api.weather.gov/zones/forecast/MSZ067",
-                    "https://api.weather.gov/zones/forecast/MSZ075",
-                    "https://api.weather.gov/zones/forecast/MSZ076",
-                    "https://api.weather.gov/zones/forecast/MSZ078",
-                    "https://api.weather.gov/zones/forecast/MSZ079"
-                ],
-                "references": [],
-                "sent": "2026-10-09T07:35:00-05:00",
-                "effective": "2026-10-09T07:35:00-05:00",
-                "onset": "2026-10-09T07:35:00-05:00",
-                "expires": "2026-10-09T15:45:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Moderate",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Tropical Cyclone Local Statement",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Mobile AL",
-                "headline": "Tropical Cyclone Local Statement issued October 9 at 7:35AM CDT by NWS Mobile AL",
-                "description": "HLSMOB\n\nThis product covers portions of southwest Alabama...northwest Florida...south\ncentral Alabama...and inland southeast Mississippi.\n\n**ISAIAS BECOMES A MAJOR HURRICANE**\n**PREPARATIONS WITHIN THE STORM SURGE AND HURRICANE WARNING AREAS SHOULD BE\nCOMPLETED WITHIN THE NEXT FEW HOURS**\n\nNEW INFORMATION\n---------------\n\n* CHANGES TO WATCHES AND WARNINGS:\n- None\n\n* CURRENT WATCHES AND WARNINGS:\n- A Storm Surge Warning and Hurricane Warning are in effect for\nBaldwin Central, Baldwin Coastal, Escambia Coastal, Mobile\nCentral, Mobile Coastal, Okaloosa Coastal, and Santa Rosa\nCoastal\n- A Hurricane Warning is in effect for Baldwin Inland, Conecuh,\nCovington, Escambia, Escambia Inland, Mobile Inland, Okaloosa\nInland, and Santa Rosa Inland\n- A Tropical Storm Warning is in effect for Butler, Clarke,\nCrenshaw, George, Greene, Monroe, Washington, and Wilcox\n- A Tropical Storm Watch is in effect for Choctaw, Perry, Stone,\nand Wayne\n\n* STORM INFORMATION:\n- About 260 miles south of Mobile AL or about 240 miles south of\nPensacola FL\n- 27.0N 87.7W\n- Storm Intensity 110 mph\n- Movement North-northeast or 20 degrees at 15 mph\n\nSITUATION OVERVIEW\n------------------\n\nHurricane Isaias is now a major hurricane as it accelerates toward the\nnorth central Gulf Coast. Some weakening of the peak winds is possible\njust prior to landfall. However, Isaias is expected to still be a\ndangerous hurricane at landfall this evening across either coastal\nAlabama or the western Florida Panhandle. It is important not to focus\njust on the center as the wind field will expand by landfall, resulting\nin the potential for significant wind impacts and a life threatening\nstorm surge along and to the east of where the hurricane makes landfall.\n\nPeak storm surge inundation of 6 to 9 feet above normally dry ground\nis possible near and to the east of where the center makes landfall.\nEvacuation orders have been issued by some coastal counties and you\nshould check with your local emergency management agency for the\nlatest information.\n\nThose in the hurricane warning need to prepare for damaging hurricane\nforce winds of 74 to 110 mph, especially across coastal Alabama and\nthe western Florida Panhandle. The strongest winds will occur near and\njust to the east of the center. Potential impacts from these winds\ninclude numerous downed trees and power lines, significant power\noutages, and some roof damage. Tropical storm force winds will spread\nwell inland with hurricane force gusts likely into south central Alabama\nas the center of Isaias quickly moves north.\n\nRainfall totals of 4 to 8 inches are expected across southwest\nALabama, south central Alabama, and the western Florida Panhandle.\nLocalized amounts of 10 to 12 inches are possible in bands across the\nFlorida Panhandle and near the center track of the storm. Areas of\nflooding are likely if the higher amounts are realized, with\nconsiderable impacts possible. Several rivers across the region are\nforecast to reach moderate flood stage with the potential of some\nrivers reaching major flood stage. In addition, a favorable environment\nfor tornadoes will also develop to the east of the track as it moves\ninland Friday night through early Saturday morning. The greatest threat\nwill be across the western Florida Panhandle and south central Alabama\n\nPOTENTIAL IMPACTS\n-----------------\n\n* SURGE:\nProtect against life-threatening surge having possible extensive\nimpacts across the western Florida panhandle portions of coastal\nAlabama and coasts. Potential impacts in this area include:\n- Large areas of deep inundation with storm surge flooding\naccentuated by battering waves. Structural damage to buildings,\nwith several washing away. Damage compounded by floating\ndebris. Locations may be uninhabitable for an extended period.\n- Large sections of near-shore escape routes and secondary roads\nwashed out or severely flooded. Flood control systems and\nbarriers may become stressed.\n- Severe beach erosion with significant dune loss.\n- Major damage to marinas, docks, boardwalks, and piers. Many\nsmall craft broken away from moorings, especially in\nunprotected anchorages with some lifted onshore and stranded.\n\nElsewhere across portions of southwest Alabama...northwest\nFlorida...south central Alabama...and inland southeast Mississippi.,\nlittle to no impact is anticipated.\n\n* WIND:\nProtect against life-threatening wind having possible extensive\nimpacts across the western Florida Panhandle and portions of\nsouthwest Alabama. Potential impacts in this area include:\n- Considerable roof damage to sturdy buildings, with some having\nwindow, door, and garage door failures leading to structural\ndamage. Mobile homes severely damaged, with some destroyed.\nDamage accentuated by airborne projectiles. Locations may be\nuninhabitable for weeks.\n- Many large trees snapped or uprooted along with fences and\nroadway signs blown over.\n- Some roads impassable from large debris, and more within urban\nor heavily wooded places.\n- Large areas with power and communications outages.\n\nAlso, protect against dangerous wind having possible limited to\nsignificant impacts across interior southwest Alabama.\n\n* FLOODING RAIN:\nProtect against life-threatening rainfall flooding having possible\nextensive impacts across all of southwest and south central Alabama\nand the western Florida panhandle. Potential impacts include:\n- Major rainfall flooding may prompt many evacuations and rescues.\n- Rivers and tributaries may rapidly overflow their banks in\nmultiple places. Small streams, creeks, canals, and ditches may\nbecome dangerous rivers. Flood control systems and barriers may\nbecome stressed.\n- Flood waters can enter many structures within multiple\ncommunities, some structures becoming uninhabitable or washed\naway. Many places where flood waters may cover escape routes.\nStreets and parking lots become rivers of moving water with\nunderpasses submerged. Driving conditions become dangerous.\nMany road and bridge closures with some weakened or washed out.\n\nProtect against dangerous rainfall flooding having possible limited\nto significant impacts across interior areas of southwest and south\ncentral Alabama.\n\n* TORNADOES:\nProtect against a dangerous tornado event having possible significant\nimpacts across northwest Florida and south central Alabama. Potential\nimpacts include:\n- The occurrence of scattered tornadoes can hinder the execution\nof emergency plans during tropical events.\n- Several places may experience tornado damage with a few spots\nof considerable damage, power loss, and communications failures.\n- Locations could realize roofs torn off frame houses, mobile\nhomes demolished, boxcars overturned, large trees snapped or\nuprooted, vehicles tumbled, and small boats tossed about.\nDangerous projectiles can add to the toll.\n\nProtect against a tornado event having possible limited impacts\nacross southwest Alabama.\n\nPRECAUTIONARY/PREPAREDNESS ACTIONS\n----------------------------------\n\n* EVACUATIONS:\nEvacuation orders have been issued across some coastal counties.\nFollow the advice of local officials and check with local emergency\nmanagement for the latest information.\n\n* OTHER PREPAREDNESS INFORMATION:\nNow is the time to complete all preparations to protect life and\nproperty in accordance with your emergency plan. Ensure you are in a\nsafe location before the onset of strong winds or possible flooding.\n\nIf you are relocating to safe shelter, leave as early as possible.\nAllow extra time to reach your destination. Many roads and bridges\nwill be closed once strong winds arrive. Check the latest weather\nforecast before departing and drive with caution.\n\nFailure to adequately shelter may result in serious injury or loss of\nlife. Always heed the advice of local officials and comply with any\norders that are issued. Remember, during the storm 9 1 1 Emergency\nServices may not be able to immediately respond if conditions are\nunsafe. This should be a big factor in your decision making.\n\nStorm surge is the leading killer associated with tropical storms and\nhurricanes! Make sure you are in a safe area away from the surge\nzone. Even if you are not in a surge-prone area, you could find\nyourself cutoff by flood waters during and after the storm. Heed\nevacuation orders issued by the local authorities.\n\nClosely monitor weather.gov, NOAA Weather radio or local news outlets\nfor official storm information. Be ready to adapt to possible changes\nto the forecast. Ensure you have multiple ways to receive weather\nwarnings.\n\n* ADDITIONAL SOURCES OF INFORMATION:\n- For the latest detailed evacuation and shelter information...please\nrefer to your local emergency management agency at the phone number\nor website listed below.\n- Coastal Alabama:\n- Baldwin County: 251-972-6807 or\nwww.baldwincountyal.gov/departments/EMA\n- Mobile County: 251-460-8000 or mobilecountyema.gov\n- Northwest Florida:\n- Escambia County: 850-471-6400 or myescambia.com/beready\n- Santa Rosa County: 850-983-5360 www.santarosa.fl.gov/emergency\n- Okaloosa County: 850-651-7150 or myokaloosa.com/emergency-management\n- For information on appropriate preparations see ready.gov\n- For additional disaster preparedness information see redcross.org\n\nNEXT UPDATE\n-----------\n\nThe next local statement will be issued by the National Weather\nService in Mobile AL around 10 AM CDT, or sooner if conditions\nwarrant.",
-                "instruction": null,
-                "response": "Monitor",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "HLSMOB"
-                    ],
-                    "WMOidentifier": [
-                        "WTUS84 KMOB 091235"
-                    ],
-                    "NWSheadline": [
-                        "ISAIAS BECOMES A MAJOR HURRICANE**\n**PREPARATIONS WITHIN THE STORM SURGE AND HURRICANE WARNING AREAS SHOULD BE\nCOMPLETED WITHIN THE NEXT FEW HOURS"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "HLS"
-                    ],
-                    "NationalWeatherService": [
-                        "HLS"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.9074ae10f8c88d412c048260da3cf21053903624.003.1",
             "type": "Feature",
             "geometry": null,
@@ -92574,88 +91334,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fe6cdff73bd4f9574e174adcb65bc8dd243dcf2f.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.fe6cdff73bd4f9574e174adcb65bc8dd243dcf2f.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.fe6cdff73bd4f9574e174adcb65bc8dd243dcf2f.001.1",
-                "areaDesc": "Tulsa; Rogers; Creek; Wagoner; Southeast Osage",
-                "geocode": {
-                    "SAME": [
-                        "040143",
-                        "040131",
-                        "040037",
-                        "040145",
-                        "040113"
-                    ],
-                    "UGC": [
-                        "OKZ060",
-                        "OKZ061",
-                        "OKZ064",
-                        "OKZ067",
-                        "OKZ354"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/OKZ060",
-                    "https://api.weather.gov/zones/forecast/OKZ061",
-                    "https://api.weather.gov/zones/forecast/OKZ064",
-                    "https://api.weather.gov/zones/forecast/OKZ067",
-                    "https://api.weather.gov/zones/forecast/OKZ354"
-                ],
-                "references": [],
-                "sent": "2026-10-08T15:31:00-05:00",
-                "effective": "2026-10-08T15:31:00-05:00",
-                "onset": "2026-10-08T15:31:00-05:00",
-                "expires": "2026-10-09T15:45:00-05:00",
-                "ends": null,
-                "status": "Actual",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Air Quality Alert",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Tulsa OK",
-                "headline": "Air Quality Alert issued October 8 at 3:31PM CDT by NWS Tulsa OK",
-                "description": "The Oklahoma Department of Environmental Quality has issued an Air\nQuality Alert for Ozone for Friday, for the Tulsa Metropolitan\narea.\n\nAn ozone alert means that conditions are favorable for the buildup\nof ozone near the ground, to an unhealthy level. When winds are\nlight, the vapors from fuels such as gasoline, exhaust from engines,\nand air pollutants from industrial activities remain trapped near\nthe ground. If sunshine is abundant when these air pollutants build\nup, a chemical process is triggered that results in the development\nof ozone near the ground during the afternoon and evening hours.\n\nWhile ozone in the upper levels of the atmosphere is beneficial in\nscreening the suns radiation, it is harmful near the ground. Ozone\ncan bother those with respiratory problems and can damage\nvegetation.\n\nA few simple measures can be taken to help keep the ozone levels\nfrom becoming unhealthy. During ozone alert days:\n\nPostpone any unnecessary driving and car pool if possible. If you do\ndrive to work, turn the air conditioner in your car off during your\nmorning commute. You can also cut down on extra driving by bringing\nyour lunch to work. If you must refuel your vehicle, do it in the\nevening after the sun goes down or postpone your fueling to another\nday.\n\nPostpone running the lawn mower and gas trimmer, the exhaust from\nthese small engines contributes a significant amount of pollution to\nthe air. Industrial facilities should reduce pollution emissions as\nmuch as possible on ozone alert days.\n\nThese preventative measures, performed throughout the Tulsa metro\narea, can have a tremendous effect in reducing the pollutants that\ncontribute to ozone problems.\n\nFor further information, contact The Oklahoma Department of\nEnvironmental Quality at (918) 293-1600 or the Indian Nations\nCouncil of Governments /INCOG/ at (918) 584-7526. Additional\ninformation can also be found at www.ozonealert.com... including\ncurrent ozone levels around the Tulsa area.",
-                "instruction": null,
-                "response": "Monitor",
-                "note": "Non-Weather Emergency Message. Not sent to IPAWS.",
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "AQATSA"
-                    ],
-                    "WMOidentifier": [
-                        "AEUS74 KTSA 082031"
-                    ],
-                    "NWSheadline": [
-                        "AIR QUALITY ALERT IN EFFECT FROM 11 AM TO 8 PM CDT FRIDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "AQA"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6b615fdadc595779c2bd9417878287505c03ed35.001.1",
             "type": "Feature",
             "geometry": null,
@@ -97959,5 +96637,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-10-09T20:43:35+00:00"
+    "updated": "2026-10-09T20:53:35+00:00"
 }
