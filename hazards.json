@@ -10,56 +10,108 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-48931",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e61609d9f41b0c279ce083c3effc1ca70810bbf9.001.1",
             "type": "Feature",
-            "geometry": null,
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.57,
+                            35.38
+                        ],
+                        [
+                            -82.5,
+                            35.37
+                        ],
+                        [
+                            -82.54,
+                            35.29
+                        ],
+                        [
+                            -82.67,
+                            35.21
+                        ],
+                        [
+                            -82.74,
+                            35.26
+                        ],
+                        [
+                            -82.61,
+                            35.34
+                        ],
+                        [
+                            -82.57,
+                            35.38
+                        ]
+                    ]
+                ]
+            },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-48931",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e61609d9f41b0c279ce083c3effc1ca70810bbf9.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-48931",
-                "areaDesc": "Montgomery",
+                "id": "urn:oid:2.49.0.1.840.0.e61609d9f41b0c279ce083c3effc1ca70810bbf9.001.1",
+                "areaDesc": "Henderson, NC; Transylvania, NC",
                 "geocode": {
                     "SAME": [
-                        "024031"
+                        "037089",
+                        "037175"
                     ],
                     "UGC": [
-                        "MDC031"
+                        "NCC089",
+                        "NCC175"
                     ]
                 },
                 "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
+                    "https://api.weather.gov/zones/county/NCC089",
+                    "https://api.weather.gov/zones/county/NCC175"
                 ],
                 "references": [],
-                "sent": "2026-10-12T15:03:32+00:00",
-                "effective": "2026-10-12T15:03:32+00:00",
-                "onset": null,
-                "expires": "2026-10-12T15:13:32+00:00",
-                "ends": null,
-                "status": "Test",
+                "sent": "2026-10-12T11:06:00-04:00",
+                "effective": "2026-10-12T11:06:00-04:00",
+                "onset": "2026-10-12T11:06:00-04:00",
+                "expires": "2026-10-13T00:00:00-04:00",
+                "ends": "2026-10-13T00:00:00-04:00",
+                "status": "Actual",
                 "messageType": "Alert",
                 "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Flood Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "senderName": "NWS Greenville-Spartanburg SC",
+                "headline": "Flood Warning issued October 12 at 11:06AM EDT until October 13 at 12:00AM EDT by NWS Greenville-Spartanburg SC",
+                "description": "...The Flood Warning continues for the following rivers in North\nCarolina...\n\nFrench Broad River At at Grove Bridge Rd in Blantyre affecting\nHenderson and Transylvania Counties.\n\n.Excessive runoff from widespread 4 to 6 inches of storm total\nrainfall will maintain flooding along the French Broad River.\n\n* WHAT...Minor flooding is occurring and minor flooding is forecast.\n\n* WHERE...French Broad River at at Grove Bridge Rd in Blantyre.\n\n* WHEN...Until late tonight.\n\n* IMPACTS...At 17.0 feet, Minor Flooding continues.  Floodwaters\ncontinue to inundate farmland between the French Broad River and\nthe old railroad bed. Floodwaters may inundate the shoulders of\nRiver Road near the Big Willow Road intersection. Floodwaters\ncontinue to impact boat access areas at Grove Bridge Rd. and Crab\nCreek Rd.\n\n* ADDITIONAL DETAILS...\n- At 9:00 AM EDT Monday the stage was 17.0 feet.\n- Bankfull stage is 15.0 feet.\n- Recent Activity...The maximum river stage in the 24 hours ending\nat 9:00 AM EDT Monday was 17.7 feet.\n- Forecast...The river is expected to fall below flood stage late\nthis afternoon and continue falling gradually over the course of\nthe week.\n- Minor Flood Stage is 16.0 feet.\n- Flood History...This crest compares to a previous crest of 17.0\nfeet on 05/16/1976.\n- http://www.weather.gov/safety/flood",
+                "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nFor detailed information including observed and forecast stages,\nflood impacts, flood history, FEMA Flood Hazard Layers, and more,\nplease visit: https://water.noaa.gov/wfo/GSP\n\nThe next statement should be issued late tonight before midnight EDT.",
+                "response": "Avoid",
+                "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "KEPWBC"
+                        "FLSGSP"
                     ],
                     "WMOidentifier": [
-                        "NZUS91 KWBC 121503"
+                        "WGUS82 KGSP 121506"
+                    ],
+                    "NWSheadline": [
+                        "FLOOD WARNING NOW IN EFFECT UNTIL LATE TONIGHT"
                     ],
                     "BLOCKCHANNEL": [
-                        "CMAS",
                         "EAS",
-                        "NWEM"
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KGSP.FL.W.0003.000000T0000Z-261013T0400Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-13T00:00:00-04:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.8c1ed46db362c503a1e77db0481f9f5c9fc730ca.001.1,2026-10-11T22:50:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.c0e58d16ba8d16bcff7882a7a9665d8ac1eba892.001.1,2026-10-11T01:54:00-04:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.b6bdd5a8cb078b0e9c4b4f3026e25ba5042fb2a9.001.1,2026-10-11T07:01:00-04:00"
                     ]
                 },
                 "scope": "Public",
@@ -68,10 +120,10 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "NWS"
+                        "FLS"
                     ],
                     "NationalWeatherService": [
-                        "TST"
+                        "FLW"
                     ]
                 }
             }
@@ -14271,135 +14323,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8c1ed46db362c503a1e77db0481f9f5c9fc730ca.001.1",
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -82.57,
-                            35.38
-                        ],
-                        [
-                            -82.5,
-                            35.37
-                        ],
-                        [
-                            -82.54,
-                            35.29
-                        ],
-                        [
-                            -82.67,
-                            35.21
-                        ],
-                        [
-                            -82.74,
-                            35.26
-                        ],
-                        [
-                            -82.61,
-                            35.34
-                        ],
-                        [
-                            -82.57,
-                            35.38
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8c1ed46db362c503a1e77db0481f9f5c9fc730ca.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.8c1ed46db362c503a1e77db0481f9f5c9fc730ca.001.1",
-                "areaDesc": "Henderson, NC; Transylvania, NC",
-                "geocode": {
-                    "SAME": [
-                        "037089",
-                        "037175"
-                    ],
-                    "UGC": [
-                        "NCC089",
-                        "NCC175"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/NCC089",
-                    "https://api.weather.gov/zones/county/NCC175"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.c0e58d16ba8d16bcff7882a7a9665d8ac1eba892.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.c0e58d16ba8d16bcff7882a7a9665d8ac1eba892.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-11T01:54:00-04:00"
-                    },
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b6bdd5a8cb078b0e9c4b4f3026e25ba5042fb2a9.001.1",
-                        "identifier": "urn:oid:2.49.0.1.840.0.b6bdd5a8cb078b0e9c4b4f3026e25ba5042fb2a9.001.1",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-10-11T07:01:00-04:00"
-                    }
-                ],
-                "sent": "2026-10-11T22:50:00-04:00",
-                "effective": "2026-10-11T22:50:00-04:00",
-                "onset": "2026-10-11T22:50:00-04:00",
-                "expires": "2026-10-12T11:00:00-04:00",
-                "ends": "2026-10-13T04:31:00-04:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Severe",
-                "certainty": "Observed",
-                "urgency": "Immediate",
-                "event": "Flood Warning",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Greenville-Spartanburg SC",
-                "headline": "Flood Warning issued October 11 at 10:50PM EDT until October 13 at 4:31AM EDT by NWS Greenville-Spartanburg SC",
-                "description": "...The Flood Warning is extended for the following rivers in North\nCarolina...\n\nFrench Broad River At at Grove Bridge Rd in Blantyre affecting\nHenderson and Transylvania Counties.\n\n.Excessive runoff from widespread 4 to 6 inches of storm total\nrainfall will maintain flooding along the French Broad River.\n\n* WHAT...Minor flooding is occurring and minor flooding is forecast.\n\n* WHERE...French Broad River at Grove Bridge Rd in Blantyre.\n\n* WHEN...Until late Monday night.\n\n* IMPACTS...At 17.0 feet, Minor Flooding continues.  Floodwaters\ncontinue to inundate farmland between the French Broad River and\nthe old  railroad bed. Floodwaters may start to inundate the\nshoulders of River Road near the Big Willow Road intersection.\nFloodwaters continue to impact boat access areas at Grove Bridge\nRd. and Crab Creek Rd. At 18.0 feet, Minor Flooding continues.\nWidespread farmland flooding between the French Broad River and the\nold railroad bed is ongoing.  The river may be overtopping the old\nrailroad bed near Fodderstack Mountain Rd. and River Ridge Rd.  The\nintersection of River Rd. and Big Willow Rd. is inundated with\nseveral inches of water.\n\n* ADDITIONAL DETAILS...\n- At 10:30 PM EDT Sunday the stage was 17.7 feet and slowly rising.\n- Bankfull stage is 15.0 feet.\n- Recent Activity...The maximum river stage in the 24 hours ending\nat 10:30 PM EDT Sunday was 17.7 feet.\n- Forecast...The river is expected to rise to a crest of 17.8 feet\njust after midnight tonight. It will then fall below flood stage\ntomorrow afternoon.\n- Flood stage is 16.0 feet.\n- Flood History...This crest compares to a previous crest of 17.8\nfeet on 01/03/1937.\n- http://www.weather.gov/safety/flood",
-                "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nFor detailed information including observed and forecast stages,\nflood impacts, flood history, FEMA Flood Hazard Layers, and more,\nplease visit: https://water.noaa.gov/wfo/GSP\n\nThe next statement should be issued Monday morning before 1100 AM\nEDT.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "FLSGSP"
-                    ],
-                    "WMOidentifier": [
-                        "WGUS82 KGSP 120250"
-                    ],
-                    "NWSheadline": [
-                        "FLOOD WARNING NOW IN EFFECT UNTIL LATE MONDAY NIGHT"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
-                    "VTEC": [
-                        "/O.EXT.KGSP.FL.W.0003.000000T0000Z-261013T0831Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-10-13T04:31:00-04:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "FLS"
-                    ],
-                    "NationalWeatherService": [
-                        "FLW"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.3ddac667c4143fb1f970a261f02c2fce31549336.001.1",
             "type": "Feature",
             "geometry": null,
@@ -18813,5 +18736,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-10-12T15:03:36+00:00"
+    "updated": "2026-10-12T15:13:32+00:00"
 }
