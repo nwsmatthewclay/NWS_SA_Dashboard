@@ -73,7 +73,7 @@ function obsFromFeature(f,id){
  var gustKt=p.windGust&&num(p.windGust.value)!=null?num(p.windGust.value)*1.943844:null;
  var windRaw=raw.match(/\b(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT\b/),windText="—";
  if(windKt!=null){
-  windText=(windDir==null?"":String(Math.round(windDir)).padStart(3,"0")+"° ")+Math.round(windKt)+" kt";
+  windText=(windDir!=null?String(Math.round(windDir)).padStart(3,"0")+"° ":windRaw?(windRaw[1]==="VRB"?"VRB ":windRaw[1]+"° "):"")+Math.round(windKt)+" kt";
   if(gustKt!=null)windText+=" G"+Math.round(gustKt)+" kt";
   else if(windRaw&&windRaw[3])windText+=" G"+Number(windRaw[3])+" kt";
  }else if(windRaw){
