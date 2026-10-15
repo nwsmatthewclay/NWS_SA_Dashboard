@@ -12,11 +12,11 @@ h1{font-size:clamp(19px,2.2vw,30px);margin:0;font-weight:800;letter-spacing:.02e
 .wrap{padding:15px 19px;max-width:2000px;margin:auto}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:15px}.tile{background:#f9fbff;border:1px solid var(--line);border-radius:7px;min-height:68px;display:flex;align-items:center;gap:15px;padding:11px 20px;box-shadow:0 1px 3px #14385b0a}.tile .symbol{font-size:30px;color:#17436e}.tile strong{display:block;font-size:30px;line-height:1.05}.tile span{font-size:13px;font-weight:700;letter-spacing:.025em}
 .panel{background:#f7faff;border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:0 1px 3px #14385b0a}.table-scroll{overflow-x:auto}.board{width:100%;border-collapse:collapse;min-width:1150px}.board th{background:#e2ebf5;font-size:12px;line-height:1.3;text-align:center;padding:10px 8px;border:1px solid #cbd8e7}.board th:first-child{text-align:left;padding-left:20px}.board td{border:1px solid #d5e0ed;padding:7px 8px;text-align:center;height:65px;background:#f9fbff}.board tr.mismatch-1 td{animation:flashSlow 1.4s ease-in-out infinite}.board tr.mismatch-2 td{animation:flashMedium .8s ease-in-out infinite}.board tr.mismatch-3 td{animation:flashFast .45s ease-in-out infinite}.board tr.group-active td{background:#fff2d8}.board tr.group-active .airport:before{background:var(--amber)}.board tr.mismatch-1 td{box-shadow:inset 0 0 0 9999px #fff7d9aa}.board tr.mismatch-2 td,.board tr.mismatch-3 td{box-shadow:inset 0 0 0 9999px #ffdfe2aa}
 @keyframes flashSlow{0%,100%{background-color:#fff8df}50%{background-color:#ffe8a8}}@keyframes flashMedium{0%,100%{background-color:#ffe5b2}50%{background-color:#ffb0a9}}@keyframes flashFast{0%,100%{background-color:#ffd6d6}50%{background-color:#ff8b96}}
-.airport{text-align:left!important;padding-left:20px!important;position:relative;min-width:130px}.airport:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#6ca8f5}.airport strong{font-size:19px;display:block}.airport small{font-size:14px;display:block;margin-top:3px;color:#27476c}.obs-time{font-size:13px;white-space:nowrap}.obs-data{font-size:15px;font-weight:700;line-height:1.45;white-space:nowrap}.cat{display:inline-block;border-radius:7px;padding:9px 15px;color:white;font-size:15px;font-weight:800;min-width:88px;box-shadow:inset 0 1px #ffffff55}.cat.VFR{background:var(--green)}.cat.MVFR{background:var(--blue)}.cat.IFR{background:var(--red)}.cat.LIFR{background:var(--purple)}.cat.NA{background:#78899a}.diff{display:inline-block;min-width:92px;padding:9px 10px;border-radius:7px;font-size:13px;font-weight:800;background:#dce5ef;color:#193b60}.diff.off1{background:#ffe6a9;color:#875200}.diff.off2,.diff.off3{background:#ffd0d2;color:#9a1020}.diff.pending{background:#e4eaf1;color:#5d6d7d}
+.airport{text-align:left!important;padding-left:20px!important;position:relative;min-width:130px}.airport:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#6ca8f5}.airport strong{font-size:19px;display:block}.airport small{font-size:14px;display:block;margin-top:3px;color:#27476c}.obs-time{font-size:13px;white-space:nowrap}.obs-data{font-size:13px;font-weight:700;line-height:1.45;white-space:normal;min-width:180px;text-align:left!important}.cat{display:inline-block;border-radius:7px;padding:9px 15px;color:white;font-size:15px;font-weight:800;min-width:88px;box-shadow:inset 0 1px #ffffff55}.cat.VFR{background:var(--green)}.cat.MVFR{background:var(--blue)}.cat.IFR{background:var(--red)}.cat.LIFR{background:var(--purple)}.cat.NA{background:#78899a}.diff{display:inline-block;min-width:92px;padding:9px 10px;border-radius:7px;font-size:13px;font-weight:800;background:#dce5ef;color:#193b60}.diff.off1{background:#ffe6a9;color:#875200}.diff.off2,.diff.off3{background:#ffd0d2;color:#9a1020}.diff.pending{background:#e4eaf1;color:#5d6d7d}
 .timeline{min-width:360px;padding:4px 7px 0!important}.ticks{display:flex;justify-content:space-between;font-size:11px;color:#193a60;margin:0 0 5px}.track{height:28px;border-radius:4px;display:flex;position:relative;background:#e4eaf2;overflow:visible}.segment{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;white-space:nowrap;overflow:hidden;border-right:1px solid #ffffff99;position:relative}.segment.VFR{background:var(--green)}.segment.MVFR{background:var(--blue)}.segment.IFR{background:var(--red)}.segment.LIFR{background:var(--purple)}.segment.tempo{outline:2px dashed #ffb000;outline-offset:-2px;z-index:2}.segment.prob{outline:2px dashed #b500eb;outline-offset:-2px;z-index:3}.segment.verifying{box-shadow:0 0 0 3px #ffad00;z-index:4;animation:glow .65s ease-in-out infinite alternate}@keyframes glow{from{filter:brightness(1)}to{filter:brightness(1.28)}}
 .legend{display:flex;align-items:center;gap:23px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);font-size:12px;color:#294b71}.swatch{display:inline-block;width:25px;height:13px;border-radius:3px;vertical-align:middle;margin-right:6px;background:var(--green)}.swatch.dashed{background:transparent;border:2px dashed var(--blue)}.swatch.prob{background:transparent;border:2px dashed var(--purple)}.swatch.active{background:#fff0cf;border:2px solid var(--amber)}
 .bottom{display:grid;grid-template-columns:2fr 1fr 1.05fr;gap:14px;margin-top:16px}.bottom h2{font-size:18px;margin:0;padding:10px 15px;background:#e4edf7;border-bottom:1px solid var(--line)}.inner{padding:12px 14px}.active-card{border:1px solid #ffc45b;border-radius:8px;background:#fff4df;padding:13px;min-height:90px}.active-card strong{font-size:16px}.status-pill{float:right;background:#ffdfa0;color:#895000;border-radius:5px;padding:7px 10px;font-size:12px;font-weight:800}.active-card p{font-size:13px;line-height:1.5;margin:12px 0 0}.scale{display:flex;gap:12px;align-items:center;justify-content:center}.scale .stack{display:flex;flex-direction:column;gap:4px}.scale .cat{padding:5px 10px;min-width:72px;font-size:12px}.scale p{font-size:12px;line-height:1.65;margin:0}.criteria{font-size:12px;line-height:1.65}.criteria div{margin:3px 0}.criteria b{display:inline-block;width:53px;border-radius:4px;text-align:center;margin-right:6px;padding:1px 3px}.criteria .VFR{background:#d6f4de;color:#14833a}.criteria .MVFR{background:#d8eaff;color:#0b66c7}.criteria .IFR{background:#ffe0e2;color:#c61d2b}.criteria .LIFR{background:#f0d7fa;color:#8708ad}
-footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.error-banner{display:none;background:#fff0f0;color:#9b1823;border:1px solid #f3b9bd;border-radius:6px;padding:10px 13px;margin-bottom:12px;font-size:13px}.muted{color:#5b7087}.raw{display:none;margin-top:8px;font:12px/1.5 monospace;white-space:pre-wrap;word-break:break-word;color:#243d58}.clickable{cursor:pointer}.clickable:hover td{filter:brightness(.98)}.small-note{font-size:11px;color:#5c7188}
+footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.error-banner{display:none;background:#fff0f0;color:#9b1823;border:1px solid #f3b9bd;border-radius:6px;padding:10px 13px;margin-bottom:12px;font-size:13px}.muted{color:#5b7087}.raw{display:none;margin-top:8px;font:12px/1.5 monospace;white-space:pre-wrap;overflow-wrap:normal;word-break:normal;color:#243d58;text-align:left}.clickable{cursor:pointer}.clickable:hover td{filter:brightness(.98)}.small-note{font-size:11px;color:#5c7188}
 @media(max-width:1000px){header{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom{grid-template-columns:1fr}.wrap{padding:10px}.meta{padding-left:10px}.top-meta{gap:12px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -24,13 +24,7 @@ footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-cont
 <header><div><h1>BTV AVIATION &nbsp;|&nbsp; TAF vs OBSERVATIONS</h1><div class="subhead">Terminal forecast verification • five-minute refresh • UTC</div></div><div class="top-meta"><div class="meta"><small>Observations updated</small><strong id="obsUpdated">—</strong></div><div class="meta"><small>TAFs retrieved</small><strong id="tafUpdated">—</strong></div><div class="meta"><small>Next refresh</small><strong id="nextUpdate">—</strong></div></div></header>
 <div class="wrap">
 <div class="error-banner" id="errorBanner"></div>
-<div class="summary">
-<div class="tile"><div class="symbol">✈</div><div><strong>7</strong><span>TAF SITES</span></div></div>
-<div class="tile"><div class="symbol" style="color:#e59b00">⚠</div><div><strong id="mismatchCount">—</strong><span>CATEGORY MISMATCHES</span></div></div>
-<div class="tile"><div class="symbol" style="color:#e59b00">◷</div><div><strong id="tempoCount">—</strong><span>TEMPO VERIFYING</span></div></div>
-<div class="tile"><div class="symbol" style="color:#858d97">◯</div><div><strong id="probCount">—</strong><span>PROB30 VERIFYING</span></div></div>
-</div>
-<section class="panel"><div class="table-scroll"><table class="board"><thead><tr><th style="width:150px">AIRPORT<br><span class="muted">(City)</span></th><th>OBS TIME<br>(UTC)</th><th>OBSERVED<br><span class="muted">Ceiling / Visibility</span></th><th>OBS<br>CATEGORY</th><th>TAF<br>CATEGORY</th><th>DIFFERENCE</th><th style="min-width:360px">24-HOUR TAF TIMELINE (UTC)</th></tr></thead><tbody id="airportRows"><tr><td colspan="7" style="padding:30px;text-align:center">Loading current observations and TAFs…</td></tr></tbody></table></div><div class="legend"><span><i class="swatch"></i>Prevailing TAF</span><span><i class="swatch dashed"></i>TEMPO window</span><span><i class="swatch prob"></i>PROB30 window</span><span><i class="swatch active"></i>Active group verifying</span><span class="small-note">Flash rate increases with category error.</span></div></section>
+<section class="panel"><div class="table-scroll"><table class="board"><thead><tr><th style="width:150px">AIRPORT<br><span class="muted">(City)</span></th><th>OBS TIME<br>(UTC)</th><th>OBSERVED<br><span class="muted">Wind • Ceiling • Weather • Visibility</span></th><th>OBS<br>CATEGORY</th><th>TAF<br>CATEGORY</th><th>DIFFERENCE</th><th style="min-width:360px">24-HOUR TAF TIMELINE (UTC)</th></tr></thead><tbody id="airportRows"><tr><td colspan="7" style="padding:30px;text-align:center">Loading current observations and TAFs…</td></tr></tbody></table></div><div class="legend"><span><i class="swatch"></i>Prevailing TAF</span><span><i class="swatch dashed"></i>TEMPO window</span><span><i class="swatch prob"></i>PROB30 window</span><span><i class="swatch active"></i>Active group verifying</span><span class="small-note">Flash rate increases with category error.</span></div></section>
 <div class="bottom">
 <section class="panel"><h2>ACTIVE GROUP VERIFICATION</h2><div class="inner" id="activeGroup"><div class="active-card"><strong>Waiting for live data</strong><p>When a TEMPO or PROB30 group is active and observations match its forecast category, the verifying group will be highlighted here.</p></div></div></section>
 <section class="panel"><h2>CATEGORY DIFFERENCE</h2><div class="inner scale"><div class="stack"><span class="cat VFR">VFR</span><span class="cat MVFR">MVFR</span><span class="cat IFR">IFR</span><span class="cat LIFR">LIFR</span></div><p>0 = match<br>1 = one category off<br>2 = two categories off<br>3 = three categories off</p></div></section>
@@ -65,15 +59,38 @@ function obsFromFeature(f,id){
  var p=(f&&f.properties)||{},raw=p.rawMessage||p.rawMETAR||"";
  var ceiling=p.ceiling&&num(p.ceiling.value)!=null?ft(p.ceiling.value):null;
  var visibility=p.visibility&&num(p.visibility.value)!=null?sm(p.visibility.value):null;
- if(ceiling==null&&raw){
+ if(raw){
   var clouds=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}/g)||[],base=Infinity;
   clouds.forEach(function(x){if(/^(BKN|OVC|VV)/.test(x)){var n=Number(x.slice(-3))*100;if(n<base)base=n}});
-  if(base!==Infinity)ceiling=base;
-  var vm=raw.match(/\b(\d+)?\s*(\d\/\d|\d+)?SM\b/);
-  if(vm){var text=vm[0].replace(/SM/,"").trim();var parts=text.split(/\s+/);var val=0;parts.forEach(function(q){if(q.indexOf("/")>0){var z=q.split("/");val+=Number(z[0])/Number(z[1])}else if(q)val+=Number(q)});if(isFinite(val))visibility=val}
+  if(ceiling==null&&base!==Infinity)ceiling=base;
+  if(visibility==null){
+   var vm=raw.match(/\b(?:P?\d+(?:\s+\d+\/\d+|\d+\/\d+)?|\d+\s+\d+\/\d+)SM\b/);
+   if(vm){var text=vm[0].replace(/SM/,"").replace(/^P/,"").trim(),parts=text.split(/\s+/),val=0;parts.forEach(function(q){if(q.indexOf("/")>0){var z=q.split("/");val+=Number(z[0])/Number(z[1])}else if(q)val+=Number(q)});if(isFinite(val))visibility=val}
+  }
  }
+ var windDir=p.windDirection&&num(p.windDirection.value)!=null?num(p.windDirection.value):null;
+ var windKt=p.windSpeed&&num(p.windSpeed.value)!=null?num(p.windSpeed.value)*1.943844:null;
+ var gustKt=p.windGust&&num(p.windGust.value)!=null?num(p.windGust.value)*1.943844:null;
+ var windRaw=raw.match(/\b(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT\b/),windText="—";
+ if(windKt!=null){
+  windText=(windDir==null?"":String(Math.round(windDir)).padStart(3,"0")+"° ")+Math.round(windKt)+" kt";
+  if(gustKt!=null)windText+=" G"+Math.round(gustKt)+" kt";
+ }else if(windRaw){
+  windText=(windRaw[1]==="VRB"?"VRB":windRaw[1]+"°")+" "+Number(windRaw[2])+" kt"+(windRaw[3]?" G"+Number(windRaw[3])+" kt":"");
+ }
+ var wx=[];
+ if(Array.isArray(p.presentWeather)){
+  p.presentWeather.forEach(function(w){
+   if(typeof w==="string")wx.push(w);
+   else if(w&&typeof w==="object")wx.push(w.rawString||w.weather||w.description||w.value||"");
+  });
+ }
+ wx=wx.map(function(x){return String(x||"").trim()}).filter(Boolean);
+ var metarWx=raw.match(/\s(-|\+|VC)?(?:MI|PR|BC|DR|BL|SH|TS|FZ)?(?:DZ|RA|SN|SG|IC|PL|GR|GS|UP|BR|FG|FU|VA|DU|SA|HZ|PY|PO|SQ|FC|SS|DS)(?:\s|$)/g)||[];
+ if(!wx.length&&metarWx.length)wx=metarWx.map(function(x){return x.trim()});
+ var weatherText=wx.length?wx.join(", "):"No significant weather reported";
  var t=p.timestamp||p.time||null;
- return {id:id,time:t?new Date(t):null,ceilingFt:ceiling,visSm:visibility,cat:category(ceiling,visibility),raw:raw,properties:p};
+ return {id:id,time:t?new Date(t):null,ceilingFt:ceiling,visSm:visibility,wind:windText,weather:weatherText,cat:category(ceiling,visibility),raw:raw,properties:p};
 }
 function zDate(day,hour,minute,base){
  var d=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),day,hour,minute||0));
@@ -165,8 +182,13 @@ function diff(obs,taf){
 function renderTimeline(t,obs){
  var now=new Date(),start=t.start,end=t.end,total=end-start;
  if(total<=0)return '<div class="muted">No valid timeline</div>';
- var ticks="",steps=[0,3,6,9,12,15,18,21,24];
- steps.forEach(function(h){var d=new Date(start.getTime()+h*3600000);ticks+='<span>'+String(d.getUTCHours()).padStart(2,"0")+'Z</span>'});
+ var ticks="",totalHours=(end-start)/3600000,stepHours=3,lastHour=0;
+ for(var hour=0;hour<totalHours;hour+=stepHours){
+  var tickDate=new Date(start.getTime()+hour*3600000);
+  ticks+='<span>'+String(tickDate.getUTCHours()).padStart(2,"0")+'Z</span>';
+  lastHour=hour;
+ }
+ if(totalHours-lastHour>0.75)ticks+='<span>'+String(end.getUTCHours()).padStart(2,"0")+'Z</span>';
  var segments="";
  t.groups.forEach(function(g){
   var a=Math.max(start,g.start),b=Math.min(end,g.end);if(b<=a)return;
@@ -186,7 +208,7 @@ function render(results){
   over.forEach(function(g){if(o&&diff(o,g.cond)===0){if(g.kind==="TEMPO")tempo++;if(g.kind==="PROB30"||g.kind==="PROB40")prob++;active.push({site:site,group:g,obs:o,taf:current})}});
   var rowClass=hasMismatch?" mismatch-"+Math.min(3,d):"";
   if(over.length&&o&&over.some(function(g){return diff(o,g.cond)===0}))rowClass+=" group-active";
-  var obsText=o?((o.ceilingFt==null?"—":Math.round(o.ceilingFt).toLocaleString()+" ft")+"<br>"+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")):"<span class='muted'>Unavailable</span>";
+  var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Ceiling: "+(o.ceilingFt==null?"—":Math.round(o.ceilingFt).toLocaleString()+" ft")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
   var obsTime=o&&o.time?utc(o.time):"—";
   var obsCat=o?o.cat:"NA",tafCat=current&&current.cond?current.cond.cat:"NA";
   var diffText=d===null?"NO DATA":d===0?"MATCH":d+" CAT"+(d===1?" OFF":"S OFF");
