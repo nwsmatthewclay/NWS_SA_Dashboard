@@ -129,7 +129,7 @@ function tokenizeTaf(raw,now){
    else groups.push(g);
  });
  groups.sort(function(a,b){return a.start-b.start});
- var prev=groups.filter(function(g){return g.kind==="prevailing"||g.kind==="FM"}).sort(function(a,b){return a.start-b.start);
+ var prev=groups.filter(function(g){return g.kind==="prevailing"||g.kind==="FM"}).sort(function(a,b){return a.start-b.start;});
  var current=prev.filter(function(g){return g.start<=now&&now<g.end}).pop()||prev[0]||groups[0];
  var overlays=groups.filter(function(g){return ["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&g.start<=now&&now<g.end});
  var allTimeline=groups.filter(function(g){return g.end>now-3600000&&g.start<end});
@@ -144,7 +144,7 @@ function getTafFromJson(json,id){
  return p.rawTAF||p.rawText||p.text||p.taf||null;
 }
 async function getJson(url){
- var r=await fetch(url,{cache:"no-store",headers:{"Accept":"application/geo+json, application/ld+json, application/json"}});
+ var r=await fetch(url,{cache:"no-cache"});
  if(r.status===204)return null;
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
