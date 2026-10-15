@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BTV Aviation | TAF Verification</title>
+<style>
+:root{--navy:#10365c;--navy2:#0a2948;--ink:#102b4e;--muted:#52677e;--line:#cbd8e7;--paper:#f1f6fc;--green:#24ad4a;--blue:#1982ee;--red:#ef3340;--purple:#a20bd2;--amber:#ffb000}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#eaf1fa}body{padding:0 0 14px}
+header{background:linear-gradient(110deg,var(--navy2),#194d7b);color:#fff;padding:13px 22px;display:flex;justify-content:space-between;align-items:center;gap:20px;box-shadow:0 2px 7px #102b4e33}
+h1{font-size:clamp(19px,2.2vw,30px);margin:0;font-weight:800;letter-spacing:.02em}.subhead{font-size:14px;color:#c5dbf1;margin-top:4px}.top-meta{display:flex;gap:26px;flex-wrap:wrap}.meta{border-left:1px solid #ffffff55;padding-left:18px;min-width:110px}.meta small{display:block;color:#c9def3;font-size:11px;text-transform:uppercase;letter-spacing:.06em}.meta strong{display:block;font-size:18px;margin-top:4px}
+.wrap{padding:15px 19px;max-width:2000px;margin:auto}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:15px}.tile{background:#f9fbff;border:1px solid var(--line);border-radius:7px;min-height:68px;display:flex;align-items:center;gap:15px;padding:11px 20px;box-shadow:0 1px 3px #14385b0a}.tile .symbol{font-size:30px;color:#17436e}.tile strong{display:block;font-size:30px;line-height:1.05}.tile span{font-size:13px;font-weight:700;letter-spacing:.025em}
+.panel{background:#f7faff;border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:0 1px 3px #14385b0a}.table-scroll{overflow-x:auto}.board{width:100%;border-collapse:collapse;min-width:1150px}.board th{background:#e2ebf5;font-size:12px;line-height:1.3;text-align:center;padding:10px 8px;border:1px solid #cbd8e7}.board th:first-child{text-align:left;padding-left:20px}.board td{border:1px solid #d5e0ed;padding:7px 8px;text-align:center;height:65px;background:#f9fbff}.board tr.mismatch-1 td{animation:flashSlow 1.4s ease-in-out infinite}.board tr.mismatch-2 td{animation:flashMedium .8s ease-in-out infinite}.board tr.mismatch-3 td{animation:flashFast .45s ease-in-out infinite}.board tr.group-active td{background:#fff2d8}.board tr.group-active .airport:before{background:var(--amber)}.board tr.mismatch-1 td{box-shadow:inset 0 0 0 9999px #fff7d9aa}.board tr.mismatch-2 td,.board tr.mismatch-3 td{box-shadow:inset 0 0 0 9999px #ffdfe2aa}
+@keyframes flashSlow{0%,100%{background-color:#fff8df}50%{background-color:#ffe8a8}}@keyframes flashMedium{0%,100%{background-color:#ffe5b2}50%{background-color:#ffb0a9}}@keyframes flashFast{0%,100%{background-color:#ffd6d6}50%{background-color:#ff8b96}}
+.airport{text-align:left!important;padding-left:20px!important;position:relative;min-width:130px}.airport:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#6ca8f5}.airport strong{font-size:19px;display:block}.airport small{font-size:14px;display:block;margin-top:3px;color:#27476c}.obs-time{font-size:13px;white-space:nowrap}.obs-data{font-size:15px;font-weight:700;line-height:1.45;white-space:nowrap}.cat{display:inline-block;border-radius:7px;padding:9px 15px;color:white;font-size:15px;font-weight:800;min-width:88px;box-shadow:inset 0 1px #ffffff55}.cat.VFR{background:var(--green)}.cat.MVFR{background:var(--blue)}.cat.IFR{background:var(--red)}.cat.LIFR{background:var(--purple)}.cat.NA{background:#78899a}.diff{display:inline-block;min-width:92px;padding:9px 10px;border-radius:7px;font-size:13px;font-weight:800;background:#dce5ef;color:#193b60}.diff.off1{background:#ffe6a9;color:#875200}.diff.off2,.diff.off3{background:#ffd0d2;color:#9a1020}.diff.pending{background:#e4eaf1;color:#5d6d7d}
+.timeline{min-width:360px;padding:4px 7px 0!important}.ticks{display:flex;justify-content:space-between;font-size:11px;color:#193a60;margin:0 0 5px}.track{height:28px;border-radius:4px;display:flex;position:relative;background:#e4eaf2;overflow:visible}.segment{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;white-space:nowrap;overflow:hidden;border-right:1px solid #ffffff99;position:relative}.segment.VFR{background:var(--green)}.segment.MVFR{background:var(--blue)}.segment.IFR{background:var(--red)}.segment.LIFR{background:var(--purple)}.segment.tempo{outline:2px dashed #ffb000;outline-offset:-2px;z-index:2}.segment.prob{outline:2px dashed #b500eb;outline-offset:-2px;z-index:3}.segment.verifying{box-shadow:0 0 0 3px #ffad00;z-index:4;animation:glow .65s ease-in-out infinite alternate}@keyframes glow{from{filter:brightness(1)}to{filter:brightness(1.28)}}
+.legend{display:flex;align-items:center;gap:23px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);font-size:12px;color:#294b71}.swatch{display:inline-block;width:25px;height:13px;border-radius:3px;vertical-align:middle;margin-right:6px;background:var(--green)}.swatch.dashed{background:transparent;border:2px dashed var(--blue)}.swatch.prob{background:transparent;border:2px dashed var(--purple)}.swatch.active{background:#fff0cf;border:2px solid var(--amber)}
+.bottom{display:grid;grid-template-columns:2fr 1fr 1.05fr;gap:14px;margin-top:16px}.bottom h2{font-size:18px;margin:0;padding:10px 15px;background:#e4edf7;border-bottom:1px solid var(--line)}.inner{padding:12px 14px}.active-card{border:1px solid #ffc45b;border-radius:8px;background:#fff4df;padding:13px;min-height:90px}.active-card strong{font-size:16px}.status-pill{float:right;background:#ffdfa0;color:#895000;border-radius:5px;padding:7px 10px;font-size:12px;font-weight:800}.active-card p{font-size:13px;line-height:1.5;margin:12px 0 0}.scale{display:flex;gap:12px;align-items:center;justify-content:center}.scale .stack{display:flex;flex-direction:column;gap:4px}.scale .cat{padding:5px 10px;min-width:72px;font-size:12px}.scale p{font-size:12px;line-height:1.65;margin:0}.criteria{font-size:12px;line-height:1.65}.criteria div{margin:3px 0}.criteria b{display:inline-block;width:53px;border-radius:4px;text-align:center;margin-right:6px;padding:1px 3px}.criteria .VFR{background:#d6f4de;color:#14833a}.criteria .MVFR{background:#d8eaff;color:#0b66c7}.criteria .IFR{background:#ffe0e2;color:#c61d2b}.criteria .LIFR{background:#f0d7fa;color:#8708ad}
+footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.error-banner{display:none;background:#fff0f0;color:#9b1823;border:1px solid #f3b9bd;border-radius:6px;padding:10px 13px;margin-bottom:12px;font-size:13px}.muted{color:#5b7087}.raw{display:none;margin-top:8px;font:12px/1.5 monospace;white-space:pre-wrap;word-break:break-word;color:#243d58}.clickable{cursor:pointer}.clickable:hover td{filter:brightness(.98)}.small-note{font-size:11px;color:#5c7188}
+@media(max-width:1000px){header{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom{grid-template-columns:1fr}.wrap{padding:10px}.meta{padding-left:10px}.top-meta{gap:12px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div><h1>BTV AVIATION &nbsp;|&nbsp; TAF vs OBSERVATIONS</h1><div class="subhead">Terminal forecast verification • five-minute refresh • UTC</div></div><div class="top-meta"><div class="meta"><small>Observations updated</small><strong id="obsUpdated">—</strong></div><div class="meta"><small>TAFs retrieved</small><strong id="tafUpdated">—</strong></div><div class="meta"><small>Next refresh</small><strong id="nextUpdate">—</strong></div></div></header>
+<div class="wrap">
+<div class="error-banner" id="errorBanner"></div>
+<div class="summary">
+<div class="tile"><div class="symbol">✈</div><div><strong>7</strong><span>TAF SITES</span></div></div>
+<div class="tile"><div class="symbol" style="color:#e59b00">⚠</div><div><strong id="mismatchCount">—</strong><span>CATEGORY MISMATCHES</span></div></div>
+<div class="tile"><div class="symbol" style="color:#e59b00">◷</div><div><strong id="tempoCount">—</strong><span>TEMPO VERIFYING</span></div></div>
+<div class="tile"><div class="symbol" style="color:#858d97">◯</div><div><strong id="probCount">—</strong><span>PROB30 VERIFYING</span></div></div>
+</div>
+<section class="panel"><div class="table-scroll"><table class="board"><thead><tr><th style="width:150px">AIRPORT<br><span class="muted">(City)</span></th><th>OBS TIME<br>(UTC)</th><th>OBSERVED<br><span class="muted">Ceiling / Visibility</span></th><th>OBS<br>CATEGORY</th><th>TAF<br>CATEGORY</th><th>DIFFERENCE</th><th style="min-width:360px">24-HOUR TAF TIMELINE (UTC)</th></tr></thead><tbody id="airportRows"><tr><td colspan="7" style="padding:30px;text-align:center">Loading current observations and TAFs…</td></tr></tbody></table></div><div class="legend"><span><i class="swatch"></i>Prevailing TAF</span><span><i class="swatch dashed"></i>TEMPO window</span><span><i class="swatch prob"></i>PROB30 window</span><span><i class="swatch active"></i>Active group verifying</span><span class="small-note">Flash rate increases with category error.</span></div></section>
+<div class="bottom">
+<section class="panel"><h2>ACTIVE GROUP VERIFICATION</h2><div class="inner" id="activeGroup"><div class="active-card"><strong>Waiting for live data</strong><p>When a TEMPO or PROB30 group is active and observations match its forecast category, the verifying group will be highlighted here.</p></div></div></section>
+<section class="panel"><h2>CATEGORY DIFFERENCE</h2><div class="inner scale"><div class="stack"><span class="cat VFR">VFR</span><span class="cat MVFR">MVFR</span><span class="cat IFR">IFR</span><span class="cat LIFR">LIFR</span></div><p>0 = match<br>1 = one category off<br>2 = two categories off<br>3 = three categories off</p></div></section>
+<section class="panel"><h2>FLIGHT CATEGORY CRITERIA</h2><div class="inner criteria"><div><b class="VFR">VFR</b>Ceiling ≥ 3,000 ft and visibility ≥ 5 SM</div><div><b class="MVFR">MVFR</b>Ceiling 1,000–2,999 ft or visibility 3–5 SM</div><div><b class="IFR">IFR</b>Ceiling 500–999 ft or visibility 1–under 3 SM</div><div><b class="LIFR">LIFR</b>Ceiling below 500 ft or visibility below 1 SM</div><p class="small-note">More restrictive of ceiling or visibility determines category.</p></div></section>
+</div>
+<footer><span>Verification is an aid for forecaster situational awareness, not a flight-safety decision tool. Missing/stale observations are not scored as misses.</span><span id="sourceStatus">Source: api.weather.gov • Browser-side polling</span></footer>
+</div>
+<script>
+(function(){
+"use strict";
+var SITES=[
+ {id:"KBTV",city:"Burlington"},{id:"KSLK",city:"Saranac Lake"},{id:"KPBG",city:"Plattsburgh"},
+ {id:"KMPV",city:"Montpelier"},{id:"KEFK",city:"Newport"},{id:"KRUT",city:"Rutland"},{id:"KMSS",city:"Massena"}
+];
+var ORDER=["VFR","MVFR","IFR","LIFR"],TICK=300000,latestObs={},latestTaf={},lastObsSuccess=null,lastTafSuccess=null,busy=false;
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function utc(d){return d.toISOString().slice(11,16)+"Z"}
+function num(v){return typeof v==="number"&&isFinite(v)?v:null}
+function category(ceilingFt,visSm){
+ var c=ceilingFt==null?Infinity:ceilingFt,v=visSm==null?Infinity:visSm;
+ if(c<500||v<1)return "LIFR";
+ if(c<1000||v<3)return "IFR";
+ if(c<3000||v<5)return "MVFR";
+ return "VFR";
+}
+function catIndex(c){return ORDER.indexOf(c)}
+function ft(m){return m==null?null:m*3.28084}
+function sm(m){return m==null?null:m/1609.344}
+function obsFromFeature(f,id){
+ var p=(f&&f.properties)||{},raw=p.rawMessage||p.rawMETAR||"";
+ var ceiling=p.ceiling&&num(p.ceiling.value)!=null?ft(p.ceiling.value):null;
+ var visibility=p.visibility&&num(p.visibility.value)!=null?sm(p.visibility.value):null;
+ if(ceiling==null&&raw){
+  var clouds=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}/g)||[],base=Infinity;
+  clouds.forEach(function(x){if(/^(BKN|OVC|VV)/.test(x)){var n=Number(x.slice(-3))*100;if(n<base)base=n}});
+  if(base!==Infinity)ceiling=base;
+  var vm=raw.match(/\b(\d+)?\s*(\d\/\d|\d+)?SM\b/);
+  if(vm){var text=vm[0].replace(/SM/,"").trim();var parts=text.split(/\s+/);var val=0;parts.forEach(function(q){if(q.indexOf("/")>0){var z=q.split("/");val+=Number(z[0])/Number(z[1])}else if(q)val+=Number(q)});if(isFinite(val))visibility=val}
+ }
+ var t=p.timestamp||p.time||null;
+ return {id:id,time:t?new Date(t):null,ceilingFt:ceiling,visSm:visibility,cat:category(ceiling,visibility),raw:raw,properties:p};
+}
+function zDate(day,hour,minute,base){
+ var d=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),day,hour,minute||0));
+ var delta=d-base;
+ if(delta>15*86400000)d.setUTCMonth(d.getUTCMonth()-1);
+ if(delta< -15*86400000)d.setUTCMonth(d.getUTCMonth()+1);
+ return d;
+}
+function parseDayHour(s,base){var m=/^(\d{2})(\d{2})$/.exec(s||"");return m?zDate(Number(m[1]),Number(m[2]),0,base):null}
+function parsePeriod(s,base){
+ var m=/(\d{2})(\d{2})\/(\d{2})(\d{2})/.exec(s||"");
+ if(!m)return null;
+ var a=zDate(+m[1],+m[2],0,base),b=zDate(+m[3],+m[4],0,base);
+ if(b<=a)b.setUTCMonth(b.getUTCMonth()+1);
+ if(a-base>20*86400000)a.setUTCMonth(a.getUTCMonth()-1);
+ if(base-a>20*86400000)a.setUTCMonth(a.getUTCMonth()+1);
+ if(b<a)b.setUTCMonth(b.getUTCMonth()+1);
+ return {start:a,end:b};
+}
+function conditionFromText(text){
+ var c=null,v=null;
+ var cloudRx=/\b(FEW|SCT|BKN|OVC|VV)(\d{3})\b/g,m;
+ while((m=cloudRx.exec(text))!==null){if(m[1]==="BKN"||m[1]==="OVC"||m[1]==="VV"){var n=Number(m[2])*100;c=c==null?n:Math.min(c,n)}}
+ var vis=/\b(P?\d+(?:\/\d+)?|\d+\s+\d+\/\d+)SM\b/.exec(text);
+ if(vis){var q=vis[1].replace(/^P/,"").split(/\s+/);v=0;q.forEach(function(x){if(x.indexOf("/")>=0){var a=x.split("/");v+=Number(a[0])/Number(a[1])}else v+=Number(x)});if(/^P/.test(vis[1]))v=Math.max(6,v)}
+ if(/\bCAVOK\b/.test(text)){c=Infinity;v=10}
+ if(/\bP6SM\b/.test(text))v=10;
+ return {ceilingFt:c,visSm:v,cat:category(c,v)};
+}
+function tokenizeTaf(raw,now){
+ if(!raw)return null;
+ var txt=raw.replace(/\s+/g," ").trim(),m=txt.match(/\b(\d{4})\/(\d{4})\b/),period=m?parsePeriod(m[0],now):null;
+ var start=period?period.start:new Date(now.getTime()-3600000),end=period?period.end:new Date(now.getTime()+24*3600000);
+ var marker=/(?:^|\s)(PROB30(?:\s+TEMPO)?|TEMPO|FM\d{6}|BECMG|PROB40)(?=\s|$)/g,marks=[],x;
+ while((x=marker.exec(txt))!==null)marks.push({index:x.index+(x[0].length-x[0].trimStart().length),token:x[1]});
+ var headerEnd=txt.indexOf(" ",txt.indexOf("Z")+1); if(headerEnd<0)headerEnd=0;
+ var initial=txt.slice(headerEnd,marks.length?marks[0].index:txt.length);
+ var groups=[{kind:"prevailing",start:start,end:end,raw:initial,cond:conditionFromText(initial)}];
+ marks.forEach(function(mark,i){
+   var stop=i+1<marks.length?marks[i+1].index:txt.length,body=txt.slice(mark.index+mark.token.length,stop).trim(),kind="prevailing",valid=null,condText=body;
+   if(mark.token.indexOf("FM")===0){
+     kind="FM";var fm=mark.token.slice(2),d=zDate(+fm.slice(0,2),+fm.slice(2,4),+fm.slice(4,6),now);
+     if(d-now>15*86400000)d.setUTCMonth(d.getUTCMonth()-1);
+     if(now-d>15*86400000)d.setUTCMonth(d.getUTCMonth()+1);
+     valid={start:d,end:end};
+   }else if(mark.token==="TEMPO"||mark.token.indexOf("PROB30")===0||mark.token==="PROB40"||mark.token==="BECMG"){
+     kind=mark.token.indexOf("PROB30")===0?"PROB30":mark.token==="PROB40"?"PROB40":mark.token;
+     var pm=/(\d{4})\/(\d{4})/.exec(body);valid=pm?parsePeriod(pm[0],now):null;
+     if(pm)condText=body.replace(pm[0],"").trim();
+   }
+   var g={kind:kind,start:valid?valid.start:start,end:valid?valid.end:end,raw:condText,cond:conditionFromText(condText)};
+   if(kind==="FM"&&valid){groups=groups.filter(function(a){if(a.kind==="prevailing")return false;return true});groups.push(g)}
+   else groups.push(g);
+ });
+ groups.sort(function(a,b){return a.start-b.start});
+ var prev=groups.filter(function(g){return g.kind==="prevailing"||g.kind==="FM"}).sort(function(a,b){return a.start-b.start);
+ var current=prev.filter(function(g){return g.start<=now&&now<g.end}).pop()||prev[0]||groups[0];
+ var overlays=groups.filter(function(g){return ["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&g.start<=now&&now<g.end});
+ var allTimeline=groups.filter(function(g){return g.end>now-3600000&&g.start<end});
+ return {raw:txt,start:start,end:end,groups:allTimeline,current:current,overlays:overlays,issue:(txt.match(/\b\d{6}Z\b/)||[])[0]||"—"};
+}
+function getTafFromJson(json,id){
+ var arr=Array.isArray(json)?json:(json&&json.features)||[];
+ if(json&&json.properties&&json.properties.rawTAF)arr=[json];
+ var candidates=arr.filter(function(f){var p=f.properties||f;return !p.icaoId||p.icaoId===id||p.stationId===id||p.id===id});
+ candidates.sort(function(a,b){var pa=a.properties||a,pb=b.properties||b;return new Date(pb.issueTime||pb.bulletinTime||0)-new Date(pa.issueTime||pa.bulletinTime||0)});
+ var f=candidates[0];if(!f)return null;var p=f.properties||f;
+ return p.rawTAF||p.rawText||p.text||p.taf||null;
+}
+async function getJson(url){
+ var r=await fetch(url,{cache:"no-store",headers:{"Accept":"application/geo+json, application/ld+json, application/json"}});
+ if(r.status===204)return null;
+ if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
+ return r.json();
+}
+async function loadSite(site){
+ var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
+ var oUrl="https://api.weather.gov/stations/"+site.id+"/observations/latest";
+ var tUrl="https://api.weather.gov/stations/"+site.id+"/tafs";
+ var outcomes=await Promise.allSettled([getJson(oUrl),getJson(tUrl)]);
+ if(outcomes[0].status==="fulfilled"){
+   var oj=outcomes[0].value,feature=oj&&(oj.features?oj.features[0]:oj);
+   if(feature)result.obs=obsFromFeature(feature,site.id);else result.obsError="No current observation";
+ }else result.obsError=outcomes[0].reason.message;
+ if(outcomes[1].status==="fulfilled"){
+   var raw=getTafFromJson(outcomes[1].value,site.id);
+   if(raw)result.taf=tokenizeTaf(raw,new Date());else result.tafError="No TAF returned by NWS API";
+ }else result.tafError=outcomes[1].reason.message;
+ return result;
+}
+function diff(obs,taf){
+ if(!obs||!taf||!obs.cat||!taf.cat||catIndex(obs.cat)<0||catIndex(taf.cat)<0)return null;
+ return Math.abs(catIndex(obs.cat)-catIndex(taf.cat));
+}
+function renderTimeline(t,obs){
+ var now=new Date(),start=t.start,end=t.end,total=end-start;
+ if(total<=0)return '<div class="muted">No valid timeline</div>';
+ var ticks="",steps=[0,3,6,9,12,15,18,21,24];
+ steps.forEach(function(h){var d=new Date(start.getTime()+h*3600000);ticks+='<span>'+String(d.getUTCHours()).padStart(2,"0")+'Z</span>'});
+ var segments="";
+ t.groups.forEach(function(g){
+  var a=Math.max(start,g.start),b=Math.min(end,g.end);if(b<=a)return;
+  var width=(b-a)/total*100,left=(a-start)/total*100;
+  var c=g.cond.cat||"NA",extra=(g.kind==="TEMPO"?" tempo":g.kind.indexOf("PROB")===0?" prob":"");
+  var verifying=obs&&g.kind!=="FM"&&["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&now>=g.start&&now<g.end&&diff(obs,g.cond)===0;
+  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%">'+(width>7?esc(g.kind==="prevailing"||g.kind==="FM"?c:g.kind+" "+c):"")+'</div>';
+ });
+ return '<div class="ticks">'+ticks+'</div><div class="track">'+segments+'</div>';
+}
+function render(results){
+ var now=new Date(),rows="",mismatch=0,tempo=0,prob=0,active=[];
+ results.forEach(function(r){
+  var site=r.site,o=r.obs,t=r.taf,current=t&&t.current,over=t?t.overlays:[],prevCat=current&&current.cond?current.cond.cat:null;
+  var d=diff(o,current&&current.cond),hasMismatch=d!==null&&d>0;
+  if(hasMismatch)mismatch++;
+  over.forEach(function(g){if(o&&diff(o,g.cond)===0){if(g.kind==="TEMPO")tempo++;if(g.kind==="PROB30"||g.kind==="PROB40")prob++;active.push({site:site,group:g,obs:o,taf:current})}});
+  var rowClass=hasMismatch?" mismatch-"+Math.min(3,d):"";
+  if(over.length&&o&&over.some(function(g){return diff(o,g.cond)===0}))rowClass+=" group-active";
+  var obsText=o?((o.ceilingFt==null?"—":Math.round(o.ceilingFt).toLocaleString()+" ft")+"<br>"+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")):"<span class='muted'>Unavailable</span>";
+  var obsTime=o&&o.time?utc(o.time):"—";
+  var obsCat=o?o.cat:"NA",tafCat=current&&current.cond?current.cond.cat:"NA";
+  var diffText=d===null?"NO DATA":d===0?"MATCH":d+" CAT"+(d===1?" OFF":"S OFF");
+  var diffClass=d===null?"pending":d===0?"":"off"+Math.min(3,d);
+  var raw=t?t.raw:"TAF unavailable";
+  rows+='<tr class="clickable'+rowClass+'" data-site="'+site.id+'"><td class="airport"><strong>'+site.id+'</strong><small>'+site.city+'</small></td><td class="obs-time">'+esc(obsTime)+'</td><td class="obs-data">'+obsText+'</td><td><span class="cat '+obsCat+'">'+obsCat+'</span></td><td><span class="cat '+tafCat+'">'+tafCat+'</span></td><td><span class="diff '+diffClass+'">'+diffText+'</span></td><td class="timeline">'+(t?renderTimeline(t,o):'<span class="muted">TAF unavailable</span>')+'<div class="raw" id="raw-'+site.id+'">'+esc(raw)+'</div></td></tr>';
+ });
+ $("airportRows").innerHTML=rows;
+ $("mismatchCount").textContent=mismatch;
+ $("tempoCount").textContent=tempo;
+ $("probCount").textContent=prob;
+ $("obsUpdated").textContent=lastObsSuccess?utc(lastObsSuccess):"—";
+ $("tafUpdated").textContent=lastTafSuccess?utc(lastTafSuccess):"—";
+ $("nextUpdate").textContent=utc(new Date(Date.now()+TICK));
+ if(active.length){
+  var a=active[0],g=a.group;
+  $("activeGroup").innerHTML='<div class="active-card"><span class="status-pill">ACTIVE / VERIFYING</span><strong>'+esc(a.site.id)+' • '+esc(g.kind)+' • OBS '+esc(a.obs.cat)+'</strong><p>Current observations match the '+esc(g.kind)+' forecast category during its valid window. Forecast group: '+esc(g.cond.cat)+'.</p><p class="small-note">Group conditions: '+esc(g.raw||"—")+'</p></div>';
+ }else{
+  $("activeGroup").innerHTML='<div class="active-card"><strong>No TEMPO / PROB30 group currently verifying</strong><p>Groups are highlighted only when their validity window is active and the observed category matches the group category. A non-verifying group is not automatically a forecast miss.</p></div>';
+ }
+ var errs=[];
+ results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
+ if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
+ else $("errorBanner").style.display="none";
+ $("sourceStatus").textContent="Source: api.weather.gov • Browser-side polling • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
+}
+async function refresh(){
+ if(busy)return;busy=true;
+ try{
+  var results=await Promise.all(SITES.map(loadSite));
+  results.forEach(function(r){if(r.obs)latestObs[r.site.id]=r.obs;if(r.taf)latestTaf[r.site.id]=r.taf});
+  lastObsSuccess=results.some(function(r){return !!r.obs})?new Date():lastObsSuccess;
+  lastTafSuccess=results.some(function(r){return !!r.taf})?new Date():lastTafSuccess;
+  render(results);
+ }catch(e){
+  $("errorBanner").style.display="block";$("errorBanner").textContent="Refresh failed: "+e.message+". Existing data is retained until the next attempt.";
+ }finally{busy=false}
+}
+refresh();
+setInterval(refresh,TICK);
+setInterval(function(){$("nextUpdate").textContent=utc(new Date(Date.now()+TICK))},15000);
+})();
+</script>
+</body>
+</html>
