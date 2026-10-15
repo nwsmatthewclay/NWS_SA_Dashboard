@@ -136,12 +136,27 @@ function tokenizeTaf(raw,now){
  return {raw:txt,start:start,end:end,groups:allTimeline,current:current,overlays:overlays,issue:(txt.match(/\b\d{6}Z\b/)||[])[0]||"—"};
 }
 function getTafFromJson(json,id){
- var arr=Array.isArray(json)?json:(json&&json.features)||((json&&json["@graph"])||[]);
- if(json&&!Array.isArray(json)&&(json.rawTAF||json.rawTaf||json.raw_text||json.raw||json.taf||json.properties))arr=[json];
- var candidates=arr.filter(function(f){var p=f.properties||f;var sid=p.icaoId||p.stationId||p.stationIdentifier||p.station||p.icao;return !sid||String(sid).toUpperCase()===id});
- candidates.sort(function(a,b){var pa=a.properties||a,pb=b.properties||b;return new Date(pb.issueTime||pb.bulletinTime||pb.issuetime||pb.issueTimeUtc||0)-new Date(pa.issueTime||pa.bulletinTime||pa.issuetime||pa.issueTimeUtc||0)});
- var f=candidates[0];if(!f)return null;var p=f.properties||f;
- return p.rawTAF||p.rawTaf||p.raw_text||p.rawText||p.raw||p.text||p.taf||p.forecast||null;
+ var seen=[],records=[];
+ function walk(x,depth){
+  if(x==null||depth>8)return;
+  if(typeof x==="string"){
+   var s=x.trim();
+   if(/^(?:TAF\s+)?(?:AMD\s+|COR\s+)?[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\b/.test(s))records.push(s);
+   return;
+  }
+  if(Array.isArray(x)){x.forEach(function(v){walk(v,depth+1)});return}
+  if(typeof x==="object"){
+   var p=x.properties&&typeof x.properties==="object"?x.properties:x;
+   var sid=p.icaoId||p.stationId||p.stationIdentifier||p.station||p.icao;
+   var direct=p.rawTAF||p.rawTaf||p.raw_text||p.rawText||p.raw||p.text||p.taf||p.forecast;
+   if(direct&&typeof direct==="string"&&(!sid||String(sid).toUpperCase()===id))records.push(direct.trim());
+   Object.keys(x).forEach(function(k){if(k!=="@context")walk(x[k],depth+1)});
+  }
+ }
+ walk(json,0);
+ var uniq=records.filter(function(v,i,a){return a.indexOf(v)===i});
+ var matches=uniq.filter(function(s){return new RegExp("\\b"+id+"\\b").test(s)||new RegExp("\\bTAF\\s+"+id+"\\b").test(s)});
+ return matches[0]||uniq[0]||null;
 }
 async function getJson(url){
  var r=await fetch(url,{cache:"no-cache"});
