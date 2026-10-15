@@ -136,7 +136,7 @@ function tokenizeTaf(raw,now){
  return {raw:txt,start:start,end:end,groups:allTimeline,current:current,overlays:overlays,issue:(txt.match(/\b\d{6}Z\b/)||[])[0]||"—"};
 }
 function getTafFromJson(json,id){
- var arr=Array.isArray(json)?json:(json&&json.features)||[];
+ var arr=Array.isArray(json)?json:(json&&json.features)||((json&&json["@graph"])||[]);
  if(json&&json.properties&&json.properties.rawTAF)arr=[json];
  var candidates=arr.filter(function(f){var p=f.properties||f;return !p.icaoId||p.icaoId===id||p.stationId===id||p.id===id});
  candidates.sort(function(a,b){var pa=a.properties||a,pb=b.properties||b;return new Date(pb.issueTime||pb.bulletinTime||0)-new Date(pa.issueTime||pa.bulletinTime||0)});
