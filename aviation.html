@@ -152,7 +152,7 @@ async function getJson(url){
 async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var oUrl="https://api.weather.gov/stations/"+site.id+"/observations/latest";
- var tUrl="https://aviationweather.gov/api/data/taf?ids="+site.id+"&format=json";
+ var tUrl="https://api.weather.gov/stations/"+site.id+"/tafs";
  var outcomes=await Promise.allSettled([getJson(oUrl),getJson(tUrl)]);
  if(outcomes[0].status==="fulfilled"){
    var oj=outcomes[0].value,feature=oj&&(oj.features?oj.features[0]:oj);
