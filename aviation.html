@@ -24,7 +24,7 @@ footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-cont
 <header><div><h1>BTV AVIATION &nbsp;|&nbsp; TAF vs OBSERVATIONS</h1><div class="subhead">Terminal forecast verification • five-minute refresh • UTC</div></div><div class="top-meta"><div class="meta"><small>Observations updated</small><strong id="obsUpdated">—</strong></div><div class="meta"><small>TAFs retrieved</small><strong id="tafUpdated">—</strong></div><div class="meta"><small>Next refresh</small><strong id="nextUpdate">—</strong></div></div></header>
 <div class="wrap">
 <div class="error-banner" id="errorBanner"></div>
-<section class="panel"><div class="table-scroll"><table class="board"><thead><tr><th style="width:150px">AIRPORT<br><span class="muted">(City)</span></th><th>OBS TIME<br>(UTC)</th><th>OBSERVED<br><span class="muted">Wind • Ceiling • Weather • Visibility</span></th><th>OBS<br>CATEGORY</th><th>TAF<br>CATEGORY</th><th>DIFFERENCE</th><th style="min-width:360px">24-HOUR TAF TIMELINE (UTC)</th></tr></thead><tbody id="airportRows"><tr><td colspan="7" style="padding:30px;text-align:center">Loading current observations and TAFs…</td></tr></tbody></table></div><div class="legend"><span><i class="swatch"></i>Prevailing TAF</span><span><i class="swatch dashed"></i>TEMPO window</span><span><i class="swatch prob"></i>PROB30 window</span><span><i class="swatch active"></i>Active group verifying</span><span class="small-note">Flash rate increases with category error.</span></div></section>
+<section class="panel"><div class="table-scroll"><table class="board"><thead><tr><th style="width:150px">AIRPORT<br><span class="muted">(City)</span></th><th>OBS TIME<br>(UTC)</th><th>OBSERVED<br><span class="muted">Wind • Clouds • Weather • Visibility</span></th><th>OBS<br>CATEGORY</th><th>TAF<br>CATEGORY</th><th>DIFFERENCE</th><th style="min-width:360px">24-HOUR TAF TIMELINE (UTC)</th></tr></thead><tbody id="airportRows"><tr><td colspan="7" style="padding:30px;text-align:center">Loading current observations and TAFs…</td></tr></tbody></table></div><div class="legend"><span><i class="swatch"></i>Prevailing TAF</span><span><i class="swatch dashed"></i>TEMPO window</span><span><i class="swatch prob"></i>PROB30 window</span><span><i class="swatch active"></i>Active group verifying</span><span class="small-note">Flash rate increases with category error.</span></div></section>
 <div class="bottom">
 <section class="panel"><h2>ACTIVE GROUP VERIFICATION</h2><div class="inner" id="activeGroup"><div class="active-card"><strong>Waiting for live data</strong><p>When a TEMPO or PROB30 group is active and observations match its forecast category, the verifying group will be highlighted here.</p></div></div></section>
 <section class="panel"><h2>CATEGORY DIFFERENCE</h2><div class="inner scale"><div class="stack"><span class="cat VFR">VFR</span><span class="cat MVFR">MVFR</span><span class="cat IFR">IFR</span><span class="cat LIFR">LIFR</span></div><p>0 = match<br>1 = one category off<br>2 = two categories off<br>3 = three categories off</p></div></section>
@@ -59,6 +59,8 @@ function obsFromFeature(f,id){
  var p=(f&&f.properties)||{},raw=p.rawMessage||p.rawMETAR||"";
  var ceiling=p.ceiling&&num(p.ceiling.value)!=null?ft(p.ceiling.value):null;
  var visibility=p.visibility&&num(p.visibility.value)!=null?sm(p.visibility.value):null;
+ var cloudMatch=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}(?:CB|TCU)?\b/g)||[];
+ var cloudsText=cloudMatch.length?cloudMatch.join(" "):(/\b(?:SKC|CLR|NSC|NCD)\b/.exec(raw)||[])[0]||"—";
  if(raw){
   var clouds=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}/g)||[],base=Infinity;
   clouds.forEach(function(x){if(/^(BKN|OVC|VV)/.test(x)){var n=Number(x.slice(-3))*100;if(n<base)base=n}});
@@ -99,7 +101,7 @@ function obsFromFeature(f,id){
  if(!wx.length&&metarWx.length)wx=metarWx.map(function(x){return x.trim()});
  var weatherText=wx.length?wx.join(", "):"No significant weather reported";
  var t=p.timestamp||p.time||null;
- return {id:id,time:t?new Date(t):null,ceilingFt:ceiling,visSm:visibility,wind:windText,weather:weatherText,cat:category(ceiling,visibility),raw:raw,properties:p};
+ return {id:id,time:t?new Date(t):null,ceilingFt:ceiling,clouds:cloudsText,visSm:visibility,wind:windText,weather:weatherText,cat:category(ceiling,visibility),raw:raw,properties:p};
 }
 function zDate(day,hour,minute,base){
  var d=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),day,hour,minute||0));
@@ -158,7 +160,7 @@ function tokenizeTaf(raw,now){
  var current=prev.filter(function(g){return g.start<=now&&now<g.end}).pop()||prev[0]||groups[0];
  var overlays=groups.filter(function(g){return ["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&g.start<=now&&now<g.end});
  var allTimeline=groups.filter(function(g){return g.end>now-3600000&&g.start<end});
- return {raw:txt,start:start,end:end,groups:allTimeline,current:current,overlays:overlays,issue:(txt.match(/\b\d{6}Z\b/)||[])[0]||"—"};
+ return {raw:displayRaw,start:start,end:end,groups:allTimeline,current:current,overlays:overlays,issue:(txt.match(/\b\d{6}Z\b/)||[])[0]||"—"};
 }
 function getTafFromJson(json,id){
  var value=json&&json.tafs&&json.tafs[id];
@@ -217,7 +219,7 @@ function render(results){
   over.forEach(function(g){if(o&&diff(o,g.cond)===0){if(g.kind==="TEMPO")tempo++;if(g.kind==="PROB30"||g.kind==="PROB40")prob++;active.push({site:site,group:g,obs:o,taf:current})}});
   var rowClass=hasMismatch?" mismatch-"+Math.min(3,d):"";
   if(over.length&&o&&over.some(function(g){return diff(o,g.cond)===0}))rowClass+=" group-active";
-  var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Ceiling: "+(o.ceilingFt==null?"—":Math.round(o.ceilingFt).toLocaleString()+" ft")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
+  var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Clouds: "+esc(o.clouds||"—")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
   var obsTime=o&&o.time?((/^SPECI\b/.test(o.raw||"")?"SPECI ":"")+utc(o.time)):"—";
   var obsCat=o?o.cat:"NA",tafCat=current&&current.cond?current.cond.cat:"NA";
   var diffText=d===null?"NO DATA":d===0?"MATCH":d+" CAT"+(d===1?" OFF":"S OFF");
