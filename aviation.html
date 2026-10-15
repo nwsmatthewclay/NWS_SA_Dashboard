@@ -125,8 +125,7 @@ function tokenizeTaf(raw,now){
      if(pm)condText=body.replace(pm[0],"").trim();
    }
    var g={kind:kind,start:valid?valid.start:start,end:valid?valid.end:end,raw:condText,cond:conditionFromText(condText)};
-   if(kind==="FM"&&valid){groups=groups.filter(function(a){if(a.kind==="prevailing")return false;return true});groups.push(g)}
-   else groups.push(g);
+   groups.push(g);
  });
  groups.sort(function(a,b){return a.start-b.start});
  var prev=groups.filter(function(g){return g.kind==="prevailing"||g.kind==="FM"}).sort(function(a,b){return a.start-b.start;});
