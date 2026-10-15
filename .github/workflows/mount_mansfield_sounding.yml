@@ -1,0 +1,131 @@
+name: Mount Mansfield Sounding
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Independent of the longer dashboard workflow. GitHub schedules are
+    # best-effort; the freshness gate below prevents stale data being published.
+    - cron: "*/15 * * * *"
+    # Offset schedule provides another opportunity between quarter-hour runs.
+    - cron: "7,22,37,52 * * * *"
+
+concurrency:
+  # Shared with the main dashboard workflow because both publish to outputs/.
+  group: dashboard-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sounding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy requests matplotlib metpy google-api-python-client google-auth
+
+      - name: Generate sounding and diagnostics with one retry
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
+          GLWU_DRIVE_FOLDER_ID: ${{ secrets.GLWU_DRIVE_FOLDER_ID }}
+          MANSFIELD_DRIVE_FOLDER_ID: ${{ secrets.MANSFIELD_DRIVE_FOLDER_ID }}
+        run: |
+          set -e
+          for attempt in 1 2; do
+            echo "Mount Mansfield generation attempt ${attempt}/2"
+            if python tempprofile.py; then
+              break
+            fi
+            if [ "$attempt" -eq 2 ]; then
+              echo "::error::Mount Mansfield generation failed twice; existing published outputs will be retained."
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Validate output completeness and freshness
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+
+          required = [
+              "outputs/vt_pseudo_sounding.png",
+              "outputs/vt_dashboard_card.png",
+              "outputs/vt_station_table.png",
+              "outputs/vt_diagnostics.png",
+              "outputs/vt_diagnostics_status.json",
+          ]
+          missing = [path for path in required if not os.path.isfile(path) or os.path.getsize(path) == 0]
+          if missing:
+              raise SystemExit("Missing or empty output(s): " + ", ".join(missing))
+
+          with open("outputs/vt_diagnostics_status.json", encoding="utf-8") as handle:
+              status = json.load(handle)
+
+          now = datetime.now(timezone.utc)
+          generated_raw = status.get("generated_at")
+          if not generated_raw:
+              raise SystemExit("Status JSON has no generated_at timestamp.")
+          generated = datetime.fromisoformat(generated_raw.replace("Z", "+00:00"))
+          generated_age = (now - generated.astimezone(timezone.utc)).total_seconds() / 60
+          if generated_age < -5 or generated_age > 30:
+              raise SystemExit(f"Generated status is {generated_age:.1f} minutes old; refusing to publish.")
+
+          observed_raw = status.get("observed_at")
+          if observed_raw:
+              observed = datetime.fromisoformat(observed_raw.replace("Z", "+00:00"))
+              observed_age = (now - observed.astimezone(timezone.utc)).total_seconds() / 60
+              print(f"Observation age: {observed_age:.1f} minutes; generated status age: {generated_age:.1f} minutes.")
+              if observed_age < -5 or observed_age > 30:
+                  raise SystemExit(f"Latest observation is {observed_age:.1f} minutes old; refusing to publish stale data.")
+          else:
+              print("::warning::Status JSON has no observed_at timestamp; output generated but observation freshness cannot be verified.")
+
+          print("All required Mount Mansfield outputs exist and pass freshness checks.")
+          PY
+
+      - name: Upload generated outputs for diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mount-mansfield-${{ github.run_number }}
+          path: |
+            outputs/vt_pseudo_sounding.png
+            outputs/vt_dashboard_card.png
+            outputs/vt_station_table.png
+            outputs/vt_diagnostics.png
+            outputs/vt_diagnostics_status.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Publish only Mount Mansfield outputs
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add outputs/vt_pseudo_sounding.png outputs/vt_dashboard_card.png outputs/vt_station_table.png outputs/vt_diagnostics.png outputs/vt_diagnostics_status.json
+          if git diff --cached --quiet; then
+            echo "No Mount Mansfield output changes to publish."
+            exit 0
+          fi
+          git commit -m "Update Mount Mansfield sounding and diagnostics"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
