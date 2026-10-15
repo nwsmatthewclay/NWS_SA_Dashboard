@@ -136,27 +136,8 @@ function tokenizeTaf(raw,now){
  return {raw:txt,start:start,end:end,groups:allTimeline,current:current,overlays:overlays,issue:(txt.match(/\b\d{6}Z\b/)||[])[0]||"—"};
 }
 function getTafFromJson(json,id){
- var seen=[],records=[];
- function walk(x,depth){
-  if(x==null||depth>8)return;
-  if(typeof x==="string"){
-   var s=x.trim();
-   if(/^(?:TAF\s+)?(?:AMD\s+|COR\s+)?[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\b/.test(s))records.push(s);
-   return;
-  }
-  if(Array.isArray(x)){x.forEach(function(v){walk(v,depth+1)});return}
-  if(typeof x==="object"){
-   var p=x.properties&&typeof x.properties==="object"?x.properties:x;
-   var sid=p.icaoId||p.stationId||p.stationIdentifier||p.station||p.icao;
-   var direct=p.rawTAF||p.rawTaf||p.raw_text||p.rawText||p.raw||p.text||p.taf||p.forecast;
-   if(direct&&typeof direct==="string"&&(!sid||String(sid).toUpperCase()===id))records.push(direct.trim());
-   Object.keys(x).forEach(function(k){if(k!=="@context")walk(x[k],depth+1)});
-  }
- }
- walk(json,0);
- var uniq=records.filter(function(v,i,a){return a.indexOf(v)===i});
- var matches=uniq.filter(function(s){return new RegExp("\\b"+id+"\\b").test(s)||new RegExp("\\bTAF\\s+"+id+"\\b").test(s)});
- return matches[0]||uniq[0]||null;
+ var value=json&&json.tafs&&json.tafs[id];
+ return typeof value==="string"&&value.trim()?value.trim():null;
 }
 async function getJson(url){
  var r=await fetch(url,{cache:"no-cache"});
@@ -164,19 +145,18 @@ async function getJson(url){
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
 }
-async function loadSite(site){
+async function loadSite(site,tafFeed,tafFeedError){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var oUrl="https://api.weather.gov/stations/"+site.id+"/observations/latest";
- var tUrl="https://api.weather.gov/stations/"+site.id+"/tafs";
- var outcomes=await Promise.allSettled([getJson(oUrl),getJson(tUrl)]);
- if(outcomes[0].status==="fulfilled"){
-   var oj=outcomes[0].value,feature=oj&&(oj.features?oj.features[0]:oj);
-   if(feature)result.obs=obsFromFeature(feature,site.id);else result.obsError="No current observation";
- }else result.obsError=outcomes[0].reason.message;
- if(outcomes[1].status==="fulfilled"){
-   var raw=getTafFromJson(outcomes[1].value,site.id);
-   if(raw)result.taf=tokenizeTaf(raw,new Date());else result.tafError="No TAF returned by NWS API";
- }else result.tafError=outcomes[1].reason.message;
+ try{
+  var oj=await getJson(oUrl),feature=oj&&(oj.features?oj.features[0]:oj);
+  if(feature)result.obs=obsFromFeature(feature,site.id);else result.obsError="No current observation";
+ }catch(e){result.obsError=e.message}
+ if(tafFeedError){result.tafError="TAF feed unavailable: "+tafFeedError}
+ else{
+  var raw=getTafFromJson(tafFeed,site.id);
+  if(raw)result.taf=tokenizeTaf(raw,new Date());else result.tafError="No TAF for "+site.id+" in published Aviation Weather Center feed";
+ }
  return result;
 }
 function diff(obs,taf){
@@ -232,13 +212,15 @@ function render(results){
  results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Source: api.weather.gov • Browser-side polling • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Source: NWS observations + Aviation Weather Center TAF feed • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
  if(busy)return;busy=true;
  try{
-  var results=await Promise.all(SITES.map(loadSite));
+  var feed=null,feedError=null;
+   try{feed=await getJson("data/aviation_tafs.json")}catch(e){feedError=e.message}
+   var results=await Promise.all(SITES.map(function(site){return loadSite(site,feed,feedError)}));
   results.forEach(function(r){if(r.obs)latestObs[r.site.id]=r.obs;if(r.taf)latestTaf[r.site.id]=r.taf});
   lastObsSuccess=results.some(function(r){return !!r.obs})?new Date():lastObsSuccess;
   lastTafSuccess=results.some(function(r){return !!r.taf})?new Date():lastTafSuccess;
