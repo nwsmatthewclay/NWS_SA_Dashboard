@@ -64,11 +64,11 @@ function obsFromFeature(f,id){
  if(raw){
   var clouds=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}/g)||[],base=Infinity;
   clouds.forEach(function(x){if(/^(BKN|OVC|VV)/.test(x)){var n=Number(x.slice(-3))*100;if(n<base)base=n}});
-  if(ceiling==null&&base!==Infinity)ceiling=base;
-  if(visibility==null){
-   var vm=raw.match(/\b(?:P?\d+(?:\s+\d+\/\d+|\d+\/\d+)?|\d+\s+\d+\/\d+)SM\b/);
-   if(vm){var text=vm[0].replace(/SM/,"").replace(/^P/,"").trim(),parts=text.split(/\s+/),val=0;parts.forEach(function(q){if(q.indexOf("/")>0){var z=q.split("/");val+=Number(z[0])/Number(z[1])}else if(q)val+=Number(q)});if(isFinite(val))visibility=val}
-  }
+  // The raw METAR is the source of truth for the observed ceiling/category.
+  // A cloud base is a ceiling only for BKN, OVC, or vertical visibility (VV).
+  ceiling=base===Infinity?null:base;
+  var vm=raw.match(/\b(?:P?\d+(?:\s+\d+\/\d+|\d+\/\d+)?|\d+\s+\d+\/\d+)SM\b/);
+  if(vm){var visText=vm[0].replace(/SM/,"").replace(/^P/,"").trim(),parts=visText.split(/\s+/),val=0;parts.forEach(function(q){if(q.indexOf("/")>0){var z=q.split("/");val+=Number(z[0])/Number(z[1])}else if(q)val+=Number(q)});if(isFinite(val))visibility=val}
  }
  var windDir=p.windDirection&&num(p.windDirection.value)!=null?num(p.windDirection.value):null;
  function toKnots(measurement){
@@ -167,7 +167,8 @@ function getTafFromJson(json,id){
  return typeof value==="string"&&value.trim()?value.trim():null;
 }
 async function getJson(url){
- var r=await fetch(url,{cache:"no-cache"});
+ var separator=url.indexOf("?")>=0?"&":"?";
+ var r=await fetch(url+separator+"_="+Date.now(),{cache:"no-store"});
  if(r.status===204)return null;
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
