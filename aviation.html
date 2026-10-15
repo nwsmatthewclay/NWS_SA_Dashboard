@@ -226,9 +226,9 @@ function render(results){
   rows+='<tr class="clickable'+rowClass+'" data-site="'+site.id+'"><td class="airport"><strong>'+site.id+'</strong><small>'+site.city+'</small></td><td class="obs-time">'+esc(obsTime)+'</td><td class="obs-data">'+obsText+'</td><td><span class="cat '+obsCat+'">'+obsCat+'</span></td><td><span class="cat '+tafCat+'">'+tafCat+'</span></td><td><span class="diff '+diffClass+'">'+diffText+'</span></td><td class="timeline">'+(t?renderTimeline(t,o):'<span class="muted">TAF unavailable</span>')+'<div class="raw" id="raw-'+site.id+'">'+esc(raw)+'</div></td></tr>';
  });
  $("airportRows").innerHTML=rows;
- $("mismatchCount").textContent=mismatch;
- $("tempoCount").textContent=tempo;
- $("probCount").textContent=prob;
+
+
+
  $("obsUpdated").textContent=lastObsSuccess?utc(lastObsSuccess):"—";
  $("tafUpdated").textContent=lastTafSuccess?utc(lastTafSuccess):"—";
  $("nextUpdate").textContent=utc(new Date(Date.now()+TICK));
