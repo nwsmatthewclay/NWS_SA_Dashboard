@@ -69,8 +69,16 @@ function obsFromFeature(f,id){
   }
  }
  var windDir=p.windDirection&&num(p.windDirection.value)!=null?num(p.windDirection.value):null;
- var windKt=p.windSpeed&&num(p.windSpeed.value)!=null?num(p.windSpeed.value)*1.943844:null;
- var gustKt=p.windGust&&num(p.windGust.value)!=null?num(p.windGust.value)*1.943844:null;
+ function toKnots(measurement){
+  if(!measurement||num(measurement.value)==null)return null;
+  var unit=String(measurement.unitCode||"").split(":").pop();
+  if(unit==="m_s-1")return num(measurement.value)*1.943844;
+  if(unit==="km_h-1")return num(measurement.value)/1.852;
+  if(unit==="mi_h-1")return num(measurement.value)*0.868976;
+  if(unit==="kt")return num(measurement.value);
+  return null;
+ }
+ var windKt=toKnots(p.windSpeed),gustKt=toKnots(p.windGust);
  var windRaw=raw.match(/\b(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT\b/),windText="—";
  if(windKt!=null){
   windText=(windDir!=null?String(Math.round(windDir)).padStart(3,"0")+"° ":windRaw?(windRaw[1]==="VRB"?"VRB ":windRaw[1]+"° "):"")+Math.round(windKt)+" kt";
