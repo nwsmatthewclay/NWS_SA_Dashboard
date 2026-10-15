@@ -211,15 +211,19 @@ function renderTimeline(t,obs){
   lastHour=hour;
  }
  if(totalHours-lastHour>0.75)ticks+='<span>'+String(end.getUTCHours()).padStart(2,"0")+'Z</span>';
- var segments="",shownCategories={};
+ var segments="",categoryWidest={};
+ t.groups.forEach(function(g){
+  var a=Math.max(start,g.start),b=Math.min(end,g.end);if(b<=a)return;
+  var width=(b-a)/total*100,cat=g.cond.cat||"NA";
+  if(!categoryWidest[cat]||width>categoryWidest[cat].width)categoryWidest[cat]={group:g,width:width};
+ });
  t.groups.forEach(function(g){
   var a=Math.max(start,g.start),b=Math.min(end,g.end);if(b<=a)return;
   var width=(b-a)/total*100,left=(a-start)/total*100;
   var c=g.cond.cat||"NA",extra=(g.kind==="TEMPO"?" tempo":g.kind.indexOf("PROB")===0?" prob":"");
   var verifying=obs&&g.kind!=="FM"&&["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&now>=g.start&&now<g.end&&diff(obs,g.cond)===0;
-  // Keep the timeline visually concise: label each flight category at most once per airport row.
-  var label=width>7&&!shownCategories[c]?c:"";
-  if(label)shownCategories[c]=true;
+  // Show each category once, on its widest segment so the label has room to fit.
+  var label=width>7&&categoryWidest[c]&&categoryWidest[c].group===g?c:"";
   segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%">'+esc(label)+'</div>';
  });
  return '<div class="ticks">'+ticks+'</div><div class="track">'+segments+'</div>';
