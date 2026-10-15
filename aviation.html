@@ -211,13 +211,16 @@ function renderTimeline(t,obs){
   lastHour=hour;
  }
  if(totalHours-lastHour>0.75)ticks+='<span>'+String(end.getUTCHours()).padStart(2,"0")+'Z</span>';
- var segments="";
+ var segments="",shownCategories={};
  t.groups.forEach(function(g){
   var a=Math.max(start,g.start),b=Math.min(end,g.end);if(b<=a)return;
   var width=(b-a)/total*100,left=(a-start)/total*100;
   var c=g.cond.cat||"NA",extra=(g.kind==="TEMPO"?" tempo":g.kind.indexOf("PROB")===0?" prob":"");
   var verifying=obs&&g.kind!=="FM"&&["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&now>=g.start&&now<g.end&&diff(obs,g.cond)===0;
-  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%">'+(width>7?esc(g.kind==="prevailing"||g.kind==="FM"?c:g.kind+" "+c):"")+'</div>';
+  // Keep the timeline visually concise: label each flight category at most once per airport row.
+  var label=width>7&&!shownCategories[c]?c:"";
+  if(label)shownCategories[c]=true;
+  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%">'+esc(label)+'</div>';
  });
  return '<div class="ticks">'+ticks+'</div><div class="track">'+segments+'</div>';
 }
