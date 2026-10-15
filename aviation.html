@@ -133,7 +133,7 @@ function conditionFromText(text){
 }
 function tokenizeTaf(raw,now){
  if(!raw)return null;
- var txt=raw.replace(/\s+/g," ").trim(),m=txt.match(/\b(\d{4})\/(\d{4})\b/),period=m?parsePeriod(m[0],now):null;
+ var displayRaw=raw.trim(),txt=raw.replace(/\s+/g," ").trim(),m=txt.match(/\b(\d{4})\/(\d{4})\b/),period=m?parsePeriod(m[0],now):null;
  var start=period?period.start:new Date(now.getTime()-3600000),end=period?period.end:new Date(now.getTime()+24*3600000);
  var marker=/(?:^|\s)(PROB30(?:\s+TEMPO)?|TEMPO|FM\d{6}|BECMG|PROB40)(?=\s|$)/g,marks=[],x;
  while((x=marker.exec(txt))!==null)marks.push({index:x.index+(x[0].length-x[0].trimStart().length),token:x[1]});
