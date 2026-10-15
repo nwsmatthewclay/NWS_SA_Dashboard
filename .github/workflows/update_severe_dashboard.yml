@@ -42,9 +42,6 @@ jobs:
           GLWU_DRIVE_FOLDER_ID: ${{ secrets.GLWU_DRIVE_FOLDER_ID }}
         run: python main.py
 
-      - name: Generate Mount Mansfield sounding and diagnostics
-        run: python tempprofile.py
-
       - name: Generate Mount Mansfield snow depth
         run: python MansfieldSnowDepth.py
 
