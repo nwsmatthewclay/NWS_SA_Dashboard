@@ -223,8 +223,8 @@ function renderTimeline(t,obs){
   var c=g.cond.cat||"NA",extra=(g.kind==="TEMPO"?" tempo":g.kind.indexOf("PROB")===0?" prob":"");
   var verifying=obs&&g.kind!=="FM"&&["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&now>=g.start&&now<g.end&&diff(obs,g.cond)===0;
   // Show each category once, on its widest segment so the label has room to fit.
-  var label=width>7&&categoryWidest[c]&&categoryWidest[c].group===g?c:"";
-  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%">'+esc(label)+'</div>';
+  var label=categoryWidest[c]&&categoryWidest[c].group===g?c:"";
+  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%;overflow:visible;z-index:'+(label?"5":"1")+'">'+(label?'<span style="display:inline-block;white-space:nowrap;padding:0 3px;text-shadow:0 1px 2px #0003">'+esc(label)+'</span>':"")+'</div>';
  });
  return '<div class="ticks">'+ticks+'</div><div class="track">'+segments+'</div>';
 }
