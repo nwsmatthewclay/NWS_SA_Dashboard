@@ -1,6 +1,13 @@
 name: Mount Mansfield Sounding
 
 on:
+  # Also run immediately when this workflow is changed on main; this gives
+  # us a push-triggered test without needing a separate Actions-dispatch API.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mount_mansfield_sounding.yml'
+      - 'tempprofile.py'
   workflow_dispatch:
   schedule:
     # Independent of the longer dashboard workflow. GitHub schedules are
