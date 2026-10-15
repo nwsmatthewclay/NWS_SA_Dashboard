@@ -33,8 +33,9 @@ def main():
         try:
             response = session.get(URL, params={"ids": site, "format": "raw"}, timeout=20)
             response.raise_for_status()
-            raw = " ".join(response.text.replace("\r", " ").replace("\n", " ").split()).strip()
-            if not raw or not pattern(site).search(raw):
+            raw = response.text.strip()
+            normalized = " ".join(raw.split())
+            if not normalized or not pattern(site).search(normalized):
                 missing.append(site)
                 print(f"{site}: no valid TAF in response; recording as unavailable")
                 continue
