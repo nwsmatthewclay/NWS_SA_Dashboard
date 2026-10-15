@@ -138,10 +138,10 @@ function tokenizeTaf(raw,now){
 function getTafFromJson(json,id){
  var arr=Array.isArray(json)?json:(json&&json.features)||((json&&json["@graph"])||[]);
  if(json&&!Array.isArray(json)&&(json.rawTAF||json.rawTaf||json.raw_text||json.raw||json.taf||json.properties))arr=[json];
- var candidates=arr.filter(function(f){var p=f.properties||f;var sid=p.icaoId||p.stationId||p.station||p.id||p.icao;return !sid||String(sid).toUpperCase()===id});
- candidates.sort(function(a,b){var pa=a.properties||a,pb=b.properties||b;return new Date(pb.issueTime||pb.bulletinTime||pb.issuetime||0)-new Date(pa.issueTime||pa.bulletinTime||pa.issuetime||0)});
+ var candidates=arr.filter(function(f){var p=f.properties||f;var sid=p.icaoId||p.stationId||p.stationIdentifier||p.station||p.icao;return !sid||String(sid).toUpperCase()===id});
+ candidates.sort(function(a,b){var pa=a.properties||a,pb=b.properties||b;return new Date(pb.issueTime||pb.bulletinTime||pb.issuetime||pb.issueTimeUtc||0)-new Date(pa.issueTime||pa.bulletinTime||pa.issuetime||pa.issueTimeUtc||0)});
  var f=candidates[0];if(!f)return null;var p=f.properties||f;
- return p.rawTAF||p.rawTaf||p.raw_text||p.rawText||p.raw||p.text||p.taf||null;
+ return p.rawTAF||p.rawTaf||p.raw_text||p.rawText||p.raw||p.text||p.taf||p.forecast||null;
 }
 async function getJson(url){
  var r=await fetch(url,{cache:"no-cache"});
