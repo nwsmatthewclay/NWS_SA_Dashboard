@@ -51,6 +51,7 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){retur
 function utc(d){return d.toISOString().slice(11,16)+"Z"}
 function num(v){return typeof v==="number"&&isFinite(v)?v:null}
 function category(ceilingFt,visSm){
+ if(ceilingFt==null&&visSm==null)return "NA";
  var c=ceilingFt==null?Infinity:ceilingFt,v=visSm==null?Infinity:visSm;
  if(c<500||v<1)return "LIFR";
  if(c<1000||v<3)return "IFR";
