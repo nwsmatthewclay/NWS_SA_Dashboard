@@ -241,7 +241,7 @@ function render(results){
   var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Clouds: "+esc(o.clouds||"—")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
   var obsTime=o&&o.time?((/^SPECI\b/.test(o.raw||"")?"SPECI ":"")+utc(o.time)):"—";
   var tafIssue=t&&t.issue&&t.issue!=="—"?t.issue:"—";
-  var tafTime=tafIssue!=="—"?tafIssue+"Z":"—";
+  var tafTime=tafIssue!=="—"?(tafIssue.match(/^\d{2}(\d{2})(\d{2})Z$/)?tafIssue.replace(/^\d{2}(\d{2})(\d{2})Z$/,"$1:$2Z"):tafIssue):"—";
   var obsCat=o?o.cat:"NA",tafCat=current&&current.cond?current.cond.cat:"NA";
   var diffText=d===null?"NO DATA":d===0?"MATCH":d+" CAT"+(d===1?" OFF":"S OFF");
   var diffClass=d===null?"pending":d===0?"":"off"+Math.min(3,d);
