@@ -221,10 +221,8 @@ function renderTimeline(t,obs){
   var width=(b-a)/total*100,left=(a-start)/total*100;
   var c=g.cond.cat||"NA",extra=(g.kind==="TEMPO"?" tempo":g.kind.indexOf("PROB")===0?" prob":"");
   var verifying=obs&&g.kind!=="FM"&&["TEMPO","PROB30","PROB40"].indexOf(g.kind)>=0&&now>=g.start&&now<g.end&&diff(obs,g.cond)===0;
-  // Label each category once, but only when its widest segment has enough room.
-  // Keep labels clipped to their own segment so rapid category changes cannot overlap.
-  var label=categoryWidest[c]&&categoryWidest[c].group===g&&width>=9?c:"";
-  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%;overflow:hidden;z-index:'+(label?"5":"1")+'">'+(label?'<span style="display:inline-block;white-space:nowrap;padding:0 2px;font-size:'+(width<11?'10px':'12px')+';text-shadow:0 1px 2px #0003">'+esc(label)+'</span>':"")+'</div>';
+  // Keep the timeline focused on category colors and timing; category labels are shown above.
+  segments+='<div class="segment '+c+extra+(verifying?" verifying":"")+'" title="'+esc(g.kind+" "+g.raw)+'" style="position:absolute;left:'+left+'%;width:'+Math.max(.7,width)+'%;overflow:hidden"></div>';
  });
  return '<div class="ticks">'+ticks+'</div><div class="track">'+segments+'</div>';
 }
