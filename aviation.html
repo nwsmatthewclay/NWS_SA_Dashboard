@@ -246,15 +246,13 @@ async function fetchIemRecentObservation(site){
  return {obs:obs,source:"IEM ASOS"};
 }
 async function fetchAviationWeatherTaf(site){
- // Use the live AWC endpoint rather than relying only on the scheduled static feed.
- var url="https://aviationweather.gov/api/data/taf?ids="+encodeURIComponent(site.id)+"&format=raw";
- var response=await fetch(cacheBustedUrl(url),{cache:"no-store"});
- if(!response.ok)throw new Error("AWC HTTP "+response.status+" for "+site.id);
- var text=await response.text();
- var raw=extractTafProduct({productText:text},site.id);
- if(!raw)throw new Error("AWC response contained no valid TAF for "+site.id);
+ // Same-origin feed is refreshed server-side by GitHub Actions; browser-side AWC
+ // requests are blocked by CORS. Cache-bust the published JSON to avoid stale browser copies.
+ var feed=await getJson("data/aviation_tafs.json");
+ var raw=feed&&feed.tafs&&feed.tafs[site.id];
+ if(!raw)throw new Error("No published TAF available for "+site.id);
  var taf=tokenizeTaf(raw,new Date());
- taf.source="AWC";
+ taf.source="AWC feed";
  return taf;
 }
 function tafIssueDate(taf,base){
@@ -264,33 +262,18 @@ function tafIssueDate(taf,base){
 async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var now=new Date();
- var observationRequests=await Promise.allSettled([
-  getJson("https://api.weather.gov/stations/"+site.id+"/observations/latest").then(function(payload){
-   var feature=payload&&(payload.features?payload.features[0]:payload);
-   if(!feature)throw new Error("NWS returned no latest observation");
-   var obs=obsFromFeature(feature,site.id);
-   obs.source="NWS";
-   return {obs:obs,source:"NWS"};
-  }),
-  fetchIemRecentObservation(site)
- ]);
+ var observationRequests=await Promise.allSettled([fetchIemRecentObservation(site)]);
  var candidates=[];
  observationRequests.forEach(function(item){
   if(item.status==="fulfilled"&&item.value&&item.value.obs)candidates.push(item.value);
-  else if(item.status==="rejected")console.warn(site.id+" observation source failed:",item.reason);
- });
- candidates.sort(function(a,b){
-  var at=a.obs.time&&isFinite(a.obs.time.getTime())?a.obs.time.getTime():-Infinity;
-  var bt=b.obs.time&&isFinite(b.obs.time.getTime())?b.obs.time.getTime():-Infinity;
-  if(at!==bt)return bt-at;
-  return a.source==="IEM ASOS"?-1:(b.source==="IEM ASOS"?1:0);
+  else if(item.status==="rejected")console.warn(site.id+" IEM observation source failed:",item.reason);
  });
  if(candidates.length){
   result.obs=candidates[0].obs;
   result.obs.source=candidates[0].source;
  }else{
   var obsErrors=observationRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)});
-  result.obsError=obsErrors.length?obsErrors.join("; "):"No current observation from NWS or IEM ASOS";
+  result.obsError=obsErrors.length?obsErrors.join("; "):"No current observation from IEM ASOS";
  }
  // Use the live Aviation Weather Center feed directly. The previous NWS
  // /products/types/TAF/locations/{airport}/latest URL returns HTTP 400 for
@@ -374,7 +357,7 @@ function render(results){
  results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Live sources: newest timestamp from NWS / IEM ASOS; TAFs from Aviation Weather Center • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Live sources: IEM ASOS observations; TAFs from refreshed Aviation Weather Center feed • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
