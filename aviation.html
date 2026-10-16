@@ -218,7 +218,9 @@ async function fetchIemAsosWind(site){
  var station=site.iem||site.id.replace(/^K/,"");
  var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(station)+
   "&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=onlycomma&missing=empty&trace=empty";
- var response=await fetch(cacheBustedUrl(url),{cache:"no-store"});
+ // Use no-store rather than adding a custom query parameter: IEM validates
+ // request parameters and may reject unrecognized cache-buster keys.
+ var response=await fetch(url,{cache:"no-store"});
  if(!response.ok)throw new Error("IEM ASOS returned HTTP "+response.status+" for "+site.id);
  var csv=await response.text();
  if(!csv||!csv.trim())throw new Error("IEM ASOS returned an empty response for "+site.id);
@@ -422,7 +424,9 @@ async function loadSite(site){
   result.obs.windSource=iemWind.windSource;
   result.obs.windRaw=iemWind.windRaw;
  }else if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
-  console.warn("KBTV live IEM ASOS wind request failed; using NWS recent-observation wind if available:",observationRequest[1].reason);
+  var windReason=observationRequest[1].reason;
+  result.windError=windReason&&windReason.message||String(windReason||"IEM ASOS wind request failed");
+  console.warn("KBTV live IEM ASOS wind request failed; using NWS recent-observation wind if available:",windReason);
   if(result.obs){result.obs.windSource="NWS recent observation";}
  }
 
@@ -515,7 +519,11 @@ function render(results){
   $("activeGroup").innerHTML='<div class="active-card"><strong>No TEMPO / PROB30 group currently verifying</strong><p>Groups are highlighted only when their validity window is active and the observed category matches the group category. A non-verifying group is not automatically a forecast miss.</p></div>';
  }
  var errs=[];
- results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
+ results.forEach(function(r){
+  if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);
+  if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError);
+  if(r.site.id==="KBTV"&&r.windError&&(!r.obs||!r.obs.wind||r.obs.wind==="—"))errs.push("KBTV wind: "+r.windError);
+ });
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
  $("sourceStatus").textContent="Browser-direct NWS observations/TAFs; wind recovered from recent NWS reports when the newest METAR masks it • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
