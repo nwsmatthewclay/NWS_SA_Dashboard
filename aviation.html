@@ -341,16 +341,22 @@ async function refresh(){
     metarTime=new Date(isFinite(parsed)&&parsed>1000000000?parsed*1000:stamp);
     if(!isFinite(metarTime.getTime()))metarTime=null;
    }
-   if(metarTime&&Date.now()-metarTime.getTime()>90*60000)return;
+   var ageMinutes=metarTime?Math.max(0,Math.round((Date.now()-metarTime.getTime())/60000)):null;
    var fallback=obsFromFeature({properties:{rawMessage:raw,timestamp:metarTime?metarTime.toISOString():null}},r.site.id);
    if(fallback.wind&&fallback.wind!=="—"){
-    // NWS station observations sometimes have a newer timestamp but omit
-    // structured wind fields. Do not let that suppress a valid METAR wind.
-    // Keep the newest NWS observation for ceiling/visibility/category and
-    // supplement only its missing wind; use the complete METAR when it is
-    // at least as new as the NWS observation.
+    // Do not use an old METAR to replace the current observation/category.
+    // If current NWS data has no wind, retain the last reported wind but
+    // explicitly mark its age so the wind cell is not mistaken for live data.
     var existingTime=r.obs&&r.obs.time&&isFinite(r.obs.time.getTime())?r.obs.time:null;
-    if(!r.obs||!existingTime||!metarTime||metarTime>=existingTime){
+    var staleMetar=ageMinutes!==null&&ageMinutes>90;
+    if(staleMetar){
+     if(r.obs&&(!r.obs.wind||r.obs.wind==="—"||r.obs.wind==="")){
+      r.obs.wind=fallback.wind+" (last METAR "+ageMinutes+" min old)";
+      r.obs.windStale=true;
+      r.obsSource="NWS observation + stale Aviation Weather Center wind";
+      r.obsError=null;
+     }
+    }else if(!r.obs||!existingTime||!metarTime||metarTime>=existingTime){
      r.obs=fallback;
      r.obsSource="Aviation Weather Center METAR";
      r.obsError=null;
