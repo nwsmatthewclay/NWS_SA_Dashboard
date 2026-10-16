@@ -37,6 +37,11 @@ def main():
     if not records:
         raise RuntimeError("METAR endpoint returned no usable reports; refusing to overwrite feed")
 
+    # Log each report timestamp so workflow logs reveal whether a station is
+    # missing a new report or the refresh job itself is stale.
+    for station, record in sorted(records.items()):
+        print(f"{station}: obsTime={record.get('observationTime')} {record['rawMessage']}")
+
     path = Path("data/aviation_metars.json")
     old_feed = {}
     if path.exists():
