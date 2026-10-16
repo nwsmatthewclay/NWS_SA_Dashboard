@@ -15,6 +15,10 @@ permissions:
 jobs:
   update-dashboard:
     runs-on: ubuntu-latest
+    # Prevent a stalled upstream service from occupying the shared runner forever.
+    timeout-minutes: 30
+    env:
+      PYTHONUNBUFFERED: "1"
 
     steps:
       - name: Checkout repository
@@ -36,6 +40,7 @@ jobs:
           pip install numpy pandas matplotlib scipy requests beautifulsoup4 lxml pillow imageio gspread google-auth google-api-python-client pygrib cartopy metpy
 
       - name: Run main dashboard
+        timeout-minutes: 22
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
