@@ -38,12 +38,13 @@ jobs:
       - name: Commit changed aviation feeds
         if: always()
         run: |
-          if git diff --quiet -- data/aviation_tafs.json data/aviation_obs.json; then
+          # Stage first so a newly-created observation JSON file is not missed by git diff.
+          git add data/aviation_tafs.json data/aviation_obs.json
+          if git diff --cached --quiet; then
             echo "Aviation feeds unchanged; nothing to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/aviation_tafs.json data/aviation_obs.json
           git commit -m "Refresh aviation TAF and observation feeds"
           git push
