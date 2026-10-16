@@ -35,12 +35,13 @@ jobs:
         run: python scripts/update_aviation_metars.py
       - name: Commit changed feed
         run: |
-          if git diff --quiet -- data/aviation_metars.json; then
+          # git diff ignores untracked files, which is how this feed is first created.
+          if [ -z "$(git status --porcelain -- data/aviation_metars.json)" ]; then
             echo "METAR feed unchanged; nothing to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/aviation_metars.json
+          git add -f data/aviation_metars.json
           git commit -m "Refresh aviation METAR fallback"
           git push
