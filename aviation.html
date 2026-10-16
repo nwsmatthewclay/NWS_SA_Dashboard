@@ -227,7 +227,7 @@ async function fetchIemAsosWind(site){
   var gust=row.gust==null||row.gust===""?null:Number(row.gust);
   var raw=String(row.metar||row.raw||"");
   // Some rows mask structured values but retain a valid wind group in raw METAR.
-  var match=/(?:^|\\s)(VRB|\\d{3})(\\d{2,3})(?:G(\\d{2,3}))?KT(?=\\s|$)/i.exec(raw);
+  var match=/(?:^|\s)(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT(?=\s|$)/i.exec(raw);
   if(speed==null&&match){
    speed=Number(match[2]);
    if(direction==null&&match[1].toUpperCase()!=="VRB")direction=Number(match[1]);
