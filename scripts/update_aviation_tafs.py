@@ -179,6 +179,15 @@ def fetch_observations(session):
                 "speed_kt": None,
                 "gust_kt": record["gust_kt"],
             }
+        wind_record = dict(wind_record)
+        # Sustained wind may need to come from an earlier complete METAR while
+        # the latest METAR still has a valid gust-only group. Use the newest
+        # reported gust when it is at least as new as the sustained-wind sample.
+        if (
+            record["gust_kt"] is not None
+            and parse_timestamp(record["timestamp"]) >= parse_timestamp(wind_record["timestamp"])
+        ):
+            wind_record["gust_kt"] = record["gust_kt"]
         record["wind"] = wind_record
         speed = wind_record["speed_kt"]
         direction = wind_record["direction_deg"]
