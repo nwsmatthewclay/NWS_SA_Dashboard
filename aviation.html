@@ -263,16 +263,36 @@ function collectTafStrings(node,site,out,seen){
  Object.keys(node).forEach(function(key){collectTafStrings(node[key],site,out,seen)});
 }
 async function fetchNwsTaf(site){
- // Browser-only: fetch the station's TAF collection from api.weather.gov.
- var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/tafs","application/ld+json");
- var candidates=[];
- collectTafStrings(payload,site.id,candidates,[]);
- var parsed=candidates.map(function(raw){return tokenizeTaf(raw,new Date())}).filter(function(taf){return taf&&taf.raw});
- if(!parsed.length)throw new Error("NWS station TAF endpoint returned no parseable TAF for "+site.id);
+ // Browser-only: request TAF text products for this station/location from NWS.
+ // The supported route is /products/types/{typeId}/locations/{locationId};
+ // there is no /latest suffix on this collection endpoint.
+ var payload=await getJson("https://api.weather.gov/products/types/TAF/locations/"+site.tafLocation,"application/ld+json");
+ var products=payload&&Array.isArray(payload["@graph"])?payload["@graph"]:[];
+ var parsed=[];
+ products.forEach(function(product){
+  if(!product||typeof product.productText!=="string")return;
+  var raw=extractTafProduct(product.productText,site.id);
+  if(!raw)return;
+  var taf=tokenizeTaf(raw,new Date());
+  if(!taf||!taf.raw)return;
+  taf.productIssuedAt=product.issuanceTime?new Date(product.issuanceTime):null;
+  parsed.push(taf);
+ });
+ // Some responses may nest the product collection differently; retain a
+ // recursive fallback over any TAF text fields returned by the NWS JSON-LD.
+ if(!parsed.length){
+  var candidates=[];
+  collectTafStrings(payload,site.id,candidates,[]);
+  parsed=candidates.map(function(raw){return tokenizeTaf(raw,new Date())}).filter(function(taf){return taf&&taf.raw});
+ }
+ if(!parsed.length)throw new Error("NWS TAF product collection returned no parseable TAF for "+site.id);
  parsed.sort(function(a,b){
+  var at=a.productIssuedAt&&isFinite(a.productIssuedAt.getTime())?a.productIssuedAt.getTime():-Infinity;
+  var bt=b.productIssuedAt&&isFinite(b.productIssuedAt.getTime())?b.productIssuedAt.getTime():-Infinity;
+  if(at!==bt)return bt-at;
   var ad=tafIssueDate(a,new Date()),bd=tafIssueDate(b,new Date());
-  var at=ad?ad.getTime():-Infinity,bt=bd?bd.getTime():-Infinity;
-  return bt-at;
+  var ataf=ad?ad.getTime():-Infinity,btaf=bd?bd.getTime():-Infinity;
+  return btaf-ataf;
  });
  parsed[0].source="NWS live";
  return parsed[0];
