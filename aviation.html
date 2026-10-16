@@ -59,15 +59,32 @@ function obsFromFeature(f,id){
  var p=(f&&f.properties)||{},raw=p.rawMessage||p.rawMETAR||"";
  var ceiling=p.ceiling&&num(p.ceiling.value)!=null?ft(p.ceiling.value):null;
  var visibility=p.visibility&&num(p.visibility.value)!=null?sm(p.visibility.value):null;
- var cloudMatch=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}(?:CB|TCU)?\b/g)||[];
- var cloudsText=cloudMatch.length?cloudMatch.join(" "):(/\b(?:SKC|CLR|NSC|NCD)\b/.exec(raw)||[])[0]||"—";
- if(raw){
-  var clouds=raw.match(/\b(?:FEW|SCT|BKN|OVC|VV)\d{3}/g)||[],base=Infinity;
-  clouds.forEach(function(x){if(/^(BKN|OVC|VV)/.test(x)){var n=Number(x.slice(-3))*100;if(n<base)base=n}});
-  // The raw METAR is the source of truth for the observed ceiling/category.
-  // A cloud base is a ceiling only for BKN, OVC, or vertical visibility (VV).
+ // Some NWS station responses provide structured cloudLayers but omit a usable
+ // raw METAR. Use those layers as a fallback so cloud cover isn't silently lost.
+ var cloudMatch=raw.match(/\\b(?:FEW|SCT|BKN|OVC|VV)\\d{3}(?:CB|TCU)?\\b/g)||[];
+ var structuredLayers=Array.isArray(p.cloudLayers)?p.cloudLayers:[];
+ var structuredClouds=structuredLayers.map(function(layer){
+  if(!layer||!layer.amount)return "";
+  var amount=String(layer.amount).toUpperCase(),baseM=layer.base&&num(layer.base.value),baseCode="";
+  if(baseM!=null)baseCode=String(Math.max(0,Math.round(ft(baseM)/100))).padStart(3,"0");
+  else if(/^(FEW|SCT|BKN|OVC|VV)$/.test(amount))baseCode="///";
+  var type=layer.type&&String(layer.type).toUpperCase();
+  return amount+baseCode+((type==="CB"||type==="TCU")?type:"");
+ }).filter(Boolean);
+ var clearCode=(/\\b(?:SKC|CLR|NSC|NCD|CAVOK)\\b/.exec(raw)||[])[0]||"";
+ var cloudsText=cloudMatch.length?cloudMatch.join(" "):(structuredClouds.length?structuredClouds.join(" "):(clearCode||"Not reported"));
+ var rawClouds=raw.match(/\\b(?:FEW|SCT|BKN|OVC|VV)\\d{3}/g)||[];
+ var rawHasSkyCondition=rawClouds.length>0||!!clearCode;
+ if(raw&&rawHasSkyCondition){
+  var base=Infinity;
+  rawClouds.forEach(function(x){if(/^(BKN|OVC|VV)/.test(x)){var n=Number(x.slice(-3))*100;if(n<base)base=n}});
+  // Only BKN, OVC, and VV determine a METAR ceiling.
   ceiling=base===Infinity?null:base;
-  var vm=raw.match(/\b(?:P?\d+(?:\s+\d+\/\d+|\d+\/\d+)?|\d+\s+\d+\/\d+)SM\b/);
+ }else{
+  var structuredCeilings=structuredLayers.filter(function(layer){return layer&&/^(BKN|OVC|VV)$/i.test(String(layer.amount||""))&&layer.base&&num(layer.base.value)!=null}).map(function(layer){return ft(layer.base.value)});
+  if(structuredCeilings.length)ceiling=Math.min.apply(null,structuredCeilings);
+ }
+
   if(vm){var visText=vm[0].replace(/SM/,"").replace(/^P/,"").trim(),parts=visText.split(/\s+/),val=0;parts.forEach(function(q){if(q.indexOf("/")>0){var z=q.split("/");val+=Number(z[0])/Number(z[1])}else if(q)val+=Number(q)});if(isFinite(val))visibility=val}
  }
  var windDir=p.windDirection&&num(p.windDirection.value)!=null?num(p.windDirection.value):null;
