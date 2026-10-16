@@ -315,7 +315,10 @@ async function loadSite(site){
   var iemWind=iemObservation&&iemObservation.obs&&iemObservation.obs.wind;
   var iemTime=iemObservation&&iemObservation.obs&&(iemObservation.obs.windTime||iemObservation.obs.time);
   var iemAgeMs=iemTime&&isFinite(iemTime.getTime())?Date.now()-iemTime.getTime():Infinity;
-  var iemWindFresh=iemWind&&iemWind!=="—"&&iemAgeMs>=-5*60*1000&&iemAgeMs<=60*60*1000;
+  // The scheduled feed can lag, and ASOS may mask sustained wind for
+  // consecutive reports. Preserve the last complete IEM wind for the feed's
+  // full 3-hour query window instead of dropping it after only 60 minutes.
+  var iemWindFresh=iemWind&&iemWind!=="—"&&iemAgeMs>=-5*60*1000&&iemAgeMs<=3*60*60*1000;
   if(iemWindFresh){
    result.obs.wind=iemWind;
    result.obs.windSource="IEM ASOS";
