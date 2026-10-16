@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>Mount Mansfield Dashboard</title>
 <style>
 
@@ -2854,17 +2855,37 @@ function degreesToCompass_(deg) {
 
 async function fetchWhitefaceObservation_() {
   try {
+    const url = "https://api.asrc.albany.edu:3000/wfmsapi";
+    let response = null;
+    let lastError = null;
 
-    const response = await fetchWithTimeout_(
-      "https://api.asrc.albany.edu:3000/wfmsapi",
-      { cache: "no-store" }
-    );
+    // The ASRC endpoint intermittently stalls. Retry once before marking
+    // Whiteface unavailable; allow a little more time than the default fetch.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        response = await fetchWithTimeout_(
+          url,
+          { cache: "no-store" },
+          15000
+        );
+        if (response.ok) break;
+        if (attempt === 0 && response.status >= 500) {
+          await new Promise(resolve => setTimeout(resolve, 600));
+          continue;
+        }
+        console.warn(`Whiteface API failed: HTTP ${response.status}`);
+        return null;
+      } catch (error) {
+        lastError = error;
+        if (attempt === 0) {
+          await new Promise(resolve => setTimeout(resolve, 600));
+          continue;
+        }
+      }
+    }
 
-    if (!response.ok) {
-      console.warn(
-        `Whiteface API failed: HTTP ${response.status}`
-      );
-      return null;
+    if (!response || !response.ok) {
+      throw lastError || new Error("Whiteface API request failed after retry");
     }
 
     const data = await response.json();
@@ -3373,7 +3394,17 @@ async function fetchBurkeObservation_() {
       return null;
     }
 
-    const raw = data.observations[0];
+    // Some PWS responses include a newest record with empty temperature
+    // and wind fields. Prefer the newest record with at least one usable value.
+    const raw = data.observations.find(candidate => {
+      const values = candidate && candidate.imperial;
+      if (!values) return false;
+      const hasTemp =
+        values.temp != null && Number.isFinite(Number(values.temp));
+      const hasWind =
+        values.windSpeed != null && Number.isFinite(Number(values.windSpeed));
+      return hasTemp || hasWind;
+    }) || data.observations[0];
 
     const imperial = raw.imperial || {};
 
