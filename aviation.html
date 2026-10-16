@@ -203,6 +203,33 @@ async function getJson(url){
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
 }
+async function fetchIemBtvWind(){
+ // NWS/MADIS can briefly publish KBTV observations without wind fields.
+ // Aviation Weather Center's API explicitly disallows cross-origin browser
+ // requests, so use IEM's ASOS service as a secondary live source for BTV.
+ var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=BTV&data=metar&hours=3&tz=UTC&format=tdf";
+ var response=await fetch(url,{cache:"no-store"});
+ if(!response.ok)throw new Error("IEM HTTP "+response.status);
+ var body=await response.text();
+ var lines=body.split(/\\r?\\n/).filter(function(line){return line.trim()!==""});
+ if(!lines.length)throw new Error("IEM returned no BTV reports");
+ var header=lines[0].split("\\t").map(function(x){return x.trim().toLowerCase()});
+ var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid"),metarIndex=header.indexOf("metar");
+ if(metarIndex<0)throw new Error("IEM response did not include a METAR column");
+ var records=[];
+ lines.slice(1).forEach(function(line){
+  var cols=line.split("\\t");
+  var station=stationIndex>=0?String(cols[stationIndex]||"").trim().toUpperCase():"BTV";
+  var raw=String(cols[metarIndex]||"").trim();
+  if(station==="BTV"&&raw&&/\\bKBTV\\b/.test(raw)){
+   var stamp=validIndex>=0?String(cols[validIndex]||"").trim():"";
+   var date=stamp?new Date(/(?:Z|[+-]\\d{2}:?\\d{2})$/.test(stamp)?stamp:stamp.replace(" ","T")+"Z"):null;
+   records.push({raw:raw,time:date&&isFinite(date.getTime())?date:null});
+  }
+ });
+ records.sort(function(a,b){return (b.time?b.time.getTime():0)-(a.time?a.time.getTime():0)});
+ return records[0]||null;
+}
 async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var oUrl="https://api.weather.gov/stations/"+site.id+"/observations/latest";
@@ -231,6 +258,25 @@ async function loadSite(site){
    }
   }catch(windFallbackError){
    console.warn(site.id+" recent-observation wind fallback failed:",windFallbackError);
+  }
+ }
+ // KBTV's NWS/MADIS feed has occasionally returned otherwise valid observations
+ // with wind omitted. If recent NWS reports also lack it, try IEM's live ASOS
+ // METAR feed and copy only the wind. This does not replace the current report.
+ if(site.id==="KBTV"&&result.obs&&(!result.obs.wind||result.obs.wind==="—"||result.obs.wind==="")){
+  try{
+   var iem=await fetchIemBtvWind();
+   if(iem&&iem.raw){
+    var parsed=obsFromFeature({properties:{rawMessage:iem.raw,timestamp:iem.time?iem.time.toISOString():null}},site.id);
+    if(parsed.wind&&parsed.wind!=="—"&&parsed.wind!==""){
+     var iemAge=iem.time?Math.max(0,Math.round((Date.now()-iem.time.getTime())/60000)):null;
+     result.obs.wind=parsed.wind+(iemAge!==null?" (IEM METAR "+iemAge+" min old)":" (IEM METAR)");
+     result.obs.windStale=true;
+     result.obsError=null;
+    }
+   }
+  }catch(iemError){
+   console.warn("KBTV IEM METAR wind fallback failed:",iemError);
   }
  }
  try{
