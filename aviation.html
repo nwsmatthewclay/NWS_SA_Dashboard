@@ -295,8 +295,7 @@ async function loadSite(site){
   console.warn(site.id+" NWS observation request failed:",reason);
  }
 
- // Per page refresh: request the current official NWS TAF. Fall back to the
- // refreshed AWC same-origin feed if the NWS endpoint is unavailable.
+ // Per page refresh: request the current official NWS station TAF directly.
  var tafRequests=await Promise.allSettled([fetchNwsTaf(site)]);
  var tafCandidates=[];
  tafRequests.forEach(function(item){
