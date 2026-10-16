@@ -39,7 +39,10 @@ jobs:
         if: always()
         run: |
           # Stage first so a newly-created observation JSON file is not missed by git diff.
-          git add data/aviation_tafs.json data/aviation_obs.json
+          git add data/aviation_tafs.json
+          if [ -f data/aviation_obs.json ]; then
+            git add data/aviation_obs.json
+          fi
           if git diff --cached --quiet; then
             echo "Aviation feeds unchanged; nothing to commit."
             exit 0
