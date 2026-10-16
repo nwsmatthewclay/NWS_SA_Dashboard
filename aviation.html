@@ -210,6 +210,29 @@ async function loadSite(site){
   var oj=await getJson(oUrl),feature=oj&&(oj.features?oj.features[0]:oj);
   if(feature)result.obs=obsFromFeature(feature,site.id);else result.obsError="No current observation";
  }catch(e){result.obsError=e.message}
+ // Some MADIS/NWS latest-observation records omit wind even when the airport
+ // has a valid recent METAR. If so, look back through recent station reports
+ // and borrow only the wind field; never replace current ceiling, visibility,
+ // weather, category, or observation timestamp with an older report.
+ if(result.obs&&(!result.obs.wind||result.obs.wind==="—"||result.obs.wind==="")){
+  try{
+   var recent=await getJson("https://api.weather.gov/stations/"+site.id+"/observations?limit=6");
+   var features=recent&&Array.isArray(recent.features)?recent.features:[];
+   for(var i=0;i<features.length;i++){
+    var prior=obsFromFeature(features[i],site.id);
+    if(prior.wind&&prior.wind!=="—"&&prior.wind!==""){
+     var priorTime=prior.time&&isFinite(prior.time.getTime())?prior.time:null;
+     var age=priorTime?Math.max(0,Math.round((Date.now()-priorTime.getTime())/60000)):null;
+     result.obs.wind=prior.wind+(age!==null?" (last wind report "+age+" min old)":" (previous station report)");
+     result.obs.windStale=true;
+     result.obsError=null;
+     break;
+    }
+   }
+  }catch(windFallbackError){
+   console.warn(site.id+" recent-observation wind fallback failed:",windFallbackError);
+  }
+ }
  try{
   var product=await getJson("https://api.weather.gov/products/types/TAF/locations/"+site.tafLocation+"/latest");
   var raw=extractTafProduct(product,site.id);
