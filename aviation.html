@@ -365,8 +365,14 @@ async function loadSite(site){
   result.obsError=reason&&reason.message||String(reason||"NWS observation unavailable");
   console.warn(site.id+" NWS observation request failed:",reason);
  }
- if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="fulfilled"&&result.obs){
+ if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="fulfilled"){
+  // The wind feed is independent of the NWS observation response. Never discard
+  // a valid live KBTV ASOS wind just because the NWS observation request failed.
   var iemWind=observationRequest[1].value;
+  if(!result.obs){
+   result.obs={id:site.id,time:iemWind.windTime,ceilingFt:null,clouds:"Not reported",visSm:null,weather:"Not reported",cat:"NA",raw:iemWind.windRaw||"",source:"IEM ASOS wind fallback"};
+   result.obsError=result.obsError||"NWS observation fields unavailable; displaying live ASOS wind";
+  }
   result.obs.wind=iemWind.wind;
   result.obs.windTime=iemWind.windTime;
   result.obs.windSource=iemWind.windSource;
