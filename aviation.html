@@ -89,11 +89,13 @@ function obsFromFeature(f,id){
  var windDir=p.windDirection&&num(p.windDirection.value)!=null?num(p.windDirection.value):null;
  function toKnots(measurement){
   if(!measurement||num(measurement.value)==null)return null;
-  var unit=String(measurement.unitCode||"").split(":").pop();
-  if(unit==="m_s-1")return num(measurement.value)*1.943844;
-  if(unit==="km_h-1")return num(measurement.value)/1.852;
-  if(unit==="mi_h-1")return num(measurement.value)*0.868976;
-  if(unit==="kt")return num(measurement.value);
+  var unit=String(measurement.unitCode||"").split(":").pop().toLowerCase();
+  // NWS station observations have used both "kt" and "kn" for knots.
+  // Accept common WMO/legacy spellings so a valid speed is not rendered as missing.
+  if(unit==="m_s-1"||unit==="m/s")return num(measurement.value)*1.943844;
+  if(unit==="km_h-1"||unit==="km/h")return num(measurement.value)/1.852;
+  if(unit==="mi_h-1"||unit==="mi/h")return num(measurement.value)*0.868976;
+  if(unit==="kt"||unit==="kn"||unit==="knot"||unit==="knots")return num(measurement.value);
   return null;
  }
  var windKt=toKnots(p.windSpeed),gustKt=toKnots(p.windGust);
