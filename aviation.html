@@ -302,30 +302,34 @@ async function refresh(){
   // new METAR/SPECI. If the live request fails, use the static feed as backup.
   // METAR/SPECI issuance is event-driven; polling every five minutes cannot
   // create a new airport observation when the station has not issued one.
-  var awcStations=null;
+  var awcStations={};
   try{
    var awcUrl="https://aviationweather.gov/api/data/metar?ids="+SITES.map(function(s){return s.id}).join(",")+"&format=json";
    var awcPayload=await getJson(awcUrl);
    if(Array.isArray(awcPayload)){
-    awcStations={};
     awcPayload.forEach(function(item){
      if(!item||typeof item!=="object")return;
      var id=String(item.icaoId||item.stationId||"").toUpperCase();
      var raw=String(item.rawOb||item.rawMETAR||"").trim();
-     if(id&&raw)awcStations[id]={rawMessage:raw,observationTime:item.obsTime};
+     if(id&&raw)awcStations[id]={rawMessage:raw,observationTime:item.obsTime,source:"live"};
     });
    }
   }catch(awcError){
    console.warn("Live Aviation Weather Center METAR request failed; using static fallback:",awcError);
   }
-  if(!awcStations){
-   try{
-    var feed=await getJson("data/aviation_metars.json?ts="+Date.now());
-    awcStations=feed&&feed.stations||{};
-   }catch(feedError){
-    console.warn("Static METAR fallback feed unavailable:",feedError);
-    awcStations={};
-   }
+  // A successful but empty/partial live response is not proof that the static
+  // feed is unnecessary. Merge it as a per-station fallback, without replacing
+  // any station that has a live report.
+  try{
+   var feed=await getJson("data/aviation_metars.json?ts="+Date.now());
+   var staticStations=feed&&feed.stations||{};
+   SITES.forEach(function(site){
+    if(!awcStations[site.id]&&staticStations[site.id]){
+     awcStations[site.id]=staticStations[site.id];
+    }
+   });
+  }catch(feedError){
+   console.warn("Static METAR fallback feed unavailable:",feedError);
   }
   results.forEach(function(r){
    var entry=awcStations[r.site.id],raw=entry&&entry.rawMessage;
