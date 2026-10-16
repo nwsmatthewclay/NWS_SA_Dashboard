@@ -340,12 +340,19 @@ async function refresh(){
    if(metarTime&&Date.now()-metarTime.getTime()>90*60000)return;
    var fallback=obsFromFeature({properties:{rawMessage:raw,timestamp:metarTime?metarTime.toISOString():null}},r.site.id);
    if(fallback.wind&&fallback.wind!=="—"){
-    // Choose the newest complete report rather than mixing fields from
-    // different observation timestamps. Preserve NWS data if it is newer.
+    // NWS station observations sometimes have a newer timestamp but omit
+    // structured wind fields. Do not let that suppress a valid METAR wind.
+    // Keep the newest NWS observation for ceiling/visibility/category and
+    // supplement only its missing wind; use the complete METAR when it is
+    // at least as new as the NWS observation.
     var existingTime=r.obs&&r.obs.time&&isFinite(r.obs.time.getTime())?r.obs.time:null;
-    if(!existingTime||!metarTime||metarTime>=existingTime){
+    if(!r.obs||!existingTime||!metarTime||metarTime>=existingTime){
      r.obs=fallback;
      r.obsSource="Aviation Weather Center METAR";
+     r.obsError=null;
+    }else if(!r.obs.wind||r.obs.wind==="—"||r.obs.wind===""){
+     r.obs.wind=fallback.wind;
+     r.obsSource="NWS observation + Aviation Weather Center wind";
      r.obsError=null;
     }
    }
