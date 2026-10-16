@@ -212,35 +212,79 @@ async function getJson(url,accept){
  return r.json();
 }
 async function fetchIemAsosWind(site){
- // Live IEM ASOS feed is queried directly from the browser. Its structured
- // direction/speed/gust fields are independent of NWS MADIS wind QC omissions.
+ // IEM's request/asos.py endpoint emits CSV (onlycomma/tdf), not JSON.
+ // Parse its documented CSV output directly so an otherwise valid ASOS report
+ // cannot be lost to Response.json() throwing a syntax error.
  var station=site.iem||site.id.replace(/^K/,"");
- var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(station)+"&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=json";
- var payload=await getJson(url);
- var rows=payload&&(Array.isArray(payload.data)?payload.data:(Array.isArray(payload.observations)?payload.observations:null));
- if(!rows||!rows.length)throw new Error("IEM returned no ASOS reports for "+site.id);
- var parsed=rows.map(function(row){
-  var stamp=row.valid||row.time||row.timestamp;
-  var time=stamp?new Date(stamp):null;
-  var speed=row.sknt==null||row.sknt===""?null:Number(row.sknt);
-  var direction=row.drct==null||row.drct===""?null:Number(row.drct);
-  var gust=row.gust==null||row.gust===""?null:Number(row.gust);
-  var raw=String(row.metar||row.raw||"");
-  // Some rows mask structured values but retain a valid wind group in raw METAR.
-  var match=/(?:^|\s)(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT(?=\s|$)/i.exec(raw);
-  if(speed==null&&match){
-   speed=Number(match[2]);
-   if(direction==null&&match[1].toUpperCase()!=="VRB")direction=Number(match[1]);
-   if(gust==null&&match[3])gust=Number(match[3]);
+ var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(station)+
+  "&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=onlycomma&missing=empty&trace=empty";
+ var response=await fetch(cacheBustedUrl(url),{cache:"no-store"});
+ if(!response.ok)throw new Error("IEM ASOS returned HTTP "+response.status+" for "+site.id);
+ var csv=await response.text();
+ if(!csv||!csv.trim())throw new Error("IEM ASOS returned an empty response for "+site.id);
+ function parseCsvLine(line){
+  var fields=[],field="",quoted=false;
+  for(var i=0;i<line.length;i++){
+   var ch=line.charAt(i);
+   if(ch==='"'){
+    if(quoted&&line.charAt(i+1)==='"'){field+='"';i++;}
+    else quoted=!quoted;
+   }else if(ch===","&&!quoted){fields.push(field.trim());field="";}
+   else field+=ch;
   }
-  return {time:time,direction:direction,speed:speed,gust:gust,raw:raw};
- }).filter(function(row){return row.time&&isFinite(row.time.getTime())&&row.speed!=null&&isFinite(row.speed)&&row.speed>=0});
+  fields.push(field.trim());
+  return fields;
+ }
+ function numField(value){
+  if(value==null||String(value).trim()===""||/^(M|NA|NULL|N\/A|\/\/+|--+)$/i.test(String(value).trim()))return null;
+  var n=Number(value);
+  return isFinite(n)?n:null;
+ }
+ var lines=csv.replace(/^\uFEFF/,"").split(/\r?\n/),headerIndex=-1,headers=[];
+ for(var li=0;li<lines.length;li++){
+  var line=lines[li].trim();
+  if(!line||line.charAt(0)==="#")continue;
+  var candidate=parseCsvLine(line).map(function(v){return v.toLowerCase().replace(/^\uFEFF/,"")});
+  if(candidate.indexOf("valid")>=0&&candidate.indexOf("sknt")>=0&&candidate.indexOf("metar")>=0){
+   headerIndex=li;headers=candidate;break;
+  }
+ }
+ if(headerIndex<0)throw new Error("IEM ASOS CSV header not recognized for "+site.id+": "+csv.slice(0,160).replace(/\s+/g," "));
+ function column(row,name){var idx=headers.indexOf(name);return idx>=0&&idx<row.length?row[idx]:"";}
+ var parsed=[];
+ for(var ri=headerIndex+1;ri<lines.length;ri++){
+  var dataLine=lines[ri].trim();
+  if(!dataLine||dataLine.charAt(0)==="#")continue;
+  var cells=parseCsvLine(dataLine);
+  var stamp=column(cells,"valid")||column(cells,"time")||column(cells,"timestamp");
+  var time=null;
+  if(stamp){
+   var stampText=String(stamp).trim();
+   // IEM timestamps are in the requested UTC zone but may omit the timezone suffix.
+   if(/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/.test(stampText))
+    stampText=stampText.replace(" ","T")+"Z";
+   time=new Date(stampText);
+  }
+  var speed=numField(column(cells,"sknt"));
+  var direction=numField(column(cells,"drct"));
+  var gust=numField(column(cells,"gust"));
+  var raw=String(column(cells,"metar")||"");
+  // If a structured field is masked, recover what is explicitly reported in METAR.
+  var match=/(?:^|\s)(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT(?=\s|$)/i.exec(raw);
+  if((speed==null||speed<0)&&match)speed=Number(match[2]);
+  if(direction==null&&match&&match[1].toUpperCase()!=="VRB")direction=Number(match[1]);
+  if(gust==null&&match&&match[3])gust=Number(match[3]);
+  if(time&&isFinite(time.getTime())&&speed!=null&&isFinite(speed)&&speed>=0){
+   parsed.push({time:time,direction:direction,speed:speed,gust:gust,raw:raw,variable:!!(match&&match[1].toUpperCase()==="VRB")});
+  }
+ }
  parsed.sort(function(a,b){return b.time-a.time});
- if(!parsed.length)throw new Error("IEM reports contained no usable wind for "+site.id);
+ if(!parsed.length)throw new Error("IEM reports contained no timestamped usable wind for "+site.id);
  var w=parsed[0],text;
  if(w.speed===0)text="Calm";
  else{
-  text=(w.direction!=null&&isFinite(w.direction)?String(Math.round(w.direction)).padStart(3,"0")+"° ":"")+Math.round(w.speed)+" kt";
+  var directionText=w.variable?"VRB ":w.direction!=null&&isFinite(w.direction)?String(Math.round(w.direction)).padStart(3,"0")+"° ":"";
+  text=directionText+Math.round(w.speed)+" kt";
   if(w.gust!=null&&isFinite(w.gust)&&w.gust>w.speed)text+=" G"+Math.round(w.gust)+" kt";
  }
  return {wind:text,windTime:w.time,windSource:"IEM ASOS",windRaw:w.raw,windSpeedKt:w.speed,windDirectionDeg:w.direction,windGustKt:w.gust};
