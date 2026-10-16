@@ -297,11 +297,10 @@ async function refresh(){
  if(busy)return;busy=true;
  try{
   var results=await Promise.all(SITES.map(function(site){return loadSite(site)}));
-  // Poll the Aviation Weather Center directly on each dashboard refresh so
-  // we do not have to wait for a GitHub Actions commit/deployment to publish a
-  // new METAR/SPECI. If the live request fails, use the static feed as backup.
-  // METAR/SPECI issuance is event-driven; polling every five minutes cannot
-  // create a new airport observation when the station has not issued one.
+  // Fetch the latest METAR/SPECI directly from Aviation Weather Center on
+  // each refresh. No committed JSON snapshot is used. If the browser blocks
+  // this request (for example, due to CORS), keep the direct NWS observations
+  // loaded above rather than substituting a potentially stale file.
   var awcStations={};
   try{
    var awcUrl="https://aviationweather.gov/api/data/metar?ids="+SITES.map(function(s){return s.id}).join(",")+"&format=json";
@@ -315,21 +314,7 @@ async function refresh(){
     });
    }
   }catch(awcError){
-   console.warn("Live Aviation Weather Center METAR request failed; using static fallback:",awcError);
-  }
-  // A successful but empty/partial live response is not proof that the static
-  // feed is unnecessary. Merge it as a per-station fallback, without replacing
-  // any station that has a live report.
-  try{
-   var feed=await getJson("data/aviation_metars.json?ts="+Date.now());
-   var staticStations=feed&&feed.stations||{};
-   SITES.forEach(function(site){
-    if(!awcStations[site.id]&&staticStations[site.id]){
-     awcStations[site.id]=staticStations[site.id];
-    }
-   });
-  }catch(feedError){
-   console.warn("Static METAR fallback feed unavailable:",feedError);
+   console.warn("Live Aviation Weather Center METAR request failed; using direct NWS station observations only:",awcError);
   }
   results.forEach(function(r){
    var entry=awcStations[r.site.id],raw=entry&&entry.rawMessage;
