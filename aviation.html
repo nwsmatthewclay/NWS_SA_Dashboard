@@ -278,7 +278,6 @@ async function fetchNwsTaf(site){
    var parsed=[];
    products.forEach(function(product){
     if(!product||typeof product.productText!=="string")return;
-    if(product.productCode&&String(product.productCode).toUpperCase()!=="TAF")return;
     var raw=extractTafProduct(product.productText,site.id);
     if(!raw)return;
     var taf=tokenizeTaf(raw,new Date());
