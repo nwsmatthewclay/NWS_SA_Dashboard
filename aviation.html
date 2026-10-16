@@ -204,28 +204,34 @@ async function getJson(url){
  return r.json();
 }
 async function fetchIemBtvWind(){
- // NWS/MADIS can briefly publish KBTV observations without wind fields.
- // Aviation Weather Center's API explicitly disallows cross-origin browser
- // requests, so use IEM's ASOS service as a secondary live source for BTV.
- var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=BTV&data=metar&hours=3&tz=UTC&format=tdf";
+ // Secondary live source for KBTV wind when the NWS/MADIS observation omits it.
+ // IEM identifies Burlington as BTV; use its structured ASOS wind fields.
+ var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=BTV&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=tdf";
  var response=await fetch(url,{cache:"no-store"});
  if(!response.ok)throw new Error("IEM HTTP "+response.status);
  var body=await response.text();
  var lines=body.split(/\r?\n/).filter(function(line){return line.trim()!==""});
- if(!lines.length)throw new Error("IEM returned no BTV reports");
- var header=lines[0].split("\t").map(function(x){return x.trim().toLowerCase()});
- var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid"),metarIndex=header.indexOf("metar");
- if(metarIndex<0)throw new Error("IEM response did not include a METAR column");
+ var headerIndex=-1,header=[];
+ for(var h=0;h<lines.length;h++){
+  var candidate=lines[h].split("\t").map(function(x){return x.trim().toLowerCase().replace(/^#+/,"")});
+  if(candidate.indexOf("station")>=0&&candidate.indexOf("valid")>=0&&candidate.indexOf("sknt")>=0){headerIndex=h;header=candidate;break}
+ }
+ if(headerIndex<0)throw new Error("IEM response did not contain a recognizable tab-delimited header");
+ var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid");
+ var directionIndex=header.indexOf("drct"),speedIndex=header.indexOf("sknt"),gustIndex=header.indexOf("gust");
  var records=[];
- lines.slice(1).forEach(function(line){
+ lines.slice(headerIndex+1).forEach(function(line){
+  if(/^\s*#/.test(line))return;
   var cols=line.split("\t");
-  var station=stationIndex>=0?String(cols[stationIndex]||"").trim().toUpperCase():"BTV";
-  var raw=String(cols[metarIndex]||"").trim();
-  if(station==="BTV"&&raw&&/\bKBTV\b/.test(raw)){
-   var stamp=validIndex>=0?String(cols[validIndex]||"").trim():"";
-   var date=stamp?new Date(/(?:Z|[+-]\d{2}:?\d{2})$/.test(stamp)?stamp:stamp.replace(" ","T")+"Z"):null;
-   records.push({raw:raw,time:date&&isFinite(date.getTime())?date:null});
-  }
+  var station=String(cols[stationIndex]||"").trim().toUpperCase();
+  if(station!=="BTV")return;
+  var speedText=String(cols[speedIndex]||"").trim(),directionText=directionIndex>=0?String(cols[directionIndex]||"").trim():"";
+  var gustText=gustIndex>=0?String(cols[gustIndex]||"").trim():"";
+  var speed=Number(speedText),direction=Number(directionText),gust=Number(gustText);
+  if(!speedText||speedText==="M"||!isFinite(speed)||speed<0)return;
+  var stamp=validIndex>=0?String(cols[validIndex]||"").trim():"";
+  var date=stamp?new Date(/(?:Z|[+-]\d{2}:?\d{2})$/.test(stamp)?stamp:stamp.replace(" ","T")+"Z"):null;
+  records.push({time:date&&isFinite(date.getTime())?date:null,speed:speed,direction:directionText&&directionText!=="M"&&isFinite(direction)?direction:null,gust:gustText&&gustText!=="M"&&isFinite(gust)&&gust>0?gust:null});
  });
  records.sort(function(a,b){return (b.time?b.time.getTime():0)-(a.time?a.time.getTime():0)});
  return records[0]||null;
