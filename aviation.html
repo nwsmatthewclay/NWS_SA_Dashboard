@@ -211,19 +211,19 @@ async function fetchIemBtvWind(){
  var response=await fetch(url,{cache:"no-store"});
  if(!response.ok)throw new Error("IEM HTTP "+response.status);
  var body=await response.text();
- var lines=body.split(/\\r?\\n/).filter(function(line){return line.trim()!==""});
+ var lines=body.split(/\r?\n/).filter(function(line){return line.trim()!==""});
  if(!lines.length)throw new Error("IEM returned no BTV reports");
- var header=lines[0].split("\\t").map(function(x){return x.trim().toLowerCase()});
+ var header=lines[0].split("\t").map(function(x){return x.trim().toLowerCase()});
  var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid"),metarIndex=header.indexOf("metar");
  if(metarIndex<0)throw new Error("IEM response did not include a METAR column");
  var records=[];
  lines.slice(1).forEach(function(line){
-  var cols=line.split("\\t");
+  var cols=line.split("\t");
   var station=stationIndex>=0?String(cols[stationIndex]||"").trim().toUpperCase():"BTV";
   var raw=String(cols[metarIndex]||"").trim();
-  if(station==="BTV"&&raw&&/\\bKBTV\\b/.test(raw)){
+  if(station==="BTV"&&raw&&/\bKBTV\b/.test(raw)){
    var stamp=validIndex>=0?String(cols[validIndex]||"").trim():"";
-   var date=stamp?new Date(/(?:Z|[+-]\\d{2}:?\\d{2})$/.test(stamp)?stamp:stamp.replace(" ","T")+"Z"):null;
+   var date=stamp?new Date(/(?:Z|[+-]\d{2}:?\d{2})$/.test(stamp)?stamp:stamp.replace(" ","T")+"Z"):null;
    records.push({raw:raw,time:date&&isFinite(date.getTime())?date:null});
   }
  });
