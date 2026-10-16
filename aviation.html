@@ -217,7 +217,7 @@ async function fetchIemRecentObservation(site){
  var lines=body.split(/\r?\n/).filter(function(line){return line.trim()!==""});
  var headerIndex=-1,header=[];
  for(var h=0;h<lines.length;h++){
-  var candidate=lines[h].split("\t").map(function(x){return x.trim().toLowerCase().replace(/^#+/,"")});
+  var candidate=lines[h].split("\t").map(function(x){return x.trim().toLowerCase().replace(/^#+\s*/,"").trim()});
   if(candidate.indexOf("station")>=0&&candidate.indexOf("valid")>=0&&candidate.indexOf("metar")>=0){
    headerIndex=h;header=candidate;break;
   }
@@ -368,7 +368,7 @@ function render(results){
   var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Clouds: "+esc(o.clouds||"—")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
   var obsTime=o&&o.time?((/^SPECI\b/.test(o.raw||"")?"SPECI ":"")+utc(o.time)+(o.source?" · "+o.source:"")):"—";
   var tafIssue=t&&t.issue&&t.issue!=="—"?t.issue:"—";
-  var tafTime=tafIssue!=="—"?(tafIssue.match(/^\d{2}(\d{2})(\d{2})Z$/)?tafIssue.replace(/^\d{2}(\d{2})(\d{2})Z$/,"$1:$2Z"):tafIssue):"—";
+  var tafTime=tafIssue!=="—"?(tafIssue.match(/^\d{2}(\d{2})(\d{2})Z$/)?tafIssue.replace(/^\d{2}(\d{2})(\d{2})Z$/,"$1:$2Z"):tafIssue)+(t&&t.source?" · "+t.source:""):"—";
   var obsCat=o?o.cat:"NA",tafCat=current&&current.cond?current.cond.cat:"NA";
   var diffText=verifyingGroup?verifyingGroup.kind+" VERIFYING":d===null?"NO DATA":d===0?"MATCH":d===1?"MINOR · 1 CAT OFF":d===2?"MAJOR · 2 CATS OFF":"MAJOR · 3 CATS OFF";
   var diffClass=verifyingGroup?"verifying":d===null?"pending":d===0?"":"off"+Math.min(3,d);
