@@ -102,6 +102,7 @@ def fetch_observations(session):
         indexes[field] = header.index(field) if field in header else -1
 
     newest = {}
+    newest_wind = {}
     for line in lines[header_index + 1:]:
         if line.lstrip().startswith("#"):
             continue
@@ -141,6 +142,19 @@ def fetch_observations(session):
             "speed_kt": speed,
             "gust_kt": gust,
         }
+        # Track the newest complete sustained-wind observation separately from
+        # the newest METAR. A METAR can report a gust while masking direction /
+        # speed (e.g. /////G22KT); don't throw away the last valid wind sample.
+        if speed is not None:
+            wind_record = {
+                "timestamp": stamp.isoformat().replace("+00:00", "Z"),
+                "direction_deg": direction,
+                "speed_kt": speed,
+                "gust_kt": gust,
+            }
+            previous_wind = newest_wind.get(site)
+            if previous_wind is None or stamp > parse_timestamp(previous_wind["timestamp"]):
+                newest_wind[site] = wind_record
         previous = newest.get(site)
         if previous is None or stamp > parse_timestamp(previous["timestamp"]):
             newest[site] = record
@@ -155,16 +169,29 @@ def fetch_observations(session):
         if not record:
             print(f"{site}: no usable IEM observation in the last 3 hours")
             continue
-        speed, direction, gust = record["speed_kt"], record["direction_deg"], record["gust_kt"]
+        wind_record = newest_wind.get(site)
+        if wind_record is None:
+            # Keep the current report's gust-only group visible when no complete
+            # wind sample exists in the three-hour query window.
+            wind_record = {
+                "timestamp": record["timestamp"],
+                "direction_deg": None,
+                "speed_kt": None,
+                "gust_kt": record["gust_kt"],
+            }
+        record["wind"] = wind_record
+        speed = wind_record["speed_kt"]
+        direction = wind_record["direction_deg"]
+        gust = wind_record["gust_kt"]
         if speed is None:
-            wind_text = "wind unavailable in newest METAR"
+            wind_text = f"gust {gust:.0f} kt; sustained wind unavailable" if gust is not None else "wind unavailable"
         elif speed == 0:
             wind_text = "Calm"
         else:
             wind_text = (f"{direction:03.0f}° " if direction is not None else "") + f"{speed:.0f} kt"
             if gust is not None and gust > speed:
                 wind_text += f" G{gust:.0f} kt"
-        print(f"{site}: IEM report={record['timestamp']} wind={wind_text}")
+        print(f"{site}: latest IEM report={record['timestamp']} wind={wind_text} (wind sample={wind_record['timestamp']})")
 
     payload = json.dumps({"source": "IEM ASOS", "observations": newest}, indent=2) + "\n"
     OBS_OUT.parent.mkdir(parents=True, exist_ok=True)
