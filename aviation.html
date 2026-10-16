@@ -21,7 +21,7 @@ footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-cont
 </style>
 </head>
 <body>
-<header><div class="header-main"><div class="brand"><div class="brand-mark" aria-hidden="true">✈</div><div><div class="eyebrow">NOAA · NATIONAL WEATHER SERVICE</div><div class="brand-name">BURLINGTON, VT</div><div class="brand-sub">Weather Forecast Office · Vermont &amp; Northern New York</div></div></div><div class="hero-title"><span class="hero-plane" aria-hidden="true">✈</span><div><h1>AVIATION WEATHER</h1><div class="subhead">TAF verification &nbsp;•&nbsp; Flight categories &nbsp;•&nbsp; UTC</div></div></div><div class="top-meta"><div class="meta"><small>Observations updated</small><strong id="obsUpdated">—</strong></div><div class="meta"><small>TAFs retrieved</small><strong id="tafUpdated">—</strong></div><div class="meta"><small>Next refresh</small><strong id="nextUpdate">—</strong></div></div></div><div class="header-bottom"><div class="header-nav"><span>Terminal Forecasts</span><span>Flight Categories</span><span>Observations</span><span>Forecast Verification</span></div><div class="category-reference"><span class="ref-label">Flight category reference</span><span class="flight-pill vfr">VFR</span><span class="flight-pill mvfr">MVFR</span><span class="flight-pill ifr">IFR</span><span class="flight-pill lifr">LIFR</span></div></div></header>
+<header><div class="header-main"><div class="brand"><div class="brand-mark" aria-hidden="true">✈</div><div><div class="eyebrow">NOAA · NATIONAL WEATHER SERVICE</div><div class="brand-name">BURLINGTON, VT</div><div class="brand-sub">Weather Forecast Office · Vermont &amp; Northern New York</div></div></div><div class="hero-title"><span class="hero-plane" aria-hidden="true">✈</span><div><h1>AVIATION WEATHER</h1><div class="subhead">TAF verification &nbsp;•&nbsp; Flight categories &nbsp;•&nbsp; UTC</div></div></div><div class="top-meta"><div class="meta"><small>Last data check</small><strong id="obsUpdated">—</strong></div><div class="meta"><small>TAFs retrieved</small><strong id="tafUpdated">—</strong></div><div class="meta"><small>Next refresh</small><strong id="nextUpdate">—</strong></div></div></div><div class="header-bottom"><div class="header-nav"><span>Terminal Forecasts</span><span>Flight Categories</span><span>Observations</span><span>Forecast Verification</span></div><div class="category-reference"><span class="ref-label">Flight category reference</span><span class="flight-pill vfr">VFR</span><span class="flight-pill mvfr">MVFR</span><span class="flight-pill ifr">IFR</span><span class="flight-pill lifr">LIFR</span></div></div></header>
 <div class="wrap">
 <div class="error-banner" id="errorBanner"></div>
 <section class="panel"><div class="table-scroll"><table class="board"><thead><tr><th style="width:150px">AIRPORT<br><span class="muted">(City)</span></th><th>OBS / TAF TIME<br>(UTC)</th><th>OBSERVED<br><span class="muted">Wind • Clouds • Weather • Visibility</span></th><th>OBS<br>CATEGORY</th><th>TAF<br>CATEGORY</th><th>DIFFERENCE</th><th style="min-width:360px">24-HOUR TAF TIMELINE (UTC)</th></tr></thead><tbody id="airportRows"><tr><td colspan="7" style="padding:30px;text-align:center">Loading current observations and TAFs…</td></tr></tbody></table></div><div class="legend"><span><i class="swatch"></i>Prevailing TAF</span><span><i class="swatch dashed"></i>TEMPO window</span><span><i class="swatch prob"></i>PROB30 window</span><span><i class="swatch active"></i>Active group verifying</span><span class="small-note">Flash rate increases with category error.</span></div></section>
@@ -36,8 +36,8 @@ footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-cont
 (function(){
 "use strict";
 var SITES=[
- {id:"KBTV",tafLocation:"BTV",city:"Burlington"},{id:"KSLK",tafLocation:"SLK",city:"Saranac Lake"},{id:"KPBG",tafLocation:"PBG",city:"Plattsburgh"},
- {id:"KMPV",tafLocation:"MPV",city:"Montpelier"},{id:"KEFK",tafLocation:"EFK",city:"Newport"},{id:"KRUT",tafLocation:"RUT",city:"Rutland"},{id:"KMSS",tafLocation:"MSS",city:"Massena"}
+ {id:"KBTV",tafLocation:"BTV",iem:"BTV",city:"Burlington"},{id:"KSLK",tafLocation:"SLK",iem:"SLK",city:"Saranac Lake"},{id:"KPBG",tafLocation:"PBG",iem:"PBG",city:"Plattsburgh"},
+ {id:"KMPV",tafLocation:"MPV",iem:"MPV",city:"Montpelier"},{id:"KEFK",tafLocation:"EFK",iem:"EFK",city:"Newport"},{id:"KRUT",tafLocation:"RUT",iem:"RUT",city:"Rutland"},{id:"KMSS",tafLocation:"MSS",iem:"MSS",city:"Massena"}
 ];
 var ORDER=["VFR","MVFR","IFR","LIFR"],TICK=300000,latestObs={},latestTaf={},lastObsSuccess=null,lastTafSuccess=null,busy=false;
 var $=function(id){return document.getElementById(id)};
@@ -197,132 +197,127 @@ function extractTafProduct(product,site){
  }
  return match?normalized.slice(match.index).trim():null;
 }
+function cacheBustedUrl(url){
+ return url+(url.indexOf("?")>=0?"&":"?")+"_cb="+Date.now()+"_"+Math.random().toString(36).slice(2);
+}
 async function getJson(url){
- var r=await fetch(url,{cache:"no-store"});
+ // No-store avoids browser caching; the unique query also discourages CDN/proxy reuse.
+ var r=await fetch(cacheBustedUrl(url),{cache:"no-store"});
  if(r.status===204)return null;
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
 }
-async function fetchIemBtvWind(){
- // Secondary live source for KBTV wind when the NWS/MADIS observation omits it.
- // IEM identifies Burlington as BTV; use its structured ASOS wind fields.
- var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=BTV&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=tdf";
- var response=await fetch(url,{cache:"no-store"});
- if(!response.ok)throw new Error("IEM HTTP "+response.status);
+async function fetchIemRecentObservation(site){
+ // IEM ingests ASOS METARs independently of api.weather.gov. Compare report times.
+ var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(site.iem)+
+  "&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=tdf";
+ var response=await fetch(cacheBustedUrl(url),{cache:"no-store"});
+ if(!response.ok)throw new Error("IEM HTTP "+response.status+" for "+site.iem);
  var body=await response.text();
  var lines=body.split(/\r?\n/).filter(function(line){return line.trim()!==""});
  var headerIndex=-1,header=[];
  for(var h=0;h<lines.length;h++){
   var candidate=lines[h].split("\t").map(function(x){return x.trim().toLowerCase().replace(/^#+/,"")});
-  if(candidate.indexOf("station")>=0&&candidate.indexOf("valid")>=0&&candidate.indexOf("sknt")>=0){headerIndex=h;header=candidate;break}
+  if(candidate.indexOf("station")>=0&&candidate.indexOf("valid")>=0&&candidate.indexOf("metar")>=0){
+   headerIndex=h;header=candidate;break;
+  }
  }
- if(headerIndex<0)throw new Error("IEM response did not contain a recognizable tab-delimited header");
- var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid");
- var directionIndex=header.indexOf("drct"),speedIndex=header.indexOf("sknt"),gustIndex=header.indexOf("gust");
+ if(headerIndex<0)throw new Error("IEM response did not contain a METAR table for "+site.iem);
+ var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid"),metarIndex=header.indexOf("metar");
  var records=[];
  lines.slice(headerIndex+1).forEach(function(line){
   if(/^\s*#/.test(line))return;
   var cols=line.split("\t");
-  var station=String(cols[stationIndex]||"").trim().toUpperCase();
-  if(station!=="BTV")return;
-  var speedText=String(cols[speedIndex]||"").trim(),directionText=directionIndex>=0?String(cols[directionIndex]||"").trim():"";
-  var gustText=gustIndex>=0?String(cols[gustIndex]||"").trim():"";
-  var speed=Number(speedText),direction=Number(directionText),gust=Number(gustText);
-  if(!speedText||speedText==="M"||!isFinite(speed)||speed<0)return;
-  var stamp=validIndex>=0?String(cols[validIndex]||"").trim():"";
-  var date=stamp?new Date(/(?:Z|[+-]\d{2}:?\d{2})$/.test(stamp)?stamp:stamp.replace(" ","T")+"Z"):null;
-  records.push({time:date&&isFinite(date.getTime())?date:null,speed:speed,direction:directionText&&directionText!=="M"&&isFinite(direction)?direction:null,gust:gustText&&gustText!=="M"&&isFinite(gust)&&gust>0?gust:null});
+  if(String(cols[stationIndex]||"").trim().toUpperCase()!==site.iem)return;
+  var raw=String(cols[metarIndex]||"").trim();
+  var stamp=String(cols[validIndex]||"").trim();
+  if(!raw||raw==="M"||!stamp||stamp==="M")return;
+  var normalized=/\dT\d/.test(stamp)?stamp:stamp.replace(" ","T");
+  if(!/(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized))normalized+="Z";
+  var date=new Date(normalized);
+  if(!isFinite(date.getTime()))return;
+  records.push({time:date,raw:raw});
  });
- records.sort(function(a,b){return (b.time?b.time.getTime():0)-(a.time?a.time.getTime():0)});
- return records[0]||null;
+ records.sort(function(a,b){return b.time-a.time});
+ if(!records.length)return null;
+ var newest=records[0];
+ var obs=obsFromFeature({properties:{rawMessage:newest.raw,timestamp:newest.time.toISOString()}},site.id);
+ obs.source="IEM ASOS";
+ return {obs:obs,source:"IEM ASOS"};
+}
+async function fetchAviationWeatherTaf(site){
+ // Use the live AWC endpoint rather than relying only on the scheduled static feed.
+ var url="https://aviationweather.gov/api/data/taf?ids="+encodeURIComponent(site.id)+"&format=raw";
+ var response=await fetch(cacheBustedUrl(url),{cache:"no-store"});
+ if(!response.ok)throw new Error("AWC HTTP "+response.status+" for "+site.id);
+ var text=await response.text();
+ var raw=extractTafProduct({productText:text},site.id);
+ if(!raw)throw new Error("AWC response contained no valid TAF for "+site.id);
+ var taf=tokenizeTaf(raw,new Date());
+ taf.source="AWC";
+ return taf;
+}
+async function fetchNwsTaf(site){
+ var product=await getJson("https://api.weather.gov/products/types/TAF/locations/"+site.tafLocation+"/latest");
+ var raw=extractTafProduct(product,site.id);
+ if(!raw)throw new Error("NWS latest product contained no valid TAF for "+site.id);
+ var taf=tokenizeTaf(raw,new Date());
+ taf.source="NWS";
+ return taf;
+}
+function tafIssueDate(taf,base){
+ var m=/^(\d{2})(\d{2})(\d{2})Z$/.exec(taf&&taf.issue||"");
+ return m?zDate(Number(m[1]),Number(m[2]),Number(m[3]),base):null;
 }
 async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
- var oUrl="https://api.weather.gov/stations/"+site.id+"/observations/latest";
- try{
-  var oj=await getJson(oUrl),feature=oj&&(oj.features?oj.features[0]:oj);
-  if(feature)result.obs=obsFromFeature(feature,site.id);else result.obsError="No current observation";
- }catch(e){result.obsError=e.message}
- // Some MADIS/NWS latest-observation records omit wind even when the airport
- // has a valid recent METAR. If so, look back through recent station reports
- // and borrow only the wind field; never replace current ceiling, visibility,
- // weather, category, or observation timestamp with an older report.
- if(result.obs&&(!result.obs.wind||result.obs.wind==="—"||result.obs.wind==="")){
-  try{
-   var recent=await getJson("https://api.weather.gov/stations/"+site.id+"/observations?limit=6");
-   var features=recent&&Array.isArray(recent.features)?recent.features:[];
-   for(var i=0;i<features.length;i++){
-    var prior=obsFromFeature(features[i],site.id);
-    if(prior.wind&&prior.wind!=="—"&&prior.wind!==""){
-     var priorTime=prior.time&&isFinite(prior.time.getTime())?prior.time:null;
-     var age=priorTime?Math.max(0,Math.round((Date.now()-priorTime.getTime())/60000)):null;
-     if(age!==null&&age>=120)continue;
-     result.obs.wind=prior.wind;
-     result.obs.windStale=age!==null&&age>=120;
-     result.obsError=null;
-     break;
-    }
-   }
-  }catch(windFallbackError){
-   console.warn(site.id+" recent-observation wind fallback failed:",windFallbackError);
-  }
+ var now=new Date();
+ var observationRequests=await Promise.allSettled([
+  getJson("https://api.weather.gov/stations/"+site.id+"/observations/latest").then(function(payload){
+   var feature=payload&&(payload.features?payload.features[0]:payload);
+   if(!feature)throw new Error("NWS returned no latest observation");
+   var obs=obsFromFeature(feature,site.id);
+   obs.source="NWS";
+   return {obs:obs,source:"NWS"};
+  }),
+  fetchIemRecentObservation(site)
+ ]);
+ var candidates=[];
+ observationRequests.forEach(function(item){
+  if(item.status==="fulfilled"&&item.value&&item.value.obs)candidates.push(item.value);
+  else if(item.status==="rejected")console.warn(site.id+" observation source failed:",item.reason);
+ });
+ candidates.sort(function(a,b){
+  var at=a.obs.time&&isFinite(a.obs.time.getTime())?a.obs.time.getTime():-Infinity;
+  var bt=b.obs.time&&isFinite(b.obs.time.getTime())?b.obs.time.getTime():-Infinity;
+  if(at!==bt)return bt-at;
+  return a.source==="IEM ASOS"?-1:(b.source==="IEM ASOS"?1:0);
+ });
+ if(candidates.length){
+  result.obs=candidates[0].obs;
+  result.obs.source=candidates[0].source;
+ }else{
+  var obsErrors=observationRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)});
+  result.obsError=obsErrors.length?obsErrors.join("; "):"No current observation from NWS or IEM ASOS";
  }
- // KBTV-only wind recovery. Try the official NWS endpoint with QC enabled/disabled
- // before using IEM's independently ingested ASOS fields. The rest of the current
- // observation (time, clouds, visibility, weather, and category) is never replaced.
- if(site.id==="KBTV"&&result.obs&&(!result.obs.wind||result.obs.wind==="—"||result.obs.wind==="")){
-  var nwsWindCandidate=null;
-  for(var qcIndex=0;qcIndex<2;qcIndex++){
-   var qcValue=qcIndex===0?"false":"true";
-   try{
-    var qcPayload=await getJson(oUrl+"?require_qc="+qcValue);
-    var qcFeature=qcPayload&&(qcPayload.features?qcPayload.features[0]:qcPayload);
-    if(!qcFeature)continue;
-    var qcObs=obsFromFeature(qcFeature,site.id);
-    if(!qcObs.wind||qcObs.wind==="—"||qcObs.wind==="")continue;
-    var qcTime=qcObs.time&&isFinite(qcObs.time.getTime())?qcObs.time:null;
-    var candidateTime=nwsWindCandidate&&nwsWindCandidate.time?nwsWindCandidate.time:null;
-    if(!nwsWindCandidate||(qcTime&&(!candidateTime||qcTime>candidateTime))){
-     nwsWindCandidate={wind:qcObs.wind,time:qcTime};
-    }
-   }catch(qcError){
-    console.warn("KBTV NWS require_qc="+qcValue+" wind retry failed:",qcError);
-   }
-  }
-  if(nwsWindCandidate){
-   var qcAge=nwsWindCandidate.time?Math.max(0,Math.round((Date.now()-nwsWindCandidate.time.getTime())/60000)):null;
-   if(qcAge===null||qcAge<120){
-    result.obs.wind=nwsWindCandidate.wind;
-    result.obs.windStale=false;
-   }
-   result.obsError=null;
-  }
-  // Final fallback: live IEM ASOS data, queried at page load/refresh, not a saved file.
-  // fetchIemBtvWind returns numeric fields (speed/direction/gust), not raw METAR text.
-  if(!result.obs.wind||result.obs.wind==="—"||result.obs.wind===""){
-   try{
-    var iem=await fetchIemBtvWind();
-    if(iem){
-     var iemWind=iem.speed===0?"Calm":(iem.direction!==null?String(Math.round(iem.direction)).padStart(3,"0")+"° ":"")+Math.round(iem.speed)+" kt";
-     if(iem.speed!==0&&iem.gust!==null)iemWind+=" G"+Math.round(iem.gust)+" kt";
-     var iemAge=iem.time?Math.max(0,Math.round((Date.now()-iem.time.getTime())/60000)):null;
-     if(iemAge===null||iemAge<120){
-      result.obs.wind=iemWind;
-      result.obs.windStale=false;
-     }
-     result.obsError=null;
-    }
-   }catch(iemError){
-    console.warn("KBTV IEM ASOS wind fallback failed:",iemError);
-   }
-  }
+ // Select the TAF with the newest issuance timestamp; AWC wins ties.
+ var tafRequests=await Promise.allSettled([fetchAviationWeatherTaf(site),fetchNwsTaf(site)]);
+ var tafCandidates=[];
+ tafRequests.forEach(function(item){
+  if(item.status==="fulfilled"&&item.value)tafCandidates.push(item.value);
+  else if(item.status==="rejected")console.warn(site.id+" TAF source failed:",item.reason);
+ });
+ tafCandidates.sort(function(a,b){
+  var ad=tafIssueDate(a,now),bd=tafIssueDate(b,now);
+  var at=ad?ad.getTime():-Infinity,bt=bd?bd.getTime():-Infinity;
+  if(at!==bt)return bt-at;
+  return a.source==="AWC"?-1:(b.source==="AWC"?1:0);
+ });
+ if(tafCandidates.length)result.taf=tafCandidates[0];
+ else{
+  var tafErrors=tafRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)});
+  result.tafError=tafErrors.length?tafErrors.join("; "):"No current TAF found for "+site.id;
  }
- try{
-  var product=await getJson("https://api.weather.gov/products/types/TAF/locations/"+site.tafLocation+"/latest");
-  var raw=extractTafProduct(product,site.id);
-  if(raw)result.taf=tokenizeTaf(raw,new Date());
-  else result.tafError="Latest NWS TAF product for "+site.tafLocation+" did not contain a valid "+site.id+" forecast";
- }catch(e){result.tafError="NWS TAF request failed: "+e.message}
  return result;
 }
 function diff(obs,taf){
@@ -371,7 +366,7 @@ function render(results){
   var rowClass=hasMismatch?" mismatch-"+Math.min(3,d):"";
   if(verifyingGroup)rowClass+=" group-active";
   var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Clouds: "+esc(o.clouds||"—")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
-  var obsTime=o&&o.time?((/^SPECI\b/.test(o.raw||"")?"SPECI ":"")+utc(o.time)):"—";
+  var obsTime=o&&o.time?((/^SPECI\b/.test(o.raw||"")?"SPECI ":"")+utc(o.time)+(o.source?" · "+o.source:"")):"—";
   var tafIssue=t&&t.issue&&t.issue!=="—"?t.issue:"—";
   var tafTime=tafIssue!=="—"?(tafIssue.match(/^\d{2}(\d{2})(\d{2})Z$/)?tafIssue.replace(/^\d{2}(\d{2})(\d{2})Z$/,"$1:$2Z"):tafIssue):"—";
   var obsCat=o?o.cat:"NA",tafCat=current&&current.cond?current.cond.cat:"NA";
@@ -397,15 +392,15 @@ function render(results){
  results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Source: NWS observations + NWS TAF text products • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Live sources: newest timestamp from NWS / IEM ASOS; newest issue time from AWC / NWS TAFs • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
  if(busy)return;busy=true;
  try{
   var results=await Promise.all(SITES.map(function(site){return loadSite(site)}));
-  // Observations and TAFs are fetched live from NWS on every page load
-  // and scheduled refresh. KBTV's missing-wind case is handled in loadSite().
+  // Each refresh compares NWS and IEM observation timestamps, and AWC/NWS TAF issue
+  // times. All upstream requests are cache-busted to avoid stale cached responses.
   results.forEach(function(r){if(r.obs)latestObs[r.site.id]=r.obs;if(r.taf)latestTaf[r.site.id]=r.taf});
   lastObsSuccess=results.some(function(r){return !!r.obs})?new Date():lastObsSuccess;
   lastTafSuccess=results.some(function(r){return !!r.taf})?new Date():lastTafSuccess;
