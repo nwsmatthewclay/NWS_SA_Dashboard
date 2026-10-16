@@ -294,6 +294,35 @@ async function refresh(){
  if(busy)return;busy=true;
  try{
   var results=await Promise.all(SITES.map(function(site){return loadSite(site)}));
+  // Supplement incomplete api.weather.gov observations with the METAR feed
+  // refreshed server-side by GitHub Actions. Use one METAR report as a unit
+  // rather than combining wind from one timestamp with clouds/visibility from another.
+  try{
+   var feed=await getJson("data/aviation_metars.json?ts="+Date.now());
+   var stations=feed&&feed.stations||{};
+   results.forEach(function(r){
+    var entry=stations[r.site.id],raw=entry&&entry.rawMessage;
+    if(!raw)return;
+    var metarTime=null,stamp=entry.observationTime;
+    if(typeof stamp==="number"&&isFinite(stamp))metarTime=new Date(stamp*1000);
+    else if(typeof stamp==="string"&&stamp.trim()){
+     var parsed=Number(stamp);
+     metarTime=new Date(isFinite(parsed)&&parsed>1000000000?parsed*1000:stamp);
+     if(!isFinite(metarTime.getTime()))metarTime=null;
+    }
+    // Never let a stale fallback replace a newer API observation.
+    if(metarTime&&Date.now()-metarTime.getTime()>90*60000)return;
+    var fallback=obsFromFeature({properties:{rawMessage:raw,timestamp:metarTime?metarTime.toISOString():null}},r.site.id);
+    if(fallback.wind&&fallback.wind!=="—"){
+     r.obs=fallback;
+     r.obsSource="Aviation Weather Center METAR";
+     r.obsError=null;
+    }
+   });
+  }catch(feedError){
+   // The dashboard remains functional if the static fallback feed is absent or delayed.
+   console.warn("METAR fallback feed unavailable:",feedError);
+  }
   results.forEach(function(r){if(r.obs)latestObs[r.site.id]=r.obs;if(r.taf)latestTaf[r.site.id]=r.taf});
   lastObsSuccess=results.some(function(r){return !!r.obs})?new Date():lastObsSuccess;
   lastTafSuccess=results.some(function(r){return !!r.taf})?new Date():lastTafSuccess;
