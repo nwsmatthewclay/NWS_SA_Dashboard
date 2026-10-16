@@ -257,14 +257,6 @@ async function fetchAviationWeatherTaf(site){
  taf.source="AWC";
  return taf;
 }
-async function fetchNwsTaf(site){
- var product=await getJson("https://api.weather.gov/products/types/TAF/locations/"+site.tafLocation+"/latest");
- var raw=extractTafProduct(product,site.id);
- if(!raw)throw new Error("NWS latest product contained no valid TAF for "+site.id);
- var taf=tokenizeTaf(raw,new Date());
- taf.source="NWS";
- return taf;
-}
 function tafIssueDate(taf,base){
  var m=/^(\d{2})(\d{2})(\d{2})Z$/.exec(taf&&taf.issue||"");
  return m?zDate(Number(m[1]),Number(m[2]),Number(m[3]),base):null;
@@ -300,23 +292,13 @@ async function loadSite(site){
   var obsErrors=observationRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)});
   result.obsError=obsErrors.length?obsErrors.join("; "):"No current observation from NWS or IEM ASOS";
  }
- // Select the TAF with the newest issuance timestamp; AWC wins ties.
- var tafRequests=await Promise.allSettled([fetchAviationWeatherTaf(site),fetchNwsTaf(site)]);
- var tafCandidates=[];
- tafRequests.forEach(function(item){
-  if(item.status==="fulfilled"&&item.value)tafCandidates.push(item.value);
-  else if(item.status==="rejected")console.warn(site.id+" TAF source failed:",item.reason);
- });
- tafCandidates.sort(function(a,b){
-  var ad=tafIssueDate(a,now),bd=tafIssueDate(b,now);
-  var at=ad?ad.getTime():-Infinity,bt=bd?bd.getTime():-Infinity;
-  if(at!==bt)return bt-at;
-  return a.source==="AWC"?-1:(b.source==="AWC"?1:0);
- });
- if(tafCandidates.length)result.taf=tafCandidates[0];
- else{
-  var tafErrors=tafRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)});
-  result.tafError=tafErrors.length?tafErrors.join("; "):"No current TAF found for "+site.id;
+ // Use the live Aviation Weather Center feed directly. The previous NWS
+ // /products/types/TAF/locations/{airport}/latest URL returns HTTP 400 for
+ // these terminal IDs; do not treat that invalid endpoint as a TAF failure.
+ try{
+  result.taf=await fetchAviationWeatherTaf(site);
+ }catch(tafError){
+  result.tafError="Aviation Weather Center TAF request failed: "+(tafError&&tafError.message||tafError);
  }
  return result;
 }
@@ -392,7 +374,7 @@ function render(results){
  results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Live sources: newest timestamp from NWS / IEM ASOS; newest issue time from AWC / NWS TAFs • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Live sources: newest timestamp from NWS / IEM ASOS; TAFs from Aviation Weather Center • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
