@@ -10,10 +10,8 @@ on:
       - 'tempprofile.py'
   workflow_dispatch:
   schedule:
-    # Independent of the longer dashboard workflow. GitHub schedules are
-    # best-effort; the freshness gate below prevents stale data being published.
-    - cron: "*/15 * * * *"
-    # Offset schedule provides another opportunity between quarter-hour runs.
+    # Stagger these runs away from the main dashboard's :00/:30 schedule.
+    # GitHub schedules are best-effort; freshness checks prevent stale publication.
     - cron: "7,22,37,52 * * * *"
 
 concurrency:
