@@ -256,8 +256,9 @@ async function loadSite(site){
     if(prior.wind&&prior.wind!=="—"&&prior.wind!==""){
      var priorTime=prior.time&&isFinite(prior.time.getTime())?prior.time:null;
      var age=priorTime?Math.max(0,Math.round((Date.now()-priorTime.getTime())/60000)):null;
-     result.obs.wind=prior.wind+(age!==null?" (last wind report "+age+" min old)":" (previous station report)");
-     result.obs.windStale=true;
+     if(age!==null&&age>=120)continue;
+     result.obs.wind=prior.wind;
+     result.obs.windStale=age!==null&&age>=120;
      result.obsError=null;
      break;
     }
@@ -290,8 +291,10 @@ async function loadSite(site){
   }
   if(nwsWindCandidate){
    var qcAge=nwsWindCandidate.time?Math.max(0,Math.round((Date.now()-nwsWindCandidate.time.getTime())/60000)):null;
-   result.obs.wind=nwsWindCandidate.wind+(qcAge!==null?" (NWS METAR "+qcAge+" min old)":" (NWS METAR)");
-   result.obs.windStale=true;
+   if(qcAge===null||qcAge<120){
+    result.obs.wind=nwsWindCandidate.wind;
+    result.obs.windStale=false;
+   }
    result.obsError=null;
   }
   // Final fallback: live IEM ASOS data, queried at page load/refresh, not a saved file.
@@ -303,8 +306,10 @@ async function loadSite(site){
      var iemWind=iem.speed===0?"Calm":(iem.direction!==null?String(Math.round(iem.direction)).padStart(3,"0")+"° ":"")+Math.round(iem.speed)+" kt";
      if(iem.speed!==0&&iem.gust!==null)iemWind+=" G"+Math.round(iem.gust)+" kt";
      var iemAge=iem.time?Math.max(0,Math.round((Date.now()-iem.time.getTime())/60000)):null;
-     result.obs.wind=iemWind+(iemAge!==null?" (IEM ASOS "+iemAge+" min old)":" (IEM ASOS)");
-     result.obs.windStale=true;
+     if(iemAge===null||iemAge<120){
+      result.obs.wind=iemWind;
+      result.obs.windStale=false;
+     }
      result.obsError=null;
     }
    }catch(iemError){
