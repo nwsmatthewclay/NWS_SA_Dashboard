@@ -186,7 +186,7 @@ function tokenizeTaf(raw,now){
 }
 function extractTafProduct(product,site){
  if(!product)return null;
- var text=product.productText||product.text||product.productTextRaw||"";
+ var text=typeof product==="string"?product:(product.productText||product.text||product.productTextRaw||"");
  if(typeof text!=="string")return null;
  var normalized=text.replace(/\r/g,"").trim();
  var marker=new RegExp("(?:^|\\n)\\s*(?:TAF\\s+)?(?:AMD\\s+|COR\\s+)?"+site+"\\s+\\d{6}Z\\s+\\d{4}/\\d{4}\\b","i");
@@ -212,68 +212,71 @@ async function getJson(url){
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
 }
-async function fetchIemRecentObservation(site){
- // Read the server-refreshed IEM feed from this same origin. This avoids
- // browser CORS/network issues and lets the Actions logs verify the source values.
- var feed=await getJson("data/aviation_obs.json");
- var record=feed&&feed.observations&&feed.observations[site.id];
- if(!record)throw new Error("No published IEM ASOS observation for "+site.id);
- var windRecord=record.wind&&typeof record.wind==="object"?record.wind:record;
- var properties={
-  rawMessage:record.raw||"",
-  timestamp:record.timestamp||null,
-  windDirection:windRecord.direction_deg==null?null:{value:windRecord.direction_deg,unitCode:"wmoUnit:degree_(angle)"},
-  windSpeed:windRecord.speed_kt==null?null:{value:windRecord.speed_kt,unitCode:"wmoUnit:knots"},
-  windGust:windRecord.gust_kt==null?null:{value:windRecord.gust_kt,unitCode:"wmoUnit:knots"}
- };
- var obs=obsFromFeature({properties:properties},site.id);
- // The wind sample may be older than the newest METAR if that report masks
- // sustained wind (e.g. /////G22KT). Keep the wind sample's own timestamp.
- var speed=windRecord.speed_kt==null?null:Number(windRecord.speed_kt);
- var direction=windRecord.direction_deg==null?null:Number(windRecord.direction_deg);
- var gust=windRecord.gust_kt==null?null:Number(windRecord.gust_kt);
- if(speed!=null&&isFinite(speed)){
-  if(speed===0)obs.wind="Calm";
-  else{
-   obs.wind=(direction!=null&&isFinite(direction)?String(Math.round(direction)).padStart(3,"0")+"° ":"")+Math.round(speed)+" kt";
-   if(gust!=null&&isFinite(gust)&&gust>speed)obs.wind+=" G"+Math.round(gust)+" kt";
-  }
- }else if(gust!=null&&isFinite(gust)){
-  obs.wind="G"+Math.round(gust)+" kt only; direction/speed unavailable";
+async function fetchNwsRecentObservations(site){
+ // Browser-only: read recent official NWS station observations directly.
+ // Looking back through recent reports lets us retain a valid wind if the newest
+ // METAR has a masked sustained-wind group such as /////G22KT.
+ var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/observations?limit=20");
+ var features=payload&&(Array.isArray(payload.features)?payload.features:(Array.isArray(payload["@graph"])?payload["@graph"]:null));
+ if(!features||!features.length)throw new Error("NWS returned no recent observations for "+site.id);
+ var parsed=features.map(function(feature){
+  var obs=obsFromFeature(feature,site.id);
+  return {obs:obs,feature:feature,time:obs.time&&isFinite(obs.time.getTime())?obs.time.getTime():-Infinity};
+ }).filter(function(item){return item.time!==-Infinity;});
+ parsed.sort(function(a,b){return b.time-a.time});
+ if(!parsed.length)throw new Error("NWS returned no timestamped observations for "+site.id);
+ var obs=parsed[0].obs;
+ // Wind selection is independent of the newest report's clouds / weather.
+ var windSample=parsed.find(function(item){return item.obs.wind&&item.obs.wind!=="—"});
+ if(windSample){
+  obs.wind=windSample.obs.wind;
+  obs.windTime=windSample.obs.time;
+  obs.windSource="NWS recent observation";
+ }else{
+  obs.wind="—";
+  obs.windTime=null;
+  obs.windSource="NWS recent observation";
  }
- obs.windTime=windRecord.timestamp?new Date(windRecord.timestamp):null;
- obs.source="IEM ASOS";
- return {obs:obs,source:"IEM ASOS"};
-}
-async function fetchNwsLatestObservation(site){
- // Pull the latest official NWS station observation on every page refresh.
- // Do not append query parameters to this endpoint: api.weather.gov rejects them.
- var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/observations/latest");
- var feature=payload&&(payload.features?payload.features[0]:payload);
- if(!feature)throw new Error("NWS returned no latest observation for "+site.id);
- var obs=obsFromFeature(feature,site.id);
  obs.source="NWS live";
  return {obs:obs,source:"NWS live"};
 }
-async function fetchAviationWeatherTaf(site){
- // Same-origin feed is refreshed server-side by GitHub Actions; browser-side AWC
- // requests are blocked by CORS. Cache-bust the published JSON to avoid stale browser copies.
- var feed=await getJson("data/aviation_tafs.json");
- var raw=feed&&feed.tafs&&feed.tafs[site.id];
- if(!raw)throw new Error("No published TAF available for "+site.id);
- var taf=tokenizeTaf(raw,new Date());
- taf.source="AWC feed";
- return taf;
+function collectTafStrings(node,site,out,seen){
+ if(node==null)return;
+ if(typeof node==="string"){
+  var raw=extractTafProduct(node,site);
+  if(raw&&out.indexOf(raw)<0)out.push(raw);
+  return;
+ }
+ if(Array.isArray(node)){
+  node.forEach(function(item){collectTafStrings(item,site,out,seen)});
+  return;
+ }
+ if(typeof node!=="object")return;
+ if(seen.indexOf(node)>=0)return;
+ seen.push(node);
+ // Common current and legacy fields used by NWS station-product responses.
+ ["rawTAF","rawTaf","rawText","rawMessage","tafText","productText","productTextRaw","text","taf"].forEach(function(key){
+  if(typeof node[key]==="string"){
+   var raw=extractTafProduct(node[key],site);
+   if(raw&&out.indexOf(raw)<0)out.push(raw);
+  }
+ });
+ Object.keys(node).forEach(function(key){collectTafStrings(node[key],site,out,seen)});
 }
 async function fetchNwsTaf(site){
- // The NWS products API is browser-accessible. Query it live without _cb,
- // because its API schema rejects undocumented query parameters.
- var product=await getJson("https://api.weather.gov/products/types/TAF/locations/"+site.tafLocation+"/latest");
- var raw=extractTafProduct(product,site.id);
- if(!raw)throw new Error("NWS latest TAF product did not contain "+site.id);
- var taf=tokenizeTaf(raw,new Date());
- taf.source="NWS live";
- return taf;
+ // Browser-only: fetch the station's TAF collection from api.weather.gov.
+ var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/tafs");
+ var candidates=[];
+ collectTafStrings(payload,site.id,candidates,[]);
+ var parsed=candidates.map(function(raw){return tokenizeTaf(raw,new Date())}).filter(function(taf){return taf&&taf.raw});
+ if(!parsed.length)throw new Error("NWS station TAF endpoint returned no parseable TAF for "+site.id);
+ parsed.sort(function(a,b){
+  var ad=tafIssueDate(a,new Date()),bd=tafIssueDate(b,new Date());
+  var at=ad?ad.getTime():-Infinity,bt=bd?bd.getTime():-Infinity;
+  return bt-at;
+ });
+ parsed[0].source="NWS live";
+ return parsed[0];
 }
 function tafIssueDate(taf,base){
  var m=/^(\d{2})(\d{2})(\d{2})Z$/.exec(taf&&taf.issue||"");
@@ -283,57 +286,19 @@ async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var now=new Date();
 
- // Per page refresh: obtain the current official NWS observation and compare
- // it with the last published IEM ASOS report. Use the latest report timestamp.
- var observationRequests=await Promise.allSettled([
-  fetchNwsLatestObservation(site),
-  fetchIemRecentObservation(site)
- ]);
- var observations=[],iemObservation=null;
- observationRequests.forEach(function(item){
-  if(item.status==="fulfilled"&&item.value&&item.value.obs){
-   observations.push(item.value);
-   if(item.value.source==="IEM ASOS")iemObservation=item.value;
-  }else if(item.status==="rejected")console.warn(site.id+" observation source failed:",item.reason);
- });
- observations.sort(function(a,b){
-  var at=a.obs.time&&isFinite(a.obs.time.getTime())?a.obs.time.getTime():-Infinity;
-  var bt=b.obs.time&&isFinite(b.obs.time.getTime())?b.obs.time.getTime():-Infinity;
-  if(at!==bt)return bt-at;
-  // Same issue time: prefer an observation with parsed wind, otherwise official NWS.
-  var aw=a.obs.wind&&a.obs.wind!=="—"?1:0,bw=b.obs.wind&&b.obs.wind!=="—"?1:0;
-  if(aw!==bw)return bw-aw;
-  return a.source==="NWS live"?-1:(b.source==="NWS live"?1:0);
- });
- if(observations.length){
-  result.obs=observations[0].obs;
-  result.obs.source=observations[0].source;
-
-  // Wind is selected independently from the main observation. The NWS API can
-  // return a newer observation whose structured wind fields are absent or
-  // unusable; do not let that erase a valid ASOS wind from the IEM feed.
-  var iemWind=iemObservation&&iemObservation.obs&&iemObservation.obs.wind;
-  var iemTime=iemObservation&&iemObservation.obs&&(iemObservation.obs.windTime||iemObservation.obs.time);
-  var iemAgeMs=iemTime&&isFinite(iemTime.getTime())?Date.now()-iemTime.getTime():Infinity;
-  // The scheduled feed can lag, and ASOS may mask sustained wind for
-  // consecutive reports. Preserve the last complete IEM wind for the feed's
-  // full 3-hour query window instead of dropping it after only 60 minutes.
-  var iemWindFresh=iemWind&&iemWind!=="—"&&iemAgeMs>=-5*60*1000&&iemAgeMs<=3*60*60*1000;
-  if(iemWindFresh){
-   result.obs.wind=iemWind;
-   result.obs.windSource="IEM ASOS";
-   result.obs.windTime=iemTime;
-  }else{
-   result.obs.windSource=result.obs.source||observations[0].source;
-   result.obs.windTime=result.obs.time||null;
-  }
+ // Fetch recent observations and station TAF directly from the NWS API on each refresh.
+ var observationRequest=await Promise.allSettled([fetchNwsRecentObservations(site)]);
+ if(observationRequest[0].status==="fulfilled"&&observationRequest[0].value&&observationRequest[0].value.obs){
+  result.obs=observationRequest[0].value.obs;
  }else{
-  result.obsError=observationRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)}).join("; ")||"No usable observation from NWS or IEM";
+  var reason=observationRequest[0].reason;
+  result.obsError=reason&&reason.message||String(reason||"NWS observation unavailable");
+  console.warn(site.id+" NWS observation request failed:",reason);
  }
 
  // Per page refresh: request the current official NWS TAF. Fall back to the
  // refreshed AWC same-origin feed if the NWS endpoint is unavailable.
- var tafRequests=await Promise.allSettled([fetchNwsTaf(site),fetchAviationWeatherTaf(site)]);
+ var tafRequests=await Promise.allSettled([fetchNwsTaf(site)]);
  var tafCandidates=[];
  tafRequests.forEach(function(item){
   if(item.status==="fulfilled"&&item.value)tafCandidates.push(item.value);
@@ -424,7 +389,7 @@ function render(results){
  results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Per-refresh NWS observations/TAFs • wind sourced independently from fresh IEM ASOS when available • IEM obs/AWC TAF fallbacks • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Browser-direct NWS observations/TAFs; wind recovered from recent NWS reports when the newest METAR masks it • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
