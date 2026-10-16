@@ -200,13 +200,12 @@ function extractTafProduct(product,site){
 function cacheBustedUrl(url){
  return url+(url.indexOf("?")>=0?"&":"?")+"_cb="+Date.now()+"_"+Math.random().toString(36).slice(2);
 }
-async function getJson(url){
- // NWS rejects undocumented query parameters, so never append _cb to api.weather.gov.
- // For same-origin static feeds, use a unique URL as well as cache: no-store.
+async function getJson(url,accept){
+ // Browser-direct NWS API requests; no static feed or cache-buster query parameters.
  var isNws=url.indexOf("https://api.weather.gov/")===0;
  var target=isNws?url:cacheBustedUrl(url);
  var options={cache:"no-store"};
- if(isNws)options.headers={"Accept":"application/geo+json"};
+ if(isNws)options.headers={"Accept":accept||"application/geo+json"};
  var r=await fetch(target,options);
  if(r.status===204)return null;
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
@@ -265,7 +264,7 @@ function collectTafStrings(node,site,out,seen){
 }
 async function fetchNwsTaf(site){
  // Browser-only: fetch the station's TAF collection from api.weather.gov.
- var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/tafs");
+ var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/tafs","application/ld+json");
  var candidates=[];
  collectTafStrings(payload,site.id,candidates,[]);
  var parsed=candidates.map(function(raw){return tokenizeTaf(raw,new Date())}).filter(function(taf){return taf&&taf.raw});
