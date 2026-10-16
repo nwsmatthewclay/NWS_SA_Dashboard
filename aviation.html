@@ -211,6 +211,40 @@ async function getJson(url,accept){
  if(!r.ok)throw new Error("HTTP "+r.status+" from "+url);
  return r.json();
 }
+async function fetchIemAsosWind(site){
+ // Live IEM ASOS feed is queried directly from the browser. Its structured
+ // direction/speed/gust fields are independent of NWS MADIS wind QC omissions.
+ var station=site.iem||site.id.replace(/^K/,"");
+ var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(station)+"&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=json";
+ var payload=await getJson(url);
+ var rows=payload&&(Array.isArray(payload.data)?payload.data:(Array.isArray(payload.observations)?payload.observations:null));
+ if(!rows||!rows.length)throw new Error("IEM returned no ASOS reports for "+site.id);
+ var parsed=rows.map(function(row){
+  var stamp=row.valid||row.time||row.timestamp;
+  var time=stamp?new Date(stamp):null;
+  var speed=row.sknt==null||row.sknt===""?null:Number(row.sknt);
+  var direction=row.drct==null||row.drct===""?null:Number(row.drct);
+  var gust=row.gust==null||row.gust===""?null:Number(row.gust);
+  var raw=String(row.metar||row.raw||"");
+  // Some rows mask structured values but retain a valid wind group in raw METAR.
+  var match=/(?:^|\\s)(VRB|\\d{3})(\\d{2,3})(?:G(\\d{2,3}))?KT(?=\\s|$)/i.exec(raw);
+  if(speed==null&&match){
+   speed=Number(match[2]);
+   if(direction==null&&match[1].toUpperCase()!=="VRB")direction=Number(match[1]);
+   if(gust==null&&match[3])gust=Number(match[3]);
+  }
+  return {time:time,direction:direction,speed:speed,gust:gust,raw:raw};
+ }).filter(function(row){return row.time&&isFinite(row.time.getTime())&&row.speed!=null&&isFinite(row.speed)&&row.speed>=0});
+ parsed.sort(function(a,b){return b.time-a.time});
+ if(!parsed.length)throw new Error("IEM reports contained no usable wind for "+site.id);
+ var w=parsed[0],text;
+ if(w.speed===0)text="Calm";
+ else{
+  text=(w.direction!=null&&isFinite(w.direction)?String(Math.round(w.direction)).padStart(3,"0")+"° ":"")+Math.round(w.speed)+" kt";
+  if(w.gust!=null&&isFinite(w.gust)&&w.gust>w.speed)text+=" G"+Math.round(w.gust)+" kt";
+ }
+ return {wind:text,windTime:w.time,windSource:"IEM ASOS",windRaw:w.raw,windSpeedKt:w.speed,windDirectionDeg:w.direction,windGustKt:w.gust};
+}
 async function fetchNwsRecentObservations(site){
  // Browser-only: read recent official NWS station observations directly.
  // Looking back through recent reports lets us retain a valid wind if the newest
@@ -317,14 +351,29 @@ async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var now=new Date();
 
- // Fetch recent observations and station TAF directly from the NWS API on each refresh.
- var observationRequest=await Promise.allSettled([fetchNwsRecentObservations(site)]);
+ // Fetch official NWS observations on every refresh. For KBTV, take wind
+ // from the live IEM ASOS feed first; NWS can omit wind during QC even when
+ // the airport's METAR/ASOS report contains it. Fall back to recent NWS reports.
+ var observationJobs=site.id==="KBTV"
+  ?[fetchNwsRecentObservations(site),fetchIemAsosWind(site)]
+  :[fetchNwsRecentObservations(site)];
+ var observationRequest=await Promise.allSettled(observationJobs);
  if(observationRequest[0].status==="fulfilled"&&observationRequest[0].value&&observationRequest[0].value.obs){
   result.obs=observationRequest[0].value.obs;
  }else{
   var reason=observationRequest[0].reason;
   result.obsError=reason&&reason.message||String(reason||"NWS observation unavailable");
   console.warn(site.id+" NWS observation request failed:",reason);
+ }
+ if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="fulfilled"&&result.obs){
+  var iemWind=observationRequest[1].value;
+  result.obs.wind=iemWind.wind;
+  result.obs.windTime=iemWind.windTime;
+  result.obs.windSource=iemWind.windSource;
+  result.obs.windRaw=iemWind.windRaw;
+ }else if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
+  console.warn("KBTV live IEM ASOS wind request failed; using NWS recent-observation wind if available:",observationRequest[1].reason);
+  if(result.obs){result.obs.windSource="NWS recent observation";}
  }
 
  // Per page refresh: request the current official NWS station TAF directly.
