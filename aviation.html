@@ -208,10 +208,12 @@ async function getJson(url){
  return r.json();
 }
 async function fetchIemRecentObservation(site){
- // IEM ingests ASOS METARs independently of api.weather.gov. Compare report times.
+ // IEM ASOS identifiers are three-letter airport codes (BTV, SLK, PBG, MPV,
+ // EFK, RUT, MSS). This endpoint validates query parameters, so do NOT append
+ // our generic cache-buster (_cb); cache: no-store is the safe bypass here.
  var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(site.iem)+
   "&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=tdf";
- var response=await fetch(cacheBustedUrl(url),{cache:"no-store"});
+ var response=await fetch(url,{cache:"no-store",headers:{"Accept":"text/plain"}});
  if(!response.ok)throw new Error("IEM HTTP "+response.status+" for "+site.iem);
  var body=await response.text();
  var lines=body.split(/\r?\n/).filter(function(line){return line.trim()!==""});
@@ -222,26 +224,51 @@ async function fetchIemRecentObservation(site){
    headerIndex=h;header=candidate;break;
   }
  }
- if(headerIndex<0)throw new Error("IEM response did not contain a METAR table for "+site.iem);
+ if(headerIndex<0)throw new Error("IEM response did not contain a recognized TDF header for "+site.iem);
  var stationIndex=header.indexOf("station"),validIndex=header.indexOf("valid"),metarIndex=header.indexOf("metar");
+ var directionIndex=header.indexOf("drct"),speedIndex=header.indexOf("sknt"),gustIndex=header.indexOf("gust");
+ if(stationIndex<0||validIndex<0)throw new Error("IEM TDF header is missing station or valid columns for "+site.iem);
  var records=[];
  lines.slice(headerIndex+1).forEach(function(line){
   if(/^\s*#/.test(line))return;
   var cols=line.split("\t");
   if(String(cols[stationIndex]||"").trim().toUpperCase()!==site.iem)return;
-  var raw=String(cols[metarIndex]||"").trim();
+  var raw=metarIndex>=0?String(cols[metarIndex]||"").trim():"";
   var stamp=String(cols[validIndex]||"").trim();
-  if(!raw||raw==="M"||!stamp||stamp==="M")return;
+  var speedText=speedIndex>=0?String(cols[speedIndex]||"").trim():"";
+  var directionText=directionIndex>=0?String(cols[directionIndex]||"").trim():"";
+  var gustText=gustIndex>=0?String(cols[gustIndex]||"").trim():"";
+  var speed=speedText&&speedText!=="M"&&isFinite(Number(speedText))?Number(speedText):null;
+  var direction=directionText&&directionText!=="M"&&isFinite(Number(directionText))?Number(directionText):null;
+  var gust=gustText&&gustText!=="M"&&isFinite(Number(gustText))?Number(gustText):null;
+  if((!raw||raw==="M")&&speed===null)return;
+  if(!stamp||stamp==="M")return;
   var normalized=/\dT\d/.test(stamp)?stamp:stamp.replace(" ","T");
   if(!/(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized))normalized+="Z";
   var date=new Date(normalized);
   if(!isFinite(date.getTime()))return;
-  records.push({time:date,raw:raw});
+  records.push({time:date,raw:raw,speed:speed,direction:direction,gust:gust});
  });
  records.sort(function(a,b){return b.time-a.time});
- if(!records.length)return null;
+ if(!records.length)throw new Error("IEM returned no usable recent observations for "+site.iem);
  var newest=records[0];
- var obs=obsFromFeature({properties:{rawMessage:newest.raw,timestamp:newest.time.toISOString()}},site.id);
+ var obs=obsFromFeature({properties:{
+  rawMessage:newest.raw,
+  timestamp:newest.time.toISOString(),
+  windDirection:newest.direction===null?null:{value:newest.direction,unitCode:"wmoUnit:degree_(angle)"},
+  windSpeed:newest.speed===null?null:{value:newest.speed,unitCode:"wmoUnit:knots"},
+  windGust:newest.gust===null?null:{value:newest.gust,unitCode:"wmoUnit:knots"}
+ }},site.id);
+ // Prefer IEM's explicit numeric ASOS fields when present; raw METAR parsing remains
+ // the fallback. This keeps wind available even when the raw-message form differs.
+ if(newest.speed!==null){
+  if(newest.speed===0){
+   obs.wind="Calm";
+  }else{
+   obs.wind=(newest.direction!==null?String(Math.round(newest.direction)).padStart(3,"0")+"° ":"")+Math.round(newest.speed)+" kt";
+   if(newest.gust!==null&&newest.gust>newest.speed)obs.wind+=" G"+Math.round(newest.gust)+" kt";
+  }
+ }
  obs.source="IEM ASOS";
  return {obs:obs,source:"IEM ASOS"};
 }
