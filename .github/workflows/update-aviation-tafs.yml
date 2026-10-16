@@ -50,4 +50,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh aviation TAF and observation feeds"
-          git push
+          # Other dashboard automation can push to main while this job is running.
+          # Rebase our data-only commit before pushing so the new feed is not lost.
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
