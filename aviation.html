@@ -266,23 +266,50 @@ async function loadSite(site){
    console.warn(site.id+" recent-observation wind fallback failed:",windFallbackError);
   }
  }
- // KBTV's NWS/MADIS feed has occasionally returned otherwise valid observations
- // with wind omitted. If recent NWS reports also lack it, try IEM's live ASOS
- // METAR feed and copy only the wind. This does not replace the current report.
+ // KBTV-only wind recovery. Try the official NWS endpoint with QC enabled/disabled
+ // before using IEM's independently ingested ASOS fields. The rest of the current
+ // observation (time, clouds, visibility, weather, and category) is never replaced.
  if(site.id==="KBTV"&&result.obs&&(!result.obs.wind||result.obs.wind==="—"||result.obs.wind==="")){
-  try{
-   var iem=await fetchIemBtvWind();
-   if(iem&&iem.raw){
-    var parsed=obsFromFeature({properties:{rawMessage:iem.raw,timestamp:iem.time?iem.time.toISOString():null}},site.id);
-    if(parsed.wind&&parsed.wind!=="—"&&parsed.wind!==""){
+  var nwsWindCandidate=null;
+  for(var qcIndex=0;qcIndex<2;qcIndex++){
+   var qcValue=qcIndex===0?"false":"true";
+   try{
+    var qcPayload=await getJson(oUrl+"?require_qc="+qcValue);
+    var qcFeature=qcPayload&&(qcPayload.features?qcPayload.features[0]:qcPayload);
+    if(!qcFeature)continue;
+    var qcObs=obsFromFeature(qcFeature,site.id);
+    if(!qcObs.wind||qcObs.wind==="—"||qcObs.wind==="")continue;
+    var qcTime=qcObs.time&&isFinite(qcObs.time.getTime())?qcObs.time:null;
+    var candidateTime=nwsWindCandidate&&nwsWindCandidate.time?nwsWindCandidate.time:null;
+    if(!nwsWindCandidate||(qcTime&&(!candidateTime||qcTime>candidateTime))){
+     nwsWindCandidate={wind:qcObs.wind,time:qcTime};
+    }
+   }catch(qcError){
+    console.warn("KBTV NWS require_qc="+qcValue+" wind retry failed:",qcError);
+   }
+  }
+  if(nwsWindCandidate){
+   var qcAge=nwsWindCandidate.time?Math.max(0,Math.round((Date.now()-nwsWindCandidate.time.getTime())/60000)):null;
+   result.obs.wind=nwsWindCandidate.wind+(qcAge!==null?" (NWS METAR "+qcAge+" min old)":" (NWS METAR)");
+   result.obs.windStale=true;
+   result.obsError=null;
+  }
+  // Final fallback: live IEM ASOS data, queried at page load/refresh, not a saved file.
+  // fetchIemBtvWind returns numeric fields (speed/direction/gust), not raw METAR text.
+  if(!result.obs.wind||result.obs.wind==="—"||result.obs.wind===""){
+   try{
+    var iem=await fetchIemBtvWind();
+    if(iem){
+     var iemWind=iem.speed===0?"Calm":(iem.direction!==null?String(Math.round(iem.direction)).padStart(3,"0")+"° ":"")+Math.round(iem.speed)+" kt";
+     if(iem.speed!==0&&iem.gust!==null)iemWind+=" G"+Math.round(iem.gust)+" kt";
      var iemAge=iem.time?Math.max(0,Math.round((Date.now()-iem.time.getTime())/60000)):null;
-     result.obs.wind=parsed.wind+(iemAge!==null?" (IEM METAR "+iemAge+" min old)":" (IEM METAR)");
+     result.obs.wind=iemWind+(iemAge!==null?" (IEM ASOS "+iemAge+" min old)":" (IEM ASOS)");
      result.obs.windStale=true;
      result.obsError=null;
     }
+   }catch(iemError){
+    console.warn("KBTV IEM ASOS wind fallback failed:",iemError);
    }
-  }catch(iemError){
-   console.warn("KBTV IEM METAR wind fallback failed:",iemError);
   }
  }
  try{
@@ -372,61 +399,8 @@ async function refresh(){
  if(busy)return;busy=true;
  try{
   var results=await Promise.all(SITES.map(function(site){return loadSite(site)}));
-  // Fetch the latest METAR/SPECI directly from Aviation Weather Center on
-  // each refresh. No committed JSON snapshot is used. If the browser blocks
-  // this request (for example, due to CORS), keep the direct NWS observations
-  // loaded above rather than substituting a potentially stale file.
-  var awcStations={};
-  try{
-   var awcUrl="https://aviationweather.gov/api/data/metar?ids="+SITES.map(function(s){return s.id}).join(",")+"&format=json";
-   var awcPayload=await getJson(awcUrl);
-   if(Array.isArray(awcPayload)){
-    awcPayload.forEach(function(item){
-     if(!item||typeof item!=="object")return;
-     var id=String(item.icaoId||item.stationId||"").toUpperCase();
-     var raw=String(item.rawOb||item.rawMETAR||"").trim();
-     if(id&&raw)awcStations[id]={rawMessage:raw,observationTime:item.obsTime,source:"live"};
-    });
-   }
-  }catch(awcError){
-   console.warn("Live Aviation Weather Center METAR request failed; using direct NWS station observations only:",awcError);
-  }
-  results.forEach(function(r){
-   var entry=awcStations[r.site.id],raw=entry&&entry.rawMessage;
-   if(!raw)return;
-   var metarTime=null,stamp=entry.observationTime;
-   if(typeof stamp==="number"&&isFinite(stamp))metarTime=new Date(stamp*1000);
-   else if(typeof stamp==="string"&&stamp.trim()){
-    var parsed=Number(stamp);
-    metarTime=new Date(isFinite(parsed)&&parsed>1000000000?parsed*1000:stamp);
-    if(!isFinite(metarTime.getTime()))metarTime=null;
-   }
-   var ageMinutes=metarTime?Math.max(0,Math.round((Date.now()-metarTime.getTime())/60000)):null;
-   var fallback=obsFromFeature({properties:{rawMessage:raw,timestamp:metarTime?metarTime.toISOString():null}},r.site.id);
-   if(fallback.wind&&fallback.wind!=="—"){
-    // Do not use an old METAR to replace the current observation/category.
-    // If current NWS data has no wind, retain the last reported wind but
-    // explicitly mark its age so the wind cell is not mistaken for live data.
-    var existingTime=r.obs&&r.obs.time&&isFinite(r.obs.time.getTime())?r.obs.time:null;
-    var staleMetar=ageMinutes!==null&&ageMinutes>90;
-    if(staleMetar){
-     if(r.obs&&(!r.obs.wind||r.obs.wind==="—"||r.obs.wind==="")){
-      r.obs.wind=fallback.wind+" (last METAR "+ageMinutes+" min old)";
-      r.obs.windStale=true;
-      r.obsSource="NWS observation + stale Aviation Weather Center wind";
-      r.obsError=null;
-     }
-    }else if(!r.obs||!existingTime||!metarTime||metarTime>=existingTime){
-     r.obs=fallback;
-     r.obsSource="Aviation Weather Center METAR";
-     r.obsError=null;
-    }else if(!r.obs.wind||r.obs.wind==="—"||r.obs.wind===""){
-     r.obs.wind=fallback.wind;
-     r.obsSource="NWS observation + Aviation Weather Center wind";
-     r.obsError=null;
-    }
-   }
-  });
+  // Observations and TAFs are fetched live from NWS on every page load
+  // and scheduled refresh. KBTV's missing-wind case is handled in loadSite().
   results.forEach(function(r){if(r.obs)latestObs[r.site.id]=r.obs;if(r.taf)latestTaf[r.site.id]=r.taf});
   lastObsSuccess=results.some(function(r){return !!r.obs})?new Date():lastObsSuccess;
   lastTafSuccess=results.some(function(r){return !!r.taf})?new Date():lastTafSuccess;
