@@ -3,7 +3,8 @@ name: NWS Situational Awareness Dashboard
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    # main.py can take ~16 minutes; leave room for each run to finish.
+    - cron: "*/30 * * * *"
 
 concurrency:
   group: dashboard-update
