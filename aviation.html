@@ -90,22 +90,26 @@ function obsFromFeature(f,id){
  function toKnots(measurement){
   if(!measurement||num(measurement.value)==null)return null;
   var unit=String(measurement.unitCode||"").split(":").pop().toLowerCase();
-  // NWS station observations have used both "kt" and "kn" for knots.
-  // Accept common WMO/legacy spellings so a valid speed is not rendered as missing.
-  if(unit==="m_s-1"||unit==="m/s")return num(measurement.value)*1.943844;
-  if(unit==="km_h-1"||unit==="km/h")return num(measurement.value)/1.852;
-  if(unit==="mi_h-1"||unit==="mi/h")return num(measurement.value)*0.868976;
-  if(unit==="kt"||unit==="kn"||unit==="knot"||unit==="knots")return num(measurement.value);
+  // NWS station observations have used several WMO and legacy unit spellings.
+  if(unit==="m_s-1"||unit==="m/s"||unit==="mps")return num(measurement.value)*1.943844;
+  if(unit==="km_h-1"||unit==="km/h"||unit==="kmh-1")return num(measurement.value)/1.852;
+  if(unit==="mi_h-1"||unit==="mi/h"||unit==="mph")return num(measurement.value)*0.868976;
+  if(["kt","kn","knot","knots","kts"].indexOf(unit)>=0)return num(measurement.value);
   return null;
  }
  var windKt=toKnots(p.windSpeed),gustKt=toKnots(p.windGust);
- var windRaw=raw.match(/\b(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT\b/),windText="—";
- if(windKt!=null){
-  windText=(windDir!=null?String(Math.round(windDir)).padStart(3,"0")+"° ":windRaw?(windRaw[1]==="VRB"?"VRB ":windRaw[1]+"° "):"")+Math.round(windKt)+" kt";
+ // Parse the METAR wind group independently of structured NWS fields. This
+ // handles calm winds (00000KT), variable winds, and gusts when unit metadata
+ // is absent or unfamiliar.
+ var windRaw=/(?:^|\s)(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT(?=\s|$)/i.exec(raw),windText="—";
+ if(windRaw&&Number(windRaw[2])===0&&!windRaw[3]){
+  windText="Calm";
+ }else if(windKt!=null){
+  windText=(windDir!=null?String(Math.round(windDir)).padStart(3,"0")+"° ":windRaw?(windRaw[1].toUpperCase()==="VRB"?"VRB ":windRaw[1]+"° "):"")+Math.round(windKt)+" kt";
   if(gustKt!=null)windText+=" G"+Math.round(gustKt)+" kt";
   else if(windRaw&&windRaw[3])windText+=" G"+Number(windRaw[3])+" kt";
  }else if(windRaw){
-  windText=(windRaw[1]==="VRB"?"VRB":windRaw[1]+"°")+" "+Number(windRaw[2])+" kt"+(windRaw[3]?" G"+Number(windRaw[3])+" kt":"");
+  windText=(windRaw[1].toUpperCase()==="VRB"?"VRB":windRaw[1]+"°")+" "+Number(windRaw[2])+" kt"+(windRaw[3]?" G"+Number(windRaw[3])+" kt":"");
  }
  var wx=[];
  if(Array.isArray(p.presentWeather)){
