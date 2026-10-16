@@ -394,8 +394,7 @@ async function refresh(){
  if(busy)return;busy=true;
  try{
   var results=await Promise.all(SITES.map(function(site){return loadSite(site)}));
-  // Each refresh calls official NWS observation and TAF endpoints without unsupported
-  // query parameters. Same-origin fallback feeds are cache-busted separately.
+  // Each refresh calls the official NWS observation-history and station-TAF endpoints directly.
   results.forEach(function(r){if(r.obs)latestObs[r.site.id]=r.obs;if(r.taf)latestTaf[r.site.id]=r.taf});
   lastObsSuccess=results.some(function(r){return !!r.obs})?new Date():lastObsSuccess;
   lastTafSuccess=results.some(function(r){return !!r.taf})?new Date():lastTafSuccess;
