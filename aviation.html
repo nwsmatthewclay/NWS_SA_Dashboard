@@ -284,10 +284,12 @@ async function loadSite(site){
   fetchNwsLatestObservation(site),
   fetchIemRecentObservation(site)
  ]);
- var observations=[];
+ var observations=[],iemObservation=null;
  observationRequests.forEach(function(item){
-  if(item.status==="fulfilled"&&item.value&&item.value.obs)observations.push(item.value);
-  else if(item.status==="rejected")console.warn(site.id+" observation source failed:",item.reason);
+  if(item.status==="fulfilled"&&item.value&&item.value.obs){
+   observations.push(item.value);
+   if(item.value.source==="IEM ASOS")iemObservation=item.value;
+  }else if(item.status==="rejected")console.warn(site.id+" observation source failed:",item.reason);
  });
  observations.sort(function(a,b){
   var at=a.obs.time&&isFinite(a.obs.time.getTime())?a.obs.time.getTime():-Infinity;
@@ -301,6 +303,22 @@ async function loadSite(site){
  if(observations.length){
   result.obs=observations[0].obs;
   result.obs.source=observations[0].source;
+
+  // Wind is selected independently from the main observation. The NWS API can
+  // return a newer observation whose structured wind fields are absent or
+  // unusable; do not let that erase a valid ASOS wind from the IEM feed.
+  var iemWind=iemObservation&&iemObservation.obs&&iemObservation.obs.wind;
+  var iemTime=iemObservation&&iemObservation.obs&&iemObservation.obs.time;
+  var iemAgeMs=iemTime&&isFinite(iemTime.getTime())?Date.now()-iemTime.getTime():Infinity;
+  var iemWindFresh=iemWind&&iemWind!=="—"&&iemAgeMs>=-5*60*1000&&iemAgeMs<=60*60*1000;
+  if(iemWindFresh){
+   result.obs.wind=iemWind;
+   result.obs.windSource="IEM ASOS";
+   result.obs.windTime=iemTime;
+  }else{
+   result.obs.windSource=result.obs.source||observations[0].source;
+   result.obs.windTime=result.obs.time||null;
+  }
  }else{
   result.obsError=observationRequests.filter(function(x){return x.status==="rejected"}).map(function(x){return x.reason&&x.reason.message||String(x.reason)}).join("; ")||"No usable observation from NWS or IEM";
  }
@@ -371,7 +389,7 @@ function render(results){
   over.forEach(function(g){if(o&&diff(o,g.cond)===0){if(g.kind==="TEMPO")tempo++;if(g.kind==="PROB30"||g.kind==="PROB40")prob++;active.push({site:site,group:g,obs:o,taf:current})}});
   var rowClass=hasMismatch?" mismatch-"+Math.min(3,d):"";
   if(verifyingGroup)rowClass+=" group-active";
-  var obsText=o?("<div>Wind: "+esc(o.wind||"—")+"</div><div>Clouds: "+esc(o.clouds||"—")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
+  var obsText=o?("<div>Wind ("+esc(o.windSource||o.source||"unknown source")+"): "+esc(o.wind||"—")+"</div><div>Clouds: "+esc(o.clouds||"—")+"</div><div>Weather: "+esc(o.weather||"—")+"</div><div>Visibility: "+(o.visSm==null?"—":(o.visSm<10?o.visSm.toFixed(1).replace(/\.0$/,""):Math.round(o.visSm))+" SM")+"</div>"):"<span class='muted'>Unavailable</span>";
   var obsTime=o&&o.time?((/^SPECI\b/.test(o.raw||"")?"SPECI ":"")+utc(o.time)+(o.source?" · "+o.source:"")):"—";
   var tafIssue=t&&t.issue&&t.issue!=="—"?t.issue:"—";
   var tafTime=tafIssue!=="—"?(tafIssue.match(/^\d{2}(\d{2})(\d{2})Z$/)?tafIssue.replace(/^\d{2}(\d{2})(\d{2})Z$/,"$1:$2Z"):tafIssue)+(t&&t.source?" · "+t.source:""):"—";
@@ -398,7 +416,7 @@ function render(results){
  results.forEach(function(r){if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError)});
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Per-refresh live NWS observations/TAFs; IEM observations and AWC TAFs are fallbacks • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Per-refresh NWS observations/TAFs • wind sourced independently from fresh IEM ASOS when available • IEM obs/AWC TAF fallbacks • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
