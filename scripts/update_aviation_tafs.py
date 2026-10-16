@@ -28,9 +28,9 @@ HEADERS = {"User-Agent": "NWS-SABTV-AviationDashboard/1.0 (GitHub Actions; publi
 
 def pattern(site):
     return re.compile(
-        r"(?<![A-Z0-9])(?:TAF\\s+)?(?:(?:AMD|COR)\\s+)?"
+        r"(?<![A-Z0-9])(?:TAF\s+)?(?:(?:AMD|COR)\s+)?"
         + re.escape(site)
-        + r"\\s+\\d{6}Z\\s+\\d{4}/\\d{4}\\b",
+        + r"\s+\d{6}Z\s+\d{4}/\d{4}\b",
         re.IGNORECASE,
     )
 
@@ -61,7 +61,7 @@ def parse_timestamp(value):
 
 def wind_from_metar(raw):
     match = re.search(
-        r"(?<![A-Z0-9])(VRB|\\d{3})(\\d{2,3})(?:G(\\d{2,3}))?KT(?![A-Z0-9])",
+        r"(?<![A-Z0-9])(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT(?![A-Z0-9])",
         raw or "",
         re.IGNORECASE,
     )
@@ -90,7 +90,7 @@ def fetch_observations(session):
     header_index = -1
     header = []
     for index, line in enumerate(lines):
-        candidate = [cell.strip().lower().lstrip("#").strip() for cell in line.split("\\t")]
+        candidate = [cell.strip().lower().lstrip("#").strip() for cell in line.split("\t")]
         if "station" in candidate and "valid" in candidate and "metar" in candidate:
             header_index, header = index, candidate
             break
@@ -105,7 +105,7 @@ def fetch_observations(session):
     for line in lines[header_index + 1:]:
         if line.lstrip().startswith("#"):
             continue
-        cells = line.split("\\t")
+        cells = line.split("\t")
         station = cells[indexes["station"]].strip().upper() if indexes["station"] < len(cells) else ""
         site = next((name for name, code in IEM_STATIONS.items() if code == station), None)
         if not site:
@@ -166,7 +166,7 @@ def fetch_observations(session):
                 wind_text += f" G{gust:.0f} kt"
         print(f"{site}: IEM report={record['timestamp']} wind={wind_text}")
 
-    payload = json.dumps({"source": "IEM ASOS", "observations": newest}, indent=2) + "\\n"
+    payload = json.dumps({"source": "IEM ASOS", "observations": newest}, indent=2) + "\n"
     OBS_OUT.parent.mkdir(parents=True, exist_ok=True)
     if OBS_OUT.exists() and OBS_OUT.read_text(encoding="utf-8") == payload:
         print("IEM observations unchanged; no observation-feed commit needed.")
@@ -217,7 +217,7 @@ def main():
         return 1
     print(f"Valid TAFs: {len(tafs)}/{len(SITES)}; unavailable stations: {', '.join(missing) if missing else 'none'}")
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps({"tafs": tafs}, indent=2) + "\\n"
+    payload = json.dumps({"tafs": tafs}, indent=2) + "\n"
     if OUT.exists() and OUT.read_text(encoding="utf-8") == payload:
         print("TAFs unchanged; no commit needed.")
         return 0
