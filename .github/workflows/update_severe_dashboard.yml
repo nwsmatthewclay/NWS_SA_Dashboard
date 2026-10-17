@@ -3,7 +3,7 @@ name: NWS Situational Awareness Dashboard
 on:
   workflow_dispatch:
   schedule:
-    # main.py can take ~16 minutes; leave room for each run to finish.
+    # Bound total runtime while allowing the dashboard and ancillary products to finish.
     - cron: "*/30 * * * *"
 
 concurrency:
@@ -17,13 +17,19 @@ jobs:
   update-dashboard:
     runs-on: ubuntu-latest
     # Keep stalled upstream services from occupying the shared queue indefinitely.
-    timeout-minutes: 30
+    timeout-minutes: 40
     env:
       PYTHONUNBUFFERED: "1"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Cache Cartopy Natural Earth data
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/cartopy
+          key: cartopy-natural-earth-v1
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,7 +47,7 @@ jobs:
           pip install numpy pandas matplotlib scipy requests beautifulsoup4 lxml pillow imageio gspread google-auth google-api-python-client pygrib cartopy metpy
 
       - name: Run main dashboard
-        timeout-minutes: 22
+        timeout-minutes: 32
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
