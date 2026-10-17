@@ -1,4 +1,5 @@
 import re
+import shutil
 import io
 import requests
 import pandas as pd
@@ -677,7 +678,9 @@ def glwu_render_station_forecast_panel(
     period_series = {name: [] for name, _, _ in GLWU_STATIONS}
     direction_series = {name: [] for name, _, _ in GLWU_STATIONS}
 
-    for h in fhours:
+    for hour_index, h in enumerate(fhours):
+        if hour_index % 6 == 0 or hour_index == len(fhours) - 1:
+            print(f"  GLWU station panel: extracting forecast hour {h} ({hour_index + 1}/{len(fhours)})", flush=True)
         msg = grbs.select(shortName="swh", forecastTime=h)[0]
         wave_h, _, _ = msg.data()
 
@@ -1753,9 +1756,11 @@ def glwu_build_animation(grib_path: Path, out_gif: Path, n_hours: int = GLWU_N_H
         v = grbs.select(shortName="v", forecastTime=h)[0]
         frame_msgs.append((h, swh, u, v))
 
-    pil_frames = [
-        glwu_render_frame(swh, u, v, h) for h, swh, u, v in frame_msgs
-    ]
+    pil_frames = []
+    for frame_index, (h, swh, u, v) in enumerate(frame_msgs):
+        pil_frames.append(glwu_render_frame(swh, u, v, h))
+        if (frame_index + 1) % 4 == 0 or frame_index == len(frame_msgs) - 1:
+            print(f"  GLWU animation: rendered {frame_index + 1}/{len(frame_msgs)} frames", flush=True)
     grbs.close()
 
     out_gif.parent.mkdir(parents=True, exist_ok=True)
@@ -1828,7 +1833,9 @@ def run_glwu_plot():
         timestamped_gif = GLWU_OUTPUT_DIR / f"glwu_{date_str}_t{hour_str}z.gif"
         latest_gif = GLWU_OUTPUT_DIR / "latest.gif"
         glwu_build_animation(grib_dest, timestamped_gif)
-        glwu_build_animation(grib_dest, latest_gif)
+        # Both public filenames represent the same cycle. Render once, then
+        # copy the finished GIF; rendering it twice doubled the expensive map work.
+        shutil.copy2(timestamped_gif, latest_gif)
         print(f"  Saved {timestamped_gif} and {latest_gif} "
               f"({GLWU_N_HOURS} frames: analysis + {GLWU_N_HOURS - 1}h forecast)")
 
