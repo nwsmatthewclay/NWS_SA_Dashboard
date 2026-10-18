@@ -2337,7 +2337,7 @@ print("Current sheet updated successfully")
 # Run the maintained sounding module as part of this single dashboard
 # pipeline. Keeping its implementation in tempprofile.py avoids duplicating
 # thousands of lines, while this orchestrator guarantees one output publisher.
-print("\\n=== MOUNT MANSFIELD SOUNDING / DIAGNOSTICS ===", flush=True)
+print("\n=== MOUNT MANSFIELD SOUNDING / DIAGNOSTICS ===", flush=True)
 _sounding_success = False
 for _attempt in range(1, 3):
     print(f"Mount Mansfield generation attempt {_attempt}/2", flush=True)
