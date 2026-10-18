@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  # Shared with the main dashboard workflow because both publish to outputs/.
+  # Shared with the main dashboard workflow to avoid overlapping manual diagnostics.
   group: dashboard-update
   cancel-in-progress: false
 
