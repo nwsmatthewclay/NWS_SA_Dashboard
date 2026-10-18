@@ -7,6 +7,8 @@ import numpy as np
 import gspread
 import json
 import os
+import subprocess
+import sys
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -2328,3 +2330,26 @@ current_sheet.update(
     [current_df.columns.tolist()] + current_df.values.tolist()
 )
 print("Current sheet updated successfully")
+
+# ============================================================
+# MOUNT MANSFIELD OBSERVED SLOPE SOUNDING + DIAGNOSTICS
+# ============================================================
+# Run the maintained sounding module as part of this single dashboard
+# pipeline. Keeping its implementation in tempprofile.py avoids duplicating
+# thousands of lines, while this orchestrator guarantees one output publisher.
+print("\\n=== MOUNT MANSFIELD SOUNDING / DIAGNOSTICS ===", flush=True)
+_sounding_success = False
+for _attempt in range(1, 3):
+    print(f"Mount Mansfield generation attempt {_attempt}/2", flush=True)
+    try:
+        subprocess.run([sys.executable, "tempprofile.py"], check=True)
+        _sounding_success = True
+        break
+    except subprocess.CalledProcessError as _exc:
+        print(f"WARNING: Mount Mansfield generation attempt {_attempt} failed: {_exc}", flush=True)
+        if _attempt < 2:
+            import time
+            time.sleep(10)
+if not _sounding_success:
+    raise RuntimeError("Mount Mansfield sounding/diagnostics failed after two attempts")
+print("Mount Mansfield sounding and diagnostics completed successfully.", flush=True)
