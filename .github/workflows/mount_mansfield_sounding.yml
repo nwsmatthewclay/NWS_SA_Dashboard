@@ -1,18 +1,9 @@
 name: Mount Mansfield Sounding
 
 on:
-  # Also run immediately when this workflow is changed on main; this gives
-  # us a push-triggered test without needing a separate Actions-dispatch API.
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/mount_mansfield_sounding.yml'
-      - 'tempprofile.py'
+  # Main dashboard now runs this script as part of its single publishing pipeline.
+  # Keep manual dispatch for isolated troubleshooting only.
   workflow_dispatch:
-  schedule:
-    # Stagger these runs away from the main dashboard's :00/:30 schedule.
-    # Freshness checks below prevent stale data from being published.
-    - cron: "7,22,37,52 * * * *"
 
 concurrency:
   # Shared with the main dashboard workflow because both publish to outputs/.
@@ -120,17 +111,5 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Publish only Mount Mansfield outputs
-        run: |
-          set -e
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add outputs/vt_pseudo_sounding.png outputs/vt_dashboard_card.png outputs/vt_station_table.png outputs/vt_diagnostics.png outputs/vt_diagnostics_status.json
-          if git diff --cached --quiet; then
-            echo "No Mount Mansfield output changes to publish."
-            exit 0
-          fi
-          git commit -m "Update Mount Mansfield sounding and diagnostics"
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
+      # Deliberately no commit/push step here. The main dashboard workflow is
+      # the single publisher for outputs/ to prevent concurrent Git rebase conflicts.
