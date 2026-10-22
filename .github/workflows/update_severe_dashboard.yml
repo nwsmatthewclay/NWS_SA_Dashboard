@@ -3,8 +3,8 @@ name: NWS Situational Awareness Dashboard
 on:
   workflow_dispatch:
   schedule:
-    # Run every 30 minutes away from the most common scheduling boundaries.
-    - cron: "7,37 * * * *"
+    # Offset schedule to re-register the schedule trigger and avoid :00/:30 load peaks.
+    - cron: "8,38 * * * *"
 
 concurrency:
   group: dashboard-update
