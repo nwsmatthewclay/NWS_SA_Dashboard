@@ -620,13 +620,21 @@ body {
 .snow-summary .comparison-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .snow-summary .comparison-title { color: #f3f8ff; font-size: 10px; font-weight: 850; letter-spacing: .055em; }
 .snow-summary .comparison-note { color: #91b9dc; font-size: 9px; }
-.snow-summary .comparison-track { position: relative; height: 13px; margin: 12px 7px 5px; border-radius: 999px; background: linear-gradient(90deg, #31516f, #52799a 50%, #31516f); }
-.snow-summary .comparison-track::before { content: ""; position: absolute; inset: 4px 0; border-radius: inherit; background: rgba(255,255,255,.16); }
-.snow-summary .comparison-marker { position: absolute; top: 50%; z-index: 2; width: 13px; height: 13px; border-radius: 50%; transform: translate(-50%,-50%); }
-.snow-summary .comparison-marker.today { left: 0%; background: #fff; border: 3px solid #86ceff; box-shadow: 0 0 0 3px rgba(134,206,255,.16); }
-.snow-summary .comparison-marker.normal { left: 50%; background: #38d2f4; border: 2px solid #073154; box-shadow: 0 0 0 2px rgba(56,210,244,.18); }
-.snow-summary .comparison-legend { display: flex; justify-content: space-between; gap: 8px; color: #a9cce9; font-size: 9px; }
-.snow-summary .comparison-legend strong { color: #fff; font-size: 10px; }
+.snow-summary .comparison-track { position: relative; height: 16px; margin: 14px 7px 10px; border-radius: 999px; background: linear-gradient(90deg, #294763, #52799a 50%, #294763); box-shadow: inset 0 1px 3px rgba(0,0,0,.25); }
+.snow-summary .comparison-track::before { content: ""; position: absolute; inset: 5px 0; border-radius: inherit; background: rgba(255,255,255,.18); }
+.snow-summary .comparison-marker { position: absolute; top: 50%; z-index: 2; width: 13px; height: 13px; transform: translate(-50%,-50%); }
+.snow-summary .comparison-marker.observed { border-radius: 50%; background: #fff; border: 3px solid #86ceff; box-shadow: 0 0 0 3px rgba(134,206,255,.16); }
+.snow-summary .comparison-marker.normal { width: 11px; height: 11px; border-radius: 3px; background: #38d2f4; border: 2px solid #073154; transform: translate(-50%,-50%) rotate(45deg); }
+.snow-summary .comparison-marker.daily-max { width: 3px; height: 23px; border-radius: 3px; background: #ffd16b; box-shadow: 0 0 0 1px rgba(5,29,51,.5); }
+.snow-summary .comparison-marker.daily-min { width: 3px; height: 23px; border-radius: 3px; background: #ff8b91; box-shadow: 0 0 0 1px rgba(5,29,51,.5); }
+.snow-summary .comparison-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; color: #a9cce9; font-size: 9px; }
+.snow-summary .comparison-legend span { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.snow-summary .comparison-legend strong { margin-left: auto; color: #fff; font-size: 10px; white-space: nowrap; }
+.snow-summary .legend-key { display: inline-block; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; }
+.snow-summary .legend-key.observed { background: #86ceff; border: 1px solid #fff; }
+.snow-summary .legend-key.normal { background: #38d2f4; border-radius: 2px; transform: rotate(45deg); }
+.snow-summary .legend-key.daily-max { background: #ffd16b; border-radius: 1px; }
+.snow-summary .legend-key.daily-min { background: #ff8b91; border-radius: 1px; }
 .snow-summary .stats-mini {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px;
 }
@@ -920,16 +928,20 @@ body {
           <div data-section="in-season">
             <div class="comparison">
               <div class="comparison-head">
-                <span class="comparison-title">DEPTH COMPARISON</span>
-                <span class="comparison-note">Today vs. normal</span>
+                <span class="comparison-title">DAILY SNOW-DEPTH RANGE</span>
+                <span class="comparison-note">Daily minimum → maximum</span>
               </div>
-              <div class="comparison-track" role="img" aria-label="Current snow depth compared with normal">
-                <span class="comparison-marker today" data-field="comparison-current-marker"></span>
-                <span class="comparison-marker normal" data-field="comparison-normal-marker"></span>
+              <div class="comparison-track" role="img" aria-label="Daily minimum, daily maximum, normal, and observed snow depth">
+                <span class="comparison-marker daily-min" data-field="comparison-min-marker" title="Daily minimum"></span>
+                <span class="comparison-marker daily-max" data-field="comparison-max-marker" title="Daily maximum"></span>
+                <span class="comparison-marker normal" data-field="comparison-normal-marker" title="Daily normal"></span>
+                <span class="comparison-marker observed" data-field="comparison-current-marker" title="Observed snow depth"></span>
               </div>
               <div class="comparison-legend">
-                <span>TODAY <strong data-field="comparison-current-label">—</strong></span>
-                <span>NORMAL <strong data-field="comparison-normal-label">—</strong></span>
+                <span><i class="legend-key daily-min"></i>DAILY MIN <strong data-field="comparison-min-label">—</strong></span>
+                <span><i class="legend-key daily-max"></i>DAILY MAX <strong data-field="comparison-max-label">—</strong></span>
+                <span><i class="legend-key normal"></i>NORMAL <strong data-field="comparison-normal-label">—</strong></span>
+                <span><i class="legend-key observed"></i>OBSERVED <strong data-field="comparison-current-label">—</strong></span>
               </div>
             </div>
 
@@ -2478,10 +2490,24 @@ document.querySelectorAll('[data-field="rime-icing-potential"]').forEach((el) =>
     setText("snow-rank-detail", data.rank_of != null ? `Across ${data.rank_of} years` : "Across available years");
     setText("comparison-current-label", currentIn != null ? `${Math.round(currentIn)}"` : "—");
     setText("comparison-normal-label", normalIn != null ? `${Math.round(normalIn)}"` : "—");
+    setText("comparison-min-label", recordLowIn != null ? `${Math.round(recordLowIn)}"` : "—");
+    setText("comparison-max-label", recordHighIn != null ? `${Math.round(recordHighIn)}"` : "—");
 
-    const scaleMax = Math.max(6, currentIn || 0, normalIn || 0, recordHighIn || 0);
-    setMarker("comparison-current-marker", currentIn != null ? currentIn / scaleMax * 100 : 0, currentIn != null);
-    setMarker("comparison-normal-marker", normalIn != null ? normalIn / scaleMax * 100 : 0, normalIn != null);
+    // Position all four markers on the same daily minimum-to-maximum scale.
+    // These feed fields are the observed depth, normal, record low, and record high for the date.
+    const scaleMin = recordLowIn;
+    const scaleMax = recordHighIn;
+    const scaleSpan = scaleMin != null && scaleMax != null && scaleMax > scaleMin
+      ? scaleMax - scaleMin : null;
+    const markerPosition = value => {
+      if (value == null) return 0;
+      if (scaleSpan == null) return 50;
+      return ((value - scaleMin) / scaleSpan) * 100;
+    };
+    setMarker("comparison-min-marker", 0, recordLowIn != null);
+    setMarker("comparison-max-marker", 100, recordHighIn != null);
+    setMarker("comparison-current-marker", markerPosition(currentIn), currentIn != null);
+    setMarker("comparison-normal-marker", markerPosition(normalIn), normalIn != null);
 
     const isOffSeason =
       data.season == null ||
