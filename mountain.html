@@ -530,244 +530,147 @@ body {
 .wind-legend .legend-item.red .legend-dot    { background: #e03131; }
 .wind-legend .legend-item.purple .legend-dot { background: #9c36b5; }
 
-/* ================= SNOW SUMMARY (chart image removed) ================= */
-
+/* ================= SNOW DEPTH CARD — OPTION 2 ================= */
 .snow-summary {
-  flex: 0 0 34%;
+  --snow-border: rgba(139, 190, 235, .24);
+  flex: 0 0 42%;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-radius: 12px;
-  padding: 18px 20px;
-  background: linear-gradient(160deg, var(--snow-card-from), var(--snow-card-to));
-  color: white;
-  display: flex;
-  flex-direction: column;
-}
-
-.snow-summary .eyebrow {
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #cfe0f2;
-}
-
-.snow-summary .headline {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.snow-summary .headline .snowflake {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-  color: #bcd6f2;
-  align-self: center;
-}
-
-.snow-summary .value {
-  font-size: 46px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.snow-summary .unit {
-  font-size: 18px;
-  font-weight: 700;
-  color: #bcd6f2;
-}
-
-.snow-summary .location {
-  font-size: 13px;
-  color: #cfe0f2;
-  margin-top: 6px;
-}
-
-.snow-summary .departure {
-  font-size: 12.5px;
-  font-weight: 700;
-  margin-top: 12px;
-  display: inline-block;
-  padding: 4px 11px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.12);
-  align-self: flex-start;
-}
-
-.snow-summary .departure.placeholder {
-  color: #bcd6f2;
-  font-weight: 600;
-  background: rgba(255,255,255,0.08);
-}
-
-.snow-summary .updated {
-  font-size: 11px;
-  color: #9db6d4;
-  margin-top: auto;
-  padding-top: 12px;
-}
-
-.snow-summary .stats-mini {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255,255,255,0.14);
-  display: flex;
-}
-
-.snow-summary .stat-mini-col {
-  flex: 1;
-  text-align: center;
-  min-width: 0;
-}
-
-.snow-summary .stat-mini-col + .stat-mini-col {
-  border-left: 1px solid rgba(255,255,255,0.14);
-}
-
-.snow-summary .stat-mini-col .label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: #9db6d4;
-}
-
-.snow-summary .stat-mini-col .value {
-  display: block;
-  font-size: 19px;
-  font-weight: 800;
-  color: #eaf1fa;
-  margin-top: 5px;
-}
-
-.snow-summary .pct-normal-row {
-  margin-top: 16px;
-}
-
-.snow-summary .pct-normal-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: #9db6d4;
-}
-
-.snow-summary .pct-normal-label .readout {
-  font-size: 13px;
-  font-weight: 800;
-  color: #eaf1fa;
-  letter-spacing: 0;
-}
-
-.snow-summary .pct-normal-track {
-  margin-top: 6px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.14);
-  overflow: hidden;
-}
-
-.snow-summary .pct-normal-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #bcd6f2, #eaf1fa);
-  width: 0%;
-  transition: width 0.5s ease;
-}
-
-.snow-summary .record-range-row {
-  margin-top: 16px;
-}
-
-.snow-summary .record-range-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: #9db6d4;
-}
-
-.snow-summary .record-range-label .readout {
-  font-size: 13px;
-  font-weight: 800;
-  color: #eaf1fa;
-  letter-spacing: 0;
-}
-
-.snow-summary .record-range-track {
   position: relative;
-  margin-top: 8px;
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.10), rgba(255,255,255,0.22), rgba(255,255,255,0.10));
-}
-
-.snow-summary .record-range-marker {
-  position: absolute;
-  top: 50%;
-  left: 0%;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #eaf1fa;
-  border: 3px solid var(--snow-card-to);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.35);
-  transform: translate(-50%, -50%);
-  transition: left 0.5s ease;
-}
-
-.snow-summary .record-range-endpoints {
+  isolation: isolate;
+  border: 1px solid rgba(117, 181, 236, .42);
+  border-radius: 16px;
+  padding: 14px;
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(44, 125, 195, .28), transparent 45%),
+    linear-gradient(155deg, #082e55 0%, #062748 58%, #061f3d 100%);
+  color: #f7fbff;
   display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #9db6d4;
-}
-
-/* Off-season state: current_depth/normal/record fields all come back
-   null outside winter (confirmed against the live feed). Rather than
-   a wall of "—" placeholders that reads like something's broken, this
-   fills the same space with one deliberate, centered message — and
-   since it flex-grows to fill whatever room is left in the card, it
-   also closes the "too much empty space" gap this whole fix is about. */
-.snow-summary .off-season-block {
-  display: none;
-  flex: 1 1 auto;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 10px;
-  color: #bcd6f2;
-  padding: 10px 0;
+  gap: 11px;
+  box-shadow: 0 10px 26px rgba(4, 22, 43, .18);
 }
-
-.snow-summary .off-season-block .snowflake-ghost {
-  width: 34px;
-  height: 34px;
-  opacity: 0.45;
+.snow-summary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -42px; top: -62px;
+  width: 180px; height: 180px;
+  border: 1px solid rgba(157, 211, 255, .09);
+  border-radius: 50%;
+  box-shadow: 0 0 0 22px rgba(157,211,255,.025), 0 0 0 46px rgba(157,211,255,.02);
+  pointer-events: none;
 }
-
-.snow-summary .off-season-block .off-season-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #eaf1fa;
+.snow-summary .snow-head {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
 }
-
-.snow-summary .off-season-block .off-season-subtext {
-  font-size: 11.5px;
-  color: #9db6d4;
-  max-width: 240px;
-  line-height: 1.5;
+.snow-summary .snow-brand-icon {
+  width: 36px; height: 36px; flex: 0 0 36px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  color: #9ed8ff;
+  background: rgba(107, 183, 239, .12);
+  border: 1px solid rgba(140, 203, 250, .18);
 }
-  
-/* ================= DIAGNOSTIC CARD GRID (moved into snow-row) ================= */
+.snow-summary .snow-brand-icon svg { width: 22px; height: 22px; }
+.snow-summary .snow-head-copy { min-width: 0; flex: 1 1 auto; }
+.snow-summary .eyebrow {
+  font-size: 12px; font-weight: 850; letter-spacing: .075em; color: #f3f8ff;
+}
+.snow-summary .snow-subtitle {
+  margin-top: 3px; color: #9fc4e5; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+}
+.snow-summary .obs-stamp {
+  flex: 0 0 auto; max-width: 48%;
+  padding: 7px 9px; border: 1px solid var(--snow-border);
+  border-radius: 10px; background: rgba(3, 23, 45, .38);
+  color: #d5eaff; font-size: 10px; line-height: 1.35; text-align: right;
+}
+.snow-summary .obs-stamp strong { display: block; color: #fff; font-size: 11px; margin-top: 2px; }
+.snow-summary .snow-hero {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 12px; border: 1px solid rgba(111, 181, 237, .34);
+  border-radius: 13px;
+  background: linear-gradient(115deg, rgba(30, 92, 145, .52), rgba(8, 40, 73, .75));
+}
+.snow-summary .snowflake {
+  width: 35px; height: 35px; flex: 0 0 35px; color: #86ceff;
+}
+.snow-summary .hero-reading { min-width: 0; flex: 1 1 auto; }
+.snow-summary .hero-label { color: #b8d8f4; font-size: 10px; font-weight: 800; letter-spacing: .065em; }
+.snow-summary .headline { display: flex; align-items: baseline; gap: 7px; margin-top: 2px; }
+.snow-summary .headline .value { font-size: clamp(40px, 3.3vw, 56px); font-weight: 850; line-height: .98; letter-spacing: -.045em; color: #fff; }
+.snow-summary .unit { font-size: 17px; font-weight: 800; color: #b9dcf7; }
+.snow-summary .location { margin-top: 4px; font-size: 10px; color: #a9c8e5; }
+.snow-summary .hero-status { min-width: 0; flex: 0 0 42%; padding-left: 12px; border-left: 1px solid rgba(255,255,255,.13); }
+.snow-summary .departure {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  max-width: 100%; padding: 5px 9px; border-radius: 999px;
+  background: rgba(113, 205, 158, .16); border: 1px solid rgba(113, 205, 158, .32);
+  color: #b6f2d1; font-size: 10px; font-weight: 850; line-height: 1.2;
+}
+.snow-summary .departure::before { content: ""; width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: currentColor; }
+.snow-summary .departure.placeholder { color: #b5d3ee; background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.12); }
+.snow-summary .snow-context { margin-top: 7px; color: #d7e9f8; font-size: 10px; line-height: 1.35; }
+.snow-summary .comparison {
+  padding: 10px 11px 9px; border: 1px solid var(--snow-border);
+  border-radius: 12px; background: rgba(3, 24, 47, .38);
+}
+.snow-summary .comparison-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.snow-summary .comparison-title { color: #f3f8ff; font-size: 10px; font-weight: 850; letter-spacing: .055em; }
+.snow-summary .comparison-note { color: #91b9dc; font-size: 9px; }
+.snow-summary .comparison-track { position: relative; height: 13px; margin: 12px 7px 5px; border-radius: 999px; background: linear-gradient(90deg, #31516f, #52799a 50%, #31516f); }
+.snow-summary .comparison-track::before { content: ""; position: absolute; inset: 4px 0; border-radius: inherit; background: rgba(255,255,255,.16); }
+.snow-summary .comparison-marker { position: absolute; top: 50%; z-index: 2; width: 13px; height: 13px; border-radius: 50%; transform: translate(-50%,-50%); }
+.snow-summary .comparison-marker.today { left: 0%; background: #fff; border: 3px solid #86ceff; box-shadow: 0 0 0 3px rgba(134,206,255,.16); }
+.snow-summary .comparison-marker.normal { left: 50%; background: #38d2f4; border: 2px solid #073154; box-shadow: 0 0 0 2px rgba(56,210,244,.18); }
+.snow-summary .comparison-legend { display: flex; justify-content: space-between; gap: 8px; color: #a9cce9; font-size: 9px; }
+.snow-summary .comparison-legend strong { color: #fff; font-size: 10px; }
+.snow-summary .stats-mini {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px;
+}
+.snow-summary .stat-mini-col {
+  min-width: 0; display: flex; align-items: center; gap: 8px;
+  padding: 8px 9px; border-radius: 10px;
+  border: 1px solid rgba(128, 183, 226, .18);
+  background: rgba(24, 66, 105, .43); text-align: left;
+}
+.snow-summary .stat-mini-col .metric-icon {
+  width: 25px; height: 25px; flex: 0 0 25px; display: grid; place-items: center;
+  border-radius: 7px; color: #82ccff; background: rgba(104, 188, 247, .12);
+}
+.snow-summary .stat-mini-col .metric-icon svg { width: 15px; height: 15px; }
+.snow-summary .stat-mini-col:nth-child(2) .metric-icon { color: #ffd16b; background: rgba(255,209,107,.12); }
+.snow-summary .stat-mini-col:nth-child(3) .metric-icon { color: #ff8b91; background: rgba(255,139,145,.12); }
+.snow-summary .stat-mini-col .metric-copy { min-width: 0; }
+.snow-summary .stat-mini-col .label { display: block; color: #9fc4e5; font-size: 8px; font-weight: 850; letter-spacing: .045em; }
+.snow-summary .stat-mini-col .value { display: block; margin-top: 3px; color: #f4f9ff; font-size: 17px; font-weight: 850; line-height: 1.1; overflow-wrap: anywhere; }
+.snow-summary .stat-mini-col .detail { display: block; margin-top: 2px; color: #9fc4e5; font-size: 9px; }
+.snow-summary .off-season-block {
+  display: none; flex: 1 1 auto; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 8px; color: #bcd6f2; padding: 10px 0;
+  border: 1px dashed rgba(141, 193, 235, .25); border-radius: 12px; background: rgba(3,24,47,.24);
+}
+.snow-summary .off-season-block .snowflake-ghost { width: 30px; height: 30px; opacity: .55; color: #8acfff; }
+.snow-summary .off-season-block .off-season-title { font-size: 12px; font-weight: 800; color: #eaf4ff; }
+.snow-summary .off-season-block .off-season-subtext { font-size: 10px; color: #9fc4e5; max-width: 240px; line-height: 1.45; }
+.snow-summary .updated { margin-top: auto; padding-top: 2px; color: #7fa7ca; font-size: 9px; }
+.snow-summary [data-section="in-season"] { display: flex; flex-direction: column; gap: 9px; }
+@media (max-width: 1100px) {
+  .snow-summary { padding: 11px; gap: 8px; }
+  .snow-summary .snow-hero { padding: 10px 9px; gap: 8px; }
+  .snow-summary .snowflake { width: 28px; height: 28px; flex-basis: 28px; }
+  .snow-summary .hero-status { flex-basis: 40%; padding-left: 8px; }
+  .snow-summary .stat-mini-col { padding: 7px; gap: 6px; }
+  .snow-summary .stat-mini-col .metric-icon { width: 21px; height: 21px; flex-basis: 21px; }
+  .snow-summary .stat-mini-col .value { font-size: 15px; }
+}
+@media (max-width: 760px) {
+  .snow-summary { flex-basis: auto; }
+  .snow-summary .obs-stamp { max-width: 46%; font-size: 9px; }
+  .snow-summary .headline .value { font-size: 44px; }
+}/* ================= DIAGNOSTIC CARD GRID (moved into snow-row) ================= */
 
 .quad-stats {
   flex: 1 1 auto;
@@ -985,78 +888,79 @@ body {
 
       <div class="snow-row">
 
-        <div class="snow-summary">
-          <div class="eyebrow">SNOW DEPTH</div>
-
-          <div class="headline">
-            <svg class="snowflake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-              <path d="M12 2 V22 M4 7 L20 17 M20 7 L4 17"/>
-            </svg>
-            <span class="value" data-field="snow-depth">—</span>
-            <span class="unit">in</span>
+        <section class="snow-summary" aria-label="Mount Mansfield snow depth and historical comparison">
+          <div class="snow-head">
+            <div class="snow-brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20 9 8l4 7 3-5 5 10Z"/><path d="m7 12 2 2 2-3"/>
+              </svg>
+            </div>
+            <div class="snow-head-copy">
+              <div class="eyebrow">MOUNT MANSFIELD</div>
+              <div class="snow-subtitle">SNOW DEPTH · SUMMIT</div>
+            </div>
+            <div class="obs-stamp">LATEST UPDATE<strong data-field="updated">—</strong></div>
           </div>
 
-          <div class="location">at Mansfield Summit</div>
-
-          <div class="departure placeholder" data-field="departure">
-            Departure — pending wiring
+          <div class="snow-hero">
+            <svg class="snowflake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 2V22M4 7l16 10M20 7 4 17M8 4l4 3 4-3M8 20l4-3 4 3"/>
+            </svg>
+            <div class="hero-reading">
+              <div class="hero-label">CURRENT SNOW DEPTH</div>
+              <div class="headline"><span class="value" data-field="snow-depth">—</span><span class="unit">in</span></div>
+              <div class="location">Mansfield Summit · 3,900 ft</div>
+            </div>
+            <div class="hero-status">
+              <div class="departure placeholder" data-field="departure">Awaiting data</div>
+              <div class="snow-context" data-field="snow-context">Comparing today's snowpack with the daily normal.</div>
+            </div>
           </div>
 
           <div data-section="in-season">
+            <div class="comparison">
+              <div class="comparison-head">
+                <span class="comparison-title">DEPTH COMPARISON</span>
+                <span class="comparison-note">Today vs. normal</span>
+              </div>
+              <div class="comparison-track" role="img" aria-label="Current snow depth compared with normal">
+                <span class="comparison-marker today" data-field="comparison-current-marker"></span>
+                <span class="comparison-marker normal" data-field="comparison-normal-marker"></span>
+              </div>
+              <div class="comparison-legend">
+                <span>TODAY <strong data-field="comparison-current-label">—</strong></span>
+                <span>NORMAL <strong data-field="comparison-normal-label">—</strong></span>
+              </div>
+            </div>
+
             <div class="stats-mini">
               <div class="stat-mini-col">
-                <span class="label">NORMAL</span>
-                <span class="value" data-field="snow-normal">—</span>
+                <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg></span>
+                <span class="metric-copy"><span class="label">DAILY NORMAL</span><span class="value" data-field="snow-normal">—</span><span class="detail">For this date</span></span>
               </div>
               <div class="stat-mini-col">
-                <span class="label">RECORD HIGH</span>
-                <span class="value" data-field="snow-record-high">—</span>
+                <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg></span>
+                <span class="metric-copy"><span class="label">RECORD HIGH</span><span class="value" data-field="snow-record-high">—</span><span class="detail">Historical maximum</span></span>
               </div>
               <div class="stat-mini-col">
-                <span class="label">RECORD LOW</span>
-                <span class="value" data-field="snow-record-low">—</span>
+                <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9"/></svg></span>
+                <span class="metric-copy"><span class="label">RECORD LOW</span><span class="value" data-field="snow-record-low">—</span><span class="detail">Historical minimum</span></span>
               </div>
               <div class="stat-mini-col">
-                <span class="label">RANK</span>
-                <span class="value" data-field="snow-rank">—</span>
-              </div>
-            </div>
-
-            <div class="pct-normal-row">
-              <div class="pct-normal-label">
-                <span>% OF NORMAL</span>
-                <span class="readout" data-field="snow-pct-readout">&mdash;</span>
-              </div>
-              <div class="pct-normal-track">
-                <div class="pct-normal-fill" data-field="snow-pct-fill"></div>
-              </div>
-            </div>
-
-            <div class="record-range-row">
-              <div class="record-range-label">
-                <span>RECORD RANGE</span>
-                <span class="readout" data-field="record-range-readout">&mdash;</span>
-              </div>
-              <div class="record-range-track">
-                <div class="record-range-marker" data-field="record-range-marker"></div>
-              </div>
-              <div class="record-range-endpoints">
-                <span data-field="record-range-low-label">—</span>
-                <span data-field="record-range-high-label">—</span>
+                <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h10M4 19h6"/></svg></span>
+                <span class="metric-copy"><span class="label">HISTORICAL RANK</span><span class="value" data-field="snow-rank">—</span><span class="detail" data-field="snow-rank-detail">Across available years</span></span>
               </div>
             </div>
           </div>
 
           <div class="off-season-block" data-section="off-season">
-            <svg class="snowflake-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-              <path d="M12 2 V22 M4 7 L20 17 M20 7 L4 17"/>
-            </svg>
-            <div class="off-season-title">Off-Season</div>
-            <div class="off-season-subtext" data-field="off-season-subtext">Normals and records return once accumulation begins this winter.</div>
+            <svg class="snowflake-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M12 2V22M4 7l16 10M20 7 4 17"/></svg>
+            <div class="off-season-title">No normal snowpack expected</div>
+            <div class="off-season-subtext" data-field="off-season-subtext">Daily normals and records will appear when the seasonal climatology is available.</div>
           </div>
-          
-          <div class="updated">Updated: <span data-field="updated">25 Jul 2026 02:03 UTC</span></div>
-        </div>
+
+          <div class="updated">Source update: <span data-field="updated-footer">Waiting for snow-depth feed</span></div>
+        </section>
 
         <div class="quad-stats">
 
@@ -2541,127 +2445,77 @@ document.querySelectorAll('[data-field="rime-icing-potential"]').forEach((el) =>
     }
 
     async function refreshSnowDepth() {
-      try {
-        const res = await fetch(DATA_BASE + "vt_snow_depth_status.json?cb=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+  const setText = (field, value) => setField(field, value);
+  const setMarker = (field, pct, visible = true) => {
+    document.querySelectorAll(`[data-field="${field}"]`).forEach(el => {
+      el.style.left = `${Math.max(0, Math.min(100, pct))}%`;
+      el.style.opacity = visible ? "1" : "0.22";
+    });
+  };
 
-        setField(
-          "snow-depth",
-          data.current_depth_in !== null && data.current_depth_in !== undefined
-            ? Math.round(data.current_depth_in)
-            : "\u2014"
-        );
+  try {
+    const res = await fetch(DATA_BASE + "vt_snow_depth_status.json?cb=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
 
-        setField("departure", data.departure_text ?? "\u2014");
+    const currentIn = Number.isFinite(Number(data.current_depth_in)) && data.current_depth_in != null
+      ? Number(data.current_depth_in) : null;
+    const normalIn = Number.isFinite(Number(data.normal_depth_in)) && data.normal_depth_in != null
+      ? Number(data.normal_depth_in) : null;
+    const recordHighIn = Number.isFinite(Number(data.record_high_in)) && data.record_high_in != null
+      ? Number(data.record_high_in) : null;
+    const recordLowIn = Number.isFinite(Number(data.record_low_in)) && data.record_low_in != null
+      ? Number(data.record_low_in) : null;
 
-        document.querySelectorAll('[data-field="departure"]').forEach((el) => {
-          el.classList.remove("placeholder");
-        });
+    setText("snow-depth", currentIn != null ? Math.round(currentIn) : "—");
+    setText("departure", data.departure_text || "Status unavailable");
+    document.querySelectorAll('[data-field="departure"]').forEach(el => el.classList.toggle("placeholder", !data.departure_text));
 
-        setField(
-          "snow-normal",
-          data.normal_depth_in !== null && data.normal_depth_in !== undefined
-            ? `${Math.round(data.normal_depth_in)}"`
-            : "\u2014"
-        );
+    setText("snow-normal", normalIn != null ? `${Math.round(normalIn)}"` : "—");
+    setText("snow-record-high", recordHighIn != null ? `${Math.round(recordHighIn)}"` : "—");
+    setText("snow-record-low", recordLowIn != null ? `${Math.round(recordLowIn)}"` : "—");
+    setText("snow-rank", data.rank != null && data.rank_of != null ? `${ordinalSuffix_(data.rank)} of ${data.rank_of}` : "—");
+    setText("snow-rank-detail", data.rank_of != null ? `Across ${data.rank_of} years` : "Across available years");
+    setText("comparison-current-label", currentIn != null ? `${Math.round(currentIn)}"` : "—");
+    setText("comparison-normal-label", normalIn != null ? `${Math.round(normalIn)}"` : "—");
 
-        setField(
-          "snow-record-high",
-          data.record_high_in !== null && data.record_high_in !== undefined
-            ? `${Math.round(data.record_high_in)}"`
-            : "\u2014"
-        );
+    const scaleMax = Math.max(6, currentIn || 0, normalIn || 0, recordHighIn || 0);
+    setMarker("comparison-current-marker", currentIn != null ? currentIn / scaleMax * 100 : 0, currentIn != null);
+    setMarker("comparison-normal-marker", normalIn != null ? normalIn / scaleMax * 100 : 0, normalIn != null);
 
-        setField(
-          "snow-record-low",
-          data.record_low_in !== null && data.record_low_in !== undefined
-            ? `${Math.round(data.record_low_in)}"`
-            : "\u2014"
-        );
+    const isOffSeason =
+      data.season == null ||
+      (normalIn == null && recordLowIn == null && recordHighIn == null);
+    document.querySelectorAll('[data-section="in-season"]').forEach(el => {
+      el.style.display = isOffSeason ? "none" : "flex";
+    });
+    document.querySelectorAll('[data-section="off-season"]').forEach(el => {
+      el.style.display = isOffSeason ? "flex" : "none";
+    });
 
-        const currentIn = data.current_depth_in;
-        const normalIn = data.normal_depth_in;
-        let pctOfNormal = null;
-        if (
-          currentIn !== null && currentIn !== undefined &&
-          normalIn !== null && normalIn !== undefined && normalIn > 0
-        ) {
-          pctOfNormal = (currentIn / normalIn) * 100;
-        }
-
-        setField(
-          "snow-pct-readout",
-          pctOfNormal !== null ? `${Math.round(pctOfNormal)}% of normal` : "\u2014"
-        );
-
-        document.querySelectorAll('[data-field="snow-pct-fill"]').forEach((el) => {
-          el.style.width = pctOfNormal !== null ? `${Math.min(100, Math.max(0, pctOfNormal))}%` : "0%";
-        });
-
-        // RANK — already computed server-side (rank/rank_of in the feed)
-        // but wasn't being displayed anywhere until now.
-        setField(
-          "snow-rank",
-          data.rank !== null && data.rank !== undefined && data.rank_of !== null && data.rank_of !== undefined
-            ? `${ordinalSuffix_(data.rank)} of ${data.rank_of}`
-            : "\u2014"
-        );
-
-        // RECORD RANGE — where today's depth sits between the record low
-        // and record high for this date, using fields already fetched
-        // for the mini-stats above (no new data source needed).
-        const recordLowIn = data.record_low_in;
-        const recordHighIn = data.record_high_in;
-        let recordRangePct = null;
-
-        if (
-          currentIn !== null && currentIn !== undefined &&
-          recordLowIn !== null && recordLowIn !== undefined &&
-          recordHighIn !== null && recordHighIn !== undefined &&
-          recordHighIn > recordLowIn
-        ) {
-          recordRangePct = ((currentIn - recordLowIn) / (recordHighIn - recordLowIn)) * 100;
-        }
-
-        document.querySelectorAll('[data-field="record-range-marker"]').forEach((el) => {
-          el.style.left = recordRangePct !== null ? `${Math.min(100, Math.max(0, recordRangePct))}%` : "0%";
-          el.style.opacity = recordRangePct !== null ? "1" : "0.25";
-        });
-
-        setField(
-          "record-range-readout",
-          currentIn !== null && currentIn !== undefined ? `${Math.round(currentIn)}" today` : "\u2014"
-        );
-        setField(
-          "record-range-low-label",
-          recordLowIn !== null && recordLowIn !== undefined ? `${Math.round(recordLowIn)}"` : "\u2014"
-        );
-        setField(
-          "record-range-high-label",
-          recordHighIn !== null && recordHighIn !== undefined ? `${Math.round(recordHighIn)}"` : "\u2014"
-        );
-
-        // OFF-SEASON — normal/record/rank fields all come back null
-        // outside winter (confirmed against the live feed: season itself
-        // is explicitly null then too). Swap the mini-stats/bars for one
-        // deliberate message instead of a wall of "—" placeholders.
-        const isOffSeason =
-          data.season === null || data.season === undefined ||
-          (normalIn == null && recordLowIn == null && recordHighIn == null);
-
-        document.querySelectorAll('[data-section="in-season"]').forEach((el) => {
-          el.style.display = isOffSeason ? "none" : "block";
-        });
-        document.querySelectorAll('[data-section="off-season"]').forEach((el) => {
-          el.style.display = isOffSeason ? "flex" : "none";
-        });
-
-        setField("updated", formatDateUTC(data.generated_at));
-      } catch (err) {
-        console.warn("Snow depth status fetch failed:", err);
+    let context = "Daily normal is not available for this date.";
+    if (currentIn != null && normalIn != null) {
+      if (normalIn === 0) {
+        context = currentIn === 0
+          ? "No normal snowpack expected for this date."
+          : "Snowpack is present while the daily normal is zero.";
+      } else {
+        const pct = currentIn / normalIn * 100;
+        context = `${Math.round(pct)}% of normal snow depth for this date.`;
       }
+    } else if (currentIn == null) {
+      context = "Current snow depth is unavailable; check the source update time.";
     }
+    setText("snow-context", context);
+
+    const generated = data.generated_at ? formatDateUTC(data.generated_at) : "—";
+    setText("updated", generated);
+    setText("updated-footer", generated);
+  } catch (err) {
+    console.warn("Snow depth status fetch failed:", err);
+    setText("snow-context", "Snow-depth data could not be refreshed.");
+  }
+}
 
     // "1st" / "2nd" / "3rd" / "4th"... with the 11/12/13 exception.
     function ordinalSuffix_(n) {
