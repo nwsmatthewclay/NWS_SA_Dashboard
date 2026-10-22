@@ -3,8 +3,8 @@ name: NWS Situational Awareness Dashboard
 on:
   workflow_dispatch:
   schedule:
-    # Bound total runtime while allowing the dashboard and ancillary products to finish.
-    - cron: "*/30 * * * *"
+    # Run every 30 minutes away from the most common scheduling boundaries.
+    - cron: "7,37 * * * *"
 
 concurrency:
   group: dashboard-update
