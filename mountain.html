@@ -849,6 +849,173 @@ body {
 .quad-card.rime-card.rime-low    { --quad-accent: #2f9e44; --quad-accent-bg: #ddf3e8; }
 .quad-card.rime-card.rime-mod    { --quad-accent: #d9822b; --quad-accent-bg: #faead3; }
 .quad-card.rime-card.rime-high   { --quad-accent: #e03131; --quad-accent-bg: #fbdcdc; }
+
+/* ================= RESPONSIVE MONITOR / LAPTOP LAYOUT =================
+   Keep the dense, full-screen presentation on large TVs and monitors.
+   On shorter displays, allow the page to grow and scroll rather than
+   compressing the sounding, snow card, and observation cards into the
+   available viewport height. On narrower screens, stack the columns.
+   ===================================================================== */
+
+/* Laptop-height displays: preserve readable card sizes and use scrolling. */
+@media (max-height: 850px) {
+  html, body {
+    height: auto;
+    min-height: 100%;
+  }
+  body {
+    min-height: 100vh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .main {
+    flex: 0 0 auto;
+    min-height: 0;
+    align-items: stretch;
+  }
+  .left-column {
+    flex: 0 0 62%;
+  }
+  .snow-row {
+    flex: 0 0 auto;
+    min-height: 350px;
+  }
+  .right-column {
+    flex: 1 1 0;
+  }
+  .sidebar {
+    min-height: 660px;
+    overflow: visible;
+  }
+  .mountain-table-wrap {
+    overflow: visible;
+  }
+  .summit-card {
+    flex: 1 0 105px;
+    min-height: 105px;
+  }
+}
+
+/* Smaller desktop windows and tablets: stack the major dashboard columns. */
+@media (max-width: 1200px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .main {
+    flex: 0 0 auto;
+    flex-direction: column;
+    min-height: 0;
+    padding: 12px;
+  }
+  .left-column,
+  .right-column {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  .sounding-panel {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  .snow-row {
+    flex: 0 0 auto;
+    min-height: 360px;
+  }
+  .right-column {
+    min-height: 660px;
+  }
+  .sidebar {
+    min-height: 660px;
+    overflow: visible;
+  }
+  .mountain-table-wrap {
+    overflow: visible;
+  }
+  .summit-card {
+    flex: 1 0 105px;
+    min-height: 105px;
+  }
+}
+
+/* Phone / narrow portrait layout: stack snow summary and diagnostics too. */
+@media (max-width: 760px) {
+  .navbar {
+    flex-basis: auto;
+    min-height: 58px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .navbar h1 {
+    font-size: 13px;
+  }
+  .navbar .subtitle {
+    font-size: 10px;
+  }
+  .navbar .right {
+    gap: 8px;
+  }
+  .navbar .live {
+    display: none;
+  }
+  .navbar .clock {
+    font-size: 11px;
+  }
+  .main {
+    padding: 8px;
+    gap: 10px;
+  }
+  .snow-row {
+    flex-direction: column;
+    min-height: 0;
+    gap: 10px;
+  }
+  .snow-summary {
+    flex: 0 0 auto;
+  }
+  .quad-stats {
+    flex: 0 0 auto;
+    grid-template-rows: none;
+    grid-auto-rows: minmax(105px, auto);
+  }
+  .sidebar {
+    padding: 10px;
+  }
+  .station-cell {
+    min-height: 105px;
+  }
+  .card-illustration {
+    flex-basis: 15%;
+    min-width: 48px;
+  }
+  .card-body {
+    padding: 8px;
+    gap: 6px;
+  }
+  .station-name {
+    font-size: 15px;
+  }
+  .stat-temp {
+    font-size: 25px;
+  }
+  .stat-col .stat-value {
+    font-size: 13px;
+  }
+  .stat-col .stat-label {
+    font-size: 8px;
+  }
+  .temp-block {
+    padding-right: 8px;
+    margin-right: 5px;
+  }
+  .wind-legend {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+}
+
 </style>
 </head>
 <body>
