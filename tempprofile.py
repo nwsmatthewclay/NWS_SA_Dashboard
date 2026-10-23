@@ -4109,10 +4109,19 @@ def plot_skewt(
 
         fig.text(
             1.0 - right_margin_in / fig_width_in, (fig_height_in - 0.22) / fig_height_in,
-            newest.strftime("%d %b %Y %H:%M UTC"),
-            fontsize=11, fontweight="bold", color="black",
+            f"Latest obs: {newest.strftime('%d %b %Y %H:%M UTC')}",
+            fontsize=10, fontweight="bold", color="black",
             ha="right", va="top",
         )
+
+    # Report image generation time separately from observation time.
+    generated_at = datetime.now(timezone.utc)
+    fig.text(
+        1.0 - right_margin_in / fig_width_in, (fig_height_in - 0.43) / fig_height_in,
+        f"Generated: {generated_at.strftime('%d %b %Y %H:%M UTC')}",
+        fontsize=9, color=MUTED_TEXT,
+        ha="right", va="top",
+    )
 
     # ==============================================================
     # SAVE
