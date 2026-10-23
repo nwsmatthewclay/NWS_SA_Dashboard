@@ -638,7 +638,7 @@ def fetch_synoptic_station(stid):
     params = {
         "token": token,
         "stid": stid,
-        "vars": "air_temp,wind_speed,wind_direction,dew_point_temperature",
+        "vars": "air_temp,wind_speed,wind_direction,dew_point_temperature,relative_humidity",
         "within": 180,
         "obtimezone": "utc",
         "units": "english",
@@ -680,6 +680,7 @@ def fetch_synoptic_station(stid):
 
     temp_f, temp_time = field("air_temp")
     dewpoint_f, dewpoint_time = field("dew_point_temperature")
+    relative_humidity, relative_humidity_time = field("relative_humidity")
     wind_mph, wind_time = field("wind_speed")
     wind_direction, wind_direction_time = field("wind_direction")
 
@@ -695,6 +696,7 @@ def fetch_synoptic_station(stid):
 
     temp_f = finite_number(temp_f)
     dewpoint_f = finite_number(dewpoint_f)
+    relative_humidity = finite_number(relative_humidity)
     wind_mph = finite_number(wind_mph)
     wind_direction = finite_number(wind_direction)
 
@@ -705,6 +707,15 @@ def fetch_synoptic_station(stid):
     # English units: Fahrenheit and miles/hour.
     temp_c = (temp_f - 32.0) * 5.0 / 9.0
     dewpoint_c = ((dewpoint_f - 32.0) * 5.0 / 9.0) if dewpoint_f is not None else None
+    if dewpoint_c is None and relative_humidity is not None and 0 < relative_humidity <= 100:
+        try:
+            dewpoint_c = float(mpcalc.dewpoint_from_relative_humidity(
+                temp_c * units.degC, relative_humidity * units.percent
+            ).to("degC").m)
+            dewpoint_time = relative_humidity_time or temp_time
+            print(f"  {stid}: dewpoint calculated from Synoptic relative humidity ({relative_humidity:.0f}%).")
+        except Exception as exc:
+            print(f"  {stid}: could not derive dewpoint from relative humidity: {exc}")
     wind_kmh = (wind_mph * 1.609344) if wind_mph is not None else None
 
     # Synoptic does not always return a dewpoint for every station even
@@ -718,6 +729,8 @@ def fetch_synoptic_station(stid):
             dewpoint_c = nws_values.get("dewpoint_C")
             dewpoint_time = nws_values.get("dewpoint_time")
             print(f"  {stid}: dewpoint filled from NWS API fallback.")
+        else:
+            print(f"  {stid}: dewpoint unavailable from Synoptic, RH calculation, and NWS fallback.")
 
     # The station-pressure anchor remains sourced from the NWS API when
     # available; Synoptic's temperature/wind values are independent.
@@ -1287,6 +1300,7 @@ def fetch_all():
         else:
             print("  Wind: MISSING")
         print(f"  Temp time: {obs.get('temperature_time')}")
+        print(f"  Dewpoint: {fmt(obs.get('dewpoint_C'))} C; time: {obs.get('dewpoint_time')}")
         print(f"  Wind time: {obs.get('wind_time')}")
 
     # DO NOT replace this: MMNV1 temperature remains the NWS BTV RR2
@@ -1684,8 +1698,10 @@ def print_profile(profile):
         f"{'ELEV':>8}"
         f"{'PRES':>10}"
         f"{'TEMP':>9}"
+        f"{'DEWPT':>9}"
         f"{'WIND':>13}"
         f"{'TEMP AGE':>11}"
+        f"{'DEWPT AGE':>11}"
         f"{'WIND AGE':>11}"
         f"   SOURCE"
     )
@@ -1727,6 +1743,8 @@ def print_profile(profile):
             )
         )
 
+        dewpoint_age = observation_age_minutes(x.get("dewpoint_time"))
+
         wind_age = (
             observation_age_minutes(
                 x["wind_time"]
@@ -1737,6 +1755,10 @@ def print_profile(profile):
             f"{temp_age:.0f}m"
             if temp_age is not None
             else "--"
+        )
+
+        dewpoint_age_text = (
+            f"{dewpoint_age:.0f}m" if dewpoint_age is not None else "--"
         )
 
         wind_age_text = (
@@ -1750,13 +1772,15 @@ def print_profile(profile):
             f"{x['elevation_ft']:>7.0f}'"
             f"{x['pressure_hPa']:>9.1f}"
             f"{x['temperature_C']:>9.1f}"
+            f"{fmt(x.get('dewpoint_C')):>9}"
             f"{wind_text:>13}"
             f"{temp_age_text:>11}"
+            f"{dewpoint_age_text:>11}"
             f"{wind_age_text:>11}"
             f"   {x['source']}"
         )
 
-    print("=" * 112)
+    print("=" * 136)
 
 
 # =====================================================================
