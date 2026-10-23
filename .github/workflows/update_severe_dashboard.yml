@@ -50,9 +50,10 @@ jobs:
         timeout-minutes: 32
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          GLWU_GOOGLE_CREDENTIALS: ${{ secrets.GLWU_GOOGLE_CREDENTIALS }}
-          GLWU_DRIVE_FOLDER_ID: ${{ secrets.GLWU_DRIVE_FOLDER_ID }}
           MANSFIELD_DRIVE_FOLDER_ID: ${{ secrets.MANSFIELD_DRIVE_FOLDER_ID }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BRANCH: main
         run: python main.py
 
       - name: Generate Mount Mansfield snow depth
