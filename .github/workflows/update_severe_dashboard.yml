@@ -57,6 +57,10 @@ jobs:
         run: python main.py
 
       - name: Generate Mount Mansfield snow depth
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BRANCH: main
         run: python MansfieldSnowDepth.py
 
       - name: Upload generated dashboard outputs
