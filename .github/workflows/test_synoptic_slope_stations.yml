@@ -111,18 +111,24 @@ jobs:
           for station in obs_stations:
               values = {"STID": station.get("STID"), "NAME": station.get("NAME")}
               observations = station.get("OBSERVATIONS", {}) or {}
+              latest_times = []
               for variable in ("air_temp", "wind_speed", "wind_direction", "dew_point_temperature"):
                   for suffix in ("value_1", "set_1", "set_1d"):
                       key = f"{variable}_{suffix}"
-                      if key in observations:
-                          values[key] = observations[key]
-              latest_times = []
-              for key, value in observations.items():
-                  if key.endswith("_set_1") and isinstance(value, str):
-                      try:
-                          latest_times.append(datetime.fromisoformat(value.replace("Z", "+00:00")))
-                      except ValueError:
-                          pass
+                      if key not in observations:
+                          continue
+                      item = observations[key]
+                      if isinstance(item, dict):
+                          values[key] = item.get("value")
+                          stamp = item.get("date_time")
+                      else:
+                          values[key] = item
+                          stamp = None
+                      if isinstance(stamp, str):
+                          try:
+                              latest_times.append(datetime.fromisoformat(stamp.replace("Z", "+00:00")))
+                          except ValueError:
+                              pass
               newest = max(latest_times) if latest_times else None
               values["LATEST_OBSERVATION_UTC"] = newest.isoformat() if newest else "not found"
               values["AGE_MINUTES"] = round((now - newest).total_seconds() / 60, 1) if newest else None
