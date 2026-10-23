@@ -707,6 +707,18 @@ def fetch_synoptic_station(stid):
     dewpoint_c = ((dewpoint_f - 32.0) * 5.0 / 9.0) if dewpoint_f is not None else None
     wind_kmh = (wind_mph * 1.609344) if wind_mph is not None else None
 
+    # Synoptic does not always return a dewpoint for every station even
+    # when temperature is present. Recover just that missing field from
+    # the NWS observation history, keeping its own timestamp so the normal
+    # freshness check in build_profile() still applies. This avoids losing
+    # the dewpoint trace when the rest of the Synoptic report is usable.
+    if dewpoint_c is None:
+        nws_values = extract_latest_nws_values(stid)
+        if nws_values and nws_values.get("dewpoint_C") is not None:
+            dewpoint_c = nws_values.get("dewpoint_C")
+            dewpoint_time = nws_values.get("dewpoint_time")
+            print(f"  {stid}: dewpoint filled from NWS API fallback.")
+
     # The station-pressure anchor remains sourced from the NWS API when
     # available; Synoptic's temperature/wind values are independent.
     pressure_pa = None
