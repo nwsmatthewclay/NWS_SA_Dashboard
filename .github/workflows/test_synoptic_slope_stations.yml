@@ -1,0 +1,132 @@
+name: Test Synoptic Slope Stations
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-synoptic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Query Synoptic station metadata and observations
+        env:
+          SYNOPTIC_API_KEY: ${{ secrets.SYNOPTIC_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+          import requests
+          from datetime import datetime, timezone
+
+          token = os.environ.get("SYNOPTIC_API_KEY", "").strip()
+          if not token:
+              print("ERROR: SYNOPTIC_API_KEY is missing or empty. Check the repository Actions secret.")
+              sys.exit(1)
+
+          # Probe the stations used by the slope-temperature profile.
+          station_ids = "KBTV,D0383,E6664,A3150,UVM05,MMSV1,UVM06"
+          base = "https://api.synopticdata.com/v2/stations"
+          session = requests.Session()
+          session.headers.update({"User-Agent": "NWS-BTV-Slope-Station-Diagnostic/1.0"})
+
+          def request_endpoint(endpoint, params):
+              params = dict(params)
+              params["token"] = token
+              try:
+                  response = session.get(f"{base}/{endpoint}", params=params, timeout=25)
+                  print(f"\nEndpoint: {endpoint} | HTTP {response.status_code}")
+                  try:
+                      payload = response.json()
+                  except ValueError:
+                      print("Response was not JSON; body omitted.")
+                      return None
+                  summary = payload.get("SUMMARY", {})
+                  print("API summary:", {
+                      "RESPONSE_CODE": summary.get("RESPONSE_CODE"),
+                      "RESPONSE_MESSAGE": summary.get("RESPONSE_MESSAGE"),
+                      "NUMBER_OF_STATIONS": summary.get("NUMBER_OF_STATIONS"),
+                  })
+                  if not response.ok:
+                      print("Request failed; response body omitted to avoid exposing sensitive request details.")
+                      return None
+                  return payload
+              except requests.RequestException as exc:
+                  print(f"Request error: {type(exc).__name__}: {exc}")
+                  return None
+
+          metadata = request_endpoint("metadata", {"stid": station_ids})
+          if metadata is None:
+              print("\nMetadata request failed. Check the API response above.")
+              sys.exit(1)
+
+          stations = metadata.get("STATION", []) or []
+          print(f"\nMetadata stations returned: {len(stations)}")
+          returned_ids = []
+          for station in stations:
+              stid = station.get("STID", "unknown")
+              returned_ids.append(stid)
+              print({
+                  "STID": stid,
+                  "NAME": station.get("NAME"),
+                  "ELEVATION": station.get("ELEVATION"),
+                  "LATITUDE": station.get("LATITUDE"),
+                  "LONGITUDE": station.get("LONGITUDE"),
+                  "MNET_ID": station.get("MNET_ID"),
+                  "STATUS": station.get("STATUS"),
+              })
+
+          requested = station_ids.split(",")
+          missing = [stid for stid in requested if stid not in returned_ids]
+          print("\nRequested IDs not returned by metadata:", missing if missing else "none")
+
+          obs = request_endpoint(
+              "observations",
+              {
+                  "stid": station_ids,
+                  "vars": "air_temp,wind_speed,wind_direction,dew_point_temperature",
+                  "within": 180,
+                  "obtimezone": "utc",
+                  "units": "english",
+              },
+          )
+          if obs is None:
+              print("\nObservation request failed.")
+              sys.exit(1)
+
+          obs_stations = obs.get("STATION", []) or []
+          print(f"\nStations with observation responses: {len(obs_stations)}")
+          now = datetime.now(timezone.utc)
+          fresh_count = 0
+          for station in obs_stations:
+              values = {"STID": station.get("STID"), "NAME": station.get("NAME")}
+              observations = station.get("OBSERVATIONS", {}) or {}
+              for variable in ("air_temp", "wind_speed", "wind_direction", "dew_point_temperature"):
+                  for suffix in ("value_1", "set_1", "set_1d"):
+                      key = f"{variable}_{suffix}"
+                      if key in observations:
+                          values[key] = observations[key]
+              latest_times = []
+              for key, value in observations.items():
+                  if key.endswith("_set_1") and isinstance(value, str):
+                      try:
+                          latest_times.append(datetime.fromisoformat(value.replace("Z", "+00:00")))
+                      except ValueError:
+                          pass
+              newest = max(latest_times) if latest_times else None
+              values["LATEST_OBSERVATION_UTC"] = newest.isoformat() if newest else "not found"
+              values["AGE_MINUTES"] = round((now - newest).total_seconds() / 60, 1) if newest else None
+              if newest and (now - newest).total_seconds() <= 180 * 60:
+                  fresh_count += 1
+              print(values)
+
+          print(f"\nDiagnostic complete: {len(obs_stations)} station response(s), {fresh_count} with a parsed observation timestamp within 180 minutes.")
+          print("The API key itself is never printed.")
+          PY
