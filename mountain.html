@@ -1537,6 +1537,8 @@ const MANSFIELD_RR2_PIL = "RR2BTV";
 const MANSFIELD_RR2_MAX_FAILURES = 3;
 let mansfieldRr2Failures = 0;
 let mansfieldRr2LastGood = null;
+// Retain Whiteface's last valid observation across brief ASRC endpoint outages.
+let whitefaceLastGoodObservation = null;
 
 async function fetchWithTimeout_(url, options = {}, timeoutMs = 8000) {
   const controller = new AbortController();
@@ -1759,12 +1761,43 @@ async function fetchMansfieldTemperature_() {
       throw new Error("RR2BTV page contained no AFOS product text");
     }
 
-    const match = text.match(
-      /\.A\s+MMNV1\s+(\d{6})\s+Z\s+DH(\d{4})\/TAIRGZZ\s+(-?\d+(?:\.\d+)?)/
+    // AFOS formatting can differ between the plain-text and HTML views.
+    // Normalize whitespace/markup, then restrict parsing to MMNV1's own
+    // nearby text so we cannot accidentally use another station's value.
+    const normalized = text
+      .replace(/\r/g, " ")
+      .replace(/&nbsp;|&#160;|&#xA0;/gi, " ")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const stationIndex = normalized.search(/\bMMNV1\b/i);
+    if (stationIndex < 0) {
+      throw new Error("RR2BTV product text did not include station MMNV1");
+    }
+
+    const stationText = normalized.slice(stationIndex, stationIndex + 260);
+    // Standard: MMNV1 YYMMDD Z DHhhmm/TAIRGZZ temperature. Accept optional
+    // Z and flexible whitespace/punctuation across different product views.
+    let match = stationText.match(
+      /\bMMNV1\s+(\d{6})\s+(?:Z\s+)?DH(\d{4})\s*\/\s*TAIRGZZ\s+(-?\d+(?:\.\d+)?)/i
     );
 
+    // Fallback for renderings that split the station/time and element with
+    // markup or line wrapping; still require the exact TAIRGZZ element.
     if (!match) {
-      throw new Error("Latest RR2BTV product did not contain an MMNV1 TAIRGZZ observation");
+      const dateTime = stationText.match(/\b(\d{6})\s+(?:Z\s+)?DH(\d{4})/i);
+      const temperature = stationText.match(/\/\s*TAIRGZZ\s+(-?\d+(?:\.\d+)?)/i);
+      if (dateTime && temperature) {
+        match = [dateTime[0] + " " + temperature[0], dateTime[1], dateTime[2], temperature[1]];
+      }
+    }
+
+    if (!match) {
+      throw new Error(
+        "Latest RR2BTV product did not contain a parseable MMNV1 TAIRGZZ observation. " +
+        "Station excerpt: " + stationText.slice(0, 180)
+      );
     }
 
     const yyMMdd = match[1];
@@ -3090,8 +3123,22 @@ async function refreshWhitefaceObs() {
 
   try {
 
-    const obs =
+    let obs =
       await fetchWhitefaceObservation_();
+
+    if (obs) {
+      whitefaceLastGoodObservation = obs;
+    } else if (
+      whitefaceLastGoodObservation &&
+      ageMinutes_(whitefaceLastGoodObservation.timestamp) !== null &&
+      ageMinutes_(whitefaceLastGoodObservation.timestamp) <= 30
+    ) {
+      // Keep showing a recent valid summit report during a transient API
+      // timeout. Its original timestamp remains intact, so staleness styling
+      // still reflects the age of the actual observation.
+      obs = whitefaceLastGoodObservation;
+      console.warn("Whiteface: using cached observation after temporary API failure.");
+    }
 
     if (!obs) {
 
