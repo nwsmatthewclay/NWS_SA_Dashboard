@@ -2257,7 +2257,7 @@ def directional_consistency_deg(profile):
 # ingredient is present in the model", not a guarantee.
 
 RAP_WIND_PROFILE_URL_TEMPLATE = (
-    "https://raw.githubusercontent.com/matthewclay88/severe-dashboard/"
+    "https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/"
     "main/outputs/{site}_rap_wind_profile.json"
 )
 
