@@ -3900,7 +3900,18 @@ async function refreshBoltonObs() {
       });
     }
 
+    // Force a fresh request for the slope-profile PNG on each page refresh
+    // and each dashboard refresh cycle. The timestamp query string prevents
+    // browser/CDN caches from reusing an older image at the same URL.
+    function refreshSoundingImage() {
+      const image = document.getElementById("sounding-image");
+      if (!image) return;
+      const baseUrl = "https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/outputs/vt_pseudo_sounding.png";
+      image.src = baseUrl + "?cb=" + Date.now();
+    }
+
     function refreshAll() {
+      refreshSoundingImage();
       refreshDiagnostics();
       refreshSnowDepth();
       refreshWashingtonObs();
