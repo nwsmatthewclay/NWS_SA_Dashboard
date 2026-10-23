@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Cache Cartopy Natural Earth data
         uses: actions/cache@v4
@@ -73,8 +75,9 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Commit generated dashboard outputs
+      - name: Commit and publish generated dashboard outputs
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -87,7 +90,37 @@ jobs:
 
           git commit -m "Update dashboard outputs"
 
+          # Another publisher may have updated generated files since checkout.
+          # Rebase first; if conflicts are limited to outputs/, keep this run's
+          # freshly generated versions. Never auto-resolve source-code conflicts.
           git fetch origin main
-          git rebase origin/main
+          if ! git rebase origin/main; then
+            conflicted_files="$(git diff --name-only --diff-filter=U)"
+            if [ -z "$conflicted_files" ]; then
+              echo "::error::Rebase failed without identifiable conflicted files."
+              git rebase --abort || true
+              exit 1
+            fi
+
+            non_output_conflicts="$(printf '%s\n' "$conflicted_files" | grep -v '^outputs/' || true)"
+            if [ -n "$non_output_conflicts" ]; then
+              echo "::error::Rebase encountered conflicts outside outputs/:"
+              printf '%s\n' "$non_output_conflicts"
+              git rebase --abort || true
+              exit 1
+            fi
+
+            echo "Resolving generated-output conflicts in favor of this run's fresh outputs:"
+            printf '%s\n' "$conflicted_files"
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              git checkout --theirs -- "$file"
+              git add -- "$file"
+            done <<EOF
+          $conflicted_files
+          EOF
+
+            GIT_EDITOR=true git rebase --continue
+          fi
 
           git push origin HEAD:main
