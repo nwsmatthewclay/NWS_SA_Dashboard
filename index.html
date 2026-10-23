@@ -127,7 +127,6 @@ body{
   body.alert-mode .did-you-know-card,
   body.alert-mode #envThreatPanel,
   body.alert-mode #glmCard,
-  body.alert-mode #lightningCard,
   body.alert-mode #outageCard {
     opacity: .5;
     filter: saturate(.55);
@@ -209,10 +208,10 @@ body{
   }
   .refresh-btn:hover { background: #1a3a55; transform: rotate(90deg); }
 
-  /* ── STATUS BAR (5 neon glass glow cards) ── */
+  /* ── STATUS BAR (4 primary operational cards) ── */
   .status-bar {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
     padding: 10px 12px;
     border-bottom: 1px solid var(--border);
@@ -1288,29 +1287,6 @@ body{
 }
 .external-frame.active { display: block; }
 
-.lightning-card{
-    cursor:pointer;
-    transition:all .2s ease;
-}
-
-.lightning-card:hover{
-    border-color:#4a7edb;
-    transform:translateY(-2px);
-    box-shadow:0 6px 14px rgba(37,99,235,.25);
-}
-
-#lightningCardIcon{
-    font-size:28px;
-    background:none !important;
-    width:auto;
-    height:auto;
-    color:#4ade80;
-}
-
-.lightning-card .status-value{
-    color:#7ea6f5 !important;
-}
-
   /* ── INLINE PANELS (kept for legacy, hidden by default) ── */
   .inline-panel {
     display: none; background: #0a1628; border: 1px solid var(--border2);
@@ -1788,16 +1764,6 @@ body{
       <div class="status-label">Next DSS Event</div>
       <div class="status-value" id="nextObligationValue" style="color:#7ea6f5;">--</div>
       <div class="status-sub" id="nextObligationSub">0 Upcoming</div>
-    </div>
-  </div>
-
-  <!-- Card 4: UVM Lightning -->
-  <div class="status-card lightning-card" id="lightningCard">
-    <div class="status-icon blue" id="lightningCardIcon">⚡</div>
-    <div style="min-width:0;">
-      <div class="status-label">UVM Lightning</div>
-      <div class="status-value" id="lightningCardValue"><span class="skeleton-text" style="width:100px;"></span></div>
-      <div class="status-link" id="lightningCardSub">Open Lightning Dashboard →</div>
     </div>
   </div>
 
@@ -3639,38 +3605,6 @@ function refreshThreatGauges() {
     .catch(function(err) { console.error('threats.json fetch failed:', err); });
 }
 
-function updateLightningCard() {
-  fetch(DATA_BASE_URL + 'lightning.json')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      const card = document.querySelector('.lightning-card');
-      if (!card) return;
-      card.style.background = `linear-gradient(
-  135deg,
-  ${data.color}22 0%,
-  #10162a 45%,
-  #10162a 100%
-)`;
-      const icon  = document.getElementById('lightningCardIcon');
-      const value = document.getElementById('lightningCardValue');
-      const sub   = document.getElementById('lightningCardSub');
-      card.style.backgroundColor = "";
-      card.style.borderColor = "";
-      icon.textContent = "⚡";
-      icon.style.color = data.color;
-      value.textContent = data.level.toUpperCase() + ' (' + data.probability + '%)';
-      value.style.color = "white";
-      sub.textContent = "Open Lightning Dashboard →";
-    })
-    .catch(function(err) {
-      console.error('lightning.json fetch failed:', err);
-      const value = document.getElementById('lightningCardValue');
-      const sub   = document.getElementById('lightningCardSub');
-      if (value) { value.textContent = 'Unavailable'; value.style.color = '#8188a3'; }
-      if (sub)   sub.textContent = 'Error fetching lightning data';
-    });
-}
-
 function updateGlmCard() {
   fetch('https://raw.githubusercontent.com/matthewclay88/btv-glm-lightning/main/data/lightning.json?t=' + Date.now())
     .then(function(r) { return r.json(); })
@@ -4434,7 +4368,6 @@ function refreshDashboard() {
       document.getElementById('dssStatusSub2').textContent = 'Failed to load events';
     });
 
-  updateLightningCard();
   updateOutageCard();
   refreshThreatGauges();
   updateGlmCard();
@@ -4450,9 +4383,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initParticleCanvas();
 
   on('refreshBtn', 'click', refreshDashboard);
-  on('lightningCard', 'click', function() {
-    window.open('https://grafana-public.ssec.wisc.edu/grafana/d/cca85e59-9e80-4fd0-bde4-e0cc0cec31ae/dss-and-stadiums?orgId=1&var-Location=University%20of%20Vermont&refresh=1m&from=now-1h&to=now&timezone=browser', '_blank');
-  });
   on('outageCard', 'click', showOutageDetails);
   on('outageModalCloseBtn', 'click', function() { document.getElementById('outageModal').style.display = 'none'; });
   on('btnCloseModal', 'click', closeCalendarModal);
