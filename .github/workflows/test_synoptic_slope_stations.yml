@@ -91,7 +91,7 @@ jobs:
           print("\nRequested IDs not returned by metadata:", missing if missing else "none")
 
           obs = request_endpoint(
-              "observations",
+              "latest",
               {
                   "stid": station_ids,
                   "vars": "air_temp,wind_speed,wind_direction,dew_point_temperature",
@@ -105,7 +105,7 @@ jobs:
               sys.exit(1)
 
           obs_stations = obs.get("STATION", []) or []
-          print(f"\nStations with observation responses: {len(obs_stations)}")
+          print(f"\nStations with latest-observation responses: {len(obs_stations)}")
           now = datetime.now(timezone.utc)
           fresh_count = 0
           for station in obs_stations:
