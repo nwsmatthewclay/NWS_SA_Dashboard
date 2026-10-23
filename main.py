@@ -52,14 +52,8 @@ creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
 gc = gspread.authorize(creds)
 drive_service = build("drive", "v3", credentials=creds)
 
-# Separate Google credentials for the GLWU Drive account.
-# GLWU lives under a different Google account from the forecast Sheet, so it
-# needs its own service-account JSON in GitHub Actions.
-glwu_creds_dict = json.loads(os.environ["GLWU_GOOGLE_CREDENTIALS"])
-glwu_creds = Credentials.from_service_account_info(glwu_creds_dict, scopes=[
-    "https://www.googleapis.com/auth/drive",
-])
-glwu_drive_service = build("drive", "v3", credentials=glwu_creds)
+# GLWU products publish directly to this repository using a scoped GitHub
+# token. Google Drive is no longer part of the GLWU output path.
 
 # ============================================================
 # MODELS + FORECAST-HOUR CAP
@@ -514,12 +508,11 @@ AIRPLANE_PATH = mpath.Path([
     (-0.5, 0.02), (-0.5, 0.15), (-0.08, 0.55), (0, 1.0),
 ])
 
-# Drive folder the plot gets uploaded to (the runner's disk is wiped after
-# each GitHub Actions run, so this is what actually persists). The folder
-# must be shared with the service account's email (found in
-# creds_dict["client_email"]) with Editor access, or the upload will fail
-# with a 403/404.
-GLWU_DRIVE_FOLDER_ID = os.environ.get("GLWU_DRIVE_FOLDER_ID", "1InNdENvWv4CZE6-jhAEhy1OIIwAbf281")
+# Published GLWU products live in the repository's tracked outputs/ folder.
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "nwsmatthewclay/NWS_SA_Dashboard")
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", os.environ.get("GITHUB_REF_NAME", "main"))
+GITHUB_API_BASE = "https://api.github.com"
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 
 # ============================================================
 # 8-STATION WAVE HEIGHT FORECAST (vertical stacked chart)
@@ -1775,42 +1768,51 @@ def glwu_build_animation(grib_path: Path, out_gif: Path, n_hours: int = GLWU_N_H
     )
 
 
-def glwu_upload_to_drive(local_path: Path, drive_filename: str, mimetype: str):
-    """
-    Upsert a file into Drive: if a file with this exact name already
-    exists in GLWU_DRIVE_FOLDER_ID, overwrite its content (same file ID,
-    same shareable link every time). Otherwise create it. Requires the
-    target folder to be shared with the service account's client_email,
-    AND (since service accounts have no storage quota of their own) a
-    file with this exact name must already exist there, pre-uploaded by
-    a real Google account - otherwise the "create" branch below will
-    fail with a storageQuotaExceeded error.
-    """
-    if not GLWU_DRIVE_FOLDER_ID:
-        print("  WARNING: GLWU_DRIVE_FOLDER_ID not set; skipping Drive upload.")
-        return
+def glwu_publish_to_github(local_path: Path, repo_path: str, mimetype: str):
+    """Create or replace a generated GLWU product in this repository.
 
-    query = (
-        f"name = '{drive_filename}' "
-        f"and '{GLWU_DRIVE_FOLDER_ID}' in parents "
-        f"and trashed = false"
+    Requires GITHUB_TOKEN with Contents: read/write permission for the repo.
+    GitHub Actions provides this token when the workflow passes `github.token`;
+    Oracle can use a fine-grained token stored in its environment.
+    """
+    if not GITHUB_TOKEN:
+        raise RuntimeError(
+            "GITHUB_TOKEN is not set; cannot publish GLWU outputs to GitHub."
+        )
+
+    api_url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPOSITORY}/contents/{repo_path}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+    existing = requests.get(
+        api_url, headers=headers, params={"ref": GITHUB_BRANCH}, timeout=30
     )
-    existing = glwu_drive_service.files().list(
-        q=query, spaces="drive", fields="files(id, name)"
-    ).execute().get("files", [])
-
-    media = MediaFileUpload(str(local_path), mimetype=mimetype, resumable=False)
-
-    if existing:
-        file_id = existing[0]["id"]
-        glwu_drive_service.files().update(fileId=file_id, media_body=media).execute()
-        print(f"  Updated existing Drive file: {drive_filename} (id={file_id})")
+    if existing.status_code == 200:
+        sha = existing.json().get("sha")
+    elif existing.status_code == 404:
+        sha = None
     else:
-        file_metadata = {"name": drive_filename, "parents": [GLWU_DRIVE_FOLDER_ID]}
-        created = glwu_drive_service.files().create(
-            body=file_metadata, media_body=media, fields="id"
-        ).execute()
-        print(f"  Created new Drive file: {drive_filename} (id={created.get('id')})")
+        existing.raise_for_status()
+        sha = None
+
+    import base64
+    with open(local_path, "rb") as handle:
+        encoded_content = base64.b64encode(handle.read()).decode("ascii")
+
+    payload = {
+        "message": f"Update generated GLWU product: {Path(repo_path).name}",
+        "content": encoded_content,
+        "branch": GITHUB_BRANCH,
+    }
+    if sha:
+        payload["sha"] = sha
+
+    response = requests.put(api_url, headers=headers, json=payload, timeout=120)
+    response.raise_for_status()
+    print(f"  Published {local_path} -> {GITHUB_REPOSITORY}/{repo_path} ({mimetype})")
 
 
 def run_glwu_plot():
@@ -1841,12 +1843,10 @@ def run_glwu_plot():
         print(f"  Saved {timestamped_gif} and {latest_gif} "
               f"({GLWU_N_HOURS} frames: analysis + {GLWU_N_HOURS - 1}h forecast)")
 
-        # The GitHub Actions runner disk disappears after this job ends,
-        # so push the current animation to Drive to make it actually
-        # persist. Only "latest.gif" is uploaded (overwritten each run)
-        # so Drive doesn't accumulate one file per run, every 15
-        # minutes, forever.
-        glwu_upload_to_drive(latest_gif, "glwu_latest.gif", mimetype="image/gif")
+        # Publish stable filenames to GitHub so the static dashboard can load
+        # them directly. Keep the timestamped animation local for diagnostics;
+        # only the latest products are committed, avoiding repository growth.
+        glwu_publish_to_github(latest_gif, "outputs/glwu_latest.gif", mimetype="image/gif")
 
         # 8-station vertical forecast chart — reuses the same already-downloaded
         # grib_dest, no extra fetch. Wrapped in its own try/except so a failure
@@ -1862,16 +1862,16 @@ def run_glwu_plot():
             station_panel.save(station_panel_path)
             print(f"  Saved {station_panel_path} (8-station forecast, "
                   f"+{GLWU_STATION_FORECAST_MAX_HOUR}h forward)")
-            glwu_upload_to_drive(
+            glwu_publish_to_github(
                 station_panel_path,
-                "glwu_stations_latest.png",
+                "outputs/glwu_stations_latest.png",
                 mimetype="image/png",
             )
 
             station_csv_path = GLWU_OUTPUT_DIR / "stations_latest.csv"
-            glwu_upload_to_drive(
+            glwu_publish_to_github(
                 station_csv_path,
-                "glwu_stations_latest.csv",
+                "outputs/glwu_stations_latest.csv",
                 mimetype="text/csv",
             )
         except Exception as e:
