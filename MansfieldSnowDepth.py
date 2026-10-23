@@ -87,6 +87,52 @@ REPO_OUTPUT_DIR = str(BASE_DIR / "outputs")
 STATUS_OUTPUT_FILE = os.path.join(REPO_OUTPUT_DIR, "vt_snow_depth_status.json")
 CHART_OUTPUT_FILE = os.path.join(REPO_OUTPUT_DIR, "vt_snow_depth_chart.png")
 
+# Optional direct publishing makes this script usable on Oracle cron as well as
+# GitHub Actions. Store a fine-grained Contents: read/write token in GITHUB_TOKEN.
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "nwsmatthewclay/NWS_SA_Dashboard")
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", os.environ.get("GITHUB_REF_NAME", "main"))
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
+
+
+def publish_output_to_github(local_path, repo_path):
+    """Publish a generated status/chart file to the repository, if configured."""
+    if not GITHUB_TOKEN:
+        print("GITHUB_TOKEN not set; skipping direct GitHub publish for " + repo_path)
+        return
+
+    import base64
+
+    api_url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/{repo_path}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    existing = requests.get(
+        api_url, headers=headers, params={"ref": GITHUB_BRANCH}, timeout=30
+    )
+    if existing.status_code == 200:
+        sha = existing.json().get("sha")
+    elif existing.status_code == 404:
+        sha = None
+    else:
+        existing.raise_for_status()
+        sha = None
+
+    with open(local_path, "rb") as handle:
+        encoded_content = base64.b64encode(handle.read()).decode("ascii")
+
+    payload = {
+        "message": f"Update Mount Mansfield output: {Path(repo_path).name}",
+        "content": encoded_content,
+        "branch": GITHUB_BRANCH,
+    }
+    if sha:
+        payload["sha"] = sha
+    response = requests.put(api_url, headers=headers, json=payload, timeout=120)
+    response.raise_for_status()
+    print(f"Published {local_path} -> {GITHUB_REPOSITORY}/{repo_path}")
+
 
 # =====================================================================
 # CHART (NWS feeds - unchanged)
@@ -752,6 +798,11 @@ def main():
         json.dump(status, f, indent=2)
 
     print(f"\nSaved status to {STATUS_OUTPUT_FILE}")
+
+    # Publish stable filenames so mountain.html can load these directly from
+    # GitHub, whether this script runs in Actions or on the Oracle scheduler.
+    publish_output_to_github(STATUS_OUTPUT_FILE, "outputs/vt_snow_depth_status.json")
+    publish_output_to_github(CHART_OUTPUT_FILE, "outputs/vt_snow_depth_chart.png")
 
 
 if __name__ == "__main__":
