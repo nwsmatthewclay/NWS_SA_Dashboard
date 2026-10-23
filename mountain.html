@@ -1743,7 +1743,8 @@ async function fetchMansfieldTemperature_() {
 
     const url =
       "https://mesonet.agron.iastate.edu/wx/afos/p.php" +
-      "?pil=" + encodeURIComponent(MANSFIELD_RR2_PIL);
+      "?pil=" + encodeURIComponent(MANSFIELD_RR2_PIL) +
+      "&cb=" + Date.now();
 
     const response = await fetchWithTimeout_(
       url,
