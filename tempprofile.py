@@ -616,6 +616,124 @@ def extract_latest_nws_values(stid):
     }
     
 # =====================================================================
+# 3B. SYNOPTIC MESONET OBSERVATIONS
+# =====================================================================
+
+SYNOPTIC_BASE = "https://api.synopticdata.com/v2/stations"
+
+
+def fetch_synoptic_station(stid):
+    """
+    Retrieve the latest Synoptic observation for a station.
+
+    Synoptic's English units are converted to the normalized units used
+    by this profile: temperature/dewpoint in Celsius and wind speed in
+    km/h. Each field keeps its own observation timestamp.
+    """
+    token = os.environ.get("SYNOPTIC_API_KEY", "").strip()
+    if not token:
+        print("  SYNOPTIC_API_KEY not set; cannot query Synoptic.")
+        return None
+
+    params = {
+        "token": token,
+        "stid": stid,
+        "vars": "air_temp,wind_speed,wind_direction,dew_point_temperature",
+        "within": 180,
+        "obtimezone": "utc",
+        "units": "english",
+    }
+
+    try:
+        response = requests.get(
+            f"{SYNOPTIC_BASE}/latest",
+            params=params,
+            timeout=25,
+            headers=TEXT_HEADERS,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except (requests.RequestException, ValueError) as exc:
+        print(f"  Synoptic request failed for {stid}: {exc}")
+        return None
+
+    summary = payload.get("SUMMARY", {})
+    if str(summary.get("RESPONSE_CODE")) != "1":
+        print(f"  Synoptic response for {stid}: {summary.get('RESPONSE_MESSAGE', 'unknown error')}")
+        return None
+
+    stations = payload.get("STATION") or []
+    if not stations:
+        return None
+
+    station = next(
+        (item for item in stations if item.get("STID", "").upper() == stid.upper()),
+        stations[0],
+    )
+    values = station.get("OBSERVATIONS") or {}
+
+    def field(variable):
+        item = values.get(f"{variable}_value_1")
+        if isinstance(item, dict):
+            return item.get("value"), item.get("date_time")
+        return item, None
+
+    temp_f, temp_time = field("air_temp")
+    dewpoint_f, dewpoint_time = field("dew_point_temperature")
+    wind_mph, wind_time = field("wind_speed")
+    wind_direction, wind_direction_time = field("wind_direction")
+
+    # Fall back to the direction timestamp when the speed timestamp is absent.
+    wind_time = wind_time or wind_direction_time
+
+    def finite_number(value):
+        try:
+            number = float(value)
+            return number if math.isfinite(number) else None
+        except (TypeError, ValueError):
+            return None
+
+    temp_f = finite_number(temp_f)
+    dewpoint_f = finite_number(dewpoint_f)
+    wind_mph = finite_number(wind_mph)
+    wind_direction = finite_number(wind_direction)
+
+    if temp_f is None:
+        print(f"  Synoptic returned no usable temperature for {stid}.")
+        return None
+
+    # English units: Fahrenheit and miles/hour.
+    temp_c = (temp_f - 32.0) * 5.0 / 9.0
+    dewpoint_c = ((dewpoint_f - 32.0) * 5.0 / 9.0) if dewpoint_f is not None else None
+    wind_kmh = (wind_mph * 1.609344) if wind_mph is not None else None
+
+    # The station-pressure anchor remains sourced from the NWS API when
+    # available; Synoptic's temperature/wind values are independent.
+    pressure_pa = None
+    pressure_time = None
+    if stid == "KBTV":
+        nws_values = extract_latest_nws_values(stid)
+        if nws_values:
+            pressure_pa = nws_values.get("barometric_pressure_Pa")
+            pressure_time = nws_values.get("pressure_time")
+
+    return {
+        "stid": stid,
+        "temperature_C": temp_c,
+        "temperature_time": temp_time,
+        "dewpoint_C": dewpoint_c,
+        "dewpoint_time": dewpoint_time,
+        "wind_speed_kmh": wind_kmh,
+        "wind_direction_deg": wind_direction,
+        "wind_time": wind_time,
+        "barometric_pressure_Pa": pressure_pa,
+        "pressure_time": pressure_time,
+        "timestamp": temp_time,
+        "source": "Synoptic",
+    }
+
+
+# =====================================================================
 # 4. MMNV1 TEMPERATURE - RR2
 # =====================================================================
 
@@ -1120,7 +1238,9 @@ def fetch_mmvn1():
 
 def fetch_all():
     """
-    Retrieve every station and normalize into a common dictionary.
+    Retrieve station observations. Prefer Synoptic for the slope sites;
+    retain the NWS fallback for stations with no usable Synoptic report.
+    MMNV1 is always handled separately by fetch_mmvn1() (RR2 temperature).
     """
 
     observations = {}
@@ -1131,74 +1251,36 @@ def fetch_all():
     print("=" * 70)
 
     for stid in NWS_STATIONS:
+        print(f"\nFetching {stid} from Synoptic...")
+        obs = fetch_synoptic_station(stid)
 
-        print(
-            f"\nFetching {stid}..."
-        )
-
-        obs = extract_latest_nws_values(
-            stid
-        )
+        # MMSV1 may be present in metadata but not return a Synoptic
+        # observation. Preserve the prior NWS path as a fallback.
+        if obs is None and stid == "MMSV1":
+            print("  Falling back to the existing NWS API for MMSV1.")
+            obs = extract_latest_nws_values(stid)
 
         if obs is None:
-
-            print(
-                f"  {stid}: NO DATA"
-            )
-
+            print(f"  {stid}: NO DATA")
             continue
 
         observations[stid] = obs
-
-        temp = obs["temperature_C"]
-        speed = obs["wind_speed_kmh"]
-        direction = obs[
-            "wind_direction_deg"
-        ]
-
-        print(
-            f"  Temperature: "
-            f"{fmt(temp)} C"
-        )
-
-        if (
-            speed is not None
-            and direction is not None
-        ):
-
-            speed_kt = (
-                speed
-                * units("km/hour")
-            ).to("knots").m
-
-            print(
-                f"  Wind: "
-                f"{direction:.0f}/"
-                f"{speed_kt:.0f} kt"
-            )
-
+        print(f"  Source: {obs.get('source', 'NWS API')}")
+        print(f"  Temperature: {fmt(obs.get('temperature_C'))} C")
+        speed = obs.get("wind_speed_kmh")
+        direction = obs.get("wind_direction_deg")
+        if speed is not None and direction is not None:
+            speed_kt = (speed * units("km/hour")).to("knots").m
+            print(f"  Wind: {direction:.0f}/{speed_kt:.0f} kt")
         else:
+            print("  Wind: MISSING")
+        print(f"  Temp time: {obs.get('temperature_time')}")
+        print(f"  Wind time: {obs.get('wind_time')}")
 
-            print(
-                "  Wind: MISSING"
-            )
-
-        print(
-            f"  Temp time: "
-            f"{obs['temperature_time']}"
-        )
-
-        print(
-            f"  Wind time: "
-            f"{obs['wind_time']}"
-        )
-
-    observations["MMNV1"] = (
-        fetch_mmvn1()
-    )
-
+    # DO NOT replace this: MMNV1 temperature remains the NWS BTV RR2
+    # product, and its existing IEM RRS wind retrieval remains intact.
+    observations["MMNV1"] = fetch_mmvn1()
     return observations
-
 
 # =====================================================================
 # 8. BUILD PROFILE
