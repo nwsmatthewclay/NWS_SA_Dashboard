@@ -15,7 +15,6 @@ from pathlib import Path
 
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
 from metpy.units import units
 import metpy.calc as mpcalc
 from metpy.calc import (
