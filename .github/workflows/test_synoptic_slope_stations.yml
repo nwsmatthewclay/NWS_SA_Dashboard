@@ -16,6 +16,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install diagnostic dependency
+        run: python -m pip install --disable-pip-version-check requests
+
       - name: Query Synoptic station metadata and observations
         env:
           SYNOPTIC_API_KEY: ${{ secrets.SYNOPTIC_API_KEY }}
