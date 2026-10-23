@@ -96,6 +96,12 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 
 def publish_output_to_github(local_path, repo_path):
     """Publish a generated status/chart file to the repository, if configured."""
+    # The Actions workflow commits outputs/ as a single batch at the end. Avoid
+    # creating parallel API commits during that same run; Oracle cron publishes
+    # directly because it has no workflow commit step.
+    if os.environ.get("GITHUB_ACTIONS", "").lower() == "true":
+        print("GitHub Actions will commit outputs/ after the run; skipping direct publish.")
+        return
     if not GITHUB_TOKEN:
         print("GITHUB_TOKEN not set; skipping direct GitHub publish for " + repo_path)
         return
