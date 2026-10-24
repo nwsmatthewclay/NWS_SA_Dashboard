@@ -401,7 +401,7 @@ async function loadSite(site){
  // Fetch official NWS observations on every refresh. For KBTV, take wind
  // from the live IEM ASOS feed first; NWS can omit wind during QC even when
  // the airport's METAR/ASOS report contains it. Fall back to recent NWS reports.
- var observationJobs=site.id==="KBTV"
+ var observationJobs=(site.id==="KBTV"||site.id==="KEFK")
   ?[fetchNwsRecentObservations(site),fetchIemAsosWind(site)]
   :[fetchNwsRecentObservations(site)];
  var observationRequest=await Promise.allSettled(observationJobs);
@@ -424,6 +424,25 @@ async function loadSite(site){
   result.obs.windTime=iemWind.windTime;
   result.obs.windSource=iemWind.windSource;
   result.obs.windRaw=iemWind.windRaw;
+
+ }
+ if(site.id==="KEFK"&&observationRequest[1]&&observationRequest[1].status==="fulfilled"){
+  // KEFK's latest report can arrive in the IEM ASOS feed before it appears
+  // in the NWS station-observation endpoint. Compare report timestamps, and
+  // use the IEM METAR only when it is genuinely newer than the NWS report.
+  var efkReport=observationRequest[1].value;
+  var efkObs=obsFromFeature({properties:{timestamp:efkReport.windTime?efkReport.windTime.toISOString():null,rawMessage:efkReport.windRaw||""}},site.id);
+  efkObs.wind=efkReport.wind;
+  efkObs.windTime=efkReport.windTime;
+  efkObs.windSource=efkReport.windSource;
+  efkObs.source="IEM ASOS METAR";
+  if(efkObs.time&&(!result.obs||!result.obs.time||efkObs.time.getTime()>result.obs.time.getTime())){
+   result.obs=efkObs;
+   result.obsError=null;
+  }
+ }else if(site.id==="KEFK"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
+  console.warn("KEFK IEM ASOS fallback failed; using NWS observation timestamp:",observationRequest[1].reason);
+ }
  }else if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
   var windReason=observationRequest[1].reason;
   result.windError=windReason&&windReason.message||String(windReason||"IEM ASOS wind request failed");
