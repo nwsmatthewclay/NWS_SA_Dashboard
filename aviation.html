@@ -413,8 +413,7 @@ async function loadSite(site){
   console.warn(site.id+" NWS observation request failed:",reason);
  }
  if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="fulfilled"){
-  // The wind feed is independent of the NWS observation response. Never discard
-  // a valid live KBTV ASOS wind just because the NWS observation request failed.
+  // Keep the live KBTV ASOS wind even when NWS omits it.
   var iemWind=observationRequest[1].value;
   if(!result.obs){
    result.obs={id:site.id,time:iemWind.windTime,ceilingFt:null,clouds:"Not reported",visSm:null,weather:"Not reported",cat:"NA",raw:iemWind.windRaw||"",source:"IEM ASOS wind fallback"};
@@ -424,12 +423,16 @@ async function loadSite(site){
   result.obs.windTime=iemWind.windTime;
   result.obs.windSource=iemWind.windSource;
   result.obs.windRaw=iemWind.windRaw;
-
+ }else if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
+  var windReason=observationRequest[1].reason;
+  result.windError=windReason&&windReason.message||String(windReason||"IEM ASOS wind request failed");
+  console.warn("KBTV live IEM ASOS wind request failed; using NWS recent-observation wind if available:",windReason);
+  if(result.obs){result.obs.windSource="NWS recent observation";}
  }
+
  if(site.id==="KEFK"&&observationRequest[1]&&observationRequest[1].status==="fulfilled"){
-  // KEFK's latest report can arrive in the IEM ASOS feed before it appears
-  // in the NWS station-observation endpoint. Compare report timestamps, and
-  // use the IEM METAR only when it is genuinely newer than the NWS report.
+  // KEFK's IEM ASOS feed can have a newer report than the NWS station feed.
+  // Compare timestamps and use IEM's METAR only when it is genuinely newer.
   var efkReport=observationRequest[1].value;
   var efkObs=obsFromFeature({properties:{timestamp:efkReport.windTime?efkReport.windTime.toISOString():null,rawMessage:efkReport.windRaw||""}},site.id);
   efkObs.wind=efkReport.wind;
@@ -442,12 +445,6 @@ async function loadSite(site){
   }
  }else if(site.id==="KEFK"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
   console.warn("KEFK IEM ASOS fallback failed; using NWS observation timestamp:",observationRequest[1].reason);
- }
- }else if(site.id==="KBTV"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
-  var windReason=observationRequest[1].reason;
-  result.windError=windReason&&windReason.message||String(windReason||"IEM ASOS wind request failed");
-  console.warn("KBTV live IEM ASOS wind request failed; using NWS recent-observation wind if available:",windReason);
-  if(result.obs){result.obs.windSource="NWS recent observation";}
  }
 
  // Per page refresh: request the current official NWS station TAF directly.
