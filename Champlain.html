@@ -131,6 +131,8 @@ function renderWindForecast(hour){
  const vectorSpeed=valid.length?Math.hypot(sumU,sumV)/valid.length:0;
  const meanDir=(sumU||sumV)?(Math.atan2(-sumU,-sumV)*180/Math.PI+360)%360:null;
  const axisPct=valid.length?100*along/valid.length:0;
+ // Update fetch summary and screening for the selected forecast hour.
+ updateLakeEffectCorridor(meanDir,vectorSpeed,meanSpeed,axisPct,frame.forecast_hour);
  // Draw at most 20 samples spaced across the complete valid grid.
  const displayCount=Math.min(20,valid.length);
  for(let n=0;n<displayCount;n++){
