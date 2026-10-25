@@ -142,6 +142,26 @@ function renderWindForecast(hour){
  $('windForecastValid').textContent=(frame.valid_time?'Valid '+fmtTime(frame.valid_time)+' · ':'')+
   (valid.length?'full-grid mean '+meanSpeed.toFixed(1)+' kt, vector mean '+vectorSpeed.toFixed(1)+' kt'+(meanDir==null?'':' from '+Math.round(meanDir)+'°')+' · N–S alignment '+Math.round(axisPct)+'%':'No valid wind points');
 }
+async function loadWindForecast(){
+ try{
+  const r=await fetch(BASE+'outputs/champlain_wind_forecast.json?cb='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const j=await r.json();
+  if(!Array.isArray(j.frames)||!j.frames.length)throw Error('No forecast frames in published JSON');
+  windForecastFrames=j.frames;
+  const slider=$('windForecastHour');
+  slider.max=String(Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0)));
+  const requested=Math.min(Number(slider.value)||0,Number(slider.max));
+  slider.value=String(requested);
+  renderWindForecast(requested);
+  markHealth('GLWU lake wind forecast',windForecastFrames.length+' lead times · '+((windForecastFrames[0].points||[]).length)+' grid points in first frame',j.generated_at,true);
+ }catch(e){
+  console.warn('GLWU wind forecast unavailable:',e);
+  $('windForecastLabel').textContent='Forecast unavailable';
+  $('windForecastValid').textContent='Could not load published GLWU wind data: '+e.message;
+  markHealth('GLWU lake wind forecast','Unavailable: '+e.message,null,false);
+ }
+}
 function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
 function updatePlume(dir,speed){if(!map||dir==null)return;const down=(Number(dir)+180)%360*Math.PI/180,cx=44.27,cy=-73.32,km=Math.max(18,Math.min(65,22+(Number(speed)||5)*1.8)),dlat=km/111*Math.cos(down),dlon=km/(111*Math.cos(cx*Math.PI/180))*Math.sin(down),wlat=.13*Math.cos(down+Math.PI/2),wlon=.17*Math.sin(down+Math.PI/2),end=[cx+dlat,cy+dlon],poly=[[cx,cy],[cx+dlat*.35+wlat,cy+dlon*.35+wlon],[end[0]+wlat,end[1]+wlon],[end[0]-wlat,end[1]-wlon],[cx+dlat*.35-wlat,cy+dlon*.35-wlon],[cx,cy]];if(plumeLayer)map.removeLayer(plumeLayer);if(snowLayer)map.removeLayer(snowLayer);plumeLayer=L.polygon(poly,{color:'#a5e9f4',weight:1.5,dashArray:'5 5',fillColor:'#61d9ef',fillOpacity:.18}).addTo(map).bindTooltip('Illustrative lake-cloud corridor · wind from '+Math.round(dir)+'°');snowLayer=L.polygon([[cx,cy],[cx+dlat*.5+wlat*.45,cy+dlon*.5+wlon*.45],[end[0]+wlat*.45,end[1]+wlon*.45],[end[0]-wlat*.45,end[1]-wlon*.45],[cx+dlat*.5-wlat*.45,cy+dlon*.5-wlon*.45],[cx,cy]],{color:'#78aaff',weight:1,fillColor:'#5a9dff',fillOpacity:.13}).addTo(map).bindTooltip('Conditional snow-favored corridor · not a snowfall forecast');}
 const updateWindBase=updateWind;updateWind=function(dir,speed){updateWindBase(dir,speed);updatePlume(dir,speed)};
