@@ -8,7 +8,9 @@
 <title>Champlain | Lake-Effect Cloud & Snow Lab</title>
 <style>
 :root{--bg:#061a26;--panel:#0b2836;--panel2:#103746;--line:#245466;--ink:#edfaff;--muted:#9bbcc7;--cyan:#72e2e8;--blue:#5aa8d8;--ice:#c5f2ff;--gold:#ffd166;--green:#63dfb0;--red:#ff7888}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% -8%,#246b7a 0,transparent 34%),radial-gradient(ellipse at 92% 16%,#123e59 0,transparent 38%),linear-gradient(165deg,#061a26 0%,#092634 48%,#061722 100%);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;position:relative;background:#061a26;color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(4,24,36,.22),rgba(3,19,30,.74)),url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=2400&q=85") center 48%/cover no-repeat;filter:saturate(.82) contrast(1.08)}
+body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:repeating-linear-gradient(176deg,transparent 0 38px,rgba(159,239,245,.035) 39px,transparent 41px 72px);mix-blend-mode:screen}
 header{padding:20px 26px 16px;border-bottom:1px solid #3b8290;display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(110deg,rgba(7,43,57,.96),rgba(8,32,49,.91) 58%,rgba(11,63,76,.94));position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);box-shadow:0 8px 28px #00131b55}
 header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#72e2e8 18%,#5aa8d8 52%,#72e2e8 82%,transparent);opacity:.8}
 .brand{display:flex;gap:14px;align-items:center}.mark{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,#a8f5ed 0%,#48bdcf 45%,#276d9d 100%);display:grid;place-items:center;color:#052039;font-size:25px;font-weight:900;box-shadow:0 0 32px #61d9ef40;border:1px solid #c0ffff80}
