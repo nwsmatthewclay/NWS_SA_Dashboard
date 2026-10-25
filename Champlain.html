@@ -203,7 +203,7 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
  const envTag=$('envTag').textContent||'',envText=$('envText').textContent||'';
  const m=envTag.match(/ΔT\s*([+-]?[\d.]+)°C/i),lake850=m?Number(m[1]):NaN;
  const rhm=envText.match(/RH\s*≥80%:\s*(\d+)\s*levels/i);
- const dgzm=envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
+ const dgzm=envText.match(/saturated\s+(\d+)\s*\/\s*\d+\s*levels/i)||envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
  const moistLevels=rhm?Number(rhm[1]):0,dgzLevels=dgzm?Number(dgzm[1]):0;
  const fetchKm=calculateDirectionalFetchKm(dir);
   $('fetchLength').textContent=Number.isFinite(fetchKm)&&fetchKm>0?fetchKm.toFixed(1)+' km':'—';
