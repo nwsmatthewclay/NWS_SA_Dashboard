@@ -1595,6 +1595,87 @@ def recenter_map_horizontally(img, title_height_px=100):
     return canvas
 
 
+def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hour: int = 12, stride: int = 4):
+    """Export a compact, browser-ready GLWU lake wind field for analysis through +12 h.
+    Uses the native Lake Champlain 500-m GRIB2 grid; subsampling keeps the JSON lightweight.
+    These are surface winds, not a cloud or snowfall forecast.
+    """
+    grbs = pygrib.open(str(grib_path))
+    try:
+        wind_msgs = {}
+        for msg in grbs:
+            try:
+                short = str(getattr(msg, "shortName", "")).lower()
+                name = str(getattr(msg, "name", "")).lower()
+                step = int(getattr(msg, "forecastTime", -1))
+                # GRIB inventories identify surface wind as WIND / UGRD / VGRD.
+                kind = None
+                if short in ("10si", "si") or name == "wind speed" or "wind speed" in name:
+                    kind = "speed"
+                elif short in ("u", "10u") or name == "u-component of wind":
+                    kind = "u"
+                elif short in ("v", "10v") or name == "v-component of wind":
+                    kind = "v"
+                if kind and 0 <= step <= max_hour and getattr(msg, "typeOfLevel", "") == "surface":
+                    wind_msgs.setdefault(step, {})[kind] = msg
+            except Exception:
+                continue
+        frames = []
+        for hour in range(max_hour + 1):
+            fields = wind_msgs.get(hour, {})
+            # Prefer vector components; wind speed/direction can be derived from U/V.
+            if "u" not in fields or "v" not in fields:
+                continue
+            umsg, vmsg = fields["u"], fields["v"]
+            uu, lats, lons = umsg.data()
+            vv, _, _ = vmsg.data()
+            uu = np.asarray(uu, dtype=float); vv = np.asarray(vv, dtype=float)
+            lons = np.where(np.asarray(lons) > 180, np.asarray(lons) - 360, lons)
+            speed = np.hypot(uu, vv)
+            # Meteorological direction FROM which wind blows.
+            direction = (270.0 - np.degrees(np.arctan2(vv, uu))) % 360.0
+            valid = np.isfinite(speed) & np.isfinite(direction)
+            if np.ma.isMaskedArray(uu): valid &= ~np.ma.getmaskarray(uu)
+            if np.ma.isMaskedArray(vv): valid &= ~np.ma.getmaskarray(vv)
+            # Restrict to Lake Champlain / immediate shoreline domain.
+            valid &= (lats >= 43.55) & (lats <= 45.05) & (lons >= -73.55) & (lons <= -73.05)
+            rows, cols = np.where(valid)
+            points = []
+            for rr, cc in zip(rows[::stride], cols[::stride]):
+                points.append({
+                    "lat": round(float(lats[rr, cc]), 4),
+                    "lon": round(float(lons[rr, cc]), 4),
+                    "speed_ms": round(float(speed[rr, cc]), 2),
+                    "speed_kt": round(float(speed[rr, cc]) * 1.94384, 1),
+                    "direction": round(float(direction[rr, cc]), 0),
+                    "u_ms": round(float(uu[rr, cc]), 2),
+                    "v_ms": round(float(vv[rr, cc]), 2),
+                })
+            valid_date = getattr(umsg, "validDate", None)
+            frames.append({
+                "forecast_hour": hour,
+                "valid_time": valid_date.astimezone(timezone.utc).isoformat() if valid_date else None,
+                "points": points,
+            })
+        if not frames:
+            raise RuntimeError("No GLWU surface U/V wind fields found for forecast hours 0–12.")
+        payload = {
+            "source": "NOAA/NCEP GLWU Lake Champlain 500-m GRIB2",
+            "grid": GLWU_GRID,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "max_forecast_hour": max_hour,
+            "stride": stride,
+            "note": "Surface wind field only. Cloud and snow potential require atmospheric model fields and are not predicted by this wind product.",
+            "frames": frames,
+        }
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(out_path, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, separators=(",", ":"))
+        print(f"  Exported Champlain wind forecast: {out_path} ({len(frames)} lead times, {sum(len(x['points']) for x in frames)} vectors)")
+    finally:
+        grbs.close()
+
+
 def glwu_render_frame(swh, u, v, forecast_hour):
     """Render one frame (one forecast hour) as a PIL Image. Converts GRIB2's
     native meters/m-s to feet/knots for display. Uses a fixed color scale
@@ -1845,6 +1926,18 @@ def run_glwu_plot():
         # them directly. Keep the timestamped animation local for diagnostics;
         # only the latest products are committed, avoiding repository growth.
         glwu_publish_to_github(latest_gif, "outputs/glwu_latest.gif", mimetype="image/gif")
+
+        # Browser-ready 12-hour spatial wind forecast for Champlain.html.
+        try:
+            wind_json = GLWU_OUTPUT_DIR / "champlain_wind_forecast.json"
+            glwu_export_champlain_wind_forecast(grib_dest, wind_json, max_hour=12, stride=4)
+            glwu_publish_to_github(
+                wind_json,
+                "outputs/champlain_wind_forecast.json",
+                mimetype="application/json",
+            )
+        except Exception as e:
+            print(f"  WARNING: Champlain wind-field export failed: {e}")
 
         # 8-station vertical forecast chart — reuses the same already-downloaded
         # grib_dest, no extra fetch. Wrapped in its own try/except so a failure
