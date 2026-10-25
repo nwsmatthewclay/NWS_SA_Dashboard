@@ -52,7 +52,7 @@ button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radiu
   <article class="panel">
    <div class="panel-head"><div><div class="eyebrow">02 / Lake geometry</div><h2>Fetch & downwind corridor</h2></div><span class="status">Lake Champlain · N–S axis</span></div>
    <div class="lake-scene">
-    <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>12-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="12" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+12 h</span></div><div class="sub" style="margin-top:6px">Arrows show forecast surface wind direction and speed across the lake. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
+    <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>12-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="12" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+12 h</span></div><div class="sub" style="margin-top:6px">Only 20 representative arrows are drawn for readability; the full valid grid is used for mean-wind and north–south alignment diagnostics. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
     <div class="legend"><span><i class="swatch" style="background:#61d9ef"></i>Lake shoreline</span><span><i class="swatch" style="background:#a5e9f4"></i>Potential cloud corridor</span><span><i class="swatch" style="background:#78aaff"></i>Conditional snow corridor</span></div><div class="map-note">Wind-oriented conceptual corridor, not a calibrated probability. Shoreline is loaded from Vermont Center for Geographic Information when available; fallback outline is approximate. Thermodynamics, ice coverage, moisture and radar confirmation are still required.</div>
    </div>
   </article>
@@ -109,22 +109,38 @@ function renderWindForecast(hour){
  if(!map||!windForecastFrames.length)return;
  const frame=windForecastFrames.find(x=>x.forecast_hour===Number(hour))||windForecastFrames[0];
  if(windForecastLayer)map.removeLayer(windForecastLayer);
- const markers=[],points=frame.points||[];
- // The exported grid has ~1,700 points per hour. Render a stable, evenly
- // thinned subset; do not spatial-bin it so aggressively that it can vanish.
- const stride=Math.max(1,Math.ceil(points.length/150));
- for(let i=0;i<points.length;i+=stride){
-  const p=points[i],lat=Number(p.lat),lon=Number(p.lon),dir=Number(p.direction),speed=Number(p.speed_kt);
-  if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(dir)||!Number.isFinite(speed))continue;
-  if(lat<43.60||lat>45.06||lon< -73.52||lon> -73.05)continue;
+ const markers=[],points=frame.points||[],valid=[];
+ // Every valid point contributes to diagnostics; only map symbols are thinned.
+ points.forEach(p=>{
+  const lat=Number(p.lat),lon=Number(p.lon),dir=Number(p.direction),speed=Number(p.speed_kt);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(dir)||!Number.isFinite(speed))return;
+  if(lat<43.60||lat>45.06||lon< -73.52||lon> -73.05)return;
+  valid.push({lat,lon,dir:((dir%360)+360)%360,speed});
+ });
+ // Full-grid vector mean; direction is meteorological (direction FROM).
+ let sumU=0,sumV=0,sumSpeed=0,along=0;
+ valid.forEach(({dir,speed})=>{
+  const rad=dir*Math.PI/180;
+  sumU+=-speed*Math.sin(rad);sumV+=-speed*Math.cos(rad);sumSpeed+=speed;
+  along+=Math.abs(Math.cos(rad));
+ });
+ const meanSpeed=valid.length?sumSpeed/valid.length:0;
+ const vectorSpeed=valid.length?Math.hypot(sumU,sumV)/valid.length:0;
+ const meanDir=(sumU||sumV)?(Math.atan2(-sumU,-sumV)*180/Math.PI+360)%360:null;
+ const axisPct=valid.length?100*along/valid.length:0;
+ // Draw at most 20 samples spaced across the complete valid grid.
+ const displayCount=Math.min(20,valid.length);
+ for(let n=0;n<displayCount;n++){
+  const idx=displayCount===1?0:Math.round(n*(valid.length-1)/(displayCount-1));
+  const {lat,lon,dir,speed}=valid[idx];
   const angle=(dir+180)%360,color=speed>=20?'#fff':speed>=10?'#e8f8ff':'#a9dff0';
-  const glyph='<div style="transform:rotate('+angle+'deg);color:'+color+';font-size:15px;font-weight:700;line-height:16px;text-shadow:0 1px 2px #001522,0 0 2px #001522">↑</div>';
-  markers.push(L.marker([lat,lon],{interactive:true,icon:L.divIcon({className:'wind-vector',html:glyph,iconSize:[16,16],iconAnchor:[8,8]})}).bindTooltip('Forecast wind '+Math.round(dir)+'° at '+speed.toFixed(1)+' kt · +'+frame.forecast_hour+' h'));
-  if(markers.length>=150)break;
+  const glyph='<div style="transform:rotate('+angle+'deg);color:'+color+';font-size:18px;font-weight:800;line-height:19px;text-shadow:0 1px 2px #001522,0 0 3px #001522">↑</div>';
+  markers.push(L.marker([lat,lon],{interactive:true,icon:L.divIcon({className:'wind-vector',html:glyph,iconSize:[19,19],iconAnchor:[9,9]})}).bindTooltip('Forecast wind '+Math.round(dir)+'° at '+speed.toFixed(1)+' kt · +'+frame.forecast_hour+' h'));
  }
  windForecastLayer=L.layerGroup(markers).addTo(map);
- $('windForecastLabel').textContent='+'+frame.forecast_hour+' h · '+markers.length+' vectors';
- $('windForecastValid').textContent=frame.valid_time?'Valid '+fmtTime(frame.valid_time):'Valid time unavailable';
+ $('windForecastLabel').textContent='+'+frame.forecast_hour+' h · '+markers.length+' of '+valid.length+' points shown';
+ $('windForecastValid').textContent=(frame.valid_time?'Valid '+fmtTime(frame.valid_time)+' · ':'')+
+  (valid.length?'full-grid mean '+meanSpeed.toFixed(1)+' kt, vector mean '+vectorSpeed.toFixed(1)+' kt'+(meanDir==null?'':' from '+Math.round(meanDir)+'°')+' · N–S alignment '+Math.round(axisPct)+'%':'No valid wind points');
 }
 function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
 function updatePlume(dir,speed){if(!map||dir==null)return;const down=(Number(dir)+180)%360*Math.PI/180,cx=44.27,cy=-73.32,km=Math.max(18,Math.min(65,22+(Number(speed)||5)*1.8)),dlat=km/111*Math.cos(down),dlon=km/(111*Math.cos(cx*Math.PI/180))*Math.sin(down),wlat=.13*Math.cos(down+Math.PI/2),wlon=.17*Math.sin(down+Math.PI/2),end=[cx+dlat,cy+dlon],poly=[[cx,cy],[cx+dlat*.35+wlat,cy+dlon*.35+wlon],[end[0]+wlat,end[1]+wlon],[end[0]-wlat,end[1]-wlon],[cx+dlat*.35-wlat,cy+dlon*.35-wlon],[cx,cy]];if(plumeLayer)map.removeLayer(plumeLayer);if(snowLayer)map.removeLayer(snowLayer);plumeLayer=L.polygon(poly,{color:'#a5e9f4',weight:1.5,dashArray:'5 5',fillColor:'#61d9ef',fillOpacity:.18}).addTo(map).bindTooltip('Illustrative lake-cloud corridor · wind from '+Math.round(dir)+'°');snowLayer=L.polygon([[cx,cy],[cx+dlat*.5+wlat*.45,cy+dlon*.5+wlon*.45],[end[0]+wlat*.45,end[1]+wlon*.45],[end[0]-wlat*.45,end[1]-wlon*.45],[cx+dlat*.5-wlat*.45,cy+dlon*.5-wlon*.45],[cx,cy]],{color:'#78aaff',weight:1,fillColor:'#5a9dff',fillOpacity:.13}).addTo(map).bindTooltip('Conditional snow-favored corridor · not a snowfall forecast');}
