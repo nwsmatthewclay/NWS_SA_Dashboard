@@ -49,6 +49,7 @@ button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radiu
     </div>
     <div class="explain" id="headline">Retrieving lake and atmospheric observations. The diagnostic will remain conservative when a source is unavailable.</div>
      <div class="setup-grid" aria-label="Lake-effect setup summary"><div class="setup-stat"><div class="label">Estimated directional fetch</div><div class="value" id="fetchLength">—</div><div class="detail" id="fetchLengthDetail">Waiting for forecast wind direction</div></div><div class="setup-stat"><div class="label">Downwind bearing</div><div class="value" id="downwindBearing">—</div><div class="detail" id="downwindDetail">Derived from gridded lake wind</div></div><div class="setup-stat state"><div class="label">Lake-effect screening</div><div class="value" id="screenStatus">Evaluating…</div><div class="detail" id="screenDetail">Ingredient check, not a snowfall forecast</div></div></div><p class="section-note">Fetch is an approximate directional estimate from the fallback lake outline; shoreline geometry and thresholds are experimental and should not be treated as calibrated forecast guidance.</p>
+     <div class="factor" id="screenReasonsPanel" style="margin-top:10px"><div class="factor-top"><strong>Screening checks</strong><span class="pill" id="screenCount">Waiting for forecast</span></div><ul id="screenReasons" style="margin:9px 0 0;padding-left:18px;color:var(--muted);font-size:11px"><li>Waiting for forecast wind and RAP profile diagnostics.</li></ul></div>
    </div>
   </article>
   <article class="panel">
@@ -199,13 +200,17 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
   $('fetchLengthDetail').textContent=Number.isFinite(fetchKm)&&fetchKm>0?(fetchKm>=20?'Longer open-water path':fetchKm>=8?'Moderate directional path':'Short directional path'):'Unable to estimate from current geometry';
   $('downwindBearing').textContent=Number.isFinite(dir)?Math.round((dir+180)%360)+'°':'—';
   $('downwindDetail').textContent=Number.isFinite(dir)?'Airflow directed toward '+Math.round((dir+180)%360)+'°':'Forecast wind unavailable';
-  const reasons=[];
-  if(fetchKm<8)reasons.push('short directional lake fetch ('+fetchKm.toFixed(1)+' km)');
- if(!Number.isFinite(dir)||vectorSpeed<3)reasons.push('weak or variable gridded wind');
- if(!Number.isFinite(contrast)||contrast<10)reasons.push('lake–air contrast below 10°F or unavailable');
- if(!Number.isFinite(lake850)||lake850<13)reasons.push('lake–850 hPa contrast below 13°C or unavailable');
- if(moistLevels<2)reasons.push('insufficient sampled moist depth');
- if(dgzLevels<1)reasons.push('no saturated dendritic-growth-zone levels');
+  const checks=[
+  {ok:Number.isFinite(fetchKm)&&fetchKm>=8,pass:'Directional fetch ≥ 8 km ('+fetchKm.toFixed(1)+' km)',fail:'Directional fetch below 8 km ('+(Number.isFinite(fetchKm)?fetchKm.toFixed(1)+' km':'unavailable')+')'},
+  {ok:Number.isFinite(dir)&&vectorSpeed>=3,pass:'Gridded vector wind ≥ 3 kt ('+vectorSpeed.toFixed(1)+' kt)',fail:'Gridded wind weak/variable or unavailable ('+(Number.isFinite(vectorSpeed)?vectorSpeed.toFixed(1)+' kt':'unavailable')+')'},
+  {ok:Number.isFinite(contrast)&&contrast>=10,pass:'Lake–air contrast ≥ 10°F ('+contrast.toFixed(1)+'°F)',fail:'Lake–air contrast below 10°F or unavailable ('+(Number.isFinite(contrast)?contrast.toFixed(1)+'°F':'unavailable')+')'},
+  {ok:Number.isFinite(lake850)&&lake850>=13,pass:'Lake–850 hPa temperature difference ≥ 13°C ('+lake850.toFixed(1)+'°C)',fail:'Lake–850 hPa temperature difference below 13°C or unavailable ('+(Number.isFinite(lake850)?lake850.toFixed(1)+'°C':'unavailable')+')'},
+  {ok:moistLevels>=2,pass:'At least 2 sampled levels with RH ≥ 80% ('+moistLevels+' levels)',fail:'Fewer than 2 sampled levels with RH ≥ 80% ('+moistLevels+' levels)'},
+  {ok:dgzLevels>=1,pass:'At least 1 saturated dendritic-growth-zone level ('+dgzLevels+' levels)',fail:'No saturated dendritic-growth-zone level detected ('+dgzLevels+' levels)'}
+ ];
+ const failed=checks.filter(x=>!x.ok),reasons=failed.map(x=>x.fail);
+ $('screenCount').textContent=failed.length?failed.length+' of '+checks.length+' checks unmet':'All '+checks.length+' checks met';
+ $('screenReasons').innerHTML=checks.map(x=>'<li style="margin:5px 0;color:'+(x.ok?'var(--green)':'var(--gold)')+'">'+(x.ok?'✓ ':'✕ ')+(x.ok?x.pass:x.fail)+'</li>').join('');
  if(reasons.length){
   $('screenStatus').textContent='Checks not met';$('screenDetail').textContent=reasons.length+' screening check(s) not met';$('screenStatus').style.color='var(--gold)';
   $('fetchTag').textContent='No corridor';
