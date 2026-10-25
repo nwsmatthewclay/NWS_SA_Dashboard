@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Champlain | Lake-Effect Cloud & Snow Lab</title>
+<style>
+:root{--bg:#071321;--panel:#0d2032;--panel2:#10283c;--line:#244158;--ink:#edf6ff;--muted:#91a9bf;--cyan:#61d9ef;--blue:#5a9dff;--ice:#b8e9ff;--gold:#ffd166;--green:#63dfb0;--red:#ff7888}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% -10%,#173b59 0,transparent 45%),var(--bg);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:20px 26px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;background:#071321d9;position:sticky;top:0;z-index:5;backdrop-filter:blur(14px)}
+.brand{display:flex;gap:14px;align-items:center}.mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#66dff0,#3976b8);display:grid;place-items:center;color:#052039;font-size:23px;font-weight:900;box-shadow:0 0 30px #61d9ef25}
+h1{font-size:21px;margin:0;letter-spacing:.04em}header p{margin:3px 0 0;color:var(--muted);font-size:12px}.righthead{text-align:right;color:var(--muted);font-size:12px}.righthead strong{color:var(--ink)}
+main{max-width:1600px;margin:auto;padding:20px;display:grid;gap:16px}.hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);gap:16px}
+.panel{background:linear-gradient(145deg,#10283c,#0a1b2b);border:1px solid var(--line);border-radius:15px;min-width:0;overflow:hidden;box-shadow:0 8px 28px #00000020}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 17px;border-bottom:1px solid #203a50}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h2{font-size:15px;margin:3px 0 0}h3{font-size:13px;margin:0}.sub{font-size:11px;color:var(--muted)}.pad{padding:16px}
+.status{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:10px;color:var(--muted);white-space:nowrap}.dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{padding:13px;border-radius:11px;background:#081827;border:1px solid #1b354a;min-width:0}.metric .label{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}.metric .value{font-size:25px;font-weight:750;letter-spacing:-.04em;margin:7px 0 1px}.metric .detail{font-size:10px;color:var(--muted)}
+.value.cyan{color:var(--cyan)}.value.ice{color:var(--ice)}.value.gold{color:var(--gold)}.value.green{color:var(--green)}
+.explain{margin-top:12px;padding:12px 14px;border-left:3px solid var(--cyan);background:#61d9ef0b;color:#c7d9e8;font-size:12px;border-radius:0 8px 8px 0}
+.lake-scene{padding:14px 16px 18px}.scene{width:100%;height:auto;display:block;background:#071827;border-radius:10px;border:1px solid #1c3a50}.scene-label{font-size:11px;fill:#e5f4ff}.scene-muted{font-size:9px;fill:#9bb4ca}.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:10px;margin-top:10px}.swatch{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.factor{padding:14px;border-radius:10px;background:#081827;border:1px solid #1b354a}.factor-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.factor strong{font-size:13px}.pill{font-size:10px;border-radius:5px;padding:3px 6px;background:#19394c;color:var(--cyan)}.bar{height:5px;background:#1b3448;border-radius:8px;overflow:hidden;margin:11px 0 8px}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#3976b8,#61d9ef);border-radius:8px;transition:width .4s}.factor p{font-size:11px;color:var(--muted);margin:0}
+.table{width:100%;border-collapse:collapse;font-size:12px}.table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}.table th,.table td{padding:9px 8px;border-bottom:1px solid #20374a}.table tr:last-child td{border-bottom:0}.table td:last-child{text-align:right;font-variant-numeric:tabular-nums}.empty{color:var(--muted);padding:14px;background:#081827;border-radius:9px;font-size:12px}
+.research-list{display:grid;gap:10px}.paper{padding:12px;border:1px solid #1b354a;background:#081827;border-radius:10px}.paper a{color:var(--cyan);text-decoration:none;font-weight:700;font-size:12px}.paper a:hover{text-decoration:underline}.paper p{color:var(--muted);font-size:11px;margin:5px 0 0}
+footer{padding:14px 20px 26px;text-align:center;color:#7891a7;font-size:10px}
+button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radius:7px;padding:7px 10px;font:inherit;font-size:11px;cursor:pointer}button:hover{border-color:var(--cyan)}.stamp{font-variant-numeric:tabular-nums}
+@media(max-width:1000px){.hero,.two{grid-template-columns:1fr}.three{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}header{padding:15px;position:relative}main{padding:12px}}
+@media(max-width:600px){.three{grid-template-columns:1fr}.metric .value{font-size:22px}.righthead{display:none}main{gap:12px}.pad{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="mark">≈</div><div><h1>CHAMPLAIN <span style="color:var(--cyan)">/</span> LAKE-EFFECT LAB</h1><p>Lake-induced cloud & snow diagnostics · NWS Burlington CWA</p></div></div>
+ <div class="righthead"><div>EXPERIMENTAL WORKBENCH</div><strong id="updated">Connecting to observations…</strong><div>All times UTC unless noted</div></div>
+</header>
+<main>
+ <section class="hero">
+  <article class="panel">
+   <div class="panel-head"><div><div class="eyebrow">01 / Current lake-air setup</div><h2>Surface forcing & thermal contrast</h2></div><span class="status"><span class="dot" id="obsDot"></span><span id="obsStatus">Loading feeds</span></span></div>
+   <div class="pad">
+    <div class="kpis">
+     <div class="metric"><div class="label">Lake water</div><div class="value cyan" id="waterTemp">—</div><div class="detail" id="waterTime">USGS / buoy</div></div>
+     <div class="metric"><div class="label">Lake-area air</div><div class="value ice" id="airTemp">—</div><div class="detail" id="airTime">Valcour / nearby obs</div></div>
+     <div class="metric"><div class="label">Water − air</div><div class="value gold" id="contrast">—</div><div class="detail">Surface thermal contrast</div></div>
+     <div class="metric"><div class="label">Observed wind</div><div class="value green" id="wind">—</div><div class="detail" id="windDetail">Speed / direction</div></div>
+    </div>
+    <div class="explain" id="headline">Retrieving lake and atmospheric observations. The diagnostic will remain conservative when a source is unavailable.</div>
+   </div>
+  </article>
+  <article class="panel">
+   <div class="panel-head"><div><div class="eyebrow">02 / Lake geometry</div><h2>Fetch & downwind corridor</h2></div><span class="status">Lake Champlain · N–S axis</span></div>
+   <div class="lake-scene">
+    <svg class="scene" viewBox="0 0 480 320" role="img" aria-label="Schematic Lake Champlain lake axis and observed wind orientation">
+     <defs><linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#164c70"/><stop offset="1" stop-color="#0a2a45"/></linearGradient><linearGradient id="plume" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#8fe8f3" stop-opacity=".4"/><stop offset="1" stop-color="#8fe8f3" stop-opacity="0"/></linearGradient></defs>
+     <rect width="480" height="320" fill="#071827"/>
+     <path d="M0 0H480V320H0Z" fill="#0b2030"/>
+     <path d="M130 0 L175 18 L162 48 L185 77 L169 111 L193 139 L174 173 L194 202 L175 232 L189 266 L170 320 L0 320 L0 0Z" fill="#172f3b"/>
+     <path d="M310 0 L295 30 L319 61 L300 94 L320 126 L298 158 L318 192 L302 223 L326 255 L305 286 L322 320 L480 320 L480 0Z" fill="#172f3b"/>
+     <path d="M224 -12 C202 30 237 52 215 83 C198 111 237 138 217 166 C197 195 238 219 217 249 C202 274 227 297 211 335 L277 335 C290 295 264 270 283 244 C303 216 267 189 287 161 C306 132 267 108 288 79 C307 49 269 22 288 -12Z" fill="url(#water)" stroke="#5fb6d5" stroke-width="1.6"/>
+     <path d="M240 294 C247 245 243 200 252 161 C259 123 248 84 255 40" stroke="#7ce3f0" stroke-width="20" stroke-linecap="round" opacity=".12" fill="none"/>
+     <text x="20" y="26" class="scene-label">NEW YORK</text><text x="356" y="26" class="scene-label">VERMONT</text>
+     <text x="240" y="160" class="scene-label" text-anchor="middle" transform="rotate(-90 240 160)">LAKE CHAMPLAIN</text>
+     <text x="20" y="300" class="scene-muted">Schematic, not navigational</text>
+     <g id="windArrow" transform="translate(240 158)"><circle r="25" fill="#071827" stroke="#61d9ef" stroke-opacity=".7"/><path d="M0 15 L0 -14 M0 -14 L-6 -5 M0 -14 L6 -5" stroke="#61d9ef" stroke-width="3" stroke-linecap="round" fill="none"/><text x="0" y="39" class="scene-label" text-anchor="middle" id="windDirSvg">WIND —</text></g>
+     <g transform="translate(390 85)"><circle r="27" fill="#0b2030" stroke="#3b5d75"/><path d="M0 -18 L-5 -4 L0 -7 L5 -4Z" fill="#eaf7ff"/><text y="41" class="scene-muted" text-anchor="middle">N</text></g>
+    </svg>
+    <div class="legend"><span><i class="swatch" style="background:#61d9ef"></i>Observed wind vector</span><span><i class="swatch" style="background:#8fe8f3"></i>Illustrative lake plume</span><span>Fetch is directional; not yet a simulated cloud field.</span></div>
+   </div>
+  </article>
+ </section>
+ <section class="panel">
+  <div class="panel-head"><div><div class="eyebrow">03 / Process diagnostics</div><h2>What supports lake-induced cloud development?</h2></div><span class="status">Rule-based · not a calibrated probability</span></div>
+  <div class="pad"><div class="three">
+   <div class="factor"><div class="factor-top"><strong>Thermal forcing</strong><span class="pill" id="thermalTag">Awaiting data</span></div><div class="bar"><span id="thermalBar"></span></div><p id="thermalText">Water-to-air temperature contrast is a first-order surface-flux clue, not a stand-alone lake-effect criterion.</p></div>
+   <div class="factor"><div class="factor-top"><strong>Lake-axis alignment</strong><span class="pill" id="fetchTag">Awaiting data</span></div><div class="bar"><span id="fetchBar"></span></div><p id="fetchText">Wind orientation changes effective fetch and which shoreline/downwind terrain is favored.</p></div>
+   <div class="factor"><div class="factor-top"><strong>Cloud / snow potential</strong><span class="pill" id="envTag">Needs profile</span></div><div class="bar"><span id="envBar"></span></div><p id="envText">Needs boundary-layer depth, inversion strength, moisture and dendritic-growth-layer information before a defensible snow diagnostic can be made.</p></div>
+  </div></div>
+ </section>
+ <section class="two">
+  <article class="panel"><div class="panel-head"><div><div class="eyebrow">04 / Atmospheric profile</div><h2>RAP guidance near Burlington</h2></div><button id="refreshRap">Refresh profile</button></div><div class="pad">
+   <div class="sub" id="rapMeta">Loading existing RAP wind-profile output…</div>
+   <table class="table"><thead><tr><th>Pressure</th><th>Height</th><th>Wind</th><th>Direction</th></tr></thead><tbody id="rapRows"><tr><td colspan="4" class="sub">Waiting for RAP profile data…</td></tr></tbody></table>
+   <div class="explain">The currently published JSON contains wind levels only. It does not contain temperature, dew point, inversion height, RH, or cloud water; those are essential for the next version of the diagnosis.</div>
+  </div></article>
+  <article class="panel"><div class="panel-head"><div><div class="eyebrow">05 / Observation health</div><h2>Inputs & freshness</h2></div><span class="status" id="healthBadge">Checking</span></div><div class="pad">
+   <table class="table"><thead><tr><th>Feed</th><th>Latest usable value</th><th>Status</th></tr></thead><tbody id="healthRows"><tr><td colspan="3" class="sub">Checking data sources…</td></tr></tbody></table>
+   <div class="explain">Stale or missing observations are shown as unknown rather than silently substituted with demo values.</div>
+  </div></article>
+ </section>
+ <section class="panel"><div class="panel-head"><div><div class="eyebrow">06 / Research guide</div><h2>Literature translated into a Champlain workflow</h2></div><span class="status">Research notes</span></div><div class="pad"><div class="research-list">
+  <div class="paper"><a href="https://repository.library.noaa.gov/view/noaa/6673" target="_blank" rel="noopener">Tardy (2000) · Lake effect and lake enhanced snow in the Champlain Valley</a><p>Local NWS technical attachment using Burlington Doppler radar, GOES imagery and high-resolution model output. Emphasizes that low clouds and flurries are common in Arctic outbreaks over the warmer lake, while significant lake-effect snow is less common.</p></div>
+  <div class="paper"><a href="https://www.mdpi.com/2073-4433/16/9/1011" target="_blank" rel="noopener">Nyzio & Liu (2025) · Lake-Effect Snowfall Climatology over Lake Champlain</a><p>Analyzes 64 events in 2015–2024 and compares with 1997–2006. Separates isolated, synoptic and transitional bands; supports using local event types rather than importing Great Lakes thresholds unchanged.</p></div>
+  <div class="paper"><a href="https://journals.ametsoc.org/view/journals/apme/48/2/2008jamc1923.1.xml" target="_blank" rel="noopener">Laird et al. (2009) · Climatology of Lake-Effect Precipitation Events over Lake Champlain</a><p>Identifies isolated lake-effect bands, quasi-stationary bands embedded in synoptic precipitation, and transitional cases. Radar morphology and synoptic context belong alongside thermodynamics.</p></div>
+  <div class="paper"><a href="https://www.weather.gov/buf/Research" target="_blank" rel="noopener">NWS Buffalo research collection · lake-effect snow & BUFKIT</a><p>Great Lakes research contributes useful process understanding: lake–air temperature contrast, boundary-layer depth and capping, moisture, fetch, wind direction, band orientation and downstream terrain. The Lake Champlain implementation must account for its much smaller size and north–south geometry.</p></div>
+  <div class="paper"><a href="https://journals.ametsoc.org/collection/OWLES" target="_blank" rel="noopener">Ontario Winter Lake-effect Systems (OWLeS)</a><p>Research highlights how boundary-layer turbulence, microphysics, capping inversions, lake fluxes and shoreline/terrain interactions influence band intensity and model uncertainty.</p></div>
+ </div></div></section>
+ <footer>Experimental research tool · Not an operational forecast or calibrated probability · NWS Burlington CWA · <span id="footerTime"></span></footer>
+</main>
+<script>
+const BASE='https://raw.githubusercontent.com/nwsmatthewclay/NWS_SA_Dashboard/main/';
+const $=id=>document.getElementById(id);
+const health={};
+function f(v,d=1){return Number.isFinite(Number(v))?Number(v).toFixed(d):'—'}
+function fmtTime(t){if(!t)return'unknown time';const d=new Date(t);return Number.isNaN(+d)?String(t):d.toLocaleString('en-US',{timeZone:'UTC',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}
+function markHealth(name,value,stamp,ok){health[name]={value,stamp,ok};renderHealth()}
+function renderHealth(){const rows=Object.entries(health);$('healthRows').innerHTML=rows.map(([n,x])=>'<tr><td>'+n+'</td><td>'+x.value+(x.stamp?' <span class="sub">· '+fmtTime(x.stamp)+'</span>':'')+'</td><td style="color:'+(x.ok?'var(--green)':'var(--gold)')+'">'+(x.ok?'AVAILABLE':'MISSING / STALE')+'</td></tr>').join('');const n=rows.filter(x=>x[1].ok).length;$('healthBadge').textContent=n+' / '+rows.length+' feeds available'}
+function updateThermal(water,air){if(water==null||air==null){$('contrast').textContent='—';$('thermalTag').textContent='Missing data';$('thermalText').textContent='Need a current water temperature and representative upwind air temperature.';return}const d=water-air;$('contrast').textContent=(d>0?'+':'')+f(d)+' °F';$('contrast').className='value '+(d>=18?'gold':'cyan');const score=Math.max(0,Math.min(100,(d+2)/22*100));$('thermalBar').style.width=score+'%';$('thermalTag').textContent=d>=18?'Strong contrast':d>=10?'Moderate contrast':d>0?'Weak contrast':'No positive contrast';$('thermalText').textContent='Water is '+f(d)+'°F '+(d>=0?'warmer':'colder')+' than the reported air. This is a surface contrast only; lake-effect cloud depth depends on the full vertical profile.'}
+function updateWind(dir,speed){if(dir==null)return;const a=((Number(dir)%360)+360)%360;$('windArrow').setAttribute('transform','translate(240 158) rotate('+a+')');$('windDirSvg').textContent='FROM '+Math.round(a)+'°';// axis-alignment heuristic: 0/180 deg follows the lake's long axis
+ const delta=Math.min(Math.abs(a),Math.abs(a-180),360-Math.abs(a),Math.abs(a-180));const align=Math.max(0,Math.cos(Math.min(delta,90)*Math.PI/180))*100;
+ $('fetchBar').style.width=align+'%';$('fetchTag').textContent=align>75?'Along-axis flow':align>40?'Oblique flow':'Cross-lake flow';$('fetchText').textContent='Wind direction '+Math.round(a)+'°; '+(speed!=null?f(speed)+' mph. ':'')+'The long axis is approximately north–south. This simple alignment indicator is geometric only and does not calculate exact water fetch or shoreline convergence.'}
+async function getValcour(){try{const r=await fetch('https://lcri99.github.io/last7.valcour.csv',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const t=await r.text();const lines=t.trim().split(/\r?\n/);if(lines.length<2)throw Error('No rows');const headers=lines[0].split(',').map(x=>x.trim().toLowerCase().replace(/^"|"$/g,''));const vals=lines[lines.length-1].split(',').map(x=>x.trim().replace(/^"|"$/g,''));const row={};headers.forEach((h,i)=>row[h]=vals[i]);const pick=(...keys)=>{for(const k of keys){const i=headers.findIndex(h=>h===k||h.includes(k));if(i>=0&&vals[i]!==''&&Number.isFinite(Number(vals[i])))return Number(vals[i])}return null};const time=pick('timestamp','time','date');const timeText=row.datetime||row.timestamp||row.date||row.time||null;const airC=pick('tair','airtemp','air_temp','ta');const waterC=pick('t1m','watertemp','water_temp','wtmp');const wind=pick('windspd','windspeed','wind_speed');const dir=pick('winddir','winddirection','wind_dir');const tempF=x=>x==null?null:x*9/5+32;const water=tempF(waterC),air=tempF(airC),mph=wind==null?null:wind*2.23694;const stamp=timeText||null;
+ if(water!=null){$('waterTemp').textContent=f(water)+' °F';$('waterTime').textContent='Valcour buoy · '+(stamp||'latest CSV row')}if(air!=null){$('airTemp').textContent=f(air)+' °F';$('airTime').textContent='Valcour buoy · '+(stamp||'latest CSV row')}if(mph!=null){$('wind').textContent=f(mph)+' mph';$('windDetail').textContent=dir!=null?'from '+Math.round(dir)+'°':'Direction unavailable'}updateThermal(water,air);updateWind(dir,mph);markHealth('Valcour buoy',[(water!=null?'water':'') ,(air!=null?'air':''),(mph!=null?'wind':'')].filter(Boolean).join(' / ')||'CSV received; fields not recognized',stamp,water!=null||air!=null||mph!=null);$('headline').textContent=water!=null&&air!=null?(water-air>=10?'The observed lake–air contrast supports lake-driven surface fluxes. Cloud depth and snow potential remain dependent on RAP thermodynamics and moisture.':'The current surface contrast is modest. A cold-air outbreak alone is not enough; inspect the vertical profile, moisture and radar morphology.'):'Buoy data received, but one or more expected temperature fields were not recognized. Check feed headers before using the diagnosis.';return true}catch(e){console.warn('Valcour feed:',e);markHealth('Valcour buoy','Unavailable: '+e.message,null,false);return false}}
+async function getWaterUSGS(){try{const url='https://waterservices.usgs.gov/nwis/iv/?format=json&sites=04294500&parameterCd=00010&siteStatus=all';const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();const ts=j.value.timeSeries||[];let best=null;for(const s of ts){for(const v of (s.values||[]))for(const p of (v.value||[])){if(p.value!==''&&p.value!=null&&(!best||new Date(p.dateTime)>new Date(best.dateTime)))best={value:Number(p.value),dateTime:p.dateTime,unit:v.variable.unit.unitCode}}}if(!best)throw Error('No usable water-temperature value');const c=best.unit==='deg C'?best.value:best.value;const fval=c*9/5+32;$('waterTemp').textContent=f(fval)+' °F';$('waterTime').textContent='USGS · '+fmtTime(best.dateTime);markHealth('USGS water temp',f(fval)+' °F',best.dateTime,true);return{f:fval,time:best.dateTime}}catch(e){markHealth('USGS water temp','Unavailable',null,false);return null}}
+async function getRap(){try{const r=await fetch(BASE+'outputs/kbtv_rap_wind_profile.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();const levels=j.levels||[];$('rapMeta').textContent=(j.model||'RAP')+' · '+(j.site||'KBTV')+' · valid '+fmtTime(j.valid_time)+' · generated '+fmtTime(j.generated_at);$('rapRows').innerHTML=levels.slice(0,12).map(x=>'<tr><td>'+f(x.pressure_hPa,0)+' hPa</td><td>'+f(x.height_m,0)+' m</td><td>'+f(x.wind_speed_kt,0)+' kt</td><td>'+f(x.wind_dir_deg,0)+'°</td></tr>').join('')||'<tr><td colspan="4">No profile levels published</td></tr>';markHealth('RAP wind profile',(levels.length||0)+' levels · '+(j.run||'run n/a'),j.generated_at,levels.length>0);$('envTag').textContent='Wind only';$('envBar').style.width='18%';$('envText').textContent='RAP profile is available for wind shear/orientation, but the published file contains wind only. Temperature, dew point/RH, inversion/capping and saturation must be added before assigning cloud/snow potential.'}catch(e){$('rapMeta').textContent='RAP profile unavailable: '+e.message;markHealth('RAP wind profile','Unavailable',null,false)}}
+async function refresh(){const now=new Date();$('updated').textContent='Updated '+now.toLocaleTimeString('en-US',{timeZone:'UTC',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});$('footerTime').textContent='Page refreshed '+now.toISOString();await Promise.all([getValcour(),getWaterUSGS(),getRap()]);$('obsStatus').textContent=Object.values(health).filter(x=>x.ok).length+' feeds responding';$('obsDot').style.background=Object.values(health).every(x=>x.ok)?'var(--green)':'var(--gold)'}
+$('refreshRap').addEventListener('click',getRap);refresh();setInterval(refresh,5*60*1000);
+</script>
+</body></html>
