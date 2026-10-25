@@ -106,58 +106,57 @@ SITE_GHCND = {
 # ============================================================
 
 def export_wind_profile_json(sounding, model, site, run, valid_time):
-    """
-    Write the surface-through-500-hPa portion of `sounding` (a BUFKIT
-    dataframe with PRES/HGHT/DRCT/SKNT columns, same raw object
-    calculate_parameters() receives) as a compact JSON wind-profile
-    file. Rows with an obviously-missing SKNT/DRCT sentinel value are
-    dropped rather than exported as garbage.
-    """
-
-    clean = sounding[
-        (sounding["SKNT"] > -900)
-        & (sounding["DRCT"] > -900)
-        & (sounding["PRES"] > 0)
-    ].copy()
-
-    levels = []
-
-    for _, row in clean.iterrows():
-
-        pres = float(row["PRES"])
-
-        if pres < WIND_PROFILE_TOP_PRES_HPA:
-            break
-
-        levels.append({
-            "pressure_hPa": round(pres, 1),
-            "height_m": round(float(row["HGHT"]), 0),
-            "wind_speed_kt": round(float(row["SKNT"]), 1),
-            "wind_dir_deg": round(float(row["DRCT"]), 0),
-        })
-
-    if not levels:
-        print(f"  WARNING: wind profile export for {model.upper()} {site.upper()} produced no levels.")
+    """Publish the full RAP thermodynamic and kinematic profile for Champlain diagnostics."""
+    required = ["PRES", "HGHT", "DRCT", "SKNT", "TMPC", "DWPC"]
+    if not all(col in sounding.columns for col in required):
+        print(f"  WARNING: incomplete sounding columns; cannot export Champlain profile")
         return
-
+    clean = sounding.copy()
+    clean = clean[(clean["PRES"] > 0) & (clean["PRES"] >= WIND_PROFILE_TOP_PRES_HPA)]
+    levels = []
+    for _, row in clean.iterrows():
+        def val(key):
+            try:
+                x = float(row[key])
+                return round(x, 1) if np.isfinite(x) and x > -900 else None
+            except (TypeError, ValueError):
+                return None
+        temp_c, dew_c = val("TMPC"), val("DWPC")
+        rh_pct = None
+        if temp_c is not None and dew_c is not None:
+            try:
+                rh_pct = round(float(mpcalc.relative_humidity_from_dewpoint(
+                    temp_c * units.degC, dew_c * units.degC
+                ).magnitude) * 100, 1)
+            except Exception:
+                pass
+        levels.append({
+            "pressure_hPa": val("PRES"),
+            "height_m": val("HGHT"),
+            "wind_speed_kt": val("SKNT"),
+            "wind_dir_deg": val("DRCT"),
+            "temperature_C": temp_c,
+            "dewpoint_C": dew_c,
+            "relative_humidity_pct": rh_pct,
+            "omega_Pa_s": val("OMEG"),
+            "cloud_fraction": val("CFRL"),
+        })
+    levels = [x for x in levels if x["pressure_hPa"] is not None]
+    if not levels:
+        print(f"  WARNING: RAP profile export for {site.upper()} produced no levels.")
+        return
     payload = {
-        "model": model.upper(),
-        "site": site.upper(),
-        "run": run,
-        "valid_time": valid_time,
-        "top_pressure_hPa": WIND_PROFILE_TOP_PRES_HPA,
-        "levels": levels,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "model": model.upper(), "site": site.upper(), "run": run,
+        "valid_time": valid_time, "top_pressure_hPa": WIND_PROFILE_TOP_PRES_HPA,
+        "levels": levels, "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source": "Iowa Environmental Mesonet BUFKIT model profile",
+        "note": "Model guidance; thermodynamic fields are not direct observations."
     }
-
     REPO_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
     out_path = REPO_OUTPUT_DIR / f"{site.lower()}_rap_wind_profile.json"
-
     with open(out_path, "w") as f:
         json.dump(payload, f, indent=2)
-
-    print(f"  Saved wind profile: {out_path} ({len(levels)} levels)")
+    print(f"  Saved full RAP profile: {out_path} ({len(levels)} levels)")
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 
