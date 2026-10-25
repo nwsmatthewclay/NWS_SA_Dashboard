@@ -153,6 +153,8 @@ body{
     transition: filter 0.15s, transform 0.15s; align-self: flex-start;
   }
   .nav-hazard-summary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .nav-hazard-summary.checking { border-color: rgba(56,189,248,.6); color: #bae6fd; }
+  .nav-hazard-summary.checking::before { color: #38bdf8; animation: navHazardDotPulse .8s ease-in-out infinite; }
   .nav-hazard-summary::after { content: '→'; margin-left: auto; padding-left: 8px; opacity: 0.7; flex-shrink: 0; }
   .nav-hazard-summary::before { content: '●'; font-size: 9px; flex-shrink: 0; }
   .nav-hazard-summary.clear { background: rgba(22,163,74,.10); border: 1px solid rgba(74,222,128,.28); color: #86efac; }
@@ -3847,20 +3849,30 @@ function updateNavHazardSummary(names) {
   if (!names || names.length === 0) {
     el.className = 'nav-hazard-summary clear';
     textEl.textContent = 'No active watches or warnings';
-    el.title = 'No active hazards';
+    el.title = 'No active hazards. Click to check again.';
+    el.setAttribute('aria-label', 'No active hazards. Click to check again.');
     return;
   }
 
   el.className = 'nav-hazard-summary active';
   var label = names.length + ' Active: ' + names.join(', ');
   textEl.textContent = label;
-  el.title = label;
+  el.title = label + '. Click to check for updates.';
+  el.setAttribute('aria-label', label + '. Click to check for updates.');
 }
 
 function refreshHazards() {
   // Keep the previous map state if the feed is temporarily unavailable.
   // A failed/empty response must not be interpreted as "no active hazards".
-  fetch(DATA_BASE_URL + 'hazards.json', { cache: 'no-store' })
+  var summaryEl = document.getElementById('navHazardSummary');
+  var summaryText = document.getElementById('navHazardText');
+  if (summaryEl) {
+    summaryEl.classList.add('checking');
+    summaryEl.title = 'Checking the latest hazard feed…';
+  }
+  if (summaryText) summaryText.textContent = 'Checking hazards…';
+
+  fetch(DATA_BASE_URL + 'hazards.json?check=' + Date.now(), { cache: 'no-store' })
     .then(function(r) {
       if (!r.ok) throw new Error('hazards.json returned HTTP ' + r.status);
       return r.json();
@@ -4022,6 +4034,7 @@ function refreshHazards() {
       );
 
       updateNavHazardSummary(Array.from(activeHazardNames).sort());
+      if (summaryEl) summaryEl.classList.remove('checking');
       _activeSevereWarning = sawSevere;
       setWeatherMode(sawSevere ? 'storm' : sawWinter ? 'snow' : sawFlood ? 'rain' : 'calm');
       updateAlertMode();
@@ -4030,8 +4043,12 @@ function refreshHazards() {
     })
     .catch(function(err) {
       console.error('Hazard refresh failed:', err);
+      if (summaryEl) {
+        summaryEl.classList.remove('checking');
+        summaryEl.title = 'Hazard check failed. Click to retry.';
+      }
       var el = document.getElementById('navHazardText');
-      if (el) el.textContent = 'Hazard data unavailable — retaining last map state';
+      if (el) el.textContent = 'Hazard check failed — click to retry';
     });
 }
 function updateLastUpdated() {
@@ -4402,6 +4419,18 @@ document.addEventListener('DOMContentLoaded', function() {
       var key = card.getAttribute('data-threat-key');
       if (key) showThreatDetail(key);
     });
+  });
+
+  // The header hazard summary is also a manual "check hazards" control.
+  // It refreshes the feed on demand without changing the user's map-layer toggle.
+  on('navHazardSummary', 'click', function() {
+    refreshHazards();
+  });
+  on('navHazardSummary', 'keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      refreshHazards();
+    }
   });
 
   on('hazardToggle', 'change', function(e) {
