@@ -55,7 +55,7 @@ button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radiu
   <article class="panel">
    <div class="panel-head"><div><div class="eyebrow">02 / Lake geometry</div><h2>Fetch & downwind corridor</h2></div><span class="status">Lake Champlain · N–S axis</span></div>
    <div class="lake-scene">
-    <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>12-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="12" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+12 h</span></div><div class="sub" style="margin-top:6px">Only 20 representative arrows are drawn for readability; the full valid grid is used for mean-wind and north–south alignment diagnostics. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
+    <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>24-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="24" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+24 h</span></div><div class="sub" style="margin-top:6px">Use ← / → or ↑ / ↓ to step through forecast hours; Home returns to hour 0 and End jumps to the latest available hour. Only 20 representative arrows are drawn for readability; the full valid grid is used for mean-wind and north–south alignment diagnostics. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
     <div class="legend"><span><i class="swatch" style="background:#61d9ef"></i>Lake shoreline</span><span><i class="swatch" style="background:#a5e9f4"></i>Potential cloud corridor</span><span><i class="swatch" style="background:#78aaff"></i>Conditional snow corridor</span></div><div class="map-note">Wind-oriented conceptual corridor, not a calibrated probability. Shoreline is loaded from Vermont Center for Geographic Information when available; fallback outline is approximate. Thermodynamics, ice coverage, moisture and radar confirmation are still required.</div>
    </div>
   </article>
@@ -164,9 +164,11 @@ async function loadWindForecast(){
   if(!Array.isArray(j.frames)||!j.frames.length)throw Error('No forecast frames in published JSON');
   windForecastFrames=j.frames;
   const slider=$('windForecastHour');
-  slider.max=String(Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0)));
+  const availableMax=Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0));
+  slider.max=String(Math.min(24,availableMax));
   const requested=Math.min(Number(slider.value)||0,Number(slider.max));
   slider.value=String(requested);
+  $('windForecastValid').title=availableMax<24?'Source currently provides forecast through +'+availableMax+' h; 24-hour display will be available when the feed publishes those hours.':'Full 24-hour forecast available.';
   renderWindForecast(requested);
   markHealth('GLWU lake wind forecast',windForecastFrames.length+' lead times · '+((windForecastFrames[0].points||[]).length)+' grid points in first frame',j.generated_at,true);
  }catch(e){
@@ -236,6 +238,17 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
  $('fetchTag').textContent='Fetch '+fetchKm.toFixed(0)+' km · '+Math.round(axisPct)+'% N–S';setRiskCard('windCard',fetchKm>=25&&vectorSpeed>=8?'red':fetchKm>=15?'orange':fetchKm>=8?'yellow':'green');
  $('fetchText').textContent='Full-grid GLWU vector mean points downwind toward '+Math.round((dir+180)%360)+'°. Mean wind '+meanSpeed.toFixed(1)+' kt; vector wind '+vectorSpeed.toFixed(1)+' kt; moist levels '+moistLevels+', saturated DGZ levels '+dgzLevels+'. Estimated directional fetch '+fetchKm.toFixed(1)+' km. Experimental gate; confirm with radar and observations.';
 }
-initMap();$('windForecastHour').addEventListener('input',e=>renderWindForecast(e.target.value));refresh().then(()=>loadWindForecast());setInterval(()=>refresh().then(()=>{if(!windForecastFrames.length)loadWindForecast()}),5*60*1000);
+initMap();
+const forecastSlider=$('windForecastHour');
+forecastSlider.addEventListener('input',e=>renderWindForecast(e.target.value));
+forecastSlider.addEventListener('keydown',e=>{
+ if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key)){
+  e.preventDefault();
+  const min=Number(forecastSlider.min)||0,max=Number(forecastSlider.max)||24,current=Number(forecastSlider.value)||0;
+  const next=e.key==='Home'?min:e.key==='End'?max:Math.max(min,Math.min(max,current+(['ArrowRight','ArrowUp'].includes(e.key)?1:-1)));
+  if(next!==current){forecastSlider.value=String(next);forecastSlider.dispatchEvent(new Event('input',{bubbles:true}));}
+ }
+});
+refresh().then(()=>loadWindForecast());setInterval(()=>refresh().then(()=>{if(!windForecastFrames.length)loadWindForecast()}),5*60*1000);
 </script>
 </body></html>
