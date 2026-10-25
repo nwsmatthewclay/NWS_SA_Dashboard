@@ -133,9 +133,10 @@ function renderWindForecast(hour){
  for(let n=0;n<displayCount;n++){
   const idx=displayCount===1?0:Math.round(n*(valid.length-1)/(displayCount-1));
   const {lat,lon,dir,speed}=valid[idx];
-  const angle=(dir+180)%360,color=speed>=20?'#fff':speed>=10?'#e8f8ff':'#a9dff0';
-  const glyph='<div style="transform:rotate('+angle+'deg);color:'+color+';font-size:18px;font-weight:800;line-height:19px;text-shadow:0 1px 2px #001522,0 0 3px #001522">↑</div>';
-  markers.push(L.marker([lat,lon],{interactive:true,icon:L.divIcon({className:'wind-vector',html:glyph,iconSize:[19,19],iconAnchor:[9,9]})}).bindTooltip('Forecast wind '+Math.round(dir)+'° at '+speed.toFixed(1)+' kt · +'+frame.forecast_hour+' h'));
+  const angle=(dir+180)%360;
+  // High-contrast white, slightly heavier wind barb glyph for dark basemap.
+  const glyph='<div style="transform:rotate('+angle+'deg);color:#fff;-webkit-text-stroke:.45px #fff;font-size:20px;font-weight:900;line-height:21px;text-shadow:0 1px 3px #001522,0 0 4px #001522">↑</div>';
+  markers.push(L.marker([lat,lon],{interactive:true,icon:L.divIcon({className:'wind-vector',html:glyph,iconSize:[21,21],iconAnchor:[10,10]})}).bindTooltip('Forecast wind '+Math.round(dir)+'° at '+speed.toFixed(1)+' kt · +'+frame.forecast_hour+' h'));
  }
  windForecastLayer=L.layerGroup(markers).addTo(map);
  $('windForecastLabel').textContent='+'+frame.forecast_hour+' h · '+markers.length+' of '+valid.length+' points shown';
