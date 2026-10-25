@@ -3992,13 +3992,11 @@ function refreshHazards() {
       _dataHealth.checkedAt = Date.now();
       updateHazardIntegrity('ok', true, false, 'GeoJSON parsed; waiting for map layers');
       updateDataHealthStatus();
-      if (!warningPolygonLayer || !warningZoneLayer) {
-        _dataHealth.zones = warningZoneLayer ? 'ok' : 'checking';
-        updateDataHealthStatus();
-        // The zone geometry may still be loading. The zone-load callback
-        // invokes refreshHazards again once the map is ready.
-        console.warn('Hazard refresh deferred until map zone geometry is ready.');
-        return;
+      // Header hazard status must not depend on the optional map-zone layer.
+      // UGCs are enough to determine active BTV hazards while map geometry loads.
+      var mapLayersReady = !!warningPolygonLayer && !!warningZoneLayer;
+      if (!mapLayersReady) {
+        console.warn('Hazard feed loaded; updating header summary while map layers are unavailable.');
       }
 
       // Filter by affected BTV forecast zones, not alert issuer text.
@@ -4007,7 +4005,7 @@ function refreshHazards() {
         return alert && alert.properties && typeof alert.properties === 'object';
       });
 
-      warningPolygonLayer.clearLayers();
+      if (warningPolygonLayer) warningPolygonLayer.clearLayers();
 
       var legendMap = {};
       var activeHazardNames = new Set();
@@ -4118,7 +4116,7 @@ function refreshHazards() {
               (props.headline ? '<br>' + escapeHtml(props.headline) : '') +
               (exp ? "<br><span style='color:#8188a3'>" + escapeHtml(exp) + '</span>' : '')
             );
-            warningPolygonLayer.addLayer(gLayer);
+            if (warningPolygonLayer) warningPolygonLayer.addLayer(gLayer);
           } catch (geometryError) {
             console.warn('Could not draw alert geometry:', eventName, geometryError);
           }
@@ -4127,13 +4125,15 @@ function refreshHazards() {
 
       _cachedAffectedZones = affectedZones;
       _cachedAffectedZoneInfo = affectedZoneInfo;
-      applyZoneStyling();
+      if (mapLayersReady) applyZoneStyling();
 
-      // Keep the polygon overlay in sync with the user's hazard toggle.
-      if (hazardsVisible) {
-        if (!map.hasLayer(warningPolygonLayer)) map.addLayer(warningPolygonLayer);
-      } else if (map.hasLayer(warningPolygonLayer)) {
-        map.removeLayer(warningPolygonLayer);
+      // Keep polygon visibility synchronized when the layer is available.
+      if (warningPolygonLayer && map) {
+        if (hazardsVisible) {
+          if (!map.hasLayer(warningPolygonLayer)) map.addLayer(warningPolygonLayer);
+        } else if (map.hasLayer(warningPolygonLayer)) {
+          map.removeLayer(warningPolygonLayer);
+        }
       }
 
       renderMapLegend(
@@ -4149,7 +4149,7 @@ function refreshHazards() {
       _dataHealth.zones = 'ok';
       _dataHealth.checkedAt = Date.now();
       updateDataHealthStatus();
-      updateHazardIntegrity('ok', true, true, 'Zone styling and polygon layer updated');
+      updateHazardIntegrity('ok', true, mapLayersReady, mapLayersReady ? 'Zone styling and polygon layer updated' : 'Hazard summary updated; map-zone geometry is not ready');
       if (summaryEl) summaryEl.classList.remove('checking');
       _activeSevereWarning = sawSevere;
       setWeatherMode(sawSevere ? 'storm' : sawWinter ? 'snow' : sawFlood ? 'rain' : 'calm');
