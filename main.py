@@ -1596,69 +1596,133 @@ def recenter_map_horizontally(img, title_height_px=100):
 
 
 def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hour: int = 12, stride: int = 4):
-    """Export a compact, browser-ready GLWU lake wind field for analysis through +12 h.
-    Uses the native Lake Champlain 500-m GRIB2 grid; subsampling keeps the JSON lightweight.
-    These are surface winds, not a cloud or snowfall forecast.
+    """Export a compact, browser-ready GLWU lake wind field through +12 h.
+
+    GLWU GRIB encodings vary by product cycle, so identify wind components or
+    a speed/direction pair by both GRIB shortName and descriptive name. Do not
+    require typeOfLevel == 'surface': some GRIB tables label near-surface fields
+    differently. Preserve masks and accept endStep/stepRange when forecastTime
+    is absent. This is a wind-forcing layer, not a snowfall forecast.
     """
     grbs = pygrib.open(str(grib_path))
     try:
         wind_msgs = {}
+        inventory = []
         for msg in grbs:
             try:
-                short = str(getattr(msg, "shortName", "")).lower()
-                name = str(getattr(msg, "name", "")).lower()
-                step = int(getattr(msg, "forecastTime", -1))
-                # GRIB inventories identify surface wind as WIND / UGRD / VGRD.
+                short = str(getattr(msg, "shortName", "")).lower().strip()
+                name = str(getattr(msg, "name", "")).lower().strip()
+                level_type = str(getattr(msg, "typeOfLevel", "")).lower()
+                inventory.append(f"{short}:{name}:{level_type}")
+                step = None
+                for attr in ("endStep", "forecastTime"):
+                    value = getattr(msg, attr, None)
+                    if value is not None:
+                        try:
+                            step = int(float(value))
+                            break
+                        except (TypeError, ValueError):
+                            pass
+                if step is None:
+                    step_range = str(getattr(msg, "stepRange", ""))
+                    try:
+                        step = int(float(step_range.split("-")[-1]))
+                    except (TypeError, ValueError):
+                        continue
+                if not 0 <= step <= max_hour:
+                    continue
+
                 kind = None
-                if short in ("10si", "si") or name == "wind speed" or "wind speed" in name:
-                    kind = "speed"
-                elif short in ("u", "10u") or name == "u-component of wind":
+                if short in ("u", "10u", "ugrd") or "u-component of wind" in name or name == "u wind":
                     kind = "u"
-                elif short in ("v", "10v") or name == "v-component of wind":
+                elif short in ("v", "10v", "vgrd") or "v-component of wind" in name or name == "v wind":
                     kind = "v"
-                if kind and 0 <= step <= max_hour and getattr(msg, "typeOfLevel", "") == "surface":
-                    wind_msgs.setdefault(step, {})[kind] = msg
+                elif short in ("wdir", "wind_direction", "windDirection".lower()) or "wind direction" in name:
+                    kind = "direction"
+                elif short in ("wind", "si", "10si", "ws", "wspd") or "wind speed" in name or name == "wind":
+                    kind = "speed"
+                if not kind:
+                    continue
+
+                # Prefer 10-m/near-surface fields when duplicate levels exist.
+                priority = 2 if "heightaboveground" in level_type or "surface" in level_type else 1
+                bucket = wind_msgs.setdefault(step, {})
+                prior = bucket.get(kind)
+                if prior is None or priority >= prior[0]:
+                    bucket[kind] = (priority, msg)
             except Exception:
                 continue
+
         frames = []
         for hour in range(max_hour + 1):
             fields = wind_msgs.get(hour, {})
-            # Prefer vector components; wind speed/direction can be derived from U/V.
-            if "u" not in fields or "v" not in fields:
+            u_entry, v_entry = fields.get("u"), fields.get("v")
+            speed_entry, direction_entry = fields.get("speed"), fields.get("direction")
+            source_msg = None
+
+            if u_entry and v_entry:
+                umsg, vmsg = u_entry[1], v_entry[1]
+                uu_raw, lats, lons = umsg.data()
+                vv_raw, _, _ = vmsg.data()
+                uu = np.ma.asarray(uu_raw, dtype=float)
+                vv = np.ma.asarray(vv_raw, dtype=float)
+                speed = np.ma.sqrt(uu * uu + vv * vv)
+                # Meteorological direction FROM which the wind blows.
+                direction = (270.0 - np.degrees(np.ma.arctan2(vv, uu))) % 360.0
+                source_msg = umsg
+            elif speed_entry and direction_entry:
+                smsg, dmsg = speed_entry[1], direction_entry[1]
+                speed_raw, lats, lons = smsg.data()
+                direction_raw, _, _ = dmsg.data()
+                speed = np.ma.asarray(speed_raw, dtype=float)
+                direction = np.ma.asarray(direction_raw, dtype=float)
+                # Wind speed GRIB fields are generally m/s; direction is degrees true.
+                uu = -speed * np.ma.sin(np.deg2rad(direction))
+                vv = -speed * np.ma.cos(np.deg2rad(direction))
+                source_msg = smsg
+            else:
                 continue
-            umsg, vmsg = fields["u"], fields["v"]
-            uu, lats, lons = umsg.data()
-            vv, _, _ = vmsg.data()
-            uu = np.asarray(uu, dtype=float); vv = np.asarray(vv, dtype=float)
-            lons = np.where(np.asarray(lons) > 180, np.asarray(lons) - 360, lons)
-            speed = np.hypot(uu, vv)
-            # Meteorological direction FROM which wind blows.
-            direction = (270.0 - np.degrees(np.arctan2(vv, uu))) % 360.0
-            valid = np.isfinite(speed) & np.isfinite(direction)
-            if np.ma.isMaskedArray(uu): valid &= ~np.ma.getmaskarray(uu)
-            if np.ma.isMaskedArray(vv): valid &= ~np.ma.getmaskarray(vv)
-            # Restrict to Lake Champlain / immediate shoreline domain.
-            valid &= (lats >= 43.55) & (lats <= 45.05) & (lons >= -73.55) & (lons <= -73.05)
+
+            lats = np.asarray(lats, dtype=float)
+            lons = np.asarray(lons, dtype=float)
+            lons = np.where(lons > 180, lons - 360, lons)
+            speed_data = np.ma.asarray(speed)
+            direction_data = np.ma.asarray(direction)
+            valid = (
+                np.isfinite(np.ma.filled(speed_data, np.nan))
+                & np.isfinite(np.ma.filled(direction_data, np.nan))
+                & ~np.ma.getmaskarray(speed_data)
+                & ~np.ma.getmaskarray(direction_data)
+                & (lats >= 43.55) & (lats <= 45.05)
+                & (lons >= -73.55) & (lons <= -73.05)
+            )
             rows, cols = np.where(valid)
             points = []
-            for rr, cc in zip(rows[::stride], cols[::stride]):
+            for rr, cc in zip(rows[::max(1, stride)], cols[::max(1, stride)]):
+                spd = float(speed_data[rr, cc])
+                direc = float(direction_data[rr, cc]) % 360.0
                 points.append({
                     "lat": round(float(lats[rr, cc]), 4),
                     "lon": round(float(lons[rr, cc]), 4),
-                    "speed_ms": round(float(speed[rr, cc]), 2),
-                    "speed_kt": round(float(speed[rr, cc]) * 1.94384, 1),
-                    "direction": round(float(direction[rr, cc]), 0),
+                    "speed_ms": round(spd, 2),
+                    "speed_kt": round(spd * 1.94384, 1),
+                    "direction": round(direc, 0),
                     "u_ms": round(float(uu[rr, cc]), 2),
                     "v_ms": round(float(vv[rr, cc]), 2),
                 })
-            valid_date = getattr(umsg, "validDate", None)
+            valid_date = getattr(source_msg, "validDate", None)
             frames.append({
                 "forecast_hour": hour,
                 "valid_time": valid_date.astimezone(timezone.utc).isoformat() if valid_date else None,
                 "points": points,
             })
+
         if not frames:
-            raise RuntimeError("No GLWU surface U/V wind fields found for forecast hours 0–12.")
+            summary = "; ".join(inventory[:35])
+            raise RuntimeError(
+                "No usable wind vectors found in GLWU GRIB for hours 0–"
+                f"{max_hour}. First GRIB fields: {summary or 'inventory empty'}"
+            )
         payload = {
             "source": "NOAA/NCEP GLWU Lake Champlain 500-m GRIB2",
             "grid": GLWU_GRID,
@@ -1671,10 +1735,10 @@ def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hou
         out_path.parent.mkdir(parents=True, exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, separators=(",", ":"))
-        print(f"  Exported Champlain wind forecast: {out_path} ({len(frames)} lead times, {sum(len(x['points']) for x in frames)} vectors)")
+        total = sum(len(frame["points"]) for frame in frames)
+        print(f"  Exported Champlain wind forecast: {out_path} ({len(frames)} lead times, {total} vectors)")
     finally:
         grbs.close()
-
 
 def glwu_render_frame(swh, u, v, forecast_hour):
     """Render one frame (one forecast hour) as a PIL Image. Converts GRIB2's
