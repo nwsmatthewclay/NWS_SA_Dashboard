@@ -1595,8 +1595,8 @@ def recenter_map_horizontally(img, title_height_px=100):
     return canvas
 
 
-def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hour: int = 12, stride: int = 4):
-    """Export a compact, browser-ready GLWU lake wind field through +12 h.
+def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hour: int = 24, stride: int = 4):
+    """Export a compact, browser-ready GLWU lake wind field through +24 h.
 
     GLWU GRIB encodings vary by product cycle, so identify wind components or
     a speed/direction pair by both GRIB shortName and descriptive name. Do not
@@ -1991,10 +1991,10 @@ def run_glwu_plot():
         # only the latest products are committed, avoiding repository growth.
         glwu_publish_to_github(latest_gif, "outputs/glwu_latest.gif", mimetype="image/gif")
 
-        # Browser-ready 12-hour spatial wind forecast for Champlain.html.
+         # Browser-ready 24-hour spatial wind forecast for Champlain.html.
         try:
             wind_json = GLWU_OUTPUT_DIR / "champlain_wind_forecast.json"
-            glwu_export_champlain_wind_forecast(grib_dest, wind_json, max_hour=12, stride=4)
+            glwu_export_champlain_wind_forecast(grib_dest, wind_json, max_hour=24, stride=4)
             glwu_publish_to_github(
                 wind_json,
                 "outputs/champlain_wind_forecast.json",
