@@ -1614,19 +1614,30 @@ def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hou
                 name = str(getattr(msg, "name", "")).lower().strip()
                 level_type = str(getattr(msg, "typeOfLevel", "")).lower()
                 inventory.append(f"{short}:{name}:{level_type}")
-                # forecastTime is the GRIB forecast lead. endStep may instead
-                # describe the end of an accumulation/interval and can collapse
-                # later valid forecast fields into an earlier hour if preferred.
+                # GRIB products can encode an instantaneous forecast lead in
+                # forecastTime, or an interval endpoint in endStep/stepRange.
+                # Prefer a positive forecastTime, but don't let a default 0 hide
+                # a valid positive endStep.
                 step = None
-                for attr in ("forecastTime", "endStep"):
-                    value = getattr(msg, attr, None)
-                    if value is not None:
-                        try:
-                            step = int(float(value))
-                            break
-                        except (TypeError, ValueError):
-                            pass
-                if step is None:
+                forecast_time = getattr(msg, "forecastTime", None)
+                end_step = getattr(msg, "endStep", None)
+                try:
+                    ft = int(float(forecast_time)) if forecast_time is not None else None
+                except (TypeError, ValueError):
+                    ft = None
+                try:
+                    es = int(float(end_step)) if end_step is not None else None
+                except (TypeError, ValueError):
+                    es = None
+                if ft is not None and ft > 0:
+                    step = ft
+                elif es is not None and es > 0:
+                    step = es
+                elif ft is not None:
+                    step = ft
+                elif es is not None:
+                    step = es
+                else:
                     step_range = str(getattr(msg, "stepRange", ""))
                     try:
                         step = int(float(step_range.split("-")[-1]))
