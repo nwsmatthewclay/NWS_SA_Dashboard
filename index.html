@@ -133,16 +133,36 @@ body{
     transition: opacity .6s ease, filter .6s ease;
   }
 
-  /* ── TOP HEADER ── */
+  /* ── BTV PHOTO HEADER ── */
   .top-header {
-    background: linear-gradient(180deg, #0b1524 0%, #080f1b 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 16px;
-    display: grid;
-    grid-template-columns: 1fr minmax(0, 640px) 1fr;
-    align-items: center;
-    gap: 12px;
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: 148px; padding: 20px 24px;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center; gap: 20px;
+    background: #071526 url('assets/btv_header_photo.jpg') center 56% / cover no-repeat;
+    border-bottom: 1px solid rgba(86,174,226,.65);
+    box-shadow: 0 5px 22px rgba(0,0,0,.28);
   }
+  .top-header::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(90deg, rgba(3,12,27,.97) 0%, rgba(3,15,32,.88) 27%, rgba(4,17,35,.40) 60%, rgba(3,12,27,.82) 100%), linear-gradient(0deg, rgba(3,10,22,.45), transparent 48%, rgba(4,13,28,.14));
+  }
+  .top-header::after {
+    content: ""; position: absolute; inset: auto 0 0; height: 2px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, #38bdf8 22%, #8bd5f7 48%, #f4a66a 72%, transparent); opacity: .85;
+  }
+  .header-brand { display: flex; align-items: center; gap: 18px; flex-shrink: 0; min-width: 0; }
+  .brand-text-stack { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .brand-text-stack h1 { margin: 0; }
+  .header-title { color: #f8fbff; font-size: clamp(23px, 2.2vw, 34px); line-height: 1.05; font-weight: 900; letter-spacing: .075em; text-transform: uppercase; text-shadow: 0 2px 12px rgba(0,0,0,.6); white-space: nowrap; }
+  .header-kicker { color: #c8eaff; font-size: 11px; font-weight: 800; letter-spacing: .34em; text-transform: uppercase; }
+  .header-region { display: flex; align-items: center; gap: 10px; color: #e5f4ff; font-size: 10px; font-weight: 800; letter-spacing: .23em; text-transform: uppercase; }
+  .header-region::before { content: ""; width: 34px; height: 1px; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+  .header-right { display: flex; align-items: center; gap: 12px; margin-left: auto; flex-shrink: 0; padding: 12px 15px; background: rgba(3,12,26,.64); border: 1px solid rgba(154,207,239,.22); border-radius: 12px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .header-right .last-updated-box { padding-right: 12px; border-right: 1px solid rgba(154,207,239,.25); }
+  .header-right .last-updated-label { color: #9cc8e5; letter-spacing: .15em; font-size: 9px; }
+  .header-right #lastUpdatedText { color: #fff; font-size: 13px; font-weight: 800; }
+  .header-right .refresh-btn { width: 38px; height: 38px; border-radius: 10px; }
   .header-brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
   .brand-text-stack { display: flex; flex-direction: column; gap: 6px; }
   .brand-text-stack h1 { margin: 0; }
@@ -1746,26 +1766,23 @@ body{
 <div id="alertVignette"></div>
 
 <div class="top-header">
-
   <div class="header-brand">
     <div class="brand-text-stack">
-      <h1>NWS Burlington DSS Dashboard V3.0 <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;">— Static</span></h1>
+      <h1 class="header-title">NWS Burlington</h1>
+      <div class="header-kicker">Situational Awareness</div>
+      <div class="header-region">Vermont and Northern New York</div>
       <div class="nav-hazard-summary clear" id="navHazardSummary" role="button" tabindex="0" aria-label="Check active hazards">
         <span id="navHazardText">Checking hazards…</span>
       </div>
     </div>
   </div>
-
-  <div id="daylightArcClock" class="daylight-arc-clock"></div>
-
   <div class="header-right">
     <div class="last-updated-box">
       <div class="last-updated-label">LAST UPDATED</div>
       <div id="lastUpdatedText">--:--:--</div>
     </div>
-    <button class="refresh-btn" id="refreshBtn" title="Refresh Dashboard">↻</button>
+    <button class="refresh-btn" id="refreshBtn" title="Refresh Dashboard" aria-label="Refresh Dashboard">↻</button>
   </div>
-
 </div>
 
 <!-- ── STATUS BAR (5 rounded glow cards) ── -->
