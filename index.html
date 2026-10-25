@@ -163,6 +163,17 @@ body{
   .header-right .last-updated-label { color: #9cc8e5; letter-spacing: .15em; font-size: 9px; }
   .header-right #lastUpdatedText { color: #fff; font-size: 13px; font-weight: 800; }
   .header-right .refresh-btn { width: 38px; height: 38px; border-radius: 10px; }
+  /* Compact health status: intentionally quiet until something needs attention. */
+  .header-health { display:flex; align-items:center; gap:7px; margin-top:1px; color:#a7f3d0; font-size:10px; font-weight:700; letter-spacing:.04em; }
+  .header-health .health-dot { width:7px; height:7px; border-radius:50%; background:#34d399; box-shadow:0 0 8px rgba(52,211,153,.45); flex:0 0 auto; }
+  .header-health.checking { color:#bae6fd; }
+  .header-health.checking .health-dot { background:#38bdf8; box-shadow:0 0 8px rgba(56,189,248,.55); }
+  .header-health.degraded { color:#fcd34d; }
+  .header-health.degraded .health-dot { background:#f59e0b; box-shadow:0 0 8px rgba(245,158,11,.45); }
+  .header-health.failed { color:#fca5a5; }
+  .header-health.failed .health-dot { background:#f87171; box-shadow:0 0 8px rgba(248,113,113,.5); }
+  .hazard-integrity-note { font-size:10px; font-weight:600; opacity:.92; margin-left:3px; }
+
   .header-brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
   .brand-text-stack { display: flex; flex-direction: column; gap: 6px; }
   .brand-text-stack h1 { margin: 0; }
@@ -173,6 +184,8 @@ body{
     transition: filter 0.15s, transform 0.15s; align-self: flex-start;
   }
   .nav-hazard-summary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .nav-hazard-summary.integrity-warning { border-color: rgba(248,113,113,.75); box-shadow: 0 0 0 1px rgba(248,113,113,.15); }
+  .nav-hazard-summary.integrity-warning::before { color: #f87171; }
   .nav-hazard-summary.checking { border-color: rgba(56,189,248,.6); color: #bae6fd; }
   .nav-hazard-summary.checking::before { color: #38bdf8; animation: navHazardDotPulse .8s ease-in-out infinite; }
   .nav-hazard-summary::after { content: '→'; margin-left: auto; padding-left: 8px; opacity: 0.7; flex-shrink: 0; }
@@ -1771,6 +1784,9 @@ body{
       <h1 class="header-title">NWS Burlington</h1>
       <div class="header-kicker">Situational Awareness</div>
       <div class="header-region">Vermont and Northern New York</div>
+      <div class="header-health checking" id="dataHealthStatus" role="status" aria-live="polite" title="Checking dashboard data feeds">
+        <span class="health-dot"></span><span id="dataHealthText">Checking data feeds…</span>
+      </div>
       <div class="nav-hazard-summary clear" id="navHazardSummary" role="button" tabindex="0" aria-label="Check active hazards">
         <span id="navHazardText">Checking hazards…</span>
       </div>
@@ -3858,6 +3874,53 @@ function updateAlertMode() {
   document.body.classList.toggle('alert-mode', shouldAlert);
 }
 
+var _dataHealth = { hazards: 'checking', zones: 'checking', checkedAt: null, lastError: '' };
+var _hazardIntegrity = { feed: 'checking', parsed: false, rendered: false, checkedAt: null, message: 'Checking hazard feed' };
+
+function updateDataHealthStatus() {
+  var el = document.getElementById('dataHealthStatus');
+  var textEl = document.getElementById('dataHealthText');
+  if (!el || !textEl) return;
+  var states = [_dataHealth.hazards, _dataHealth.zones];
+  if (states.indexOf('checking') !== -1) {
+    el.className = 'header-health checking';
+    textEl.textContent = 'Checking data feeds…';
+    el.title = 'Checking hazard feed and map-zone data.';
+    return;
+  }
+  if (states.indexOf('failed') !== -1) {
+    el.className = 'header-health failed';
+    textEl.textContent = 'Data issue — check status';
+    el.title = _dataHealth.lastError || 'One or more core dashboard feeds failed.';
+    return;
+  }
+  var hazardAge = _dataHealth.checkedAt ? Math.max(0, Math.round((Date.now() - _dataHealth.checkedAt) / 60000)) : null;
+  if (hazardAge !== null && hazardAge > 10) {
+    el.className = 'header-health degraded';
+    textEl.textContent = 'Data may be stale';
+    el.title = 'Last successful hazard feed check was ' + hazardAge + ' minutes ago.';
+    return;
+  }
+  el.className = 'header-health';
+  textEl.textContent = 'Core data current';
+  el.title = 'Hazard feed parsed and map-zone data loaded. This is a feed-health check, not a guarantee that every upstream source is current.';
+}
+
+function updateHazardIntegrity(feed, parsed, rendered, message) {
+  _hazardIntegrity = { feed: feed, parsed: !!parsed, rendered: !!rendered, checkedAt: Date.now(), message: message || '' };
+  var summary = document.getElementById('navHazardSummary');
+  if (!summary) return;
+  var detail = 'Hazard feed: ' + feed + '; data parsed: ' + (!!parsed ? 'yes' : 'no') + '; map update: ' + (!!rendered ? 'completed' : 'not confirmed');
+  if (message) detail += '; ' + message;
+  summary.setAttribute('data-integrity', detail);
+  if (feed === 'failed' || (parsed && !rendered)) {
+    summary.classList.add('integrity-warning');
+    summary.title = detail + '. Click to retry.';
+  } else {
+    summary.classList.remove('integrity-warning');
+  }
+}
+
 function updateNavHazardSummary(names) {
   var el = document.getElementById('navHazardSummary');
   var textEl = document.getElementById('navHazardText');
@@ -3888,6 +3951,10 @@ function refreshHazards() {
     summaryEl.title = 'Checking the latest hazard feed…';
   }
   if (summaryText) summaryText.textContent = 'Checking hazards…';
+  _dataHealth.hazards = 'checking';
+  _dataHealth.lastError = '';
+  updateDataHealthStatus();
+  updateHazardIntegrity('checking', false, false, 'Request started');
 
   fetch(DATA_BASE_URL + 'hazards.json?check=' + Date.now(), { cache: 'no-store' })
     .then(function(r) {
@@ -3902,7 +3969,15 @@ function refreshHazards() {
       if (!alerts || !Array.isArray(alerts.features)) {
         throw new Error('hazards.json did not contain a valid GeoJSON FeatureCollection');
       }
+      _hazardIntegrity.feed = 'ok';
+      _hazardIntegrity.parsed = true;
+      _dataHealth.hazards = 'ok';
+      _dataHealth.checkedAt = Date.now();
+      updateHazardIntegrity('ok', true, false, 'GeoJSON parsed; waiting for map layers');
+      updateDataHealthStatus();
       if (!warningPolygonLayer || !warningZoneLayer) {
+        _dataHealth.zones = warningZoneLayer ? 'ok' : 'checking';
+        updateDataHealthStatus();
         // The zone geometry may still be loading. The zone-load callback
         // invokes refreshHazards again once the map is ready.
         console.warn('Hazard refresh deferred until map zone geometry is ready.');
@@ -4051,6 +4126,11 @@ function refreshHazards() {
       );
 
       updateNavHazardSummary(Array.from(activeHazardNames).sort());
+      _dataHealth.hazards = 'ok';
+      _dataHealth.zones = 'ok';
+      _dataHealth.checkedAt = Date.now();
+      updateDataHealthStatus();
+      updateHazardIntegrity('ok', true, true, 'Zone styling and polygon layer updated');
       if (summaryEl) summaryEl.classList.remove('checking');
       _activeSevereWarning = sawSevere;
       setWeatherMode(sawSevere ? 'storm' : sawWinter ? 'snow' : sawFlood ? 'rain' : 'calm');
@@ -4060,6 +4140,10 @@ function refreshHazards() {
     })
     .catch(function(err) {
       console.error('Hazard refresh failed:', err);
+      _dataHealth.hazards = 'failed';
+      _dataHealth.lastError = 'Hazard feed check failed: ' + (err && err.message ? err.message : String(err));
+      updateDataHealthStatus();
+      updateHazardIntegrity('failed', false, false, _dataHealth.lastError);
       if (summaryEl) {
         summaryEl.classList.remove('checking');
         summaryEl.title = 'Hazard check failed. Click to retry.';
@@ -4470,14 +4554,23 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   fetch('https://raw.githubusercontent.com/matthewclay88/btv-zones/main/btv_zones.geojson')
-    .then(function(r) { return r.json(); })
+    .then(function(r) { if (!r.ok) throw new Error('Zone GeoJSON HTTP ' + r.status); return r.json(); })
     .then(function(geojson) {
+      if (!geojson || !Array.isArray(geojson.features) || !geojson.features.length) throw new Error('Zone GeoJSON is empty or invalid');
       warningZoneLayer = L.geoJSON(geojson, {
         style: { color: '#4b6b8c', weight: 1.5, fillColor: '#4b6b8c', fillOpacity: 0 }
       }).addTo(map);
+      _dataHealth.zones = 'ok';
+      updateDataHealthStatus();
       refreshHazards();
     })
-    .catch(function(err) { console.error('BTV zone GeoJSON load failed:', err); });
+    .catch(function(err) {
+      console.error('BTV zone GeoJSON load failed:', err);
+      _dataHealth.zones = 'failed';
+      _dataHealth.lastError = 'Map-zone geometry failed to load: ' + (err && err.message ? err.message : String(err));
+      updateDataHealthStatus();
+      updateHazardIntegrity('failed', false, false, _dataHealth.lastError);
+    });
 
   setTimeout(function() { refreshDashboard(); }, 300);
   setInterval(refreshDashboard, 300000);
