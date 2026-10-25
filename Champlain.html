@@ -164,8 +164,41 @@ async function loadWindForecast(){
  }
 }
 function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
-function updatePlume(dir,speed){if(!map||dir==null)return;const down=(Number(dir)+180)%360*Math.PI/180,cx=44.27,cy=-73.32,km=Math.max(18,Math.min(65,22+(Number(speed)||5)*1.8)),dlat=km/111*Math.cos(down),dlon=km/(111*Math.cos(cx*Math.PI/180))*Math.sin(down),wlat=.13*Math.cos(down+Math.PI/2),wlon=.17*Math.sin(down+Math.PI/2),end=[cx+dlat,cy+dlon],poly=[[cx,cy],[cx+dlat*.35+wlat,cy+dlon*.35+wlon],[end[0]+wlat,end[1]+wlon],[end[0]-wlat,end[1]-wlon],[cx+dlat*.35-wlat,cy+dlon*.35-wlon],[cx,cy]];if(plumeLayer)map.removeLayer(plumeLayer);if(snowLayer)map.removeLayer(snowLayer);plumeLayer=L.polygon(poly,{color:'#a5e9f4',weight:1.5,dashArray:'5 5',fillColor:'#61d9ef',fillOpacity:.18}).addTo(map).bindTooltip('Illustrative lake-cloud corridor · wind from '+Math.round(dir)+'°');snowLayer=L.polygon([[cx,cy],[cx+dlat*.5+wlat*.45,cy+dlon*.5+wlon*.45],[end[0]+wlat*.45,end[1]+wlon*.45],[end[0]-wlat*.45,end[1]-wlon*.45],[cx+dlat*.5-wlat*.45,cy+dlon*.5-wlon*.45],[cx,cy]],{color:'#78aaff',weight:1,fillColor:'#5a9dff',fillOpacity:.13}).addTo(map).bindTooltip('Conditional snow-favored corridor · not a snowfall forecast');}
-const updateWindBase=updateWind;updateWind=function(dir,speed){updateWindBase(dir,speed);updatePlume(dir,speed)};
+function clearLakeEffectCorridor(){
+ if(plumeLayer){map.removeLayer(plumeLayer);plumeLayer=null}
+ if(snowLayer){map.removeLayer(snowLayer);snowLayer=null}
+}
+function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour){
+ if(!map)return;
+ clearLakeEffectCorridor();
+ const contrast=parseFloat(($('contrast').textContent||'').replace(/[^0-9.+-]/g,''));
+ const envTag=$('envTag').textContent||'',envText=$('envText').textContent||'';
+ const m=envTag.match(/ΔT\s*([+-]?[\d.]+)°C/i),lake850=m?Number(m[1]):NaN;
+ const rhm=envText.match(/RH\s*≥80%:\s*(\d+)\s*levels/i);
+ const dgzm=envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
+ const moistLevels=rhm?Number(rhm[1]):0,dgzLevels=dgzm?Number(dgzm[1]):0;
+ const reasons=[];
+ if(!Number.isFinite(dir)||vectorSpeed<3)reasons.push('weak or variable gridded wind');
+ if(!Number.isFinite(contrast)||contrast<10)reasons.push('lake–air contrast below 10°F or unavailable');
+ if(!Number.isFinite(lake850)||lake850<13)reasons.push('lake–850 hPa contrast below 13°C or unavailable');
+ if(moistLevels<2)reasons.push('insufficient sampled moist depth');
+ if(dgzLevels<1)reasons.push('no saturated dendritic-growth-zone levels');
+ if(reasons.length){
+  $('fetchTag').textContent='No corridor';
+  $('fetchText').textContent='Lake-effect gate closed: '+reasons.join('; ')+'. No cloud/snow corridor drawn. These are experimental screening thresholds, not calibrated probabilities.';
+  return;
+ }
+ const down=((dir+180)%360)*Math.PI/180,cx=44.27,cy=-73.32;
+ const lengthKm=Math.max(18,Math.min(55,18+vectorSpeed*2)),widthKm=Math.max(5,Math.min(13,5+meanSpeed*.18));
+ const dlat=lengthKm/111*Math.cos(down),dlon=lengthKm/(111*Math.cos(cx*Math.PI/180))*Math.sin(down);
+ const wlat=(widthKm/111)*Math.cos(down+Math.PI/2),wlon=(widthKm/(111*Math.cos(cx*Math.PI/180)))*Math.sin(down+Math.PI/2);
+ const p0=[cx,cy],p1=[cx+dlat*.30+wlat,cy+dlon*.30+wlon],p2=[cx+dlat+wlat*.45,cy+dlon+wlon*.45],p3=[cx+dlat+wlat,cy+dlon+wlon],p4=[cx+dlat-wlat,cy+dlon-wlon],p5=[cx+dlat-wlat*.45,cy+dlon-wlon*.45],p6=[cx+dlat*.30-wlat,cy+dlon*.30-wlon];
+ plumeLayer=L.polygon([p0,p1,p2,p3,p4,p5,p6,p0],{color:'#a5e9f4',weight:2,dashArray:'5 4',fillColor:'#61d9ef',fillOpacity:.22}).addTo(map).bindTooltip('Favorable lake-cloud corridor · GLWU +'+forecastHour+' h · downwind '+Math.round((dir+180)%360)+'°');
+ const cwlat=wlat*.52,cwlon=wlon*.52;
+ snowLayer=L.polygon([[cx,cy],[cx+dlat*.48+cwlat,cy+dlon*.48+cwlon],[cx+dlat+cwlat*.45,cy+dlon+cwlon*.45],[cx+dlat-cwlat*.45,cy+dlon-cwlon*.45],[cx+dlat*.48-cwlat,cy+dlon*.48-cwlon],[cx,cy]],{color:'#78aaff',weight:1.5,fillColor:'#5a9dff',fillOpacity:.20}).addTo(map).bindTooltip('Conditional snow-favored core · saturated DGZ detected; not a snowfall forecast');
+ $('fetchTag').textContent='Favorable · '+Math.round(axisPct)+'% N–S';
+ $('fetchText').textContent='Full-grid GLWU vector mean points downwind toward '+Math.round((dir+180)%360)+'°. Mean wind '+meanSpeed.toFixed(1)+' kt; vector wind '+vectorSpeed.toFixed(1)+' kt; moist levels '+moistLevels+', saturated DGZ levels '+dgzLevels+'. Experimental gate; confirm with radar and observations.';
+}
 initMap();$('windForecastHour').addEventListener('input',e=>renderWindForecast(e.target.value));refresh();loadWindForecast();setInterval(()=>{refresh();loadWindForecast()},5*60*1000);
 </script>
 </body></html>
