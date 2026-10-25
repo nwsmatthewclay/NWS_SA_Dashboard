@@ -1614,8 +1614,11 @@ def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hou
                 name = str(getattr(msg, "name", "")).lower().strip()
                 level_type = str(getattr(msg, "typeOfLevel", "")).lower()
                 inventory.append(f"{short}:{name}:{level_type}")
+                # forecastTime is the GRIB forecast lead. endStep may instead
+                # describe the end of an accumulation/interval and can collapse
+                # later valid forecast fields into an earlier hour if preferred.
                 step = None
-                for attr in ("endStep", "forecastTime"):
+                for attr in ("forecastTime", "endStep"):
                     value = getattr(msg, attr, None)
                     if value is not None:
                         try:
@@ -1723,6 +1726,13 @@ def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hou
                 "No usable wind vectors found in GLWU GRIB for hours 0–"
                 f"{max_hour}. First GRIB fields: {summary or 'inventory empty'}"
             )
+        present_hours = [int(frame["forecast_hour"]) for frame in frames]
+        missing_hours = sorted(set(range(max_hour + 1)) - set(present_hours))
+        print(
+            f"  GLWU wind-hour coverage: present={present_hours}; "
+            f"missing={missing_hours}",
+            flush=True,
+        )
         payload = {
             "source": "NOAA/NCEP GLWU Lake Champlain 500-m GRIB2",
             "grid": GLWU_GRID,
