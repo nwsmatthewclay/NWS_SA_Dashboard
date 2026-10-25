@@ -190,7 +190,9 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
  const rhm=envText.match(/RH\s*≥80%:\s*(\d+)\s*levels/i);
  const dgzm=envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
  const moistLevels=rhm?Number(rhm[1]):0,dgzLevels=dgzm?Number(dgzm[1]):0;
- const fetchKm=calculateDirectionalFetchKm(dir);\n const reasons=[];\n if(fetchKm<8)reasons.push('short directional lake fetch ('+fetchKm.toFixed(1)+' km)');
+ const fetchKm=calculateDirectionalFetchKm(dir);
+  const reasons=[];
+  if(fetchKm<8)reasons.push('short directional lake fetch ('+fetchKm.toFixed(1)+' km)');
  if(!Number.isFinite(dir)||vectorSpeed<3)reasons.push('weak or variable gridded wind');
  if(!Number.isFinite(contrast)||contrast<10)reasons.push('lake–air contrast below 10°F or unavailable');
  if(!Number.isFinite(lake850)||lake850<13)reasons.push('lake–850 hPa contrast below 13°C or unavailable');
