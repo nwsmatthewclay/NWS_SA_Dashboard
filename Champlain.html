@@ -168,10 +168,11 @@ async function loadWindForecast(){
   windForecastFrames=j.frames;
   const slider=$('windForecastHour');
   const availableMax=Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0));
-  slider.max=String(Math.min(24,availableMax));
-  const requested=Math.min(Number(slider.value)||0,Number(slider.max));
+  // Keep the control at 24 hours; report the actual data horizon separately.
+  slider.max='24';
+  const requested=Math.min(Number(slider.value)||0,24);
   slider.value=String(requested);
-  $('windForecastValid').title=availableMax<24?'Source currently provides forecast through +'+availableMax+' h; 24-hour display will be available when the feed publishes those hours.':'Full 24-hour forecast available.';
+  $('windForecastValid').title=availableMax<24?'Published source data currently ends at +'+availableMax+' h; hours beyond that require a refreshed 24-hour forecast export.':'Full 24-hour forecast available.';
   renderWindForecast(requested);
   markHealth('GLWU lake wind forecast',windForecastFrames.length+' lead times · '+((windForecastFrames[0].points||[]).length)+' grid points in first frame',j.generated_at,true);
  }catch(e){
