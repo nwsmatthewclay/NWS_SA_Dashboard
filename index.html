@@ -3956,6 +3956,23 @@ function refreshHazards() {
   updateDataHealthStatus();
   updateHazardIntegrity('checking', false, false, 'Request started');
 
+  // Prevent the header from remaining stuck if the hazard feed request hangs.
+  var hazardRequestTimedOut = false;
+  var hazardRequestTimeout = setTimeout(function() {
+    hazardRequestTimedOut = true;
+    var message = 'Hazard feed request timed out after 15 seconds.';
+    _dataHealth.hazards = 'failed';
+    _dataHealth.lastError = message;
+    updateDataHealthStatus();
+    updateHazardIntegrity('failed', false, false, message);
+    if (summaryEl) {
+      summaryEl.classList.remove('checking');
+      summaryEl.title = message + ' Click to retry.';
+    }
+    if (summaryText) summaryText.textContent = 'Hazard check timed out — click to retry';
+    console.error(message);
+  }, 15000);
+
   fetch(DATA_BASE_URL + 'hazards.json?check=' + Date.now(), { cache: 'no-store' })
     .then(function(r) {
       if (!r.ok) throw new Error('hazards.json returned HTTP ' + r.status);
@@ -4125,6 +4142,8 @@ function refreshHazards() {
         })
       );
 
+      clearTimeout(hazardRequestTimeout);
+      if (hazardRequestTimedOut) return;
       updateNavHazardSummary(Array.from(activeHazardNames).sort());
       _dataHealth.hazards = 'ok';
       _dataHealth.zones = 'ok';
@@ -4139,6 +4158,8 @@ function refreshHazards() {
       if (dssRows && dssRows.length > 0) loadData(dssRows, callRows);
     })
     .catch(function(err) {
+      clearTimeout(hazardRequestTimeout);
+      if (hazardRequestTimedOut) return;
       console.error('Hazard refresh failed:', err);
       _dataHealth.hazards = 'failed';
       _dataHealth.lastError = 'Hazard feed check failed: ' + (err && err.message ? err.message : String(err));
