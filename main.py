@@ -1991,7 +1991,7 @@ def run_glwu_plot():
         # only the latest products are committed, avoiding repository growth.
         glwu_publish_to_github(latest_gif, "outputs/glwu_latest.gif", mimetype="image/gif")
 
-         # Browser-ready 24-hour spatial wind forecast for Champlain.html.
+        # Browser-ready 24-hour spatial wind forecast for Champlain.html.
         try:
             wind_json = GLWU_OUTPUT_DIR / "champlain_wind_forecast.json"
             glwu_export_champlain_wind_forecast(grib_dest, wind_json, max_hour=24, stride=4)
