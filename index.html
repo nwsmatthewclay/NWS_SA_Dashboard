@@ -3858,18 +3858,33 @@ function updateNavHazardSummary(names) {
 }
 
 function refreshHazards() {
-
-  fetch(DATA_BASE_URL + 'hazards.json')
-    .then(function(r) { return r.json(); })
+  // Keep the previous map state if the feed is temporarily unavailable.
+  // A failed/empty response must not be interpreted as "no active hazards".
+  fetch(DATA_BASE_URL + 'hazards.json', { cache: 'no-store' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('hazards.json returned HTTP ' + r.status);
+      return r.json();
+    })
     .then(function(data) {
+      var alerts = typeof data === 'string' ? JSON.parse(data) : data;
+      if (alerts && alerts.features && !Array.isArray(alerts.features) && alerts.features.features) {
+        alerts = alerts.features;
+      }
+      if (!alerts || !Array.isArray(alerts.features)) {
+        throw new Error('hazards.json did not contain a valid GeoJSON FeatureCollection');
+      }
+      if (!warningPolygonLayer || !warningZoneLayer) {
+        // The zone geometry may still be loading. The zone-load callback
+        // invokes refreshHazards again once the map is ready.
+        console.warn('Hazard refresh deferred until map zone geometry is ready.');
+        return;
+      }
 
-      const alerts = typeof data === 'string' ? JSON.parse(data) : data;
-
-      const btvAlerts = alerts.features.filter(alert =>
-        alert.properties.senderName &&
-        (alert.properties.senderName.includes("Burlington") ||
-        alert.properties.senderName.includes("Albany"))
-      );
+      // Filter by affected BTV forecast zones, not alert issuer text.
+      // Neighboring WFOs can issue alerts that overlap the BTV CWA.
+      var btvAlerts = alerts.features.filter(function(alert) {
+        return alert && alert.properties && typeof alert.properties === 'object';
+      });
 
       warningPolygonLayer.clearLayers();
 
@@ -3880,104 +3895,112 @@ function refreshHazards() {
       var affectedZoneInfo = {};
       var sawWinter = false, sawFlood = false, sawSevere = false;
 
-      btvAlerts.forEach(function(alert) {
+      function zonesForAlert(alert) {
+        var props = alert.properties || {};
+        var geocode = props.geocode || {};
+        var ugcs = []
+          .concat(Array.isArray(geocode.UGC) ? geocode.UGC : [])
+          .concat(Array.isArray(props.affectedZones) ? props.affectedZones : []);
+        var result = new Set();
 
-        let vtec = null;
-        const vtecArray = alert.properties.parameters && alert.properties.parameters.VTEC;
+        ugcs.forEach(function(value) {
+          // NWS API geocode UGCs are usually codes (VTZ001/VTC001);
+          // affectedZones, when supplied, can instead be URLs.
+          var code = String(value || '').trim().toUpperCase();
+          var match = code.match(/([A-Z]{2}[ZC]\d{3})$/);
+          if (!match) return;
+          code = match[1];
 
-        if (vtecArray && vtecArray.length) {
-          const parts = vtecArray[0].split(".");
-          if (parts.length >= 5) vtec = parts[3] + "." + parts[4];
-        } else {
-          const event = (alert.properties.event || "").toLowerCase();
-          if (event.includes("warning")) vtec = "XX.W";
-          else if (event.includes("watch")) vtec = "XX.A";
-          else if (event.includes("advisory")) vtec = "XX.Y";
-          else if (event.includes("statement")) vtec = "XX.S";
-          else if (event.includes("air quality")) vtec = "AQ.Y";
-        }
-
-        var alertZoneList = [];
-        (alert.properties.geocode && alert.properties.geocode.UGC || []).forEach(function(ugc) {
-          if (ugc.charAt(2) === "Z") {
-            alertZoneList.push(ugc);
-          } else if (ugc.charAt(2) === "C") {
-            var countyKey = ugc.substring(0,2) + ugc.substring(3,6);
-            if (COUNTY_TO_ZONES[countyKey]) {
-              COUNTY_TO_ZONES[countyKey].forEach(function(zoneNum){
-                alertZoneList.push(ugc.substring(0,2) + "Z" + zoneNum);
-              });
-            }
+          if (code.charAt(2) === 'Z') {
+            result.add(code);
+          } else if (code.charAt(2) === 'C') {
+            var countyKey = code.substring(0, 2) + code.substring(3, 6);
+            (COUNTY_TO_ZONES[countyKey] || []).forEach(function(zoneNum) {
+              result.add(code.substring(0, 2) + 'Z' + zoneNum);
+            });
           }
         });
-        var affectsBtvZone = alertZoneList.some(function(zone) { return BTV_ZONE_SET.has(zone); });
-        if (affectsBtvZone) {
-          activeHazardNames.add(alert.properties.event);
-          if (['WS.W','WS.A','WW.Y','BZ.W','SQ.W','IS.W','FZ.W','FZ.A'].indexOf(vtec) !== -1) sawWinter = true;
-          if (['FF.W','FF.A','FA.W','FA.A','FA.Y'].indexOf(vtec) !== -1) sawFlood = true;
-          if (['TO.W','SV.W','TO.A','SV.A'].indexOf(vtec) !== -1) sawSevere = true;
+
+        return Array.from(result);
+      }
+
+      function getAlertVtec(alert) {
+        var params = alert.properties.parameters || {};
+        var values = Array.isArray(params.VTEC) ? params.VTEC : [];
+        for (var i = 0; i < values.length; i++) {
+          var match = String(values[i]).match(/(?:^|\.)([A-Z]{2})\.([A-Z])\./);
+          if (match) return match[1] + '.' + match[2];
         }
+        var event = String(alert.properties.event || '').toLowerCase();
+        if (event.indexOf('warning') !== -1) return 'XX.W';
+        if (event.indexOf('watch') !== -1) return 'XX.A';
+        if (event.indexOf('advisory') !== -1) return 'XX.Y';
+        if (event.indexOf('statement') !== -1) return 'XX.S';
+        if (event.indexOf('air quality') !== -1) return 'AQ.Y';
+        return 'XX.S';
+      }
 
-        var drewPolygon = false;
-        if (
-          affectsBtvZone &&
-          alert.geometry &&
-          ["TO.W","SV.W","FF.W","FA.W","SQ.W","MA.W"].includes(vtec)
-        ) {
+      function getHazardColor(vtec) {
+        if (HAZARD_COLORS[vtec]) return HAZARD_COLORS[vtec];
+        if (vtec && vtec.endsWith('.W')) return '#e0645a';
+        if (vtec && vtec.endsWith('.A')) return '#facc15';
+        if (vtec && vtec.endsWith('.Y')) return '#e0a050';
+        return '#64748b';
+      }
 
-          let color = HAZARD_COLORS[vtec];
-          if (!color) {
-            if (vtec && vtec.endsWith(".Y")) color = "#e0a050";
-            else if (vtec && vtec.endsWith(".A")) color = "#facc15";
-            else if (vtec && vtec.endsWith(".W")) color = "#e0645a";
-            else color = "#64748b";
+      btvAlerts.forEach(function(alert) {
+        var props = alert.properties;
+        var vtec = getAlertVtec(alert);
+        var alertZones = zonesForAlert(alert);
+        var matchingZones = alertZones.filter(function(zone) {
+          return BTV_ZONE_SET.has(zone);
+        });
+        var affectsBtvZone = matchingZones.length > 0;
+
+        if (!affectsBtvZone) return;
+
+        var eventName = props.event || 'Weather Alert';
+        var color = getHazardColor(vtec);
+        activeHazardNames.add(eventName);
+        legendMap[eventName] = color;
+
+        if (['WS.W','WS.A','WW.Y','BZ.W','SQ.W','IS.W','FZ.W','FZ.A'].indexOf(vtec) !== -1) sawWinter = true;
+        if (['FF.W','FF.A','FA.W','FA.A','FA.Y'].indexOf(vtec) !== -1) sawFlood = true;
+        if (['TO.W','SV.W','TO.A','SV.A','SQ.W','MA.W'].indexOf(vtec) !== -1) sawSevere = true;
+
+        // Always record affected zones, even when a storm-based polygon is
+        // also available. This keeps the zone fallback correct when users
+        // toggle polygon visibility and preserves priority across overlaps.
+        matchingZones.forEach(function(zone) {
+          var currentRank = rankOf(vtec);
+          if (!affectedZones[zone] || currentRank > (affectedRanks[zone] || 0)) {
+            affectedZones[zone] = vtec;
+            affectedRanks[zone] = currentRank;
+            affectedZoneInfo[zone] = {
+              event: eventName,
+              headline: props.headline || '',
+              endTime: props.ends || props.expires || null
+            };
           }
+        });
 
-          if (!legendMap[alert.properties.event]) legendMap[alert.properties.event] = color;
-
-          const gLayer = L.geoJSON(alert.geometry,{
-            style: { color: color, weight: 2, fillColor: color, fillOpacity: 0.28 }
-          });
-
-          const exp = formatAlertExpiry(alert.properties.ends || alert.properties.expires);
-
-          gLayer.bindPopup(
-            "<b>" + escapeHtml(alert.properties.event) + "</b>" +
-            (alert.properties.headline ? "<br>" + escapeHtml(alert.properties.headline) : "") +
-            (exp ? "<br><span style='color:#8188a3'>" + escapeHtml(exp) + "</span>" : "")
-          );
-
-          warningPolygonLayer.addLayer(gLayer);
-          drewPolygon = true;
-        }
-
-        if (!drewPolygon) {
-          (alert.properties.geocode && alert.properties.geocode.UGC || []).forEach(function(ugc) {
-            var zoneList = [];
-            if (ugc.charAt(2) === "Z") {
-              zoneList.push(ugc);
-            } else if (ugc.charAt(2) === "C") {
-              var countyKey = ugc.substring(0,2) + ugc.substring(3,6);
-              if (COUNTY_TO_ZONES[countyKey]) {
-                COUNTY_TO_ZONES[countyKey].forEach(function(zoneNum){
-                  zoneList.push(ugc.substring(0,2) + "Z" + zoneNum);
-                });
-              }
-            }
-            zoneList.forEach(function(zone){
-              if (!BTV_ZONE_SET.has(zone)) return;
-              var currentRank = rankOf(vtec);
-              if (!affectedZones[zone] || currentRank > (affectedRanks[zone] || 0)) {
-                affectedZones[zone] = vtec;
-                affectedRanks[zone] = currentRank;
-                legendMap[alert.properties.event] = HAZARD_COLORS[vtec] || "#e0a050";
-                affectedZoneInfo[zone] = {
-                  event: alert.properties.event,
-                  endTime: alert.properties.ends || alert.properties.expires
-                };
-              }
+        // Draw every valid alert geometry that intersects the BTV CWA,
+        // rather than restricting polygon rendering to a short event list.
+        if (alert.geometry && typeof alert.geometry === 'object') {
+          try {
+            var gLayer = L.geoJSON(alert.geometry, {
+              style: { color: color, weight: 2, fillColor: color, fillOpacity: 0.28 }
             });
-          });
+            var exp = formatAlertExpiry(props.ends || props.expires);
+            gLayer.bindPopup(
+              '<b>' + escapeHtml(eventName) + '</b>' +
+              (props.headline ? '<br>' + escapeHtml(props.headline) : '') +
+              (exp ? "<br><span style='color:#8188a3'>" + escapeHtml(exp) + '</span>' : '')
+            );
+            warningPolygonLayer.addLayer(gLayer);
+          } catch (geometryError) {
+            console.warn('Could not draw alert geometry:', eventName, geometryError);
+          }
         }
       });
 
@@ -3985,26 +4008,32 @@ function refreshHazards() {
       _cachedAffectedZoneInfo = affectedZoneInfo;
       applyZoneStyling();
 
+      // Keep the polygon overlay in sync with the user's hazard toggle.
+      if (hazardsVisible) {
+        if (!map.hasLayer(warningPolygonLayer)) map.addLayer(warningPolygonLayer);
+      } else if (map.hasLayer(warningPolygonLayer)) {
+        map.removeLayer(warningPolygonLayer);
+      }
+
       renderMapLegend(
-        Object.keys(legendMap).map(function(name){ return { label: name, color: legendMap[name] }; })
+        Object.keys(legendMap).map(function(name) {
+          return { label: name, color: legendMap[name] };
+        })
       );
 
-      updateNavHazardSummary(Array.from(activeHazardNames));
-
+      updateNavHazardSummary(Array.from(activeHazardNames).sort());
       _activeSevereWarning = sawSevere;
       setWeatherMode(sawSevere ? 'storm' : sawWinter ? 'snow' : sawFlood ? 'rain' : 'calm');
       updateAlertMode();
 
       if (dssRows && dssRows.length > 0) loadData(dssRows, callRows);
-
     })
     .catch(function(err) {
-      console.error("Hazard refresh failed:", err);
+      console.error('Hazard refresh failed:', err);
       var el = document.getElementById('navHazardText');
-      if (el) el.textContent = 'Hazard data unavailable';
+      if (el) el.textContent = 'Hazard data unavailable — retaining last map state';
     });
 }
-
 function updateLastUpdated() {
   const now = new Date();
   document.getElementById("lastUpdatedText").textContent =
