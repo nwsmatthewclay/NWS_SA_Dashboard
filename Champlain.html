@@ -121,8 +121,16 @@ const shore=[[45.01,-73.37],[44.96,-73.39],[44.88,-73.40],[44.79,-73.42],[44.69,
 let windForecastFrames=[],windForecastLayer=null;
 function renderWindForecast(hour){
  if(!map||!windForecastFrames.length)return;
- const frame=windForecastFrames.find(x=>x.forecast_hour===Number(hour))||windForecastFrames[0];
+ const requestedHour=Number(hour);
+ const frame=windForecastFrames.find(x=>Number(x.forecast_hour)===requestedHour);
  if(windForecastLayer)map.removeLayer(windForecastLayer);
+ if(!frame){
+  updateLakeEffectCorridor(null,0,0,0,requestedHour);
+  $('windForecastLabel').textContent='+'+requestedHour+' h · forecast data unavailable';
+  $('windForecastValid').textContent='No wind-field frame was published for +'+requestedHour+' h. The viewer will not substitute hour 0 for a missing forecast hour.';
+  windForecastLayer=L.layerGroup([]).addTo(map);
+  return;
+ }
  const markers=[],points=frame.points||[],valid=[];
  // Every valid point contributes to diagnostics; only map symbols are thinned.
  points.forEach(p=>{
