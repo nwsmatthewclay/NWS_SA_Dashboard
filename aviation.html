@@ -568,7 +568,7 @@ function render(results){
  results.forEach(function(r){
   if(r.obsError)errs.push(r.site.id+" observation: "+r.obsError);
   if(r.tafError)errs.push(r.site.id+" TAF: "+r.tafError);
-  if(r.site.id==="KBTV"&&r.windError&&(!r.obs||!r.obs.wind||r.obs.wind==="—"))errs.push("KBTV wind: "+r.windError);
+  if(r.obs&&(!r.obs.wind||r.obs.wind==="—"))errs.push(r.site.id+" wind unavailable from both NWS and IEM");
  });
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
