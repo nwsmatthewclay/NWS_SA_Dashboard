@@ -401,9 +401,8 @@ async function loadSite(site){
  // Fetch official NWS observations on every refresh. For KBTV, take wind
  // from the live IEM ASOS feed first; NWS can omit wind during QC even when
  // the airport's METAR/ASOS report contains it. Fall back to recent NWS reports.
- var observationJobs=(site.id==="KBTV"||site.id==="KEFK")
-  ?[fetchNwsRecentObservations(site),fetchIemAsosWind(site)]
-  :[fetchNwsRecentObservations(site)];
+ // Query IEM for every airport as a live backup/comparison, not only KBTV/KEFK.
+ var observationJobs=[fetchNwsRecentObservations(site),fetchIemAsosWind(site)];
  var observationRequest=await Promise.allSettled(observationJobs);
  if(observationRequest[0].status==="fulfilled"&&observationRequest[0].value&&observationRequest[0].value.obs){
   result.obs=observationRequest[0].value.obs;
@@ -445,6 +444,28 @@ async function loadSite(site){
   }
  }else if(site.id==="KEFK"&&observationRequest[1]&&observationRequest[1].status==="rejected"){
   console.warn("KEFK IEM ASOS fallback failed; using NWS observation timestamp:",observationRequest[1].reason);
+ }
+
+ // Compare IEM's timestamped METAR with NWS for every site. Use IEM's complete
+ // METAR when it is newer, or when the NWS observation request failed. This
+ // prevents KPBG (and the other airports) being marked stale solely because
+ // the NWS station feed is lagging behind the current airport report.
+ if(observationRequest[1]&&observationRequest[1].status==="fulfilled"){
+  var iemReport=observationRequest[1].value;
+  var iemObs=obsFromFeature({properties:{
+   timestamp:iemReport.windTime?iemReport.windTime.toISOString():null,
+   rawMessage:iemReport.windRaw||""
+  }},site.id);
+  iemObs.wind=iemReport.wind;
+  iemObs.windTime=iemReport.windTime;
+  iemObs.windSource=iemReport.windSource;
+  iemObs.source="IEM ASOS METAR";
+  if(iemObs.time&&(!result.obs||!result.obs.time||iemObs.time.getTime()>result.obs.time.getTime())){
+   result.obs=iemObs;
+   result.obsError=null;
+  }
+ }else if(observationRequest[1]&&observationRequest[1].status==="rejected"){
+  console.warn(site.id+" IEM ASOS backup failed; retaining NWS observation if available:",observationRequest[1].reason);
  }
 
  // Per page refresh: request the current official NWS station TAF directly.
