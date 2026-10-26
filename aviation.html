@@ -254,7 +254,7 @@ async function fetchIemAsosWind(site){
  }
  if(headerIndex<0)throw new Error("IEM ASOS CSV header not recognized for "+site.id+": "+csv.slice(0,160).replace(/\s+/g," "));
  function column(row,name){var idx=headers.indexOf(name);return idx>=0&&idx<row.length?row[idx]:"";}
- var parsed=[];
+ var parsed=[],reports=[];
  for(var ri=headerIndex+1;ri<lines.length;ri++){
   var dataLine=lines[ri].trim();
   if(!dataLine||dataLine.charAt(0)==="#")continue;
@@ -277,20 +277,24 @@ async function fetchIemAsosWind(site){
   if((speed==null||speed<0)&&match)speed=Number(match[2]);
   if(direction==null&&match&&match[1].toUpperCase()!=="VRB")direction=Number(match[1]);
   if(gust==null&&match&&match[3])gust=Number(match[3]);
-  if(time&&isFinite(time.getTime())&&speed!=null&&isFinite(speed)&&speed>=0){
-   parsed.push({time:time,direction:direction,speed:speed,gust:gust,raw:raw,variable:!!(match&&match[1].toUpperCase()==="VRB")});
+  if(time&&isFinite(time.getTime())){
+   var report={time:time,direction:direction,speed:speed,gust:gust,raw:raw,variable:!!(match&&match[1].toUpperCase()==="VRB")};
+   reports.push(report);
+   if(speed!=null&&isFinite(speed)&&speed>=0)parsed.push(report);
   }
  }
+ reports.sort(function(a,b){return b.time-a.time});
  parsed.sort(function(a,b){return b.time-a.time});
- if(!parsed.length)throw new Error("IEM reports contained no timestamped usable wind for "+site.id);
- var w=parsed[0],text;
- if(w.speed===0)text="Calm";
- else{
+ var latestReport=reports.find(function(r){return !!r.raw})||reports[0]||null;
+ var w=parsed[0]||null,text="—";
+ if(w&&w.speed===0)text="Calm";
+ else if(w){
   var directionText=w.variable?"VRB ":w.direction!=null&&isFinite(w.direction)?String(Math.round(w.direction)).padStart(3,"0")+"° ":"";
   text=directionText+Math.round(w.speed)+" kt";
   if(w.gust!=null&&isFinite(w.gust)&&w.gust>w.speed)text+=" G"+Math.round(w.gust)+" kt";
  }
- return {wind:text,windTime:w.time,windSource:"IEM ASOS",windRaw:w.raw,windSpeedKt:w.speed,windDirectionDeg:w.direction,windGustKt:w.gust};
+ if(!latestReport&&!w)throw new Error("IEM returned no timestamped ASOS reports for "+site.id);
+ return {reportTime:latestReport?latestReport.time:null,reportRaw:latestReport?latestReport.raw:"",wind:text,windTime:w?w.time:null,windSource:"IEM ASOS",windRaw:w?w.raw:"",windSpeedKt:w?w.speed:null,windDirectionDeg:w?w.direction:null,windGustKt:w?w.gust:null};
 }
 async function fetchNwsRecentObservations(site){
  // Browser-only: read recent official NWS station observations directly.
