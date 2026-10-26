@@ -575,7 +575,7 @@ function render(results){
  });
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="Browser-direct NWS observations/TAFs; wind recovered from recent NWS reports when the newest METAR masks it • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="Browser-direct NWS TAFs/observations with IEM ASOS METAR timestamp fallback when newer • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
