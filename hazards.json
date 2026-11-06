@@ -10,74 +10,7 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-59939",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-59939",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-59939",
-                "areaDesc": "Montgomery",
-                "geocode": {
-                    "SAME": [
-                        "024031"
-                    ],
-                    "UGC": [
-                        "MDC031"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/county/MDC031"
-                ],
-                "references": [],
-                "sent": "2026-11-06T03:14:58+00:00",
-                "effective": "2026-11-06T03:14:58+00:00",
-                "onset": null,
-                "expires": "2026-11-06T03:24:58+00:00",
-                "ends": null,
-                "status": "Test",
-                "messageType": "Alert",
-                "category": "Met",
-                "severity": "Unknown",
-                "certainty": "Unknown",
-                "urgency": "Unknown",
-                "event": "Test Message",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS",
-                "headline": null,
-                "description": "Monitoring message only. Please disregard.",
-                "instruction": "Monitoring message only. Please disregard.",
-                "response": "None",
-                "note": "This is only a test for monitoring of vital dissemination systems.",
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "KEPWBC"
-                    ],
-                    "WMOidentifier": [
-                        "NZUS91 KWBC 060314"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "CMAS",
-                        "EAS",
-                        "NWEM"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "TST"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b73f8921e0589cabe4bb5cd0278debb6b6a492d7.001.1",
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f089905684ab1b1f734c2fb041d5c359bb7f5f62.001.1",
             "type": "Feature",
             "geometry": {
                 "type": "Polygon",
@@ -115,9 +48,9 @@
                 ]
             },
             "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b73f8921e0589cabe4bb5cd0278debb6b6a492d7.001.1",
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f089905684ab1b1f734c2fb041d5c359bb7f5f62.001.1",
                 "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.b73f8921e0589cabe4bb5cd0278debb6b6a492d7.001.1",
+                "id": "urn:oid:2.49.0.1.840.0.f089905684ab1b1f734c2fb041d5c359bb7f5f62.001.1",
                 "areaDesc": "Coastal waters from Port Aransas to Matagorda Ship Channel out 20 NM",
                 "geocode": {
                     "SAME": [
@@ -130,14 +63,21 @@
                 "affectedZones": [
                     "https://api.weather.gov/zones/forecast/GMZ255"
                 ],
-                "references": [],
-                "sent": "2026-11-05T21:07:00-06:00",
-                "effective": "2026-11-05T21:07:00-06:00",
-                "onset": "2026-11-05T21:07:00-06:00",
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b73f8921e0589cabe4bb5cd0278debb6b6a492d7.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.b73f8921e0589cabe4bb5cd0278debb6b6a492d7.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-11-05T21:07:00-06:00"
+                    }
+                ],
+                "sent": "2026-11-05T21:29:00-06:00",
+                "effective": "2026-11-05T21:29:00-06:00",
+                "onset": "2026-11-05T21:29:00-06:00",
                 "expires": "2026-11-05T21:45:00-06:00",
                 "ends": "2026-11-05T21:45:00-06:00",
                 "status": "Actual",
-                "messageType": "Alert",
+                "messageType": "Update",
                 "category": "Met",
                 "severity": "Severe",
                 "certainty": "Likely",
@@ -145,20 +85,23 @@
                 "event": "Special Marine Warning",
                 "sender": "w-nws.webmaster@noaa.gov",
                 "senderName": "NWS Corpus Christi TX",
-                "headline": "Special Marine Warning issued November 5 at 9:07PM CST until November 5 at 9:45PM CST by NWS Corpus Christi TX",
-                "description": "SMWCRP\n\nThe National Weather Service in Corpus Christi has issued a\n\n* Special Marine Warning for...\nCoastal waters from Port Aransas to Matagorda Ship Channel out 20\nNM...\n\n* Until 945 PM CST.\n\n* At 907 PM CST, a severe thunderstorm capable of producing\nwaterspouts was located 17 NM east of Port Aransas, moving\nsoutheast at 10 knots.\n\nHAZARD...Waterspouts and wind gusts to 34 knots.\n\nSOURCE...Radar indicated.\n\nIMPACT...Waterspouts can easily overturn boats and create locally\nhazardous seas. Small craft could be damaged in briefly\nhigher winds and suddenly higher waves.\n\n* Locations impacted include...\nMainly open waters from Port Aransas to Matagorda Ship Channel out\n20 NM.",
+                "headline": "Special Marine Warning issued November 5 at 9:29PM CST until November 5 at 9:45PM CST by NWS Corpus Christi TX",
+                "description": "For the following areas...\nCoastal waters from Port Aransas to Matagorda Ship Channel out 20\nNM...\n\nAt 929 PM CST, a severe thunderstorm capable of producing waterspouts\nwas located 20 NM east of Port Aransas, moving southeast at 10 knots.\n\nHAZARD...Waterspouts and wind gusts to 34 knots.\n\nSOURCE...Radar indicated.\n\nIMPACT...Waterspouts can easily overturn boats and create locally\nhazardous seas. Small craft could be damaged in briefly\nhigher winds and suddenly higher waves.\n\nLocations impacted include...\nMainly open waters from Port Aransas to Matagorda Ship Channel out\n20 NM.",
                 "instruction": "Move to safe harbor until hazardous weather passes.",
                 "response": "Avoid",
                 "note": null,
                 "parameters": {
                     "AWIPSidentifier": [
-                        "SMWCRP"
+                        "MWSCRP"
                     ],
                     "WMOidentifier": [
-                        "WHUS54 KCRP 060307"
+                        "FZUS74 KCRP 060329"
+                    ],
+                    "NWSheadline": [
+                        "SPECIAL MARINE WARNING REMAINS IN EFFECT UNTIL 945 PM CST"
                     ],
                     "eventMotionDescription": [
-                        "2026-11-06T03:06:00-00:00...storm...306DEG...8KT...27.82,-96.77"
+                        "2026-11-06T03:07:00-00:00...storm...306DEG...8KT...27.82,-96.77"
                     ],
                     "maxWindGust": [
                         "34 knots"
@@ -174,11 +117,8 @@
                         "NWEM",
                         "CMAS"
                     ],
-                    "EAS-ORG": [
-                        "WXR"
-                    ],
                     "VTEC": [
-                        "/O.NEW.KCRP.MA.W.0059.261106T0307Z-261106T0345Z/"
+                        "/O.CON.KCRP.MA.W.0059.000000T0000Z-261106T0345Z/"
                     ],
                     "eventEndingTime": [
                         "2026-11-05T21:45:00-06:00"
@@ -190,10 +130,340 @@
                 "web": "http://www.weather.gov",
                 "eventCode": {
                     "SAME": [
-                        "SMW"
+                        "NWS"
                     ],
                     "NationalWeatherService": [
                         "MAW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.039f547c165adad2acb25bc7785fddce662a077e.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.039f547c165adad2acb25bc7785fddce662a077e.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.039f547c165adad2acb25bc7785fddce662a077e.001.1",
+                "areaDesc": "Pike; Barbour",
+                "geocode": {
+                    "SAME": [
+                        "001109",
+                        "001005"
+                    ],
+                    "UGC": [
+                        "ALZ049",
+                        "ALZ050"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/ALZ049",
+                    "https://api.weather.gov/zones/forecast/ALZ050"
+                ],
+                "references": [],
+                "sent": "2026-11-05T21:28:00-06:00",
+                "effective": "2026-11-05T21:28:00-06:00",
+                "onset": "2026-11-05T21:28:00-06:00",
+                "expires": "2026-11-06T03:00:00-06:00",
+                "ends": "2026-11-06T03:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Dense Fog Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Birmingham AL",
+                "headline": "Dense Fog Advisory issued November 5 at 9:28PM CST until November 6 at 3:00AM CST by NWS Birmingham AL",
+                "description": "* WHAT...Visibility one quarter mile or less in dense fog.\n\n* WHERE...Barbour and Pike Counties.\n\n* WHEN...Until 3 AM CST Friday.\n\n* IMPACTS...Low visibility could make driving conditions hazardous.",
+                "instruction": "If driving, slow down, use your headlights, and leave plenty of\ndistance ahead of you.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWBMX"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS74 KBMX 060328"
+                    ],
+                    "NWSheadline": [
+                        "DENSE FOG ADVISORY IN EFFECT UNTIL 3 AM CST FRIDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KBMX.FG.Y.0019.261106T0328Z-261106T0900Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-11-06T03:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FGY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0c0ec64aaf23ee022a913d016fdb9c8a6c1b962b.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0c0ec64aaf23ee022a913d016fdb9c8a6c1b962b.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.0c0ec64aaf23ee022a913d016fdb9c8a6c1b962b.002.1",
+                "areaDesc": "Calumet Harbor IL to Gary IN; Gary to Burns Harbor IN; Burns Harbor to Michigan City IN",
+                "geocode": {
+                    "SAME": [
+                        "092743",
+                        "092744",
+                        "092745"
+                    ],
+                    "UGC": [
+                        "LMZ743",
+                        "LMZ744",
+                        "LMZ745"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/LMZ743",
+                    "https://api.weather.gov/zones/forecast/LMZ744",
+                    "https://api.weather.gov/zones/forecast/LMZ745"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-11-05T13:51:00-06:00"
+                    }
+                ],
+                "sent": "2026-11-05T21:27:00-06:00",
+                "effective": "2026-11-05T21:27:00-06:00",
+                "onset": "2026-11-05T21:27:00-06:00",
+                "expires": "2026-11-06T05:30:00-06:00",
+                "ends": "2026-11-07T15:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Chicago IL",
+                "headline": "Small Craft Advisory issued November 5 at 9:27PM CST until November 7 at 3:00PM CST by NWS Chicago IL",
+                "description": "* WHAT...Northwest winds to 30 kt and significant waves to 11 ft\noccasionally to 14 ft.\n\n* WHERE...Calumet Harbor IL to Michigan City IN.\n\n* WHEN...Until 3 PM CST Saturday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWLOT"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS73 KLOT 060327"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 3 PM CST SATURDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KLOT.SC.Y.0093.000000T0000Z-261107T2100Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-11-07T15:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f420dd35f278f76cffabe2ca0f4a910a3d50f457.002.2,2026-11-05T08:37:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fd268011bb84e41fd9bfea019e91ef1e35a4d1cc.002.2,2026-11-05T03:03:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0c0ec64aaf23ee022a913d016fdb9c8a6c1b962b.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.0c0ec64aaf23ee022a913d016fdb9c8a6c1b962b.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.0c0ec64aaf23ee022a913d016fdb9c8a6c1b962b.001.1",
+                "areaDesc": "Winthrop Harbor to Wilmette Harbor IL; Wilmette Harbor to Northerly Island IL; Northerly Island to Calumet Harbor IL",
+                "geocode": {
+                    "SAME": [
+                        "092740",
+                        "092741",
+                        "092742"
+                    ],
+                    "UGC": [
+                        "LMZ740",
+                        "LMZ741",
+                        "LMZ742"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/LMZ740",
+                    "https://api.weather.gov/zones/forecast/LMZ741",
+                    "https://api.weather.gov/zones/forecast/LMZ742"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-11-05T13:51:00-06:00"
+                    }
+                ],
+                "sent": "2026-11-05T21:27:00-06:00",
+                "effective": "2026-11-05T21:27:00-06:00",
+                "onset": "2026-11-05T21:27:00-06:00",
+                "expires": "2026-11-06T05:30:00-06:00",
+                "ends": "2026-11-07T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Small Craft Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Chicago IL",
+                "headline": "Small Craft Advisory issued November 5 at 9:27PM CST until November 7 at 9:00AM CST by NWS Chicago IL",
+                "description": "* WHAT...Northwest winds to 30 kt and significant waves to 8 ft\noccasionally to 10 ft.\n\n* WHERE...Winthrop Harbor to Calumet Harbor IL.\n\n* WHEN...Until 9 AM CST Saturday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
+                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
+                "response": "Avoid",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "MWWLOT"
+                    ],
+                    "WMOidentifier": [
+                        "WHUS73 KLOT 060327"
+                    ],
+                    "NWSheadline": [
+                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 9 AM CST SATURDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KLOT.SC.Y.0093.000000T0000Z-261107T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-11-07T09:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.f420dd35f278f76cffabe2ca0f4a910a3d50f457.001.2,2026-11-05T08:37:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fd268011bb84e41fd9bfea019e91ef1e35a4d1cc.001.2,2026-11-05T03:03:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "SCY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-29239",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0-KEEPALIVE-29239",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0-KEEPALIVE-29239",
+                "areaDesc": "Montgomery",
+                "geocode": {
+                    "SAME": [
+                        "024031"
+                    ],
+                    "UGC": [
+                        "MDC031"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MDC031"
+                ],
+                "references": [],
+                "sent": "2026-11-06T03:24:58+00:00",
+                "effective": "2026-11-06T03:24:58+00:00",
+                "onset": null,
+                "expires": "2026-11-06T03:34:58+00:00",
+                "ends": null,
+                "status": "Test",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Unknown",
+                "certainty": "Unknown",
+                "urgency": "Unknown",
+                "event": "Test Message",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS",
+                "headline": null,
+                "description": "Monitoring message only. Please disregard.",
+                "instruction": "Monitoring message only. Please disregard.",
+                "response": "None",
+                "note": "This is only a test for monitoring of vital dissemination systems.",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "KEPWBC"
+                    ],
+                    "WMOidentifier": [
+                        "NZUS91 KWBC 060324"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "CMAS",
+                        "EAS",
+                        "NWEM"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "TST"
                     ]
                 }
             }
@@ -24279,190 +24549,6 @@
             }
         },
         {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.002.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.002.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.002.1",
-                "areaDesc": "Calumet Harbor IL to Gary IN; Gary to Burns Harbor IN; Burns Harbor to Michigan City IN",
-                "geocode": {
-                    "SAME": [
-                        "092743",
-                        "092744",
-                        "092745"
-                    ],
-                    "UGC": [
-                        "LMZ743",
-                        "LMZ744",
-                        "LMZ745"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/LMZ743",
-                    "https://api.weather.gov/zones/forecast/LMZ744",
-                    "https://api.weather.gov/zones/forecast/LMZ745"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f420dd35f278f76cffabe2ca0f4a910a3d50f457.002.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.f420dd35f278f76cffabe2ca0f4a910a3d50f457.002.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-11-05T08:37:00-06:00"
-                    }
-                ],
-                "sent": "2026-11-05T13:51:00-06:00",
-                "effective": "2026-11-05T13:51:00-06:00",
-                "onset": "2026-11-05T18:00:00-06:00",
-                "expires": "2026-11-05T22:00:00-06:00",
-                "ends": "2026-11-07T15:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Small Craft Advisory issued November 5 at 1:51PM CST until November 7 at 3:00PM CST by NWS Chicago IL",
-                "description": "* WHAT...Northwest winds to 30 kt with a few gale force gusts to\n35 kt and significant waves to 11 ft occasionally to 14 ft\nexpected.\n\n* WHERE...Calumet Harbor IL to Michigan City IN.\n\n* WHEN...From 6 PM this evening to 3 PM CST Saturday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS73 KLOT 051951"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 6 PM THIS EVENING TO 3 PM CST SATURDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KLOT.SC.Y.0093.261106T0000Z-261107T2100Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-11-07T15:00:00-06:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fd268011bb84e41fd9bfea019e91ef1e35a4d1cc.002.2,2026-11-05T03:03:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.001.1",
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.001.1",
-                "@type": "wx:Alert",
-                "id": "urn:oid:2.49.0.1.840.0.e7c7f471c023499e79525277bc0c10fe561f3181.001.1",
-                "areaDesc": "Winthrop Harbor to Wilmette Harbor IL; Wilmette Harbor to Northerly Island IL; Northerly Island to Calumet Harbor IL",
-                "geocode": {
-                    "SAME": [
-                        "092740",
-                        "092741",
-                        "092742"
-                    ],
-                    "UGC": [
-                        "LMZ740",
-                        "LMZ741",
-                        "LMZ742"
-                    ]
-                },
-                "affectedZones": [
-                    "https://api.weather.gov/zones/forecast/LMZ740",
-                    "https://api.weather.gov/zones/forecast/LMZ741",
-                    "https://api.weather.gov/zones/forecast/LMZ742"
-                ],
-                "references": [
-                    {
-                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f420dd35f278f76cffabe2ca0f4a910a3d50f457.001.2",
-                        "identifier": "urn:oid:2.49.0.1.840.0.f420dd35f278f76cffabe2ca0f4a910a3d50f457.001.2",
-                        "sender": "w-nws.webmaster@noaa.gov",
-                        "sent": "2026-11-05T08:37:00-06:00"
-                    }
-                ],
-                "sent": "2026-11-05T13:51:00-06:00",
-                "effective": "2026-11-05T13:51:00-06:00",
-                "onset": "2026-11-05T18:00:00-06:00",
-                "expires": "2026-11-05T22:00:00-06:00",
-                "ends": "2026-11-07T09:00:00-06:00",
-                "status": "Actual",
-                "messageType": "Update",
-                "category": "Met",
-                "severity": "Minor",
-                "certainty": "Likely",
-                "urgency": "Expected",
-                "event": "Small Craft Advisory",
-                "sender": "w-nws.webmaster@noaa.gov",
-                "senderName": "NWS Chicago IL",
-                "headline": "Small Craft Advisory issued November 5 at 1:51PM CST until November 7 at 9:00AM CST by NWS Chicago IL",
-                "description": "* WHAT...Northwest winds to 30 kt and significant waves to 8 ft\noccasionally to 10 ft expected.\n\n* WHERE...Winthrop Harbor to Calumet Harbor IL.\n\n* WHEN...From 6 PM this evening to 9 AM CST Saturday.\n\n* IMPACTS...Conditions will be hazardous to small craft.",
-                "instruction": "Inexperienced mariners, especially those operating smaller\nvessels, should avoid navigating in hazardous conditions.",
-                "response": "Avoid",
-                "note": null,
-                "parameters": {
-                    "AWIPSidentifier": [
-                        "MWWLOT"
-                    ],
-                    "WMOidentifier": [
-                        "WHUS73 KLOT 051951"
-                    ],
-                    "NWSheadline": [
-                        "SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 6 PM THIS EVENING TO 9 AM CST SATURDAY"
-                    ],
-                    "BLOCKCHANNEL": [
-                        "EAS",
-                        "NWEM",
-                        "CMAS"
-                    ],
-                    "VTEC": [
-                        "/O.CON.KLOT.SC.Y.0093.261106T0000Z-261107T1500Z/"
-                    ],
-                    "eventEndingTime": [
-                        "2026-11-07T09:00:00-06:00"
-                    ],
-                    "expiredReferences": [
-                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.fd268011bb84e41fd9bfea019e91ef1e35a4d1cc.001.2,2026-11-05T03:03:00-06:00"
-                    ]
-                },
-                "scope": "Public",
-                "code": "IPAWSv1.0",
-                "language": "en-US",
-                "web": "http://www.weather.gov",
-                "eventCode": {
-                    "SAME": [
-                        "NWS"
-                    ],
-                    "NationalWeatherService": [
-                        "SCY"
-                    ]
-                }
-            }
-        },
-        {
             "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.a3ea89c38ef92d029872b844bea11b59d3fc7f35.001.1",
             "type": "Feature",
             "geometry": {
@@ -41070,5 +41156,5 @@
         }
     ],
     "title": "Current watches, warnings, and advisories",
-    "updated": "2026-11-06T03:15:06+00:00"
+    "updated": "2026-11-06T03:29:41+00:00"
 }
