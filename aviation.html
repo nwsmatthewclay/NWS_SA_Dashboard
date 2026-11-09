@@ -37,8 +37,8 @@ footer{font-size:11px;color:#4c6480;padding:8px 20px 0;display:flex;justify-cont
 (function(){
 "use strict";
 var SITES=[
- {id:"KBTV",tafLocation:"BTV",iem:"BTV",city:"Burlington"},{id:"KSLK",tafLocation:"SLK",iem:"SLK",city:"Saranac Lake"},{id:"KPBG",tafLocation:"PBG",iem:"PBG",city:"Plattsburgh"},
- {id:"KMPV",tafLocation:"MPV",iem:"MPV",city:"Montpelier"},{id:"KEFK",tafLocation:"EFK",iem:"EFK",city:"Newport"},{id:"KRUT",tafLocation:"RUT",iem:"RUT",city:"Rutland"},{id:"KMSS",tafLocation:"MSS",iem:"MSS",city:"Massena"}
+ {id:"KBTV",tafLocation:"BTV",iem:"BTV",city:"Burlington"},{id:"KSLK",tafLocation:"SLK",iem:"SLK",iemNetwork:"NY_ASOS",city:"Saranac Lake"},{id:"KPBG",tafLocation:"PBG",iem:"PBG",city:"Plattsburgh"},
+ {id:"KMPV",tafLocation:"MPV",iem:"MPV",city:"Montpelier"},{id:"KEFK",tafLocation:"EFK",iem:"EFK",iemNetwork:"VT_ASOS",city:"Newport"},{id:"KRUT",tafLocation:"RUT",iem:"RUT",city:"Rutland"},{id:"KMSS",tafLocation:"MSS",iem:"MSS",city:"Massena"}
 ];
 var ORDER=["VFR","MVFR","IFR","LIFR"],TICK=300000,latestObs={},latestTaf={},lastObsSuccess=null,lastTafSuccess=null,busy=false;
 var $=function(id){return document.getElementById(id)};
@@ -229,7 +229,8 @@ async function fetchIemAsosWind(site){
  // cannot be lost to Response.json() throwing a syntax error.
  var station=site.iem||site.id.replace(/^K/,"");
  var url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station="+encodeURIComponent(station)+
-  "&data=drct&data=sknt&data=gust&data=metar&hours=3&tz=UTC&format=onlycomma&missing=empty&trace=empty";
+  (site.iemNetwork?"&network="+encodeURIComponent(site.iemNetwork):"")+
+  "&data=drct&data=sknt&data=gust&data=metar&hours=12&tz=UTC&format=onlycomma&missing=empty&trace=empty";
  // Use no-store rather than adding a custom query parameter: IEM validates
  // request parameters and may reject unrecognized cache-buster keys.
  var response=await fetch(url,{cache:"no-store"});
