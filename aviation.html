@@ -56,6 +56,15 @@ function category(ceilingFt,visSm){
 function catIndex(c){return ORDER.indexOf(c)}
 function ft(m){return m==null?null:m*3.28084}
 function sm(m){return m==null?null:m/1609.344}
+// Prefer the observation time encoded in the METAR itself (DDHHMMZ) over
+// a provider's ingestion/updated timestamp. This keeps freshness tied to the
+// actual report when NWS and IEM timestamp metadata disagree.
+function reportTimeFromMetar(raw,fallback){
+ var m=/\\b(\\d{2})(\\d{2})(\\d{2})Z\\b/.exec(String(raw||""));
+ if(!m)return fallback;
+ var base=fallback&&isFinite(fallback.getTime())?fallback:new Date();
+ return zDate(Number(m[1]),Number(m[2]),Number(m[3]),base);
+}
 function obsFromFeature(f,id){
  var p=(f&&f.properties)||{},raw=p.rawMessage||p.rawMETAR||"";
  var ceiling=p.ceiling&&num(p.ceiling.value)!=null?ft(p.ceiling.value):null;
@@ -124,7 +133,9 @@ function obsFromFeature(f,id){
  if(!wx.length&&metarWx.length)wx=metarWx.map(function(x){return x.trim()});
  var weatherText=wx.length?wx.join(", "):"No significant weather reported";
  var t=p.timestamp||p.time||null;
- return {id:id,time:t?new Date(t):null,ceilingFt:ceiling,clouds:cloudsText,visSm:visibility,wind:windText,weather:weatherText,cat:category(ceiling,visibility),raw:raw,properties:p};
+ var fallbackTime=t?new Date(t):null;
+ var reportTime=reportTimeFromMetar(raw,fallbackTime);
+ return {id:id,time:reportTime,ceilingFt:ceiling,clouds:cloudsText,visSm:visibility,wind:windText,weather:weatherText,cat:category(ceiling,visibility),raw:raw,properties:p};
 }
 function zDate(day,hour,minute,base){
  var d=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),day,hour,minute||0));
@@ -272,6 +283,8 @@ async function fetchIemAsosWind(site){
   var direction=numField(column(cells,"drct"));
   var gust=numField(column(cells,"gust"));
   var raw=String(column(cells,"metar")||"");
+  // Use the METAR issue time for freshness, not a possibly delayed provider timestamp.
+  time=reportTimeFromMetar(raw,time);
   // If a structured field is masked, recover what is explicitly reported in METAR.
   var match=/(?:^|\s)(VRB|\d{3})(\d{2,3})(?:G(\d{2,3}))?KT(?=\s|$)/i.exec(raw);
   if((speed==null||speed<0)&&match)speed=Number(match[2]);
