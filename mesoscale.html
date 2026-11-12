@@ -39,7 +39,7 @@ select,input[type=range]{width:100%}select{background:#071827;color:var(--text);
 <nav id="tabs"><button class="active" data-tab="environment">Environment</button><button data-tab="soundings">Soundings</button><button data-tab="kinematics">Kinematics &amp; Forcing</button><button data-tab="cross">Cross-Sections</button><button data-tab="compare">Model Compare</button><button data-tab="evolution">Time Evolution</button></nav>
 <main class="layout">
 <aside class="panel"><h2>Analysis Controls</h2><div class="pad">
-<div class="field"><label>Model</label><select id="model"><option value="RAP">RAP · 13 km</option><option value="HRRR">HRRR · 3 km</option></select></div>
+<div class="field"><label>Model</label><select id="model"><option value="RRFS">RRFS · 3 km CONUS</option><option value="HRRR">HRRR · 3 km</option><option value="RAP">RAP · 13 km</option></select></div>
 <div class="field"><label>Model cycle</label><select id="cycle"><option>Latest available cycle</option></select></div>
 <div class="field"><label>Forecast hour</label><div class="range-row"><input id="hour" type="range" min="0" max="18" value="0"><output id="hourOut">F00</output></div></div>
 <div class="field"><label>Map parameter</label><select id="parameter"><option value="surface">Surface observations</option><option value="cape">CAPE / CIN</option><option value="shear">0–6 km bulk shear</option><option value="srh">0–1 km SRH</option><option value="pwat">Precipitable water</option><option value="lapse">700–500 mb lapse rate</option><option value="fronto">850 mb frontogenesis</option><option value="omega">700 mb vertical velocity</option><option value="moisture">925 mb moisture convergence</option></select></div>
@@ -77,7 +77,7 @@ document.getElementById('drawTransect').onclick=()=>{transect=[];drawing=true;do
 document.getElementById('clearTransect').onclick=()=>{transect=[];drawing=false;if(line){map.removeLayer(line);line=null;}document.getElementById('drawTransect').textContent='Draw cross-section line';document.getElementById('mapChip').textContent='BTV CWA · Click map to interrogate a point';};
 document.getElementById('reset').onclick=document.getElementById('locateBtv').onclick=()=>{map.setView([44.4719,-73.1533],7);selectPoint(44.4719,-73.1533,'KBTV');};
 document.getElementById('hour').oninput=e=>document.getElementById('hourOut').textContent='F'+String(e.target.value).padStart(2,'0');
-document.getElementById('model').onchange=e=>{const h=e.target.value==='HRRR'?'3 km nominal':'13 km nominal';document.getElementById('gridSpacing').textContent=h;document.getElementById('provModel').textContent=e.target.value+' · not connected';document.querySelector('#investigation .detail-line:nth-child(1) b').textContent=e.target.value;};
+document.getElementById('model').onchange=e=>{const h=e.target.value==='RAP'?'13 km nominal':'3 km nominal';document.getElementById('gridSpacing').textContent=h;document.getElementById('provModel').textContent=e.target.value+' · discovery feed';document.querySelector('#investigation .detail-line:nth-child(1) b').textContent=e.target.value;};
 document.getElementById('parameter').onchange=e=>{const label=e.target.options[e.target.selectedIndex].text;document.getElementById('mapTitle').textContent='Environment · '+label;document.getElementById('mapChip').textContent=label+' · awaiting verified model grid';};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));window.activeTab=b.dataset.tab;const titles={environment:'Environment',soundings:'Soundings',kinematics:'Kinematics & Forcing',cross:'Cross-Sections',compare:'Model Comparison',evolution:'Time Evolution'};document.getElementById('mapTitle').textContent=titles[window.activeTab]+' · Shared map selection';if(window.activeTab==='cross'&&!line)document.getElementById('mapChip').textContent='Draw a transect using the button below';});
 function renderProfilePlaceholder(){/* profile plot is intentionally blank until real vertical data are ingested */}
@@ -102,7 +102,7 @@ async function loadModelManifest(){
     const product=products.find(p=>p.cycle_utc===cycles[0]);
     document.getElementById('provModel').textContent=selectedModel+' · discovered';
     document.querySelector('#investigation .detail-line:nth-child(2) b').textContent=cycles[0];
-    badge.textContent='MODEL FILES DISCOVERED · NOT DECODED';badge.style.color='var(--green)';
+    badge.textContent=selectedModel+' FILES DISCOVERED · NOT DECODED';badge.style.color='var(--green)';
     document.getElementById('mapChip').textContent=selectedModel+' latest discovered cycle '+cycles[0]+' · model fields not yet decoded';
     if(product)document.getElementById('selectionStatus').textContent='Latest file: '+product.filename;
   }catch(error){
