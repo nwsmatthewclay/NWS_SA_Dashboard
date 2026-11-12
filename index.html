@@ -2149,7 +2149,7 @@ var BTV_COUNTIES = [
   'NYC019','NYC031','NYC033','NYC089'
 ];
 
-var map, markerLayer, warningZoneLayer = null, warningPolygonLayer, lightningLayer, spotForecastLayer;
+var map, markerLayer, warningZoneLayer = null, cwaBoundaryLayer = null, warningPolygonLayer, lightningLayer, spotForecastLayer;
 
 if (typeof L === 'undefined') {
   console.error('Leaflet library (leaflet.js) never loaded — check network access to cdn.jsdelivr.net from this device.');
@@ -2572,13 +2572,16 @@ function getMarkerColor(dssType) {
 function getForecastZoneCode(feature) {
   if (!feature) return "";
   var props = feature.properties || {};
-  var candidates = [feature.id, props.id, props.zoneId, props.ugc];
+  var candidates = [feature.id, props.id, props.zoneId, props.ugc, props.state_zone, props.STATE_ZONE];
   for (var i = 0; i < candidates.length; i++) {
-    var match = String(candidates[i] || "").toUpperCase().match(/(?:^|\/)([A-Z]{2}Z\d{3})$/);
-    if (match) return match[1];
+    var value = String(candidates[i] || "").toUpperCase().trim();
+    var full = value.match(/(?:^|\/)([A-Z]{2}Z\d{3})$/);
+    if (full) return full[1];
+    var compact = value.match(/^([A-Z]{2})(\d{3})$/);
+    if (compact) return compact[1] + "Z" + compact[2];
   }
   var state = String(props.state || props.STATE || "").toUpperCase();
-  var zoneNumber = props.zoneNumber || props.ZONE;
+  var zoneNumber = props.zoneNumber || props.zone || props.ZONE;
   if (state && zoneNumber !== undefined && zoneNumber !== null) {
     return state + "Z" + String(zoneNumber).padStart(3, "0");
   }
@@ -4595,42 +4598,87 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Load official NWS forecast-zone boundaries directly from api.weather.gov.
-  // The previous raw GitHub URL referenced an unavailable repository, preventing
-  // the zone layer from initializing and therefore preventing alert shading.
-  Promise.all(['VT', 'NY'].map(function(state) {
-    return fetch('https://api.weather.gov/zones/forecast?area=' + state, {
-      cache: 'no-store',
-      headers: { 'Accept': 'application/geo+json' }
-    }).then(function(response) {
-      if (!response.ok) throw new Error('NWS ' + state + ' forecast zones HTTP ' + response.status);
+  // Official NWS AWIPS reference-map service:
+  // Layer 8 contains public forecast-zone polygons; Layer 1 contains CWA boundaries.
+  var nwsReferenceBase = 'https://mapservices.weather.noaa.gov/static/rest/services/nws_reference_maps/nws_reference_map/MapServer/';
+  var zoneQueryUrl = nwsReferenceBase + '8/query?where=' + encodeURIComponent("cwa='BTV'") +
+    '&outFields=state,zone,cwa,name,state_zone&returnGeometry=true&outSR=4326&f=geojson';
+  var cwaQueryUrl = nwsReferenceBase + '1/query?where=' + encodeURIComponent("cwa='BTV'") +
+    '&outFields=cwa,wfo,citystate&returnGeometry=true&outSR=4326&f=geojson';
+
+  Promise.all([
+    fetch(zoneQueryUrl, { cache: 'no-store' }).then(function(response) {
+      if (!response.ok) throw new Error('NWS BTV forecast-zone query HTTP ' + response.status);
       return response.json();
-    });
-  }))
-    .then(function(zoneCollections) {
-      var zoneFeatures = [];
-      zoneCollections.forEach(function(collection) {
-        if (collection && Array.isArray(collection.features)) {
-          collection.features.forEach(function(feature) {
-            if (BTV_ZONE_SET.has(getForecastZoneCode(feature))) zoneFeatures.push(feature);
-          });
-        }
+    }),
+    fetch(cwaQueryUrl, { cache: 'no-store' }).then(function(response) {
+      if (!response.ok) throw new Error('NWS BTV CWA query HTTP ' + response.status);
+      return response.json();
+    })
+  ])
+    .then(function(results) {
+      var zoneData = results[0];
+      var cwaData = results[1];
+      if (!zoneData || !Array.isArray(zoneData.features) || !zoneData.features.length) {
+        throw new Error('NWS GIS returned no BTV forecast-zone polygons');
+      }
+      if (!cwaData || !Array.isArray(cwaData.features) || !cwaData.features.length) {
+        throw new Error('NWS GIS returned no BTV CWA boundary polygon');
+      }
+
+      // Derive the BTV alert-zone set from current official NWS GIS data.
+      var liveBtvZones = [];
+      zoneData.features.forEach(function(feature) {
+        var zoneCode = getForecastZoneCode(feature);
+        if (zoneCode) liveBtvZones.push(zoneCode);
       });
-      if (!zoneFeatures.length) throw new Error('NWS forecast-zone responses contained no matching BTV zones');
-      warningZoneLayer = L.geoJSON({
-        type: 'FeatureCollection',
-        features: zoneFeatures
-      }, {
-        style: { color: '#4b6b8c', weight: 1.5, fillColor: '#4b6b8c', fillOpacity: 0 }
+      if (!liveBtvZones.length) throw new Error('NWS zone features lack recognizable zone identifiers');
+      BTV_ZONE_SET = new Set(liveBtvZones);
+      BTV_ZONES = liveBtvZones;
+
+      warningZoneLayer = L.geoJSON(zoneData, {
+        style: {
+          color: '#9bb7d5',
+          weight: 1.15,
+          opacity: 0.9,
+          fillColor: '#7895b5',
+          fillOpacity: 0.035
+        },
+        onEachFeature: function(feature, layer) {
+          var props = feature.properties || {};
+          var zoneCode = getForecastZoneCode(feature);
+          var zoneName = props.name || props.NAME || zoneCode;
+          if (zoneCode) layer.bindTooltip(zoneCode + ' — ' + zoneName, { sticky: true });
+        }
       }).addTo(map);
+
+      cwaBoundaryLayer = L.geoJSON(cwaData, {
+        style: {
+          color: '#ff4fd8',
+          weight: 3.5,
+          opacity: 1,
+          fillColor: '#ff4fd8',
+          fillOpacity: 0.025,
+          dashArray: '8 5'
+        },
+        interactive: false
+      }).addTo(map);
+
+      // Keep storm-based alert polygons above both boundary layers.
+      if (warningPolygonLayer && map.hasLayer(warningPolygonLayer)) {
+        map.removeLayer(warningPolygonLayer);
+        warningPolygonLayer.addTo(map);
+      }
+
       _dataHealth.zones = 'ok';
       updateDataHealthStatus();
+      updateHazardIntegrity('ok', true, true, 'Loaded ' + liveBtvZones.length + ' BTV forecast zones and CWA boundary');
       refreshHazards();
     })
     .catch(function(err) {
-      console.error('BTV zone GeoJSON load failed:', err);
+      console.error('BTV forecast zones/CWA boundary load failed:', err);
       _dataHealth.zones = 'failed';
-      _dataHealth.lastError = 'NWS forecast-zone geometry failed to load: ' + (err && err.message ? err.message : String(err));
+      _dataHealth.lastError = 'NWS BTV zone/CWA geometry failed to load: ' + (err && err.message ? err.message : String(err));
       updateDataHealthStatus();
       updateHazardIntegrity('failed', false, false, _dataHealth.lastError);
     });
