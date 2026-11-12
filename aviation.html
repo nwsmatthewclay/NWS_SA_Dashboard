@@ -424,101 +424,18 @@ async function loadSite(site){
  var result={site:site,obs:null,taf:null,obsError:null,tafError:null};
  var now=new Date();
 
- // Fetch official NWS observations on every refresh. For KBTV, take wind
- // from the live IEM ASOS feed first; NWS can omit wind during QC even when
- // the airport's METAR/ASOS report contains it. Fall back to recent NWS reports.
- // Query IEM for every airport as a live backup/comparison, not only KBTV/KEFK.
- var observationJobs=[fetchNwsRecentObservations(site),fetchIemAsosWind(site)];
- var observationRequest=await Promise.allSettled(observationJobs);
- if(observationRequest[0].status==="fulfilled"&&observationRequest[0].value&&observationRequest[0].value.obs){
-  result.obs=observationRequest[0].value.obs;
- }else{
-  var reason=observationRequest[0].reason;
-  result.obsError=reason&&reason.message||String(reason||"NWS observation unavailable");
-  console.warn(site.id+" NWS observation request failed:",reason);
- }
- // Select the newest complete report independently from the newest usable wind.
- // IEM reports without usable wind still count as fresh METARs, while wind is
- // selected across both providers using its own observation timestamp.
- var iemResult=observationRequest[1];
- if(iemResult.status==="fulfilled"){
-  var iem=iemResult.value;
-  if(iem.reportRaw&&iem.reportTime&&(!result.obs||!result.obs.time||
-     iem.reportTime.getTime()>result.obs.time.getTime())){
-   var previousObs=result.obs;
-   var iemObs=obsFromFeature({properties:{
-    timestamp:iem.reportTime.toISOString(),
-    rawMessage:iem.reportRaw
-   }},site.id);
-   if(previousObs){
-    iemObs.wind=previousObs.wind;
-    iemObs.windTime=previousObs.windTime||null;
-    iemObs.windSource=previousObs.windSource||"NWS recent observation";
-    iemObs.windRaw=previousObs.windRaw||"";
-   }
-   iemObs.source="IEM ASOS METAR";
-   result.obs=iemObs;
-   result.obsError=null;
-  }
-  if(iem.windTime&&iem.wind&&iem.wind!=="—"){
-   var currentWindTime=result.obs&&result.obs.windTime&&isFinite(result.obs.windTime.getTime())
-    ?result.obs.windTime.getTime():-Infinity;
-   var iemWindTime=iem.windTime.getTime();
-   var hasCurrentWind=result.obs&&result.obs.wind&&result.obs.wind!=="—";
-   if(!hasCurrentWind||iemWindTime>currentWindTime){
-    if(!result.obs){
-     result.obs={id:site.id,time:iem.reportTime||iem.windTime,ceilingFt:null,clouds:"Not reported",visSm:null,weather:"Not reported",cat:"NA",raw:iem.reportRaw||iem.windRaw||"",source:"IEM ASOS wind fallback"};
-     result.obsError=result.obsError||"NWS observation fields unavailable; displaying IEM ASOS wind";
-    }
-    result.obs.wind=iem.wind;
-    result.obs.windTime=iem.windTime;
-    result.obs.windSource=iem.windSource;
-    result.obs.windRaw=iem.windRaw;
-   }
-  }
- }else{
-  console.warn(site.id+" IEM ASOS backup failed; retaining NWS observation if available:",iemResult.reason);
- }
-
- // KSLK has occasionally lagged in the network-scoped IEM response even
- // while a current SLK report is present in the broader ASOS feed. If the
- // selected report is already stale, retry IEM without the network filter and
- // compare its METAR timestamp before declaring the station stale.
- if(site.id==="KSLK"&&(!result.obs||!result.obs.time||
-    (Date.now()-result.obs.time.getTime())>90*60000)){
-  try{
-   var broadIem=await fetchIemAsosWind({id:site.id,iem:site.iem});
-   if(broadIem.reportRaw&&broadIem.reportTime&&
-      (!result.obs||!result.obs.time||broadIem.reportTime.getTime()>result.obs.time.getTime())){
-    var priorKslkObs=result.obs;
-    var broadObs=obsFromFeature({properties:{
-     timestamp:broadIem.reportTime.toISOString(),
-     rawMessage:broadIem.reportRaw
-    }},site.id);
-    if(priorKslkObs){
-     broadObs.wind=priorKslkObs.wind;
-     broadObs.windTime=priorKslkObs.windTime||null;
-     broadObs.windSource=priorKslkObs.windSource||"NWS recent observation";
-     broadObs.windRaw=priorKslkObs.windRaw||"";
-    }
-    broadObs.source="IEM ASOS METAR (network fallback)";
-    result.obs=broadObs;
-    result.obsError=null;
-   }
-   if(broadIem.windTime&&broadIem.wind&&broadIem.wind!=="—"){
-    var selectedWindTime=result.obs&&result.obs.windTime&&isFinite(result.obs.windTime.getTime())
-     ?result.obs.windTime.getTime():-Infinity;
-    if(!result.obs||!result.obs.wind||result.obs.wind==="—"||broadIem.windTime.getTime()>selectedWindTime){
-     if(!result.obs)result.obs={id:site.id,time:broadIem.reportTime||broadIem.windTime,ceilingFt:null,clouds:"Not reported",visSm:null,weather:"Not reported",cat:"NA",raw:broadIem.reportRaw||broadIem.windRaw||"",source:"IEM ASOS network fallback"};
-     result.obs.wind=broadIem.wind;
-     result.obs.windTime=broadIem.windTime;
-     result.obs.windSource="IEM ASOS network fallback";
-     result.obs.windRaw=broadIem.windRaw||"";
-    }
-   }
-  }catch(broadIemError){
-   console.warn("KSLK broader IEM ASOS fallback failed:",broadIemError);
-  }
+ // Use the official NWS observation-history endpoint as the sole live
+ // observation source. IEM's ASOS endpoint is rate-limiting the dashboard
+ // (HTTP 429) because seven stations are polled concurrently every five minutes.
+ // The NWS response contains the report timestamp and METAR; select its newest
+ // timestamped observation and let the METAR parser recover wind where possible.
+ try{
+  var nwsResult=await fetchNwsRecentObservations(site);
+  result.obs=nwsResult&&nwsResult.obs?nwsResult.obs:null;
+  if(!result.obs)result.obsError="NWS returned no usable observation for "+site.id;
+ }catch(nwsError){
+  result.obsError=nwsError&&nwsError.message||String(nwsError);
+  console.warn(site.id+" NWS observation request failed:",nwsError);
  }
 
  if(result.obs){
