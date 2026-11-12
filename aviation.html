@@ -237,41 +237,66 @@ async function getJson(url,accept){
  return r.json();
 }
 // IEM polling was removed: its multi-station CSV endpoint returned HTTP 429.
+async function fetchDatamaskObservation(site){
+ // Browser-accessible independent METAR feed. Datamask republishes NOAA/NWS
+ // OPMET reports and explicitly supports cross-origin GET requests.
+ var url="https://datamask.org/api/v1/metar/"+site.id;
+ var response=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"}});
+ if(!response.ok)throw new Error("Datamask HTTP "+response.status+" for "+site.id);
+ var data=await response.json();
+ if(!data||!data.raw||!data.observedAt)throw new Error("Datamask returned no METAR/time for "+site.id);
+ // API timestamp format is YYYY/MM/DD HH:mm and represents UTC.
+ var iso=String(data.observedAt).replace(/\//g,"-").replace(" ","T")+"Z";
+ var observed=new Date(iso);
+ if(!isFinite(observed.getTime()))throw new Error("Invalid Datamask timestamp for "+site.id);
+ var obs=obsFromFeature({properties:{rawMessage:data.raw,timestamp:observed.toISOString()}},site.id);
+ obs.time=observed;
+ obs.source="NOAA METAR via Datamask";
+ obs.windSource="NOAA METAR via Datamask";
+ obs.windTime=observed;
+ return obs;
+}
 async function fetchNwsRecentObservations(site){
- // Browser-only: retrieve the latest official NWS station observation.
- // This is the documented low-volume endpoint; do not repeatedly download
- // 20-report histories when only the current report is needed.
- // KSLK and KEFK have shown a lag in the NWS /latest resource compared
- // with independently available aviation reports. For these two stations only,
- // inspect the recent observation collection and select its newest timestamp.
- // Keep the lighter /latest request for the other five airports.
- var url=(site.id==="KSLK"||site.id==="KEFK")
-  ?"https://api.weather.gov/stations/"+site.id+"/observations?limit=20"
-  :"https://api.weather.gov/stations/"+site.id+"/observations/latest";
- var payload=await getJson(url);
- // /latest returns one GeoJSON Feature; history returns a FeatureCollection.
- var features=payload&&(payload.type==="Feature"?[payload]:(Array.isArray(payload.features)?payload.features:(Array.isArray(payload["@graph"])?payload["@graph"]:null)));
- if(!features||!features.length)throw new Error("NWS returned no recent observations for "+site.id);
- var parsed=features.map(function(feature){
-  var obs=obsFromFeature(feature,site.id);
-  return {obs:obs,feature:feature,time:obs.time&&isFinite(obs.time.getTime())?obs.time.getTime():-Infinity};
- }).filter(function(item){return item.time!==-Infinity;});
- parsed.sort(function(a,b){return b.time-a.time});
- if(!parsed.length)throw new Error("NWS returned no timestamped observations for "+site.id);
- var obs=parsed[0].obs;
- // Wind selection is independent of the newest report's clouds / weather.
- var windSample=parsed.find(function(item){return item.obs.wind&&item.obs.wind!=="—"});
- if(windSample){
-  obs.wind=windSample.obs.wind;
-  obs.windTime=windSample.obs.time;
-  obs.windSource="NWS recent observation";
- }else{
-  obs.wind="—";
-  obs.windTime=null;
-  obs.windSource="NWS recent observation";
+ // NWS is the primary observation source. KSLK and KEFK also compare against
+ // a browser-accessible NOAA-derived METAR feed because their NWS latest/history
+ // products have lagged independent aviation reports. Choose the newest report.
+ var nwsObs=null,nwsError=null;
+ try{
+  var url=(site.id==="KSLK"||site.id==="KEFK")
+   ?"https://api.weather.gov/stations/"+site.id+"/observations?limit=20"
+   :"https://api.weather.gov/stations/"+site.id+"/observations/latest";
+  var payload=await getJson(url);
+  var features=payload&&(payload.type==="Feature"?[payload]:(Array.isArray(payload.features)?payload.features:(Array.isArray(payload["@graph"])?payload["@graph"]:null)));
+  if(!features||!features.length)throw new Error("NWS returned no recent observations for "+site.id);
+  var parsed=features.map(function(feature){
+   var obs=obsFromFeature(feature,site.id);
+   return {obs:obs,time:obs.time&&isFinite(obs.time.getTime())?obs.time.getTime():-Infinity};
+  }).filter(function(item){return item.time!==-Infinity});
+  parsed.sort(function(a,b){return b.time-a.time});
+  if(!parsed.length)throw new Error("NWS returned no timestamped observations for "+site.id);
+  nwsObs=parsed[0].obs;
+  var windSample=parsed.find(function(item){return item.obs.wind&&item.obs.wind!=="—"});
+  if(windSample){
+   nwsObs.wind=windSample.obs.wind;
+   nwsObs.windTime=windSample.obs.time;
+   nwsObs.windSource="NWS recent observation";
+  }else{
+   nwsObs.wind="—";nwsObs.windTime=null;nwsObs.windSource="NWS recent observation";
+  }
+  nwsObs.source="NWS live";
+ }catch(error){nwsError=error}
+ // Only query the independent source for the two affected stations.
+ if(site.id==="KSLK"||site.id==="KEFK"){
+  try{
+   var alternate=await fetchDatamaskObservation(site);
+   if(!nwsObs||alternate.time.getTime()>nwsObs.time.getTime())nwsObs=alternate;
+  }catch(alternateError){
+   // Preserve the NWS report if the alternate feed is temporarily unavailable.
+   if(!nwsObs)throw alternateError;
+  }
  }
- obs.source="NWS live";
- return {obs:obs,source:"NWS live"};
+ if(!nwsObs)throw nwsError||new Error("No usable observation for "+site.id);
+ return {obs:nwsObs,source:nwsObs.source||"NWS live"};
 }
 function collectTafStrings(node,site,out,seen){
  if(node==null)return;
@@ -478,7 +503,7 @@ function render(results){
  });
  if(errs.length){$("errorBanner").style.display="block";$("errorBanner").textContent="Some data could not be loaded: "+errs.slice(0,4).join(" • ")+(errs.length>4?" • and "+(errs.length-4)+" more":"")}
  else $("errorBanner").style.display="none";
- $("sourceStatus").textContent="NWS latest observations + TAF products; HTTP cache enabled • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
+ $("sourceStatus").textContent="NWS observations + NOAA-derived METAR cross-check for KSLK/KEFK; TAF products • "+results.filter(function(r){return r.obs}).length+"/7 observations • "+results.filter(function(r){return r.taf}).length+"/7 TAFs";
  Array.prototype.forEach.call(document.querySelectorAll("tr[data-site]"),function(row){row.addEventListener("click",function(){var el=$("raw-"+row.getAttribute("data-site"));if(el)el.style.display=el.style.display==="block"?"none":"block"})});
 }
 async function refresh(){
