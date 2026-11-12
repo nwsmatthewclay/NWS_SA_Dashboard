@@ -4638,11 +4638,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
       warningZoneLayer = L.geoJSON(zoneData, {
         style: {
-          color: '#9bb7d5',
+          color: '#111111',
           weight: 1.15,
           opacity: 0.9,
-          fillColor: '#7895b5',
-          fillOpacity: 0.035
+          fillColor: '#111111',
+          fillOpacity: 0.015
         },
         onEachFeature: function(feature, layer) {
           var props = feature.properties || {};
@@ -4654,11 +4654,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
       cwaBoundaryLayer = L.geoJSON(cwaData, {
         style: {
-          color: '#ff4fd8',
-          weight: 3.5,
+          color: '#111111',
+          weight: 3,
           opacity: 1,
-          fillColor: '#ff4fd8',
-          fillOpacity: 0.025,
+          fillColor: '#111111',
+          fillOpacity: 0.01,
           dashArray: '8 5'
         },
         interactive: false
