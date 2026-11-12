@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import cfgrib
@@ -22,7 +22,7 @@ DOMAIN = {"west": -75.2, "east": -71.2, "south": 42.3, "north": 45.3}
 def json_values(array, decimals=2):
     arr = np.asarray(array, dtype=float)
     arr = np.where(np.isfinite(arr), np.round(arr, decimals), np.nan)
-    return arr.tolist()
+    return np.where(np.isfinite(arr), np.round(arr, decimals), None).tolist()
 
 
 def attr_value(value):
@@ -115,7 +115,7 @@ def process_file(path: Path, model: str, cycle: str, forecast_hour: int,
         "model": model,
         "model_cycle_utc": cycle,
         "forecast_hour": forecast_hour,
-        "valid_time_utc": None,
+        "valid_time_utc": (datetime.fromisoformat(cycle.replace("Z", "+00:00")) + timedelta(hours=forecast_hour)).isoformat().replace("+00:00", "Z"),
         "source_file": path.name,
         "domain": DOMAIN,
         "grids": grids,
