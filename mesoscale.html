@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BTV Mesoscale Detective</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--bg:#071321;--panel:#0d2033;--panel2:#102941;--line:#24435e;--text:#e8f1f8;--muted:#9cb2c5;--blue:#48a6ed;--cyan:#53d1d8;--green:#5bd49a;--amber:#f3bd59;--red:#f07878}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,Segoe UI,Arial,sans-serif}
+header{background:linear-gradient(110deg,#071827,#123451);border-bottom:1px solid var(--line);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:13px}.mark{width:42px;height:42px;border:2px solid #79c5ef;border-radius:50%;display:grid;place-items:center;color:#8bd7ee;font-weight:800}.brand h1{font-size:21px;margin:0;letter-spacing:.3px}.brand p{margin:2px 0 0;color:#b6cbdc;font-size:12px}.header-right{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}.status{color:var(--amber);border:1px solid #725b2c;padding:5px 9px;border-radius:20px}
+nav{display:flex;gap:6px;padding:10px 14px;background:#091a2a;border-bottom:1px solid var(--line);overflow:auto}
+nav button,.btn{background:#112a40;color:#c9d9e6;border:1px solid #294b66;border-radius:7px;padding:9px 13px;cursor:pointer;white-space:nowrap}
+nav button.active,.btn.primary{background:#155b8d;border-color:#348ec7;color:white}button:hover{filter:brightness(1.15)}
+.layout{display:grid;grid-template-columns:245px minmax(420px,1fr) 330px;gap:10px;padding:10px;max-width:1800px;margin:auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden;min-width:0}.panel h2{font-size:13px;letter-spacing:.5px;text-transform:uppercase;margin:0;padding:10px 12px;background:#10283d;border-bottom:1px solid var(--line);color:#d9e8f4}
+.pad{padding:11px}.field{margin-bottom:13px}.field label{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+select,input[type=range]{width:100%}select{background:#071827;color:var(--text);border:1px solid #34536b;border-radius:6px;padding:8px}
+.range-row{display:flex;align-items:center;gap:8px}.range-row input{flex:1}.range-row output{min-width:44px;text-align:right;color:var(--cyan);font-variant-numeric:tabular-nums}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{font-size:12px;color:#c5d4e0;display:flex;gap:6px;align-items:center}
+#map{height:620px;width:100%;background:#10283b}.map-wrap{position:relative}.map-chip{position:absolute;z-index:500;top:10px;left:10px;background:#071827eF;border:1px solid #35536b;border-radius:7px;padding:8px 10px;font-size:12px;pointer-events:none}.map-legend{position:absolute;z-index:500;bottom:12px;left:10px;background:#071827eF;border:1px solid #35536b;border-radius:7px;padding:8px 10px;font-size:11px;color:#c8d7e3}
+.map-actions{display:flex;gap:6px;flex-wrap:wrap;padding:8px;border-top:1px solid var(--line)}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px}
+.metric{background:#081a29;border:1px solid #27445b;border-radius:7px;padding:9px 7px;text-align:center}.metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.metric strong{display:block;font-size:20px;color:#dceaf4;margin:3px 0}.metric small{color:var(--muted);font-size:10px}
+.placeholder{color:var(--muted);font-size:12px;padding:12px;text-align:center;border:1px dashed #34536b;border-radius:7px;margin:10px}
+#profile{height:260px}#trend{height:210px}.wide{grid-column:2/4}.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 10px 10px;max-width:1800px;margin:auto}
+.notice{font-size:11px;color:#f2ca7c;background:#302817;border:1px solid #725a2b;padding:8px 10px;border-radius:6px;margin:9px}
+.detail-line{display:flex;justify-content:space-between;border-bottom:1px solid #20394e;padding:7px 0;font-size:12px}.detail-line span:first-child{color:var(--muted)}
+.tab-content{display:none}.tab-content.active{display:block}
+#crossmap{height:260px}.foot{padding:10px 15px;color:#8299ad;font-size:11px;text-align:center}
+@media(max-width:1100px){.layout{grid-template-columns:220px minmax(0,1fr)}.rightcol{grid-column:1/3;display:grid;grid-template-columns:1fr 1fr}.rightcol>.panel{min-width:0}.wide{grid-column:2}.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:700px){header{align-items:flex-start;flex-direction:column}.layout{display:flex;flex-direction:column}.rightcol{display:flex;flex-direction:column}.wide{grid-column:auto}#map{height:440px}.bottom-grid{display:flex;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="mark">BTV</div><div><h1>Mesoscale Detective</h1><p>NWS Burlington · Vermont and Northern New York</p></div></div><div class="header-right"><span class="status" id="feedStatus">MODEL FEED NOT CONNECTED</span><span id="clock">--:-- UTC</span></div></header>
+<nav id="tabs"><button class="active" data-tab="environment">Environment</button><button data-tab="soundings">Soundings</button><button data-tab="kinematics">Kinematics &amp; Forcing</button><button data-tab="cross">Cross-Sections</button><button data-tab="compare">Model Compare</button><button data-tab="evolution">Time Evolution</button></nav>
+<main class="layout">
+<aside class="panel"><h2>Analysis Controls</h2><div class="pad">
+<div class="field"><label>Model</label><select id="model"><option value="RAP">RAP · 13 km</option><option value="HRRR">HRRR · 3 km</option></select></div>
+<div class="field"><label>Model cycle</label><select id="cycle"><option>Latest available cycle</option></select></div>
+<div class="field"><label>Forecast hour</label><div class="range-row"><input id="hour" type="range" min="0" max="18" value="0"><output id="hourOut">F00</output></div></div>
+<div class="field"><label>Map parameter</label><select id="parameter"><option value="surface">Surface observations</option><option value="cape">CAPE / CIN</option><option value="shear">0–6 km bulk shear</option><option value="srh">0–1 km SRH</option><option value="pwat">Precipitable water</option><option value="lapse">700–500 mb lapse rate</option><option value="fronto">850 mb frontogenesis</option><option value="omega">700 mb vertical velocity</option><option value="moisture">925 mb moisture convergence</option></select></div>
+<div class="field"><label>Overlays</label><div class="checks">
+<label><input type="checkbox" checked id="stations"> Stations</label><label><input type="checkbox" id="radar"> MRMS radar</label><label><input type="checkbox" id="county" checked> CWA context</label><label><input type="checkbox" id="terrain"> Terrain</label>
+</div></div>
+<div class="field"><label>Selected point</label><div id="pointReadout" class="detail-line"><span>Location</span><b>KBTV</b></div><div id="coords" style="color:var(--muted);font-size:11px;margin-top:5px">44.4719°N, 73.1533°W</div></div>
+<button class="btn primary" id="reset">Reset map / KBTV</button>
+</div><div class="notice">Data status is deliberately explicit. No model-derived values are displayed until a verified RAP/HRRR data feed is connected.</div></aside>
+<section class="panel"><h2 id="mapTitle">Environment · Surface observations</h2><div class="map-wrap"><div id="map"></div><div class="map-chip" id="mapChip">BTV CWA · Click map to interrogate a point</div><div class="map-legend">Map base: OpenStreetMap · Analysis fields: awaiting data ingest</div></div><div class="map-actions"><button class="btn" id="drawTransect">Draw cross-section line</button><button class="btn" id="clearTransect">Clear line</button><button class="btn" id="locateBtv">Select KBTV</button><span style="margin-left:auto;color:var(--muted);font-size:11px;align-self:center" id="selectionStatus">Selected: KBTV</span></div></section>
+<aside class="rightcol" style="display:flex;flex-direction:column;gap:10px">
+<section class="panel"><h2>Selected Point · Diagnostics</h2><div class="metrics" id="metrics">
+<div class="metric"><span>MUCAPE</span><strong>—</strong><small>J/kg</small></div><div class="metric"><span>MLCAPE</span><strong>—</strong><small>J/kg</small></div><div class="metric"><span>MLCIN</span><strong>—</strong><small>J/kg</small></div>
+<div class="metric"><span>PWAT</span><strong>—</strong><small>mm</small></div><div class="metric"><span>0–6 km shear</span><strong>—</strong><small>kt</small></div><div class="metric"><span>0–1 km SRH</span><strong>—</strong><small>m²/s²</small></div>
+</div><div class="placeholder">No analysis grid loaded · Values will populate from the selected model, cycle, hour and map location.</div></section>
+<section class="panel"><h2>Vertical Profile</h2><div id="profile"></div><div class="placeholder">Skew-T / hodograph will render when profile-level model data is available.</div></section>
+<section class="panel"><h2>Investigation Notes</h2><div class="pad" id="investigation"><div class="detail-line"><span>Model</span><b>RAP</b></div><div class="detail-line"><span>Valid time</span><b>Awaiting feed</b></div><div class="detail-line"><span>Point</span><b>KBTV</b></div><div class="detail-line"><span>Interpretation</span><b style="color:var(--amber)">Not available</b></div></div></section>
+</aside>
+</main>
+<div class="bottom-grid">
+<section class="panel"><h2>Time Evolution · Selected point</h2><div id="trend"></div><div class="placeholder">Parameter traces will populate from consecutive model forecast hours.</div></section>
+<section class="panel"><h2>Data Provenance &amp; Quality</h2><div class="pad"><div class="detail-line"><span>Model source</span><b id="provModel">RAP · not connected</b></div><div class="detail-line"><span>Model initialization</span><b>—</b></div><div class="detail-line"><span>Valid time</span><b>—</b></div><div class="detail-line"><span>Grid spacing</span><b id="gridSpacing">13 km nominal</b></div><div class="detail-line"><span>Processing status</span><b style="color:var(--amber)">Awaiting ingestion pipeline</b></div><div class="detail-line"><span>Observation overlay</span><b>Not loaded</b></div><p style="font-size:11px;color:var(--muted);margin:12px 0 0">Every diagnostic will carry its source, initialization time, valid time, units and processing status. Model analysis and observed data will remain visually distinct.</p></div></section>
+</div>
+<footer class="foot">BTV Mesoscale Detective · Development build · Not for operational decision-making until data ingestion and verification are complete.</footer>
+<script>
+const stations=[["KBTV",44.4719,-73.1533],["KPBG",44.6509,-73.4681],["KMSS",44.9358,-74.8456],["KSLK",44.3853,-74.2062],["KMPV",44.2035,-72.5623],["KRUT",43.5294,-72.9496],["1V4",44.4193,-72.0194],["KEFK",44.8888,-72.2292]];
+const map=L.map('map',{zoomControl:true}).setView([44.15,-73.05],7);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:13,attribution:'&copy; OpenStreetMap'}).addTo(map);
+let selected={name:"KBTV",lat:44.4719,lon:-73.1533},markers=[],transect=[],line=null,drawing=false;
+function stationLayer(){markers.forEach(m=>map.removeLayer(m));markers=[];if(!document.getElementById('stations').checked)return;stations.forEach(s=>{const m=L.circleMarker([s[1],s[2]],{radius:s[0]==="KBTV"?7:5,color:"#9de7f1",weight:1.5,fillColor:"#123d59",fillOpacity:.95}).addTo(map).bindTooltip(s[0],{direction:"top"}).on('click',()=>selectPoint(s[1],s[2],s[0]));markers.push(m)});}
+function selectPoint(lat,lon,name){selected={name:name||"Custom point",lat,lon};document.getElementById('pointReadout').innerHTML='<span>Location</span><b>'+selected.name+'</b>';document.getElementById('coords').textContent=lat.toFixed(4)+'°N, '+Math.abs(lon).toFixed(4)+'°W';document.getElementById('selectionStatus').textContent='Selected: '+selected.name;document.querySelector('#investigation .detail-line:nth-child(3) b').textContent=selected.name;document.getElementById('mapChip').textContent='Selected '+selected.name+' · '+lat.toFixed(3)+', '+lon.toFixed(3);if(window.activeTab==='soundings')renderProfilePlaceholder();}
+map.on('click',e=>{if(drawing){transect.push([e.latlng.lat,e.latlng.lng]);if(transect.length===2){if(line)map.removeLayer(line);line=L.polyline(transect,{color:'#ffd166',weight:3,dashArray:'7 5'}).addTo(map);drawing=false;document.getElementById('drawTransect').textContent='Draw cross-section line';document.getElementById('mapChip').textContent='Transect selected · Cross-Sections tab';}return;}selectPoint(e.latlng.lat,e.latlng.lng,'Custom point');});
+stationLayer();document.getElementById('stations').addEventListener('change',stationLayer);
+document.getElementById('drawTransect').onclick=()=>{transect=[];drawing=true;document.getElementById('drawTransect').textContent='Click start, then end point';document.getElementById('mapChip').textContent='Choose two points on the map to define a transect';};
+document.getElementById('clearTransect').onclick=()=>{transect=[];drawing=false;if(line){map.removeLayer(line);line=null;}document.getElementById('drawTransect').textContent='Draw cross-section line';document.getElementById('mapChip').textContent='BTV CWA · Click map to interrogate a point';};
+document.getElementById('reset').onclick=document.getElementById('locateBtv').onclick=()=>{map.setView([44.4719,-73.1533],7);selectPoint(44.4719,-73.1533,'KBTV');};
+document.getElementById('hour').oninput=e=>document.getElementById('hourOut').textContent='F'+String(e.target.value).padStart(2,'0');
+document.getElementById('model').onchange=e=>{const h=e.target.value==='HRRR'?'3 km nominal':'13 km nominal';document.getElementById('gridSpacing').textContent=h;document.getElementById('provModel').textContent=e.target.value+' · not connected';document.querySelector('#investigation .detail-line:nth-child(1) b').textContent=e.target.value;};
+document.getElementById('parameter').onchange=e=>{const label=e.target.options[e.target.selectedIndex].text;document.getElementById('mapTitle').textContent='Environment · '+label;document.getElementById('mapChip').textContent=label+' · awaiting verified model grid';};
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));window.activeTab=b.dataset.tab;const titles={environment:'Environment',soundings:'Soundings',kinematics:'Kinematics & Forcing',cross:'Cross-Sections',compare:'Model Comparison',evolution:'Time Evolution'};document.getElementById('mapTitle').textContent=titles[window.activeTab]+' · Shared map selection';if(window.activeTab==='cross'&&!line)document.getElementById('mapChip').textContent='Draw a transect using the button below';});
+function renderProfilePlaceholder(){/* profile plot is intentionally blank until real vertical data are ingested */}
+Plotly.newPlot('profile',[],{paper_bgcolor:'#0d2033',plot_bgcolor:'#0d2033',margin:{l:35,r:10,t:8,b:30},xaxis:{visible:false},yaxis:{visible:false},annotations:[{text:'Profile data pending',showarrow:false,font:{color:'#9cb2c5'}}]},{displayModeBar:false,responsive:true});
+Plotly.newPlot('trend',[],{paper_bgcolor:'#0d2033',plot_bgcolor:'#0d2033',margin:{l:35,r:12,t:8,b:30},xaxis:{visible:false},yaxis:{visible:false},annotations:[{text:'Forecast-hour time series pending',showarrow:false,font:{color:'#9cb2c5'}}]},{displayModeBar:false,responsive:true});
+function tick(){document.getElementById('clock').textContent=new Date().toISOString().slice(11,16)+' UTC';}tick();setInterval(tick,30000);
+window.activeTab='environment';
+async function loadModelManifest(){
+  const badge=document.getElementById('feedStatus');
+  try{
+    const response=await fetch('./mesoscale/data/model_manifest.json?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('manifest HTTP '+response.status);
+    const manifest=await response.json();
+    const models=manifest.models||{};
+    const selectedModel=document.getElementById('model').value;
+    const products=(models[selectedModel]&&models[selectedModel].latest_products)||[];
+    const cycles=[...new Set(products.map(p=>p.cycle_utc))].sort().reverse();
+    const cycleSelect=document.getElementById('cycle');
+    cycleSelect.innerHTML='';
+    if(!cycles.length){cycleSelect.innerHTML='<option>Cycle not found</option>';badge.textContent='NO MODEL PRODUCTS FOUND';badge.style.color='var(--amber)';return;}
+    cycles.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=new Date(c).toISOString().replace('T',' ').slice(0,16)+' UTC';cycleSelect.appendChild(o);});
+    const product=products.find(p=>p.cycle_utc===cycles[0]);
+    document.getElementById('provModel').textContent=selectedModel+' · discovered';
+    document.querySelector('#investigation .detail-line:nth-child(2) b').textContent=cycles[0];
+    badge.textContent='MODEL FILES DISCOVERED · NOT DECODED';badge.style.color='var(--green)';
+    document.getElementById('mapChip').textContent=selectedModel+' latest discovered cycle '+cycles[0]+' · model fields not yet decoded';
+    if(product)document.getElementById('selectionStatus').textContent='Latest file: '+product.filename;
+  }catch(error){
+    badge.textContent='MODEL FEED NOT CONNECTED';badge.style.color='var(--amber)';
+  }
+}
+document.getElementById('model').addEventListener('change',loadModelManifest);
+loadModelManifest();
+
+</script>
+</body></html>
