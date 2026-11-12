@@ -110,6 +110,52 @@ def discover_model(session, model, days_back):
     return found
 
 
+
+def discover_rrfs(session, days_back):
+    """Discover deterministic 3-km CONUS RRFS pressure and 2-D products."""
+    found = []
+    today = datetime.now(timezone.utc).date()
+    pattern = re.compile(
+        r"rrfs\\.t(\\d{2})z\\.(prslev|2dfld|2dfld\\.subh)\\.3km\\.f(\\d{3})\\.conus\\.grib2$"
+    )
+    for day_offset in range(days_back + 1):
+        date_str = (today - timedelta(days=day_offset)).strftime("%Y%m%d")
+        day_dir = f"{BASE}/rrfs/prod/rrfs.{date_str}/"
+        try:
+            cycle_dirs = get_listing(session, day_dir)
+        except requests.RequestException as exc:
+            found.append({"date": date_str, "directory": day_dir,
+                          "error": f"{type(exc).__name__}: {exc}"})
+            continue
+        for cycle_dir in cycle_dirs:
+            cycle_name = cycle_dir.rstrip("/").rsplit("/", 1)[-1]
+            if not re.fullmatch(r"\\d{2}", cycle_name):
+                continue
+            try:
+                urls = get_listing(session, cycle_dir)
+            except requests.RequestException as exc:
+                found.append({"date": date_str, "directory": cycle_dir,
+                              "error": f"{type(exc).__name__}: {exc}"})
+                continue
+            for url in urls:
+                filename = url.rsplit("/", 1)[-1]
+                match = pattern.match(filename)
+                if not match:
+                    continue
+                cycle, family, forecast = match.groups()
+                found.append({
+                    "model": "RRFS", "date": date_str,
+                    "cycle_utc": f"{date_str}T{cycle}:00:00Z",
+                    "forecast_hour": int(forecast),
+                    "product": {"prslev": "pressure_levels_3km",
+                                "2dfld": "surface_2d_3km",
+                                "2dfld.subh": "surface_subhourly_3km"}[family],
+                    "resolution_km": 3, "domain": "conus",
+                    "filename": filename, "url": url,
+                })
+    return found
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--days-back", type=int, default=2,
