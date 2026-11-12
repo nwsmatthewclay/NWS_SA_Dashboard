@@ -60,10 +60,18 @@ function sm(m){return m==null?null:m/1609.344}
 // a provider's ingestion/updated timestamp. This keeps freshness tied to the
 // actual report when NWS and IEM timestamp metadata disagree.
 function reportTimeFromMetar(raw,fallback){
- var m=/\b(\d{2})(\d{2})(\d{2})Z\b/.exec(String(raw||""));
- if(!m)return fallback;
- var base=fallback&&isFinite(fallback.getTime())?fallback:new Date();
- return zDate(Number(m[1]),Number(m[2]),Number(m[3]),base);
+ var m=/\\b(\\d{2})(\\d{2})(\\d{2})Z\\b/.exec(String(raw||""));
+ var fallbackValid=fallback&&isFinite(fallback.getTime())?fallback:null;
+ if(!m)return fallbackValid;
+ var base=fallbackValid||new Date();
+ var metarTime=zDate(Number(m[1]),Number(m[2]),Number(m[3]),base);
+ // NWS/IEM timestamps represent the provider's valid/observation time.
+ // Occasionally the raw METAR text is carried forward with an older DDHHMMZ
+ // group even though the observation record itself has a newer timestamp.
+ // If the provider timestamp is substantially newer, use it for freshness
+ // rather than incorrectly marking the refreshed observation stale.
+ if(fallbackValid&&fallbackValid.getTime()-metarTime.getTime()>15*60000)return fallbackValid;
+ return metarTime;
 }
 function obsFromFeature(f,id){
  var p=(f&&f.properties)||{},raw=p.rawMessage||p.rawMETAR||"";
