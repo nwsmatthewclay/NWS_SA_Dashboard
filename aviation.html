@@ -60,7 +60,7 @@ function sm(m){return m==null?null:m/1609.344}
 // a provider's ingestion/updated timestamp. This keeps freshness tied to the
 // actual report when NWS and IEM timestamp metadata disagree.
 function reportTimeFromMetar(raw,fallback){
- var m=/\\b(\\d{2})(\\d{2})(\\d{2})Z\\b/.exec(String(raw||""));
+ var m=/\b(\d{2})(\d{2})(\d{2})Z\b/.exec(String(raw||""));
  var fallbackValid=fallback&&isFinite(fallback.getTime())?fallback:null;
  if(!m)return fallbackValid;
  var base=fallbackValid||new Date();
