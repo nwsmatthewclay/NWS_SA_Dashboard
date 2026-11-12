@@ -30,6 +30,8 @@ jobs:
       - name: Install discovery and test dependencies
         run: python -m pip install --upgrade requests pytest
       - name: Run mesoscale unit tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest -q mesoscale/tests/test_model_discovery.py
       - name: Discover latest RAP, HRRR and RRFS products
         run: python mesoscale/discover_models.py --days-back 2 --index-latest
