@@ -55,3 +55,27 @@ Never silently mix analysis time and forecast valid time. Never label model-deri
 ## Running locally
 
 Open `mesoscale.html` through a local static web server. The interface currently uses public Leaflet/Plotly CDNs and OpenStreetMap tiles. The model data endpoint is not connected yet.
+
+## Implemented ingestion components
+
+- `discover_models.py` checks current/recent NOMADS production directories and records available RAP and HRRR cycle/forecast products. With `--index-latest`, it retrieves the GRIB index sidecars to inspect available messages.
+- `download_subset.py` requests compact BTV geographic subsets from NOMADS instead of pulling full CONUS files. It validates the GRIB magic header before saving.
+- `process_grib.py` decodes GRIB2 with cfgrib, crops 2-D and multi-level grids to the BTV analysis domain, and writes gzip-compressed JSON with grid geometry, units, level coordinates and valid-time metadata.
+- `diagnostics.py` provides unit-aware MetPy profile calculations for SBCAPE/CIN, MLCAPE/CIN, MUCAPE/CIN, LCL, PWAT, 0-3 km lapse rate, 0-6 km bulk shear and 0-1 km SRH. It rejects incomplete or physically inconsistent columns instead of silently filling data.
+- `tests/test_profile_validation.py` covers core profile input validation.
+
+### Initial model products
+
+The first implementation uses RAP full-domain pressure-level GRIB2 and HRRR hourly 2-D GRIB2. HRRR 2-D provides surface/column and selected pressure-level fields, not a substitute for a complete 3-D upper-air sounding. RAP remains the source for full-column diagnostics.
+
+### Developer commands
+
+```bash
+python mesoscale/discover_models.py --days-back 2 --index-latest
+python mesoscale/download_subset.py --model RAP --forecast-hour 0
+python mesoscale/download_subset.py --model HRRR --forecast-hour 0
+python mesoscale/process_grib.py mesoscale/data/grib/rap_YYYYMMDD_HH_f00_btv.grib2 --model RAP --cycle 2026-11-12T12:00:00Z --forecast-hour 0 --output mesoscale/data/fields/rap_f00.json.gz
+pytest mesoscale/tests
+```
+
+The exact discovered filenames and initialization time must be used when running the processing commands. The example cycle and filename above are placeholders, not a claim that a specific model run is available.
