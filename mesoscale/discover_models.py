@@ -175,8 +175,10 @@ def main():
         "models": {},
         "errors": [],
     }
-    for model in ("RAP", "HRRR"):
-        products = discover_model(session, model, max(0, args.days_back))
+    for model in ("RAP", "HRRR", "RRFS"):
+        products = (discover_rrfs(session, max(0, args.days_back))
+                    if model == "RRFS"
+                    else discover_model(session, model, max(0, args.days_back)))
         valid = [p for p in products if p.get("url")]
         valid.sort(key=lambda p: (p["cycle_utc"], p["forecast_hour"], p["product"]), reverse=True)
         if args.index_latest:
