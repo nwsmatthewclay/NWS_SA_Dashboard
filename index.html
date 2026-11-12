@@ -3252,8 +3252,10 @@ function forceMapPixelSize() {
   mapDiv.style.width  = targetW + 'px';
   mapDiv.style.height = targetH + 'px';
 
+  // Recalculate the map's pixel dimensions without changing its current
+  // geographic view. The initial view is set to the BTV CWA when its GIS
+  // boundary loads; refitting the broad regional bounds here would undo it.
   map.invalidateSize(false);
-  map.fitBounds(BASEMAP_BOUNDS, { padding: [0,0], animate: false });
 }
 
 window.addEventListener('load', function() {
