@@ -70,16 +70,16 @@ def download(session, model, product, output_dir):
     destination = output_dir / filename
     response = session.get(url, stream=True, timeout=(20, 180))
     response.raise_for_status()
-    first = next(response.iter_content(chunk_size=4), b"")
-    if first != b"GRIB":
-        sample = first + next(response.iter_content(chunk_size=512), b"")
-        raise RuntimeError(f"NOMADS did not return GRIB data for {model}: {sample[:300]!r}")
+    chunks = iter(response.iter_content(chunk_size=1024 * 1024))
+    first = next(chunks, b"")
+    if not first.startswith(b"GRIB"):
+        raise RuntimeError(f"NOMADS did not return GRIB data for {model}: {first[:300]!r}")
     temp = destination.with_suffix(destination.suffix + ".part")
     total = 0
     with temp.open("wb") as stream:
         stream.write(first)
         total += len(first)
-        for chunk in response.iter_content(chunk_size=1024 * 1024):
+        for chunk in chunks:
             if chunk:
                 stream.write(chunk)
                 total += len(chunk)
