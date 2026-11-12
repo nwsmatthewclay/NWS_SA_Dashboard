@@ -4664,6 +4664,16 @@ document.addEventListener('DOMContentLoaded', function() {
         interactive: false
       }).addTo(map);
 
+      // Once the official BTV CWA geometry is available, frame the map around
+      // the actual warning area rather than the wider regional fallback extent.
+      var btvCwaBounds = cwaBoundaryLayer.getBounds();
+      if (btvCwaBounds && btvCwaBounds.isValid()) {
+        map.fitBounds(btvCwaBounds, {
+          padding: [18, 18],
+          animate: false
+        });
+      }
+
       // Keep storm-based alert polygons above both boundary layers.
       if (warningPolygonLayer && map.hasLayer(warningPolygonLayer)) {
         map.removeLayer(warningPolygonLayer);
