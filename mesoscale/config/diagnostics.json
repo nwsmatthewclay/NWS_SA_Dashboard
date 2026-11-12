@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "domain": {
+    "west": -75.2,
+    "east": -71.2,
+    "south": 42.3,
+    "north": 45.3,
+    "name": "BTV padded analysis domain"
+  },
+  "models": {
+    "RAP": {
+      "role": "full_column_primary",
+      "nominal_grid_km": 13,
+      "priorities": [
+        "pressure_levels",
+        "native_levels",
+        "surface"
+      ]
+    },
+    "HRRR": {
+      "role": "high_resolution_companion",
+      "nominal_grid_km": 3,
+      "priorities": [
+        "surface",
+        "near_surface",
+        "pressure_levels_if_available"
+      ]
+    }
+  },
+  "diagnostics": [
+    {
+      "id": "sbcape",
+      "label": "SBCAPE",
+      "units": "J kg-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "temperature",
+        "dewpoint",
+        "surface_pressure",
+        "vertical_profile"
+      ]
+    },
+    {
+      "id": "mlcape",
+      "label": "MLCAPE",
+      "units": "J kg-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "temperature",
+        "dewpoint",
+        "pressure",
+        "height"
+      ]
+    },
+    {
+      "id": "mucape",
+      "label": "MUCAPE",
+      "units": "J kg-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "temperature",
+        "dewpoint",
+        "pressure",
+        "height"
+      ]
+    },
+    {
+      "id": "mlcin",
+      "label": "MLCIN",
+      "units": "J kg-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "temperature",
+        "dewpoint",
+        "pressure",
+        "height"
+      ]
+    },
+    {
+      "id": "dcape",
+      "label": "DCAPE",
+      "units": "J kg-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP"
+      ],
+      "requires": [
+        "temperature",
+        "dewpoint",
+        "pressure",
+        "height"
+      ]
+    },
+    {
+      "id": "lcl",
+      "label": "LCL",
+      "units": "m AGL",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "temperature",
+        "dewpoint",
+        "surface_pressure"
+      ]
+    },
+    {
+      "id": "pwat",
+      "label": "Precipitable Water",
+      "units": "mm",
+      "group": "moisture",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "specific_humidity_or_dewpoint",
+        "pressure"
+      ]
+    },
+    {
+      "id": "lr03",
+      "label": "0-3 km lapse rate",
+      "units": "C km-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP"
+      ],
+      "requires": [
+        "temperature",
+        "height"
+      ]
+    },
+    {
+      "id": "lr75",
+      "label": "700-500 mb lapse rate",
+      "units": "C km-1",
+      "group": "thermodynamics",
+      "model_priority": [
+        "RAP"
+      ],
+      "requires": [
+        "temperature",
+        "geopotential_height"
+      ]
+    },
+    {
+      "id": "bs06",
+      "label": "0-6 km bulk shear",
+      "units": "kt",
+      "group": "kinematics",
+      "model_priority": [
+        "RAP"
+      ],
+      "requires": [
+        "u_wind",
+        "v_wind",
+        "height"
+      ]
+    },
+    {
+      "id": "srh01",
+      "label": "0-1 km SRH",
+      "units": "m2 s-2",
+      "group": "kinematics",
+      "model_priority": [
+        "RAP"
+      ],
+      "requires": [
+        "u_wind",
+        "v_wind",
+        "height",
+        "storm_motion"
+      ]
+    },
+    {
+      "id": "frontogenesis_850",
+      "label": "850 mb frontogenesis",
+      "units": "K (100 km)-1 (3 h)-1",
+      "group": "forcing",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "temperature",
+        "u_wind",
+        "v_wind",
+        "grid_spacing"
+      ]
+    },
+    {
+      "id": "moisture_convergence_925",
+      "label": "925 mb moisture convergence",
+      "units": "s-1",
+      "group": "forcing",
+      "model_priority": [
+        "RAP",
+        "HRRR"
+      ],
+      "requires": [
+        "specific_humidity",
+        "u_wind",
+        "v_wind",
+        "grid_spacing"
+      ]
+    },
+    {
+      "id": "omega_700",
+      "label": "700 mb omega",
+      "units": "Pa s-1",
+      "group": "forcing",
+      "model_priority": [
+        "RAP"
+      ],
+      "requires": [
+        "vertical_velocity"
+      ]
+    }
+  ]
+}
