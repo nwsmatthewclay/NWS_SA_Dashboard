@@ -26,6 +26,10 @@ import requests
 BASE = "https://nomads.ncep.noaa.gov/pub/data/nccf/com"
 HEADERS = {"User-Agent": "BTV-Mesoscale-Detective/0.1 (NWS forecast office research)"}
 TIMEOUT = 25
+RRFS_FILENAME_RE = re.compile(
+    r"rrfs\.t(\d{2})z\.(prslev|2dfld|2dfld\.subh)\.3km\.f(\d{3})\.conus\.grib2$"
+)
+RRFS_CYCLE_DIR_RE = re.compile(r"\d{2}")
 
 
 class Links(HTMLParser):
@@ -115,9 +119,7 @@ def discover_rrfs(session, days_back):
     """Discover deterministic 3-km CONUS RRFS pressure and 2-D products."""
     found = []
     today = datetime.now(timezone.utc).date()
-    pattern = re.compile(
-        r"rrfs\\.t(\\d{2})z\\.(prslev|2dfld|2dfld\\.subh)\\.3km\\.f(\\d{3})\\.conus\\.grib2$"
-    )
+    pattern = RRFS_FILENAME_RE
     for day_offset in range(days_back + 1):
         date_str = (today - timedelta(days=day_offset)).strftime("%Y%m%d")
         day_dir = f"{BASE}/rrfs/prod/rrfs.{date_str}/"
@@ -129,7 +131,7 @@ def discover_rrfs(session, days_back):
             continue
         for cycle_dir in cycle_dirs:
             cycle_name = cycle_dir.rstrip("/").rsplit("/", 1)[-1]
-            if not re.fullmatch(r"\\d{2}", cycle_name):
+            if not RRFS_CYCLE_DIR_RE.fullmatch(cycle_name):
                 continue
             try:
                 urls = get_listing(session, cycle_dir)
