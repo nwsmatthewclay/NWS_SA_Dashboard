@@ -310,6 +310,30 @@ async function fetchIemAsosWind(site){
  if(!latestReport&&!w)throw new Error("IEM returned no timestamped ASOS reports for "+site.id);
  return {reportTime:latestReport?latestReport.time:null,reportRaw:latestReport?latestReport.raw:"",wind:text,windTime:w?w.time:null,windSource:"IEM ASOS",windRaw:w?w.raw:"",windSpeedKt:w?w.speed:null,windDirectionDeg:w?w.direction:null,windGustKt:w?w.gust:null};
 }
+async function fetchAwcMetar(site){
+ // Independent third source for KSLK. AWC's METAR API is updated frequently
+ // and can be ahead of the NWS station-observation history or the IEM ASOS
+ // mirror. Keep this narrowly scoped to KSLK to avoid unnecessary requests.
+ var url="https://aviationweather.gov/api/data/metar?ids="+encodeURIComponent(site.id)+"&format=json&hours=3";
+ var payload=await getJson(url);
+ var reports=Array.isArray(payload)?payload:(payload&&Array.isArray(payload.data)?payload.data:[]);
+ var candidates=reports.map(function(item){
+  var raw=String(item.rawOb||item.rawMessage||item.rawMETAR||"").trim();
+  var stamp=item.obsTime||item.observationTime||item.timestamp||null;
+  var fallback=null;
+  if(typeof stamp==="number"&&isFinite(stamp))fallback=new Date(stamp<1e12?stamp*1000:stamp);
+  else if(stamp)fallback=new Date(stamp);
+  var time=reportTimeFromMetar(raw,fallback);
+  if(!raw||!time||!isFinite(time.getTime()))return null;
+  var obs=obsFromFeature({properties:{timestamp:time.toISOString(),rawMessage:raw}},site.id);
+  obs.time=time;
+  obs.source="AWC live METAR";
+  return obs;
+ }).filter(Boolean);
+ candidates.sort(function(a,b){return b.time-a.time});
+ if(!candidates.length)throw new Error("AWC returned no timestamped METAR for "+site.id);
+ return candidates[0];
+}
 async function fetchNwsRecentObservations(site){
  // Browser-only: read recent official NWS station observations directly.
  // Looking back through recent reports lets us retain a valid wind if the newest
@@ -420,7 +444,11 @@ async function loadSite(site){
  // from the live IEM ASOS feed first; NWS can omit wind during QC even when
  // the airport's METAR/ASOS report contains it. Fall back to recent NWS reports.
  // Query IEM for every airport as a live backup/comparison, not only KBTV/KEFK.
- var observationJobs=[fetchNwsRecentObservations(site),fetchIemAsosWind(site)];
+ var observationJobs=[
+  fetchNwsRecentObservations(site),
+  fetchIemAsosWind(site),
+  site.id==="KSLK"?fetchAwcMetar(site):Promise.resolve(null)
+ ];
  var observationRequest=await Promise.allSettled(observationJobs);
  if(observationRequest[0].status==="fulfilled"&&observationRequest[0].value&&observationRequest[0].value.obs){
   result.obs=observationRequest[0].value.obs;
@@ -471,6 +499,28 @@ async function loadSite(site){
  }else{
   console.warn(site.id+" IEM ASOS backup failed; retaining NWS observation if available:",iemResult.reason);
  }
+
+ // For KSLK, compare the independent AWC METAR against both NWS and IEM.
+ // Use whichever complete report is newest, while preserving any better wind
+ // observation already selected from the other providers.
+ var awcResult=observationRequest[2];
+ if(site.id==="KSLK"&&awcResult&&awcResult.status==="fulfilled"&&awcResult.value){
+  var awcObs=awcResult.value;
+  if(!result.obs||!result.obs.time||awcObs.time.getTime()>result.obs.time.getTime()){
+   var priorObs=result.obs;
+   if(priorObs){
+    awcObs.wind=priorObs.wind;
+    awcObs.windTime=priorObs.windTime||null;
+    awcObs.windSource=priorObs.windSource||"NWS recent observation";
+    awcObs.windRaw=priorObs.windRaw||"";
+   }
+   result.obs=awcObs;
+   result.obsError=null;
+  }
+ }else if(site.id==="KSLK"&&awcResult&&awcResult.status==="rejected"){
+  console.warn("KSLK AWC METAR backup failed; retaining newest NWS/IEM report:",awcResult.reason);
+ }
+
  if(result.obs){
   result.obs.windTime=result.obs.windTime||null;
   result.obs.windSource=result.obs.windSource||"NWS recent observation";
