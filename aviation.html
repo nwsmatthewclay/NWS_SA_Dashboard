@@ -241,8 +241,15 @@ async function fetchNwsRecentObservations(site){
  // Browser-only: retrieve the latest official NWS station observation.
  // This is the documented low-volume endpoint; do not repeatedly download
  // 20-report histories when only the current report is needed.
- var payload=await getJson("https://api.weather.gov/stations/"+site.id+"/observations/latest");
- // /latest returns one GeoJSON Feature; accept collection-shaped responses too.
+ // KSLK and KEFK have shown a lag in the NWS /latest resource compared
+ // with independently available aviation reports. For these two stations only,
+ // inspect the recent observation collection and select its newest timestamp.
+ // Keep the lighter /latest request for the other five airports.
+ var url=(site.id==="KSLK"||site.id==="KEFK")
+  ?"https://api.weather.gov/stations/"+site.id+"/observations?limit=20"
+  :"https://api.weather.gov/stations/"+site.id+"/observations/latest";
+ var payload=await getJson(url);
+ // /latest returns one GeoJSON Feature; history returns a FeatureCollection.
  var features=payload&&(payload.type==="Feature"?[payload]:(Array.isArray(payload.features)?payload.features:(Array.isArray(payload["@graph"])?payload["@graph"]:null)));
  if(!features||!features.length)throw new Error("NWS returned no recent observations for "+site.id);
  var parsed=features.map(function(feature){
