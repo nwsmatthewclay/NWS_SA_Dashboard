@@ -85,5 +85,32 @@ Plotly.newPlot('profile',[],{paper_bgcolor:'#0d2033',plot_bgcolor:'#0d2033',marg
 Plotly.newPlot('trend',[],{paper_bgcolor:'#0d2033',plot_bgcolor:'#0d2033',margin:{l:35,r:12,t:8,b:30},xaxis:{visible:false},yaxis:{visible:false},annotations:[{text:'Forecast-hour time series pending',showarrow:false,font:{color:'#9cb2c5'}}]},{displayModeBar:false,responsive:true});
 function tick(){document.getElementById('clock').textContent=new Date().toISOString().slice(11,16)+' UTC';}tick();setInterval(tick,30000);
 window.activeTab='environment';
+async function loadModelManifest(){
+  const badge=document.getElementById('feedStatus');
+  try{
+    const response=await fetch('./mesoscale/data/model_manifest.json?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('manifest HTTP '+response.status);
+    const manifest=await response.json();
+    const models=manifest.models||{};
+    const selectedModel=document.getElementById('model').value;
+    const products=(models[selectedModel]&&models[selectedModel].latest_products)||[];
+    const cycles=[...new Set(products.map(p=>p.cycle_utc))].sort().reverse();
+    const cycleSelect=document.getElementById('cycle');
+    cycleSelect.innerHTML='';
+    if(!cycles.length){cycleSelect.innerHTML='<option>Cycle not found</option>';badge.textContent='NO MODEL PRODUCTS FOUND';badge.style.color='var(--amber)';return;}
+    cycles.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=new Date(c).toISOString().replace('T',' ').slice(0,16)+' UTC';cycleSelect.appendChild(o);});
+    const product=products.find(p=>p.cycle_utc===cycles[0]);
+    document.getElementById('provModel').textContent=selectedModel+' · discovered';
+    document.querySelector('#investigation .detail-line:nth-child(2) b').textContent=cycles[0];
+    badge.textContent='MODEL FILES DISCOVERED · NOT DECODED';badge.style.color='var(--green)';
+    document.getElementById('mapChip').textContent=selectedModel+' latest discovered cycle '+cycles[0]+' · model fields not yet decoded';
+    if(product)document.getElementById('selectionStatus').textContent='Latest file: '+product.filename;
+  }catch(error){
+    badge.textContent='MODEL FEED NOT CONNECTED';badge.style.color='var(--amber)';
+  }
+}
+document.getElementById('model').addEventListener('change',loadModelManifest);
+loadModelManifest();
+
 </script>
 </body></html>
