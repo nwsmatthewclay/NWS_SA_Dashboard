@@ -79,3 +79,16 @@ pytest mesoscale/tests
 ```
 
 The exact discovered filenames and initialization time must be used when running the processing commands. The example cycle and filename above are placeholders, not a claim that a specific model run is available.
+
+
+## RRFS support (new)
+
+The model discovery service now includes the operational RRFS deterministic CONUS 3-km products. It discovers the pressure-level, 2-D surface, and sub-hourly 2-D file families from the NCEP production directory structure and records their .idx inventories.
+
+- Pressure levels: rrfs.tCCz.prslev.3km.fFFF.conus.grib2
+- 2-D fields: rrfs.tCCz.2dfld.3km.fFFF.conus.grib2
+- Sub-hourly 2-D fields: rrfs.tCCz.2dfld.3km.subh.fFFF.conus.grib2
+
+The RRFS selector is available in mesoscale.html. Discovery is wired into the scheduled manifest workflow. RRFS regional download/decoding is intentionally not enabled yet: its operational product families and NOMADS subsetting method need to be validated against current inventories before an automated downloader is allowed to fetch large CONUS files. The 3-km RRFS pressure-level file is the intended source for column diagnostics; the 2-D file supplies near-term fields such as composite reflectivity, CAPE/CIN, gusts, visibility and precipitation diagnostics.
+
+The RRFS/REFS transition and current product naming are documented in the NWS implementation notice and NCEP RRFS product inventory.
