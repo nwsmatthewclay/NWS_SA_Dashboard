@@ -2959,7 +2959,7 @@ function renderGlanceTimeline(opts) {
     var nowBadge = document.createElement('div');
     nowBadge.className = 'glance-now-badge';
     nowBadge.style.left = nowPct + '%';
-    nowBadge.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    nowBadge.textContent = btvTimeString(new Date(), { hour: 'numeric', minute: '2-digit' });
     overlay.appendChild(nowLine);
     overlay.appendChild(nowBadge);
     glanceGridEl.appendChild(overlay);
