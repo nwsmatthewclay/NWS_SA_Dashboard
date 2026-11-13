@@ -3304,7 +3304,7 @@ function parseNoaaSpotDate(str) {
     zone = (zoneParts.find(function(part) { return part.type === 'timeZoneName'; }) || {}).value || 'EST';
   }
   var offset = zone === 'EDT' ? '-04:00' : '-05:00';
-  return Date.parse(s.replace(' ', 'T') + offset);
+  return Date.parse(String(year).padStart(4, '0') + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0') + 'T' + String(hour).padStart(2, '0') + ':' + String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0') + offset);
 }
 
 async function refreshSpotForecasts() {
