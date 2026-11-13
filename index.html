@@ -2282,6 +2282,24 @@ function safeHref(url) {
   return escapeHtml(u);
 }
 
+// All operational clock/calendar logic is anchored to the BTV office timezone,
+// not the workstation/browser timezone. The returned Date is a wall-clock
+// representation so existing getHours()/getDate() logic remains consistent.
+var BTV_TIME_ZONE = 'America/New_York';
+function btvDate(date) {
+  var source = date instanceof Date ? date : new Date(date == null ? Date.now() : date);
+  var parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: BTV_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+  }).formatToParts(source);
+  var p = {};
+  parts.forEach(function(part) { if (part.type !== 'literal') p[part.type] = part.value; });
+  return new Date(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+}
+function btvTimeString(date, options) {
+  return new Intl.DateTimeFormat('en-US', Object.assign({ timeZone: BTV_TIME_ZONE }, options || {})).format(date || new Date());
+}
+
 function formatDate(dateString) {
   var parts = dateString.split('-');
   return Number(parts[1]) + '/' + Number(parts[2]) + '/' + parts[0];
@@ -2398,8 +2416,8 @@ function updateBottomThreatCard(key, score, pct, rawDisplayValue) {
 
   var updatedEl = document.getElementById('envThreatUpdated');
   if (updatedEl) {
-    var now = new Date();
-    updatedEl.textContent = 'Updated ' + now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    var now = btvDate();
+    updatedEl.textContent = 'Updated ' + btvTimeString(new Date(), { hour: 'numeric', minute: '2-digit' });
   }
 }
 
@@ -2505,7 +2523,7 @@ function makeCircleIcon(color, active) {
 
 function isEventCurrentlyActive(ev) {
   if (!ev || !ev.type) return false;
-  var now = new Date();
+  var now = btvDate();
   var dp = String(ev.date || '').split('/');
   if (dp.length !== 3) return false;
   var todayIso = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
@@ -2544,7 +2562,7 @@ function getDssTemporalStatusClass(dssType, startTime, endTime, isToday) {
   var end   = endTime ? parseTimeToMinutes(endTime) : start;
   if (start === 9999) return '';
 
-  var now = new Date();
+  var now = btvDate();
   var nowMin = now.getHours() * 60 + now.getMinutes();
 
   if (dssType.indexOf('Heads-up') !== -1) {
@@ -2805,7 +2823,7 @@ function renderGlanceTimeline(opts) {
   glanceSection.style.display = 'block';
   if (dssWrapperEl) dssWrapperEl.classList.remove('expanded');
 
-  var now = new Date();
+  var now = btvDate();
   var nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   var rows = [];
@@ -2987,7 +3005,7 @@ function updateNextObligation(todayDssEvents, todayCalls) {
 
   function refreshCountdown() {
 
-    var now = new Date();
+    var now = btvDate();
     var nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
 
     var soonestSecs = Infinity;
@@ -3096,7 +3114,7 @@ function computeDidYouKnowFacts(rows, calls) {
   var dssStartCol   = headers.indexOf('DSS Start');
   var dssEndCol     = headers.indexOf('DSS End');
 
-  var currentYear = new Date().getFullYear();
+  var currentYear = btvDate().getFullYear();
   var yearRows = [];
   for (var i = 1; i < rows.length; i++) {
     var row = rows[i];
@@ -3113,7 +3131,7 @@ function computeDidYouKnowFacts(rows, calls) {
   var byDate = {}, byName = {};
   var longestOnsiteMin = 0, longestOnsiteName = '';
   var firstRow = null;
-  var now = new Date();
+  var now = btvDate();
   var thisMonthCount = 0;
 
   yearRows.forEach(function(row) {
@@ -3277,7 +3295,7 @@ function parseNoaaSpotDate(str) {
     if (ampm === 'PM' && hour < 12) hour += 12;
     if (ampm === 'AM' && hour === 12) hour = 0;
   }
-  return new Date(year, month, day, hour, min, sec).getTime();
+  if (zoneMatch) {\n    var offset = zoneMatch[1].toUpperCase() === 'EDT' ? '-04:00' : '-05:00';\n    return Date.parse(s.replace(' ', 'T') + offset);\n  }\n  return btvDate(new Date(year, month, day, hour, min, sec)).getTime();
 }
 
 async function refreshSpotForecasts() {
@@ -3586,7 +3604,7 @@ function formatTimeRange(start, end) {
 
 function formatAlertExpiry(expiresStr) {
   if (!expiresStr) return '';
-  var d = new Date(expiresStr);
+  var d = btvDate(new Date(expiresStr));
   if (isNaN(d)) return '';
   var mo   = d.getMonth() + 1;
   var day  = d.getDate();
@@ -3625,7 +3643,7 @@ var hazardsVisible = true;
 var _cachedAffectedZones = {};
 var _cachedAffectedZoneInfo = {};
 var _lastKnownDateIso = (function() {
-  var n = new Date();
+  var n = btvDate();
   return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
 })();
 
@@ -4200,13 +4218,13 @@ function refreshHazards() {
     });
 }
 function updateLastUpdated() {
-  const now = new Date();
+  const now = btvDate();
   document.getElementById("lastUpdatedText").textContent =
-    now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    btvTimeString(new Date(), { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 function checkMidnightRollover() {
-  var now = new Date();
+  var now = btvDate();
   var iso = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   if (_lastKnownDateIso !== iso) {
     _lastKnownDateIso = iso;
@@ -4236,7 +4254,7 @@ function loadData(rows, calls) {
   var lonCol          = headers.indexOf('Longitude');
   var cancelledCol    = headers.indexOf('Cancelled');
 
-  var now = new Date();
+  var now = btvDate();
   var selectedDateString = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   var tomorrowD = new Date(now); tomorrowD.setDate(tomorrowD.getDate() + 1);
   var tomorrowDateString = tomorrowD.getFullYear() + '-' + String(tomorrowD.getMonth()+1).padStart(2,'0') + '-' + String(tomorrowD.getDate()).padStart(2,'0');
@@ -4457,7 +4475,7 @@ function loadData(rows, calls) {
 
   (activeSpotForecasts || []).forEach(function(spot) {
     var reqTime = parseNoaaSpotDate(spot.requested);
-    var reqDate = isNaN(reqTime) ? new Date() : new Date(reqTime);
+    var reqDate = isNaN(reqTime) ? btvDate() : btvDate(new Date(reqTime));
     var spotDateStr = (reqDate.getMonth() + 1) + '/' + reqDate.getDate() + '/' + reqDate.getFullYear();
     var spotDateIso = reqDate.getFullYear() + '-' + String(reqDate.getMonth() + 1).padStart(2, '0') + '-' + String(reqDate.getDate()).padStart(2, '0');
     var spotTimeStr = isNaN(reqTime) ? '—' : reqDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
