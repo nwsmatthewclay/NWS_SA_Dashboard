@@ -220,11 +220,11 @@ function extractTafProduct(product,site){
 function cacheBustedUrl(url){
  return url+(url.indexOf("?")>=0?"&":"?")+"_cb="+Date.now()+"_"+Math.random().toString(36).slice(2);
 }
-async function getJson(url,accept){
- // NWS explicitly supports HTTP caching (Cache-Control / Last-Modified).
- // Use the browser's standards-based cache instead of forcing no-store or
- // adding cache-buster query parameters on every five-minute refresh.
- var options={cache:"default",headers:{"Accept":accept||"application/geo+json"}};
+async function getJson(url,accept,cacheMode){
+ // Use standards-based caching by default. KSLK recent observations opt out
+ // because its station endpoint has repeatedly remained behind the live METAR;
+ // the other airports retain normal cache behavior.
+ var options={cache:cacheMode||"default",headers:{"Accept":accept||"application/geo+json"}};
  var r=await fetch(url,options);
  if(r.status===429){
   // NWS documents that temporary rate limits usually clear within seconds.
@@ -265,7 +265,7 @@ async function fetchNwsRecentObservations(site){
   var url=(site.id==="KSLK"||site.id==="KEFK")
    ?"https://api.weather.gov/stations/"+site.id+"/observations?limit=20"
    :"https://api.weather.gov/stations/"+site.id+"/observations/latest";
-  var payload=await getJson(url);
+  var payload=await getJson(url,undefined,site.id==="KSLK"?"no-store":undefined);
   var features=payload&&(payload.type==="Feature"?[payload]:(Array.isArray(payload.features)?payload.features:(Array.isArray(payload["@graph"])?payload["@graph"]:null)));
   if(!features||!features.length)throw new Error("NWS returned no recent observations for "+site.id);
   var parsed=features.map(function(feature){
