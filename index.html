@@ -4045,7 +4045,10 @@ function refreshHazards() {
     console.error(message);
   }, 15000);
 
-  fetch(CURRENT_NWS_ALERTS_URL + '&check=' + Date.now(), {\n    cache: 'no-store',\n    headers: { 'Accept': 'application/geo+json' }\n  })
+  fetch(CURRENT_NWS_ALERTS_URL + '&check=' + Date.now(), {
+    cache: 'no-store',
+    headers: { 'Accept': 'application/geo+json' }
+  })
     .then(function(r) {
       if (!r.ok) throw new Error('hazards.json returned HTTP ' + r.status);
       return r.json();
