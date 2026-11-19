@@ -2655,8 +2655,13 @@ function refreshLightningLayer() {
 
   lightningLayer.clearLayers();
 
-  fetch("https://raw.githubusercontent.com/matthewclay88/btv-glm-lightning/main/data/lightning.geojson")
-    .then(response => response.json())
+  fetch("https://raw.githubusercontent.com/matthewclay88/btv-glm-lightning/main/data/lightning.geojson", { cache: 'no-store' })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Lightning GeoJSON is unavailable (HTTP ' + response.status + '). Check the configured btv-glm-lightning repository/path.');
+      }
+      return response.json();
+    })
     .then(data => {
 
       console.log("Lightning flashes:", data.features.length);
@@ -3993,7 +3998,7 @@ function updateNavHazardSummary(names) {
 
 // Use the live NWS active-alerts service rather than a generated hazards.json
 // snapshot. The active endpoint is checked on initial page load and each refresh.
-var CURRENT_NWS_ALERTS_URL = 'https://api.weather.gov/alerts/active?area=VT%2CNY';
+var CURRENT_NWS_ALERTS_URL = 'https://api.weather.gov/alerts/active?area=';
 
 function isCurrentNwsAlert(alert) {
   var props = alert && alert.properties;
@@ -4045,14 +4050,28 @@ function refreshHazards() {
     console.error(message);
   }, 15000);
 
-  fetch(CURRENT_NWS_ALERTS_URL + '&check=' + Date.now(), {
-    cache: 'no-store',
-    headers: { 'Accept': 'application/geo+json' }
+  // The NWS API accepts one state code per area query. Fetch VT and NY
+  // independently, then combine the GeoJSON features before CWA filtering.
+  var requestHeaders = { 'Accept': 'application/geo+json' };
+  var cacheBust = '&check=' + Date.now();
+  Promise.all(['VT', 'NY'].map(function(stateCode) {
+    return fetch(CURRENT_NWS_ALERTS_URL + stateCode + cacheBust, {
+      cache: 'no-store',
+      headers: requestHeaders
+    }).then(function(response) {
+      if (!response.ok) throw new Error('NWS ' + stateCode + ' alerts returned HTTP ' + response.status);
+      return response.json();
+    });
+  })).then(function(stateFeeds) {
+    var combinedFeatures = [];
+    stateFeeds.forEach(function(feed) {
+      if (!feed || !Array.isArray(feed.features)) {
+        throw new Error('NWS state alert response was not a valid GeoJSON FeatureCollection');
+      }
+      combinedFeatures = combinedFeatures.concat(feed.features);
+    });
+    return { type: 'FeatureCollection', features: combinedFeatures };
   })
-    .then(function(r) {
-      if (!r.ok) throw new Error('hazards.json returned HTTP ' + r.status);
-      return r.json();
-    })
     .then(function(data) {
       var alerts = typeof data === 'string' ? JSON.parse(data) : data;
       if (alerts && alerts.features && !Array.isArray(alerts.features) && alerts.features.features) {
