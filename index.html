@@ -3991,6 +3991,28 @@ function updateNavHazardSummary(names) {
   el.setAttribute('aria-label', label + '. Click to check for updates.');
 }
 
+// Use the live NWS active-alerts service rather than a generated hazards.json
+// snapshot. The active endpoint is checked on initial page load and each refresh.
+var CURRENT_NWS_ALERTS_URL = 'https://api.weather.gov/alerts/active?area=VT%2CNY';
+
+function isCurrentNwsAlert(alert) {
+  var props = alert && alert.properties;
+  if (!props || typeof props !== 'object') return false;
+
+  // Only operational products belong on the dashboard.
+  if (props.status && String(props.status).toLowerCase() !== 'actual') return false;
+  if (String(props.messageType || '').toLowerCase() === 'cancel') return false;
+
+  // The API's active endpoint is the primary safeguard; this client-side
+  // expiration check is a second safeguard against stale/cached products.
+  var endValue = props.ends || props.expires;
+  if (endValue) {
+    var endTime = Date.parse(endValue);
+    if (!isNaN(endTime) && endTime <= Date.now()) return false;
+  }
+  return true;
+}
+
 function refreshHazards() {
   // Keep the previous map state if the feed is temporarily unavailable.
   // A failed/empty response must not be interpreted as "no active hazards".
@@ -4023,7 +4045,7 @@ function refreshHazards() {
     console.error(message);
   }, 15000);
 
-  fetch(DATA_BASE_URL + 'hazards.json?check=' + Date.now(), { cache: 'no-store' })
+  fetch(CURRENT_NWS_ALERTS_URL + '&check=' + Date.now(), {\n    cache: 'no-store',\n    headers: { 'Accept': 'application/geo+json' }\n  })
     .then(function(r) {
       if (!r.ok) throw new Error('hazards.json returned HTTP ' + r.status);
       return r.json();
@@ -4034,8 +4056,11 @@ function refreshHazards() {
         alerts = alerts.features;
       }
       if (!alerts || !Array.isArray(alerts.features)) {
-        throw new Error('hazards.json did not contain a valid GeoJSON FeatureCollection');
+        throw new Error('NWS active-alerts API did not return a valid GeoJSON FeatureCollection');
       }
+      // Apply the current-product/expiration test before anything can be
+      // drawn or used to color forecast zones.
+      alerts.features = alerts.features.filter(isCurrentNwsAlert);
       _hazardIntegrity.feed = 'ok';
       _hazardIntegrity.parsed = true;
       _dataHealth.hazards = 'ok';
