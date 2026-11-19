@@ -4053,13 +4053,16 @@ function refreshHazards() {
   // The NWS API accepts one state code per area query. Fetch VT and NY
   // independently, then combine the GeoJSON features before CWA filtering.
   var requestHeaders = { 'Accept': 'application/geo+json' };
-  var cacheBust = '&check=' + Date.now();
   Promise.all(['VT', 'NY'].map(function(stateCode) {
-    return fetch(CURRENT_NWS_ALERTS_URL + stateCode + cacheBust, {
+    // Do not append a cache-busting query parameter: api.weather.gov
+    // validates query parameters and rejects unknown parameters with HTTP 400.
+    return fetch(CURRENT_NWS_ALERTS_URL + stateCode, {
       cache: 'no-store',
       headers: requestHeaders
     }).then(function(response) {
-      if (!response.ok) throw new Error('NWS ' + stateCode + ' alerts returned HTTP ' + response.status);
+      if (!response.ok) {
+        throw new Error('NWS ' + stateCode + ' alerts returned HTTP ' + response.status);
+      }
       return response.json();
     });
   })).then(function(stateFeeds) {
