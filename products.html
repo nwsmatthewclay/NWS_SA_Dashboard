@@ -10009,8 +10009,8 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   ctx.font='700 21px '+FONT;
   const lineH=29;
   function estimatedCardHeight(text){
-    const items=String(text||'').replace(/[\\r\\n]+/g,' ').replace(/\\s+/g,' ').trim()
-      .split(/(?<=[.!?])\\s+(?=[A-Z])/).filter(Boolean);
+    const items=String(text||'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim()
+      .split(/(?<=[.!?])\s+(?=[A-Z])/).filter(Boolean);
     let lineCount=0;
     items.forEach(function(item){lineCount+=Math.max(1,wrapExportText(ctx,item,SIDE_W-140).length);});
     return Math.max(150, lineCount*lineH + items.length*8 + 112);
