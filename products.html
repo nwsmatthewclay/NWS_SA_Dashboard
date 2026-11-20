@@ -9870,7 +9870,9 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
     const lineH=Math.max(24,Math.round(bodySize*1.30));
     const lines=wrapBalanced(cleanText,textW);
     const maxLines=Math.max(1,Math.floor((h-114)/lineH));
-    lines.slice(0,maxLines).forEach(function(line,i){ctx.fillText(line,textX,topY+i*lineH);});
+    const visibleLines=lines.slice(0,maxLines);
+    if(lines.length>maxLines && visibleLines.length){ visibleLines[visibleLines.length-1]=visibleLines[visibleLines.length-1]+'…'; console.warn('Export text overflow in '+label+': '+lines.length+' lines available, '+maxLines+' displayed.'); }
+    visibleLines.forEach(function(line,i){ctx.fillText(line,textX,topY+i*lineH);});
   }
 
   function drawSafetySection(y,h,bodySize){
@@ -9931,7 +9933,7 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   ctx.fillRect(0,my,W,2);
   const meta=[
     ['ISSUED',topProduct&&topProduct.onset?new Date(topProduct.onset).toLocaleString('en-US',{timeZone:settings.tz,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+' '+(tzAbbrev(settings.tz)||''):'Current'],
-    ['VALID',validLines.map(l=>l.value).join(' – ')],
+    ['VALID / DURATION',validLines.map(l=>l.value).join(' – ') + (topProduct&&topProduct.onset&&(topProduct.ends||topProduct.expires)?' ('+Math.max(0,Math.round((new Date(topProduct.ends||topProduct.expires)-new Date(topProduct.onset))/3600000))+' hr duration)':'')],
     ['WFO',officeDisplay||'Weather Forecast Office'],
     ['LAST UPDATED',new Date().toLocaleString('en-US',{timeZone:settings.tz,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+' '+(tzAbbrev(settings.tz)||'')]
   ];
@@ -9991,7 +9993,7 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   const additionalDetails=narrative&&narrative.details?String(narrative.details).trim():'';
   const impacts=additionalDetails && !String(baseImpacts).toLowerCase().includes(additionalDetails.toLowerCase()) ? String(baseImpacts).trim()+'\n\nADDITIONAL DETAILS: '+additionalDetails : baseImpacts;
   const rightBodyFont=chooseRightBodyFont(sectionHeights,[what,where,impacts],getSafetyItemsForLayout(),SIDE_W-124);
-  drawSection(whatY,sectionHeights[0],'WHAT',what,'WHAT',rightBodyFont);
+  drawSection(whatY,sectionHeights[0],'THREAT SNAPSHOT',what,'WHAT',rightBodyFont);
   drawSection(whereY,sectionHeights[1],'WHERE',where,'WHERE',rightBodyFont);
   drawSection(impactsY,sectionHeights[2],'IMPACTS',impacts,'IMPACTS',rightBodyFont);
   console.info('Export right-column body font:', rightBodyFont+'px');
@@ -10304,7 +10306,7 @@ function buildCompositeCanvasLandscape(mapCanvas, nwsLogo, locatorData){
   ctx.fillStyle=bannerColor;ctx.fillRect(0,my,W,2);
   const meta=[
     ['ISSUED',topProduct&&topProduct.onset?new Date(topProduct.onset).toLocaleString('en-US',{timeZone:settings.tz,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+' '+(tzAbbrev(settings.tz)||''):'Current'],
-    ['VALID',validLines.map(l=>l.value).join(' – ')],
+    ['VALID / DURATION',validLines.map(l=>l.value).join(' – ') + (topProduct&&topProduct.onset&&(topProduct.ends||topProduct.expires)?' ('+Math.max(0,Math.round((new Date(topProduct.ends||topProduct.expires)-new Date(topProduct.onset))/3600000))+' hr duration)':'')],
     ['WFO',officeDisplay||'Weather Forecast Office'],
     ['LAST UPDATED',new Date().toLocaleString('en-US',{timeZone:settings.tz,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+' '+(tzAbbrev(settings.tz)||'')]
   ];
