@@ -1744,6 +1744,42 @@ body{
     transform-origin: center;
     animation: lightningFadeIn 0.6s ease-out;
   }
+
+/* NEON GLASS THEME */
+:root{--bg:#070a16;--surface:rgba(13,18,38,.84);--surface2:rgba(22,30,58,.86);--border:rgba(124,92,255,.24);--border2:rgba(54,211,255,.38);--text:#f3f5ff;--muted:#a4b1d4;--accent:#8b5cf6;--blue:#22d3ee;--blue-bg:rgba(34,211,238,.12);--purple:#c084fc;--purple-bg:rgba(124,58,237,.16)}
+body{background:radial-gradient(950px 500px at 72% -12%,rgba(112,54,255,.24),transparent 65%),radial-gradient(850px 460px at -8% 95%,rgba(0,215,255,.13),transparent 58%),linear-gradient(135deg,#050817,#091226 55%,#09091b)}
+#ambientGrid{background-image:linear-gradient(rgba(121,87,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(0,214,255,.04) 1px,transparent 1px);background-size:48px 48px}
+.top-header{border-bottom:1px solid rgba(88,214,255,.52);box-shadow:0 8px 32px rgba(6,3,25,.58),0 0 24px rgba(108,66,255,.12)}
+.top-header::before{background:linear-gradient(90deg,rgba(4,8,22,.98),rgba(7,12,31,.90) 28%,rgba(10,13,35,.48) 66%,rgba(4,8,22,.90)),linear-gradient(0deg,rgba(5,8,22,.58),transparent 55%)}
+.top-header::after{background:linear-gradient(90deg,transparent,#22d3ee 20%,#8b5cf6 52%,#ec4899 78%,transparent);opacity:.95;box-shadow:0 0 14px rgba(34,211,238,.28)}
+.header-right,.status-card,.data-section,.map-card,.panel-section,.env-threat-panel,.summary-tile,.tomorrow-glance-bar,.did-you-know-card,#lightningCard,#outageCard{background:linear-gradient(145deg,rgba(18,27,53,.78),rgba(8,13,29,.88));border:1px solid rgba(114,120,255,.24);box-shadow:0 10px 28px rgba(1,4,18,.36),inset 0 1px 0 rgba(255,255,255,.045);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.status-card{border-radius:14px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.status-card:hover{transform:translateY(-2px);border-color:rgba(34,211,238,.42);box-shadow:0 12px 30px rgba(0,0,0,.35),0 0 18px rgba(34,211,238,.08)}
+.status-card:has(.status-icon.green){box-shadow:0 0 18px rgba(52,211,153,.08),inset 0 1px 0 rgba(255,255,255,.04)}
+.status-card:has(.status-icon.red){box-shadow:0 0 18px rgba(248,113,113,.10),inset 0 1px 0 rgba(255,255,255,.04)}
+.status-card:has(.status-icon.blue){box-shadow:0 0 18px rgba(34,211,238,.08),inset 0 1px 0 rgba(255,255,255,.04)}
+.status-card:has(.status-icon.purple){box-shadow:0 0 18px rgba(168,85,247,.10),inset 0 1px 0 rgba(255,255,255,.04)}
+.nav-toolbar{background:rgba(7,12,27,.78);border-top:1px solid rgba(124,92,255,.18);border-bottom:1px solid rgba(34,211,238,.22);backdrop-filter:blur(12px)}
+.nav-group{background:rgba(16,24,48,.55);border:1px solid rgba(108,124,255,.16);border-radius:12px}
+.nav-btn{border:1px solid rgba(110,128,255,.2);background:linear-gradient(145deg,rgba(22,31,59,.88),rgba(11,17,36,.9));border-radius:9px;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.nav-btn:hover{border-color:rgba(34,211,238,.52);box-shadow:0 0 14px rgba(34,211,238,.12);transform:translateY(-1px)}
+.nav-btn.active{border-color:rgba(192,132,252,.72);background:linear-gradient(135deg,rgba(124,58,237,.28),rgba(20,35,68,.92));box-shadow:0 0 18px rgba(139,92,246,.18),inset 0 0 12px rgba(139,92,246,.08)}
+.hdr-btn,.refresh-btn,.join-btn,.modal-close{border-color:rgba(74,112,194,.42);background:linear-gradient(145deg,rgba(25,35,68,.94),rgba(11,17,36,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.hdr-btn:hover,.refresh-btn:hover,.join-btn:hover,.modal-close:hover{border-color:rgba(34,211,238,.6);box-shadow:0 0 15px rgba(34,211,238,.12);transform:translateY(-1px)}
+.hdr-btn.purple,.hdr-btn.blue{border-color:rgba(139,92,246,.45);box-shadow:0 0 12px rgba(139,92,246,.08)}
+.data-section,.map-card{border-radius:14px;overflow:hidden}
+.data-section-header,.panel-section-title,.data-subsection-header{background:linear-gradient(90deg,rgba(25,34,65,.96),rgba(12,18,39,.86));border-bottom:1px solid rgba(124,92,255,.24)}
+.data-table th{background:rgba(11,16,34,.88);color:#a9c6ff;border-bottom-color:rgba(34,211,238,.2)}
+.data-table td{border-bottom-color:rgba(114,120,255,.12)}
+.data-table tr:hover td{background:rgba(96,70,194,.09)}
+.map-legend-bar{background:rgba(8,13,29,.86);border-top-color:rgba(34,211,238,.22)}
+.map-legend-chip{background:rgba(21,29,56,.82);border-color:rgba(110,128,255,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.env-threat-panel{border-color:rgba(34,211,238,.28);box-shadow:0 0 24px rgba(34,211,238,.06),inset 0 1px 0 rgba(255,255,255,.04)}
+.footer{background:rgba(5,9,22,.86);border-top-color:rgba(124,92,255,.28)}
+input[type=checkbox]{accent-color:#a855f7}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #22d3ee;outline-offset:2px;box-shadow:0 0 12px rgba(34,211,238,.2)}
+@media(prefers-reduced-motion:reduce){.status-card:hover,.nav-btn:hover,.hdr-btn:hover,.refresh-btn:hover,.join-btn:hover,.modal-close:hover{transform:none}}
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
