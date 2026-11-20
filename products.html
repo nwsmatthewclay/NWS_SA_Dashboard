@@ -11430,11 +11430,25 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
     return false;
   }
 
-  // Geographic distribution pass: place the strongest operational anchor first,
-  // then favor candidates that are farther from already-selected references.
-  // This prevents a population-ranked list from clustering labels in one corner
-  // of the export while leaving other parts of the map without orientation.
-  if(eligible.length && selected.length < maximumLabels){
+  // Operational-anchor pass: retain the selected WFO host city and state
+  // capital as geographic references when they are in-view and can be placed.
+  // These anchors are attempted before the spatial-distribution pass.
+  const operationalAnchors = eligible.filter(function(item){
+    const cityName = normalizedPlaceName(item.city && item.city.name);
+    const host = selectedWfoHostCity();
+    return !!(item.city && item.city.capital) ||
+      !!(host && cityName === host.normalized);
+  });
+  operationalAnchors.sort(function(a,b){return b.priority-a.priority;});
+  operationalAnchors.forEach(function(item){
+    if(selected.length < Math.min(maximumLabels,2)){
+      tryPlaceCity(item, LABEL_GAP);
+    }
+  });
+
+  // Geographic distribution pass: place a strong anchor if none was placed,
+  // then favor candidates farther from already-selected references.
+  if(!selected.length && eligible.length && selected.length < maximumLabels){
     tryPlaceCity(eligible[0], LABEL_GAP);
   }
 
