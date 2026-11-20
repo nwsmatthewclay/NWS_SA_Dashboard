@@ -708,23 +708,13 @@
         <button class="toggle-btn active" id="toggle-sps-polygon" type="button">
           <span class="toggle-dot"></span>SPS Polygon
         </button>
-        <button class="action-btn" id="reset-zoom-btn" type="button">
-  <span>&#8635;</span>Reset Zoom
+        <button class="action-btn" id="export-cwa-hazards-btn" type="button" title="Export all active hazards for this CWA">
+  <span>&#128196;</span>Export CWA Hazards
 </button>
-
-<button class="action-btn" id="save-image-btn" type="button"
-        title="Download the full WWA export graphic">
-  <span>&#128190;</span>Save Map Image
+<button class="action-btn" id="export-by-hazard-btn" type="button" title="Choose a hazard to export">
+  <span>&#128196;</span>Export by Hazard
 </button>
-<button class="action-btn" id="save-wwa-map-only-btn" type="button"
-        title="Download a clean WWA-only map with no poster text or legend">
-  <span>&#128506;</span>WWA Map Only
-</button>
-<button class="action-btn copy-text-btn" id="copy-nws-text-btn" type="button"
-        title="Copy the selected hazard's NWS text summary">
-  <span>&#128203;</span>Copy NWS Text
-</button>
-        <div class="opacity-control" title="Opacity of hazard zone/polygon shading on the map">
+<div class="opacity-control" title="Opacity of hazard zone/polygon shading on the map">
           <span class="opacity-icon">&#9681;</span>
           <input type="range" id="opacitySlider" class="opacity-slider" min="0" max="100" step="5" value="50">
           <span class="opacity-value" id="opacityValue">100%</span>
@@ -1617,6 +1607,8 @@ let selectedExportOrientation = 'portrait';
 let directExportProductId = null; // 'single' = one NWS product, 'all' = every active product
 let directSocialExport = false; // one-click NWS social graphic
 let directWwaMapOnlyExport = false; // one-click clean WWA-only map export
+let directAllHazardsExport = false;
+let forceHazardChooser = false;
 let exportInProgress = false;
 let ACTIVE_ZONE_SET = new Set();
 let ACTIVE_COUNTY_SET = new Set();
@@ -1944,6 +1936,7 @@ function chooseSocialGraphicMode(active){
   const oldTitle = title ? title.textContent : '';
   const oldSubtitle = subtitle ? subtitle.textContent : '';
   list.innerHTML = '';
+  forceHazardChooser = false;
 
   let resolveChoice;
   const promise = new Promise(function(resolve){ resolveChoice = resolve; });
@@ -2024,6 +2017,15 @@ function chooseSocialGraphicMode(active){
 }
 
 function chooseExportMode(){
+  if(directAllHazardsExport){
+    directAllHazardsExport = false;
+    selectedExportProductId = null;
+    selectedExportMode = 'all';
+    selectedExportExtent = 'cwa';
+    selectedExportOrientation = 'portrait';
+    return Promise.resolve({ mode:'all', product:null, direct:true });
+  }
+
   // One-click clean WWA map export.
   if(directWwaMapOnlyExport){
     directWwaMapOnlyExport = false;
@@ -2090,7 +2092,7 @@ function chooseExportMode(){
 
   // With one product, still keep the export deterministic and avoid an
   // unnecessary dialog. The resulting image is the same as "one hazard".
-  if(active.length === 1){
+  if(active.length === 1 && !forceHazardChooser){
     selectedExportProductId = active[0].id;
     selectedExportMode = 'single';
     return Promise.resolve({ mode:'single', product:active[0] });
@@ -11977,7 +11979,7 @@ function startQuickSocialExport(){
 
 async function saveMapImage(){
 
-  const btn = document.getElementById('save-image-btn');
+  const btn = document.getElementById('export-cwa-hazards-btn');
   if(exportInProgress) return;
 
   if(!map){
@@ -12579,12 +12581,20 @@ document.getElementById('toggle-sps-polygon').addEventListener('click', function
   applyMapFilters();
 });
 
-document.getElementById('reset-zoom-btn').addEventListener('click', function(){
-  resetMapView();
+document.getElementById('export-cwa-hazards-btn').addEventListener('click', function(){
+  if(exportInProgress) return;
+  directAllHazardsExport = true;
+  selectedExportProductId = null;
+  selectedExportMode = 'all';
+  selectedExportExtent = 'cwa';
+  saveMapImage();
 });
-document.getElementById('save-image-btn').addEventListener('click', saveMapImage);
-document.getElementById('save-wwa-map-only-btn').addEventListener('click', startWwaMapOnlyExport);
-document.getElementById('copy-nws-text-btn').addEventListener('click', copyNwsHazardText);
+document.getElementById('export-by-hazard-btn').addEventListener('click', function(){
+  if(exportInProgress) return;
+  forceHazardChooser = true;
+  selectedExportProductId = null;
+  saveMapImage();
+});
 
 // Hazard shading transparency slider — redraws instantly from already-
 // fetched data (no need to refetch alerts), same as the legend toggles.
