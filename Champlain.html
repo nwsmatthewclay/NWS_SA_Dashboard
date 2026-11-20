@@ -144,7 +144,8 @@ function renderTimeConsistency(glwuValidTime){
  if(!glwuValidTime){status.textContent='GLWU valid time missing';box.textContent='Selected GLWU frame lacks valid-time metadata; forecast-time alignment cannot be verified.';return}
  const glwu=new Date(glwuValidTime),rap=rapTime?new Date(rapTime):null,delta=rap&&!Number.isNaN(+rap)?Math.abs(glwu-rap)/3600000:null;
  status.textContent=rap&&delta!=null&&delta<=1?'Times aligned':'RAP time differs';
- box.textContent='GLWU selected valid '+fmtTime(glwuValidTime)+'. RAP profile '+(rapTime?'valid '+fmtTime(rapTime)+' (difference '+(delta==null?'unknown':delta.toFixed(1)+' h)':'valid time unavailable.')+' HRRR is matched to the selected GLWU valid time. Surface observations are current observations, not forecast-hour dependent.';
+ const rapSummary=rapTime?'valid '+fmtTime(rapTime)+'; offset '+(delta==null?'unknown':delta.toFixed(1)+' h'):'valid time unavailable';
+ box.textContent='GLWU selected valid '+fmtTime(glwuValidTime)+'. RAP profile '+rapSummary+'. HRRR is matched to the selected GLWU valid time. Surface observations are current observations, not forecast-hour dependent.';
 }
 async function renderModelAgreement(glwuRegional,validTime){
  const status=$('modelAgreementStatus'),body=$('modelAgreementRows'),textEl=$('modelAgreementText');status.textContent='Fetching HRRR comparison…';
@@ -222,8 +223,8 @@ async function loadWindForecast(){
   const forecastHours=windForecastFrames.map(x=>Number(x.forecast_hour)).filter(Number.isFinite).sort((a,b)=>a-b);
   const missingHours=[];for(let h=0;h<=Math.min(24,Math.max(...forecastHours));h++)if(!forecastHours.includes(h))missingHours.push(h);
   const invalidFrames=windForecastFrames.filter(x=>!Array.isArray(x.points)||x.points.length<100).length;
-  const ageHours=j.generated_at?(Date.now()-new Date(j.generated_at).getTime())/3600000:Infinity;
-  const qualityParts=[];if(missingHours.length)qualityParts.push('missing lead hours '+missingHours.join(','));if(invalidFrames)qualityParts.push(invalidFrames+' low-point frames');if(ageHours>8||ageHours< -1)qualityParts.push('stale/invalid timestamp');
+  const ageHours=j.generated_at?(Date.now()-new Date(j.generated_at).getTime())/3600000:Infinity;\n  const validGeneratedAt=!!j.generated_at&&!Number.isNaN(new Date(j.generated_at).getTime());
+  const qualityParts=[];if(missingHours.length)qualityParts.push('missing lead hours '+missingHours.join(','));if(invalidFrames)qualityParts.push(invalidFrames+' low-point frames');if(!validGeneratedAt||ageHours>8||ageHours< -1)qualityParts.push('stale/invalid timestamp');
   const slider=$('windForecastHour');
   const availableMax=Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0));
   // Restrict the slider to forecast hours actually present in the published file.
@@ -232,7 +233,7 @@ async function loadWindForecast(){
   slider.value=String(requested);
   $('windForecastValid').title=availableMax<24?'Published source data currently ends at +'+availableMax+' h; hours beyond that require a refreshed 24-hour forecast export.':'Full 24-hour forecast available.';
   renderWindForecast(requested);
-  markHealth('GLWU lake wind forecast',windForecastFrames.length+' lead times · '+((windForecastFrames[0].points||[]).length)+' grid points in first frame'+(qualityParts.length?' · QA: '+qualityParts.join('; '):' · QA passed'),j.generated_at,qualityParts.length===0&&ageHours<=8&&ageHours>=-1&&invalidFrames===0&&missingHours.length===0);
+  markHealth('GLWU lake wind forecast',windForecastFrames.length+' lead times · '+((windForecastFrames[0].points||[]).length)+' grid points in first frame'+(qualityParts.length?' · QA: '+qualityParts.join('; '):' · QA passed'),j.generated_at,qualityParts.length===0&&validGeneratedAt&&ageHours<=8&&ageHours>=-1&&invalidFrames===0&&missingHours.length===0);
  }catch(e){
   console.warn('GLWU wind forecast unavailable:',e);
   $('windForecastLabel').textContent='Forecast unavailable';
