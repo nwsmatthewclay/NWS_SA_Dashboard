@@ -10419,62 +10419,56 @@ function buildCompositeCanvasLandscape(mapCanvas, nwsLogo, locatorData){
 
   narrativeSections.forEach(function(sec,idx){
     const sy=mainY+idx*sectionH;
-    if(idx>0){ctx.fillStyle=LINE;ctx.fillRect(0,sy,SIDE_W,1);}
-
-    // Hard clip each narrative section to its own card so a long safety
-    // action can never spill into the map/legend area.
+    const cardX=18, cardY=sy+10, cardW=SIDE_W-36, cardH=sectionH-20;
+    // Card-based landscape layout: white card, colored header, clean bullets.
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(0,sy,SIDE_W,sectionH);
-    ctx.clip();
-
-    const iconSize=sec.kind==='WHAT' ? 72 : 56;
-    drawSectionIcon(sec.kind,22,sy+22,iconSize);
-
-    const textX=100;
-    const textW=SIDE_W-textX-28;
-    ctx.textAlign='left';
-    ctx.fillStyle=NAVY2;
-    const headSize=fitText(sec.label,textW,30,23,'900');
-    ctx.font='900 '+headSize+'px '+FONT;
-    ctx.fillText(sec.label,textX,sy+52);
-    ctx.fillStyle=LINE;ctx.fillRect(textX,sy+68,SIDE_W-24-textX,2);
-
-    const topY=sy+98;
-    const availableH=sectionH-116;
-
+    ctx.beginPath();ctx.rect(0,sy,SIDE_W,sectionH);ctx.clip();
+    ctx.shadowColor='rgba(6,33,58,.12)';ctx.shadowBlur=7;ctx.shadowOffsetY=2;
+    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,12);ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,12);ctx.stroke();
+    const headerH=40;
+    ctx.save();ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,headerH,12);ctx.fillStyle=bannerColor;ctx.fill();
+    ctx.fillRect(cardX,cardY+headerH-10,cardW,10);ctx.restore();
+    ctx.textAlign='left';ctx.fillStyle=WHITE;ctx.font='900 24px '+FONT;ctx.fillText(sec.label,cardX+16,cardY+27);
+    const textX=cardX+22, textW=cardW-44, topY=cardY+headerH+18, availableH=cardH-headerH-28;
     if(sec.safety){
       const items=getSafetyItemsForLayoutLS().slice(0,3);
-      // Fit all safety actions as a group so the three bullets share one
-      // readable size and cannot collide with the next section or legend.
-      let bodySize=20;
-      let lineH=26;
-      let wrappedItems=[];
-      for(let fs=20;fs>=13;fs--){
+      let bodySize=19,lineH=24,wrappedItems=[];
+      for(let fs=19;fs>=13;fs--){
+        const lh=Math.max(18,Math.round(fs*1.28));
         ctx.font='700 '+fs+'px '+FONT;
-        const lh=Math.max(19,Math.round(fs*1.28));
-        const candidate=items.map(function(item){ return wrapBalanced(item,textW-18); });
-        const total=candidate.reduce(function(sum,lines){ return sum + lines.length*lh + 10; },-10);
-        if(total <= sectionH-124){
-          bodySize=fs; lineH=lh; wrappedItems=candidate; break;
-        }
+        const candidate=items.map(function(item){return wrapBalanced(item,textW-18);});
+        const total=candidate.reduce(function(sum,lines){return sum+lines.length*lh+8;},-8);
+        if(total<=availableH){bodySize=fs;lineH=lh;wrappedItems=candidate;break;}
       }
-      if(!wrappedItems.length){
-        ctx.font='700 13px '+FONT;
-        bodySize=13; lineH=19;
-        wrappedItems=items.map(function(item){ return wrapBalanced(item,textW-18); });
-      }
+      if(!wrappedItems.length){bodySize=13;lineH=18;wrappedItems=items.map(function(item){return wrapBalanced(item,textW-18);});}
       let y=topY;
       wrappedItems.forEach(function(lines){
-        ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX-10,y-7,4,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX,y-6,4,0,Math.PI*2);ctx.fill();
         ctx.fillStyle=TEXT;ctx.font='700 '+bodySize+'px '+FONT;
-        lines.forEach(function(line,i){ctx.fillText(line,textX+4,y+i*lineH);});
-        y += lines.length*lineH+10;
+        lines.forEach(function(line,i){ctx.fillText(line,textX+12,y+i*lineH);});
+        y+=lines.length*lineH+8;
       });
     }else{
-      const fitted=fitLandscapeSectionText(sec.text,textW,availableH,21,14);
-      ctx.fillStyle=TEXT;ctx.font='700 '+fitted.size+'px '+FONT;
-      fitted.lines.slice(0,8).forEach(function(line,i){ctx.fillText(line,textX,topY+i*fitted.lineH);});
+      const clean=String(sec.text||'').replace(/\\s+/g,' ').trim();
+      const items=clean.split(/(?<=[.!?])\\s+(?=[A-Z])/).filter(Boolean);
+      let size=19,lineH=24,wrapped=[];
+      for(let fs=19;fs>=13;fs--){
+        const lh=Math.max(18,Math.round(fs*1.28));
+        ctx.font='700 '+fs+'px '+FONT;
+        const candidate=items.map(function(item){return wrapBalanced(item,textW-18);});
+        const total=candidate.reduce(function(sum,lines){return sum+lines.length*lh+8;},-8);
+        if(total<=availableH){size=fs;lineH=lh;wrapped=candidate;break;}
+      }
+      if(!wrapped.length){size=13;lineH=18;wrapped=items.map(function(item){return wrapBalanced(item,textW-18);});}
+      let y=topY;
+      wrapped.forEach(function(lines){
+        ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX,y-6,4,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=TEXT;ctx.font='700 '+size+'px '+FONT;
+        lines.forEach(function(line,i){ctx.fillText(line,textX+12,y+i*lineH);});
+        y+=lines.length*lineH+8;
+      });
     }
     ctx.restore();
   });
