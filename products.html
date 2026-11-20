@@ -9803,10 +9803,13 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   }
 
   function drawSectionIcon(kind,x,y,size){
-    if(kind==='WHERE') drawPin(x,y,size,NAVY2);
-    else if(kind==='IMPACTS') drawAlertIcon(x,y,size,NAVY2);
-    else if(kind==='SAFETY ACTIONS') drawShield(x,y,size,NAVY2);
-    else drawHazardThumbnail(topProduct,x,y,size);
+    // Official, restrained section marker: simple bullet, no decorative clip art.
+    ctx.save();
+    ctx.fillStyle = bannerColor || NAVY2;
+    ctx.beginPath();
+    ctx.arc(x+size/2,y+size/2,Math.max(4,size*.12),0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
   }
   function normalizedSafetyItems(){
     try{
@@ -9870,11 +9873,13 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
     ctx.font='700 '+bodySize+'px '+FONT;
     ctx.fillStyle=TEXT;
     const lineH=Math.max(24,Math.round(bodySize*1.30));
-    const lines=wrapBalanced(cleanText,textW);
+    const lines=wrapBalanced(cleanText,textW-18);
     const maxLines=Math.max(1,Math.floor((h-114)/lineH));
     const visibleLines=lines.slice(0,maxLines);
     if(lines.length>maxLines && visibleLines.length){ visibleLines[visibleLines.length-1]=visibleLines[visibleLines.length-1]+'…'; console.warn('Export text overflow in '+label+': '+lines.length+' lines available, '+maxLines+' displayed.'); }
-    visibleLines.forEach(function(line,i){ctx.fillText(line,textX,topY+i*lineH);});
+    if(visibleLines.length){ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX-10,topY-7,4,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle=TEXT;
+    visibleLines.forEach(function(line,i){ctx.fillText(line,textX+4,topY+i*lineH);});
   }
 
   function drawSafetySection(y,h,bodySize){
@@ -9913,9 +9918,8 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   // ---------------- HAZARD BANNER ----------------
   const by=HEADER_H;ctx.fillStyle=bannerColor;ctx.fillRect(0,by,W,BANNER_H);
   ctx.fillStyle='rgba(0,0,0,.06)';ctx.fillRect(0,by,W,BANNER_H);
-  if(topProduct)drawHazardThumbnail(topProduct,34,by+28,94);
   ctx.textAlign='left';
-  const titleSize=fitText(bannerTitle,W-215,60,38,'900');ctx.font='900 '+titleSize+'px '+FONT;ctx.fillStyle=WHITE;ctx.fillText(bannerTitle,145,by+88);
+  const titleSize=fitText(bannerTitle,W-70,60,38,'900');ctx.font='900 '+titleSize+'px '+FONT;ctx.fillStyle=WHITE;ctx.fillText(bannerTitle,34,by+88);
   // The FROM/TO valid-time line now lives only in the meta strip directly
   // below (VALID column) — no need to say it twice.
   const validLines=(focusProducts.length>1?formatHazardFocusValidTime(focusProducts):formatExportValidTime(topProduct||{}));
@@ -10275,10 +10279,13 @@ function buildCompositeCanvasLandscape(mapCanvas, nwsLogo, locatorData){
   // is not visible here. Keep the same icon treatment without reaching
   // across function scopes.
   function drawSectionIcon(kind,x,y,size){
-    if(kind==='WHERE') drawPin(x,y,size,NAVY2);
-    else if(kind==='IMPACTS') drawAlertIcon(x,y,size,NAVY2);
-    else if(kind==='SAFETY ACTIONS') drawShield(x,y,size,NAVY2);
-    else drawHazardThumbnail(topProduct,x,y,size);
+    // Official, restrained section marker: simple bullet, no decorative clip art.
+    ctx.save();
+    ctx.fillStyle = bannerColor || NAVY2;
+    ctx.beginPath();
+    ctx.arc(x+size/2,y+size/2,Math.max(4,size*.12),0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
   }
 
   // ---------------- MASTHEAD ----------------
@@ -10295,9 +10302,8 @@ function buildCompositeCanvasLandscape(mapCanvas, nwsLogo, locatorData){
   const by=HEADER_H;
   ctx.fillStyle=bannerColor;ctx.fillRect(0,by,W,BANNER_H);
   ctx.fillStyle='rgba(0,0,0,.06)';ctx.fillRect(0,by,W,BANNER_H);
-  if(topProduct)drawHazardThumbnail(topProduct,30,by+21,88);
-  const titleSize=fitText(bannerTitle,W-190,56,32,'900');
-  ctx.font='900 '+titleSize+'px '+FONT;ctx.fillStyle=WHITE;ctx.fillText(bannerTitle,140,by+78);
+  const titleSize=fitText(bannerTitle,W-70,56,32,'900');
+  ctx.font='900 '+titleSize+'px '+FONT;ctx.fillStyle=WHITE;ctx.fillText(bannerTitle,30,by+78);
 
   // ---------------- META STRIP (hazard-tinted, matches portrait) ----------------
   const my=by+BANNER_H;
