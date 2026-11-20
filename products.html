@@ -9858,49 +9858,49 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   }
 
   function drawSection(y,h,label,text,kind,bodySize){
-    ctx.fillStyle=LIGHT;ctx.fillRect(MAP_W,y,SIDE_W,h);
-    ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.strokeRect(MAP_W+.5,y+.5,SIDE_W-1,h-1);
-    const iconSize = kind==='WHAT' ? 72 : 56;
-    drawSectionIcon(kind,MAP_W+18,y+22,iconSize);
-
-    const textX=MAP_W+100;
-    const textW=SIDE_W-124;
-    ctx.textAlign='left';ctx.fillStyle=NAVY2;ctx.font='900 30px '+FONT;ctx.fillText(label,textX,y+52);
-    ctx.fillStyle=LINE;ctx.fillRect(textX,y+68,W-24-textX,2);
-
-    const topY=y+96;
+    const cardX=MAP_W+16, cardW=SIDE_W-32, cardY=y+10, cardH=Math.max(80,h-20);
+    ctx.save();
+    ctx.shadowColor='rgba(6,33,58,.12)';ctx.shadowBlur=8;ctx.shadowOffsetY=2;
+    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,12);ctx.fill();
+    ctx.restore();
+    ctx.fillStyle=LINE;ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,12);ctx.stroke();
+    const headerH=42;
+    ctx.save();ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,headerH,12);ctx.fillStyle=bannerColor;ctx.fill();
+    ctx.fillRect(cardX,cardY+headerH-12,cardW,12);ctx.restore();
+    ctx.textAlign='left';ctx.fillStyle=WHITE;ctx.font='900 25px '+FONT;ctx.fillText(label,cardX+18,cardY+29);
+    const textX=cardX+22, textW=cardW-42, topY=cardY+headerH+20;
     const cleanText=String(text||'').replace(/\s+/g,' ').trim();
-    ctx.font='700 '+bodySize+'px '+FONT;
-    ctx.fillStyle=TEXT;
-    const lineH=Math.max(24,Math.round(bodySize*1.30));
-    const lines=wrapBalanced(cleanText,textW-18);
-    const maxLines=Math.max(1,Math.floor((h-114)/lineH));
-    const visibleLines=lines.slice(0,maxLines);
-    if(lines.length>maxLines && visibleLines.length){ visibleLines[visibleLines.length-1]=visibleLines[visibleLines.length-1]+'…'; console.warn('Export text overflow in '+label+': '+lines.length+' lines available, '+maxLines+' displayed.'); }
-    if(visibleLines.length){ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX-10,topY-7,4,0,Math.PI*2);ctx.fill();}
-    ctx.fillStyle=TEXT;
-    visibleLines.forEach(function(line,i){ctx.fillText(line,textX+4,topY+i*lineH);});
+    const bulletItems=cleanText.split(/(?<=[.!?])\s+(?=[A-Z])/).filter(Boolean);
+    ctx.font='700 '+bodySize+'px '+FONT;ctx.fillStyle=TEXT;
+    const lineH=Math.max(25,Math.round(bodySize*1.34));
+    let cursor=topY, maxY=cardY+cardH-14;
+    bulletItems.forEach(function(item){
+      const lines=wrapBalanced(item,textW-16);
+      if(cursor+lines.length*lineH>maxY){console.warn('Export text overflow in '+label+': card content truncated.');return;}
+      ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX,cursor-7,4,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=TEXT;lines.forEach(function(line,i){ctx.fillText(line,textX+12,cursor+i*lineH);});
+      cursor+=lines.length*lineH+8;
+    });
   }
 
   function drawSafetySection(y,h,bodySize){
-    ctx.fillStyle=LIGHT;ctx.fillRect(MAP_W,y,SIDE_W,h);
-    ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.strokeRect(MAP_W+.5,y+.5,SIDE_W-1,h-1);
-    drawShield(MAP_W+18,y+22,56,NAVY2);
-    const textX=MAP_W+100;
-    const textW=SIDE_W-124;
-    ctx.textAlign='left';ctx.fillStyle=NAVY2;ctx.font='900 30px '+FONT;ctx.fillText('SAFETY ACTIONS',textX,y+52);
-    ctx.fillStyle=LINE;ctx.fillRect(textX,y+68,W-24-textX,2);
-
-    const items=getSafetyItemsForLayout();
+    const label='SAFETY ACTIONS';
+    const cardX=MAP_W+16, cardW=SIDE_W-32, cardY=y+10, cardH=Math.max(80,h-20);
+    ctx.save();ctx.shadowColor='rgba(6,33,58,.12)';ctx.shadowBlur=8;ctx.shadowOffsetY=2;
+    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,12);ctx.fill();ctx.restore();
+    ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,12);ctx.stroke();
+    const headerH=42;
+    ctx.save();ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,headerH,12);ctx.fillStyle=bannerColor;ctx.fill();ctx.fillRect(cardX,cardY+headerH-12,cardW,12);ctx.restore();
+    ctx.textAlign='left';ctx.fillStyle=WHITE;ctx.font='900 25px '+FONT;ctx.fillText(label,cardX+18,cardY+29);
+    const items=getSafetyItemsForLayout(),textX=cardX+22,textW=cardW-42;
     ctx.font='700 '+bodySize+'px '+FONT;ctx.fillStyle=TEXT;
-    const lineH=Math.max(24,Math.round(bodySize*1.30));
-    let topY=y+96;
+    const lineH=Math.max(25,Math.round(bodySize*1.34));let cursor=cardY+headerH+20,maxY=cardY+cardH-14;
     items.slice(0,3).forEach(function(item){
-      const lines=wrapBalanced(item,textW-18);
-      ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX-10,topY-7,4,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=TEXT;
-      lines.forEach(function(line,i){ctx.fillText(line,textX+4,topY+i*lineH);});
-      topY+=lines.length*lineH+11;
+      const lines=wrapBalanced(item,textW-16);
+      if(cursor+lines.length*lineH>maxY){console.warn('Export text overflow in SAFETY ACTIONS card.');return;}
+      ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX,cursor-7,4,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=TEXT;lines.forEach(function(line,i){ctx.fillText(line,textX+12,cursor+i*lineH);});
+      cursor+=lines.length*lineH+8;
     });
   }
 
