@@ -228,16 +228,26 @@ function renderFetchGeometry(dir,fetchKm,axisPct){
  const g=getFetchGeometry(dir);
  if(!g){$('fetchGeometryStatus').textContent='No directional geometry';$('upwindShore').textContent='—';$('downwindShore').textContent='—';$('axisComponent').textContent='—';return}
  fetchGeometryLayer=L.layerGroup().addTo(map);
- const path=L.polyline([g.up,g.center,g.down],{color:'#ffdb7d',weight:3,dashArray:'7 5',opacity:.95}).addTo(fetchGeometryLayer);
- L.circleMarker(g.up,{radius:6,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Upwind shoreline · approximate');
- L.circleMarker(g.down,{radius:6,color:'#fff',fillColor:'#72e2e8',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Downwind shoreline · approximate');
+ // Three latitude-spaced transects reveal how the cross-lake path changes along the lake.
+ const transects=[{lat:44.72,label:'North'},{lat:44.27,label:'Central'},{lat:43.91,label:'South'}],crossings=[];
+ transects.forEach(t=>{
+  const origin=[t.lat,-73.32],hits=rayPolygonIntersections(origin,g.downBearing,shore);
+  const upstream=hits.filter(x=>x<0).sort((a,b)=>b-a)[0],downstream=hits.filter(x=>x>0).sort((a,b)=>a-b)[0];
+  if(!Number.isFinite(upstream)||!Number.isFinite(downstream))return;
+  const up=pointAtKm(origin[0],origin[1],dir,Math.abs(upstream)),downPt=pointAtKm(origin[0],origin[1],g.downBearing,downstream);
+  crossings.push({label:t.label,origin,up,down:downPt,km:Math.abs(upstream)+downstream});
+  L.polyline([up,origin,downPt],{color:t.label==='Central'?'#ffdb7d':'#72e2e8',weight:t.label==='Central'?3:2,dashArray:t.label==='Central'?'7 5':'4 6',opacity:.85}).addTo(fetchGeometryLayer).bindTooltip(t.label+' transect · '+(Math.abs(upstream)+downstream).toFixed(1)+' km');
+ });
+ L.circleMarker(g.up,{radius:6,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Central upwind shoreline · approximate');
+ L.circleMarker(g.down,{radius:6,color:'#fff',fillColor:'#72e2e8',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Central downwind shoreline · approximate');
  const midpoint=pointAtKm(g.center[0],g.center[1],g.downBearing,g.downDist*.5);
- L.polyline([g.center,midpoint],{color:'#72e2e8',weight:4,opacity:.85}).addTo(fetchGeometryLayer).bindTooltip('Lake-crossing wind trajectory');
- $('fetchGeometryStatus').textContent=g.fetchKm.toFixed(1)+' km crossing';
+ L.polyline([g.center,midpoint],{color:'#72e2e8',weight:4,opacity:.85}).addTo(fetchGeometryLayer).bindTooltip('Central lake-crossing trajectory');
+ const valid=crossings.length?crossings.map(x=>x.km):[g.fetchKm],min=Math.min(...valid),max=Math.max(...valid),avg=valid.reduce((a,b)=>a+b,0)/valid.length;
+ $('fetchGeometryStatus').textContent=valid.length+' transects · '+avg.toFixed(1)+' km mean';
  $('upwindShore').textContent=bearingName(dir)+' side';
  $('downwindShore').textContent=bearingName(g.downBearing)+' side';
  $('axisComponent').textContent=Math.round(axisPct)+'%';
- $('fetchGeometryNote').textContent='Estimated central-lake crossing '+g.fetchKm.toFixed(1)+' km · '+g.upDist.toFixed(1)+' km upstream and '+g.downDist.toFixed(1)+' km downstream of center. '+bearingName(dir)+'-side source flow toward '+bearingName(g.downBearing)+'-side shoreline. Conceptual geometry only; shoreline and convergence are not dynamically modeled.';
+ $('fetchGeometryNote').textContent='Three approximate north/central/south cross-lake transects: '+valid.map((v,i)=>crossings[i].label+' '+v.toFixed(1)+' km').join(' · ')+'. Range '+min.toFixed(1)+'–'+max.toFixed(1)+' km; mean '+avg.toFixed(1)+' km. Central fetch summary remains '+g.fetchKm.toFixed(1)+' km. This is conceptual fallback geometry, not a validated shoreline GIS calculation.';
 }
 \nfunction clearLakeEffectCorridor(){
  if(plumeLayer){map.removeLayer(plumeLayer);plumeLayer=null}
