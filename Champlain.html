@@ -322,7 +322,7 @@ async function loadWindForecast(){
   $('screenStatus').style.color='var(--gold)';
  }
 }
-function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
+function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],10);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.015),{maxZoom:10});};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
 function calculateDirectionalFetchKm(directionFrom){
  if(!Number.isFinite(directionFrom))return 0;
  const origin={lat:44.27,lon:-73.32},bearing=((directionFrom+180)%360)*Math.PI/180;
@@ -475,6 +475,14 @@ reorganizeChamplainMainScreen();
 initMap();
 const forecastSlider=$('windForecastHour');
 forecastSlider.addEventListener('input',e=>renderWindForecast(e.target.value));
+document.addEventListener('keydown',e=>{
+ if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
+ const target=e.target,tag=(target?.tagName||'').toLowerCase();
+ if(target?.isContentEditable||['input','textarea','select','button'].includes(tag))return;
+ e.preventDefault();const min=Number(forecastSlider.min)||0,max=Number(forecastSlider.max)||24,current=Number(forecastSlider.value)||0;
+ const next=Math.max(min,Math.min(max,current+(['ArrowRight','ArrowUp'].includes(e.key)?1:-1)));
+ if(next!==current){forecastSlider.value=String(next);forecastSlider.dispatchEvent(new Event('input',{bubbles:true}));}
+});
 forecastSlider.addEventListener('keydown',e=>{
  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key)){
   e.preventDefault();
