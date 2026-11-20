@@ -11504,6 +11504,7 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
 
     ctx.restore();
   });
+  return selected.length;
 }
 
 
@@ -11977,7 +11978,12 @@ async function saveMapImage(){
     // crisp and readable.
     drawExportHazardOverlapOnCanvas(mapCanvas, tempMap);
     if(tempMap._exportRoadLayer) drawExportRasterTilesOnCanvas(mapCanvas, tempMap, tempMap._exportRoadLayer);
-    drawExportCityLabelsOnCanvas(mapCanvas, tempMap);
+    const cityLabelCount = drawExportCityLabelsOnCanvas(mapCanvas, tempMap);
+    if(!cityLabelCount){
+      console.warn('Export quality check: no city labels were drawn. City data:', exportCityData.length);
+      const proceedWithoutCities = confirm('Geographic reference check failed: no city labels were drawn on this map.\\n\\nExport anyway?');
+      if(!proceedWithoutCities) throw new Error('Export canceled because no city reference labels were available.');
+    }
 
     // The temporary map is rendered at the exact dimensions of the final
     // right-hand map column using the automatically resolved export bounds.
