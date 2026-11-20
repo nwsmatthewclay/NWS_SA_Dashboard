@@ -2410,7 +2410,7 @@ function addSelectedProductToExportMap(prod){
       weight: (representative ? (representative.sig === 'W' ? 3 : 2.5) : (item.sig === 'W' ? 3 : 2.5)),
       opacity: 0.95,
       fillColor: color,
-      fillOpacity: selectedExportMode === 'single' ? 0.08 : baseFillOpacity,
+      fillOpacity: selectedExportMode === 'single' ? 1 : baseFillOpacity,
       lineCap: 'round',
       lineJoin: 'round'
     };
@@ -9874,7 +9874,7 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
     ctx.fillRect(cardX,cardY+headerH-12,cardW,12);ctx.restore();
     ctx.textAlign='left';ctx.fillStyle=WHITE;ctx.font='900 25px '+FONT;ctx.fillText(label,cardX+18,cardY+29);
     const textX=cardX+22, textW=cardW-42, topY=cardY+headerH+20;
-    const cleanText=String(text||'').replace(/\s+/g,' ').trim();
+    const cleanText=String(text||'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim().replace(/Swan\s+Lake/gi,'Swan\u00a0Lake');
     const bulletItems=Array.from(new Set(cleanText.split(/(?<=[.!?])\s+(?=[A-Z])/).filter(Boolean)));
     const effectiveSize=Math.max(16,bodySize);
     ctx.font='700 '+effectiveSize+'px '+FONT;ctx.fillStyle=TEXT;
