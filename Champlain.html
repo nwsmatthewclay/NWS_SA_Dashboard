@@ -223,7 +223,8 @@ async function loadWindForecast(){
   const forecastHours=windForecastFrames.map(x=>Number(x.forecast_hour)).filter(Number.isFinite).sort((a,b)=>a-b);
   const missingHours=[];for(let h=0;h<=Math.min(24,Math.max(...forecastHours));h++)if(!forecastHours.includes(h))missingHours.push(h);
   const invalidFrames=windForecastFrames.filter(x=>!Array.isArray(x.points)||x.points.length<100).length;
-  const ageHours=j.generated_at?(Date.now()-new Date(j.generated_at).getTime())/3600000:Infinity;\n  const validGeneratedAt=!!j.generated_at&&!Number.isNaN(new Date(j.generated_at).getTime());
+  const ageHours=j.generated_at?(Date.now()-new Date(j.generated_at).getTime())/3600000:Infinity;
+  const validGeneratedAt=!!j.generated_at&&!Number.isNaN(new Date(j.generated_at).getTime());
   const qualityParts=[];if(missingHours.length)qualityParts.push('missing lead hours '+missingHours.join(','));if(invalidFrames)qualityParts.push(invalidFrames+' low-point frames');if(!validGeneratedAt||ageHours>8||ageHours< -1)qualityParts.push('stale/invalid timestamp');
   const slider=$('windForecastHour');
   const availableMax=Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0));
