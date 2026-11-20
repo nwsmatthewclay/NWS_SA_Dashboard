@@ -2397,15 +2397,20 @@ function addSelectedProductToExportMap(prod){
   const list = Array.isArray(prod) ? prod.filter(Boolean) : [prod];
 
   list.forEach(function(item){
-    const color = getExportHazardColor(item);
+    // In focused exports, segmented zones of the same hazard share the
+    // selected product's color so overlap/segment boundaries do not imply
+    // different threat levels.
+    const representative = selectedExportMode === 'single' ? selectedExportProduct() : null;
+    const color = representative ? getExportHazardColor(representative) : getExportHazardColor(item);
+    const baseFillOpacity = selectedExportExtent === 'state'
+        ? Math.min((isSpsProduct(item) ? SPS_ZONE_FILL_OPACITY : EXPORT_STATE_ZONE_FILL_OPACITY) * hazardOpacityMultiplier, 1)
+        : currentZoneFillOpacity(item);
     const style = {
       color: color,
       weight: (item.sig === 'W' ? 3 : 2.5),
       opacity: 0.95,
       fillColor: color,
-      fillOpacity: selectedExportExtent === 'state'
-        ? Math.min((isSpsProduct(item) ? SPS_ZONE_FILL_OPACITY : EXPORT_STATE_ZONE_FILL_OPACITY) * hazardOpacityMultiplier, 1)
-        : currentZoneFillOpacity(item),
+      fillOpacity: selectedExportMode === 'single' ? Math.min(baseFillOpacity, 0.22) : baseFillOpacity,
       lineCap: 'round',
       lineJoin: 'round'
     };
@@ -10385,8 +10390,14 @@ function buildCompositeCanvasLandscape(mapCanvas, nwsLogo, locatorData){
   // shares this strip.
   let legendX=mapX+22;
   const legendY=mainY+MAP_H+30;
-  legendProducts.slice(0,6).forEach(function(p){
-    const color=p&&p.color?p.color:bannerColor;
+  const displayedLegendProducts = selectedExportMode==='single'
+    ? (topProduct ? [topProduct] : [])
+    : legendProducts.filter(function(p,index,arr){
+        const key=String(p&&p.phen||'')+'.'+String(p&&p.sig||'');
+        return arr.findIndex(function(q){return String(q&&q.phen||'')+'.'+String(q&&q.sig||'')===key;})===index;
+      });
+  displayedLegendProducts.slice(0,6).forEach(function(p){
+    const color=getExportHazardColor(p);
     const name=String(p&&p.name||p&&p.event||'Hazard');
     ctx.fillStyle=color;ctx.fillRect(legendX,legendY-15,38,30);
     ctx.strokeStyle='#102d47';ctx.lineWidth=1.5;ctx.strokeRect(legendX+.5,legendY-14.5,37,29);
