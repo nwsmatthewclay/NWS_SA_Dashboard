@@ -11008,6 +11008,7 @@ function loadExportCityData(leafletMap){
     f: 'json'
   });
 
+  let exportCityDiagnostics = {bounds:geometry,primaryReturned:0,primaryUsable:0,fallbackReturned:0,fallbackUsable:0,merged:0,regionFiltered:0,finalCount:0,errors:[]};
   const primaryPromise = fetch(
     EXPORT_CITY_SERVICE_URL + '?' + primaryParams.toString(),
     {headers:{'Accept':'application/json'}}
@@ -11018,8 +11019,9 @@ function loadExportCityData(leafletMap){
     })
     .then(function(data){
       const rows = Array.isArray(data && data.features) ? data.features : [];
+      exportCityDiagnostics.primaryReturned = rows.length;
 
-      return rows.map(function(feature){
+      const mapped = rows.map(function(feature){
         const props = feature.attributes || feature.properties || {};
         const geom = feature.geometry || {};
 
@@ -11052,8 +11054,11 @@ function loadExportCityData(leafletMap){
           tier:0
         };
       }).filter(Boolean);
+      exportCityDiagnostics.primaryUsable = mapped.length;
+      return mapped;
     })
     .catch(function(err){
+      exportCityDiagnostics.errors.push('Primary: ' + err.message);
       console.warn('Primary export city source unavailable:', err);
       return [];
     });
@@ -11076,18 +11081,23 @@ function loadExportCityData(leafletMap){
       })
       .then(function(data){
         const rows = Array.isArray(data && data.features) ? data.features : [];
-        return rows.map(function(feature){
+        exportCityDiagnostics.fallbackReturned = rows.length;
+        const mapped = rows.map(function(feature){
           const props = feature.attributes || feature.properties || {};
-          const centroid = feature.centroid || null;
-          const lon = centroid && Number.isFinite(Number(centroid.x)) ? Number(centroid.x) : NaN;
-          const lat = centroid && Number.isFinite(Number(centroid.y)) ? Number(centroid.y) : NaN;
+          const centroid = feature.centroid || feature.geometry || null;
+          const geom = feature.geometry || {};
+          const coord = Array.isArray(geom.coordinates) ? geom.coordinates : null;
+          const lon = centroid && Number.isFinite(Number(centroid.x)) ? Number(centroid.x) : (Number.isFinite(Number(geom.x)) ? Number(geom.x) : (coord ? Number(coord[0]) : NaN));
+          const lat = centroid && Number.isFinite(Number(centroid.y)) ? Number(centroid.y) : (Number.isFinite(Number(geom.y)) ? Number(geom.y) : (coord ? Number(coord[1]) : NaN));
           const rawName = props.NAME || props.name || '';
           const name = normalizeExportCityName(rawName);
           if(!isCurrentExportPlaceName(rawName) || !name || !Number.isFinite(lon) || !Number.isFinite(lat)) return null;
           return {name:name,lon:lon,lat:lat,population:Number(props.POPULATION)||0,popClass:Number(props.POP_CLASS)||0,capital:false,state:String(props.ST||'').trim(),sourcePriority:1,tier:3};
         }).filter(Boolean);
+        exportCityDiagnostics.fallbackUsable = mapped.length;
+        return mapped;
       })
-      .catch(function(err){ console.warn('Census populated-place service unavailable:', err); return []; });
+      .catch(function(err){ exportCityDiagnostics.errors.push('Fallback: ' + err.message); console.warn('Census populated-place service unavailable:', err); return []; });
   })();
 
   exportCityLoadPromise = Promise.all([primaryPromise, fallbackPromise])
@@ -11133,14 +11143,14 @@ function loadExportCityData(leafletMap){
         }
       });
 
-      exportCityData = Array.from(merged.values())
+      exportCityDiagnostics.merged = merged.size;
+      const beforeRegion = Array.from(merged.values())
         .filter(function(city){ return city && isCurrentExportPlaceName(city.name); })
-        .map(function(city){
-          city.tier = Number(city.tier) || exportCityTier(city);
-          return city;
-        })
-        .filter(isExportCityInSelectedRegion);
-
+        .map(function(city){ city.tier = Number(city.tier) || exportCityTier(city); return city; });
+      exportCityDiagnostics.regionFiltered = beforeRegion.length;
+      exportCityData = beforeRegion.filter(isExportCityInSelectedRegion);
+      exportCityDiagnostics.finalCount = exportCityData.length;
+      console.info('Export city diagnostics:', exportCityDiagnostics);
       return exportCityData;
     })
     .catch(function(err){
@@ -11982,8 +11992,8 @@ async function saveMapImage(){
     if(tempMap._exportRoadLayer) drawExportRasterTilesOnCanvas(mapCanvas, tempMap, tempMap._exportRoadLayer);
     const cityLabelCount = drawExportCityLabelsOnCanvas(mapCanvas, tempMap);
     if(!cityLabelCount){
-      console.warn('Export quality check: no city labels were drawn. City data:', exportCityData.length);
-      const proceedWithoutCities = confirm('Geographic reference check failed: no city labels were drawn on this map.\\n\\nExport anyway?');
+      console.warn('Export quality check: no city labels were drawn.', {dataCount:exportCityData.length, zoom:tempMap.getZoom(), extent:selectedExportExtent, mode:selectedExportMode, region:settings.regionId});
+      const proceedWithoutCities = confirm('Geographic reference check failed: no city labels were drawn on this map.\\n\\nCity data loaded: ' + exportCityData.length + '\\nMap zoom: ' + tempMap.getZoom() + '\\nRegion: ' + settings.regionId + '\\n\\nCheck the browser console for source/filter diagnostics. Export anyway?');
       if(!proceedWithoutCities) throw new Error('Export canceled because no city reference labels were available.');
     }
 
