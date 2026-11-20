@@ -58,7 +58,7 @@ button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radiu
   <article class="panel">
    <div class="panel-head"><div><div class="eyebrow">02 / Lake geometry</div><h2>Fetch & downwind corridor</h2></div><span class="status">Lake Champlain · N–S axis</span></div>
    <div class="lake-scene">
-    <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>24-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="24" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+24 h</span></div><div class="sub" style="margin-top:6px">Use ← / → or ↑ / ↓ to step through forecast hours; Home returns to hour 0 and End jumps to the latest available hour. Only 20 representative arrows are drawn for readability; the full valid grid is used for mean-wind and north–south alignment diagnostics. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
+    <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" id="fetchGeometryPanel" style="margin-top:10px"><div class="factor-top"><strong>Directional fetch geometry</strong><span class="pill" id="fetchGeometryStatus">Waiting for wind</span></div><div class="setup-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="setup-stat"><div class="label">Upwind shoreline</div><div class="value" id="upwindShore">—</div><div class="detail">Wind source side</div></div><div class="setup-stat"><div class="label">Downwind shoreline</div><div class="value" id="downwindShore">—</div><div class="detail">Potential convergence zone</div></div><div class="setup-stat"><div class="label">Lake-axis component</div><div class="value" id="axisComponent">—</div><div class="detail">Wind aligned with lake length</div></div></div><p class="section-note" id="fetchGeometryNote">The map will show an upwind-to-downwind transect, lake-crossing fetch, and a conceptual downwind convergence corridor. Shoreline locations are estimates from the current lake geometry.</p></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>24-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="24" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+24 h</span></div><div class="sub" style="margin-top:6px">Use ← / → or ↑ / ↓ to step through forecast hours; Home returns to hour 0 and End jumps to the latest available hour. Only 20 representative arrows are drawn for readability; the full valid grid is used for mean-wind and north–south alignment diagnostics. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
     <div class="legend"><span><i class="swatch" style="background:#61d9ef"></i>Lake shoreline</span><span><i class="swatch" style="background:#a5e9f4"></i>Potential cloud corridor</span><span><i class="swatch" style="background:#78aaff"></i>Conditional snow corridor</span></div><div class="map-note">Wind-oriented conceptual corridor, not a calibrated probability. Shoreline is loaded from Vermont Center for Geographic Information when available; fallback outline is approximate. Thermodynamics, ice coverage, moisture and radar confirmation are still required.</div>
    </div>
   </article>
@@ -203,7 +203,43 @@ function calculateDirectionalFetchKm(directionFrom){
  }
  hits.sort((a,b)=>a-b);return hits.length>=2?Math.max(0,hits[hits.length-1]-hits[0]):0;
 }
-function clearLakeEffectCorridor(){
+
+// Directional geometry diagnostics. Meteorological wind direction is FROM; the fetch ray points downstream.
+let fetchGeometryLayer=null;
+function bearingName(deg){const names=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];return names[Math.round((((deg%360)+360)%360)/22.5)%16]}
+function pointAtKm(lat,lon,bearing,km){const r=bearing*Math.PI/180;return [lat+km/111*Math.cos(r),lon+km/(111*Math.cos(lat*Math.PI/180))*Math.sin(r)]}
+function rayPolygonIntersections(origin,bearing,poly){
+ const dx=Math.sin(bearing*Math.PI/180),dy=Math.cos(bearing*Math.PI/180),kmLat=111,kmLon=111*Math.cos(origin[0]*Math.PI/180),hits=[];
+ for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ax=(a[1]-origin[1])*kmLon,ay=(a[0]-origin[0])*kmLat,bx=(b[1]-origin[1])*kmLon,by=(b[0]-origin[0])*kmLat,ex=bx-ax,ey=by-ay,den=dx*ey-dy*ex;if(Math.abs(den)<1e-8)continue;const t=(ax*ey-ay*ex)/den,u=(ax*dy-ay*dx)/den;if(u>=0&&u<=1)hits.push(t)}
+ return hits.sort((a,b)=>a-b);
+}
+function getFetchGeometry(dir){
+ if(!Number.isFinite(dir))return null;
+ const center=[44.27,-73.32],down=(dir+180)%360,hits=rayPolygonIntersections(center,down,shore);
+ if(hits.length<2)return null;
+ // The central ray intersects the fallback polygon at the upwind and downwind shores.
+ const upDist=hits.filter(x=>x<0).sort((a,b)=>b-a)[0],downDist=hits.filter(x=>x>0).sort((a,b)=>a-b)[0];
+ if(!Number.isFinite(upDist)||!Number.isFinite(downDist))return null;
+ const up=pointAtKm(center[0],center[1],dir,Math.abs(upDist)),downPt=pointAtKm(center[0],center[1],down,downDist);
+ return {center,up,down:downPt,fetchKm:Math.abs(upDist)+downDist,downBearing:down,upDist:Math.abs(upDist),downDist};
+}
+function renderFetchGeometry(dir,fetchKm,axisPct){
+ if(fetchGeometryLayer){map.removeLayer(fetchGeometryLayer);fetchGeometryLayer=null}
+ const g=getFetchGeometry(dir);
+ if(!g){$('fetchGeometryStatus').textContent='No directional geometry';$('upwindShore').textContent='—';$('downwindShore').textContent='—';$('axisComponent').textContent='—';return}
+ fetchGeometryLayer=L.layerGroup().addTo(map);
+ const path=L.polyline([g.up,g.center,g.down],{color:'#ffdb7d',weight:3,dashArray:'7 5',opacity:.95}).addTo(fetchGeometryLayer);
+ L.circleMarker(g.up,{radius:6,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Upwind shoreline · approximate');
+ L.circleMarker(g.down,{radius:6,color:'#fff',fillColor:'#72e2e8',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Downwind shoreline · approximate');
+ const midpoint=pointAtKm(g.center[0],g.center[1],g.downBearing,g.downDist*.5);
+ L.polyline([g.center,midpoint],{color:'#72e2e8',weight:4,opacity:.85}).addTo(fetchGeometryLayer).bindTooltip('Lake-crossing wind trajectory');
+ $('fetchGeometryStatus').textContent=g.fetchKm.toFixed(1)+' km crossing';
+ $('upwindShore').textContent=bearingName(dir)+' side';
+ $('downwindShore').textContent=bearingName(g.downBearing)+' side';
+ $('axisComponent').textContent=Math.round(axisPct)+'%';
+ $('fetchGeometryNote').textContent='Estimated central-lake crossing '+g.fetchKm.toFixed(1)+' km · '+g.upDist.toFixed(1)+' km upstream and '+g.downDist.toFixed(1)+' km downstream of center. '+bearingName(dir)+'-side source flow toward '+bearingName(g.downBearing)+'-side shoreline. Conceptual geometry only; shoreline and convergence are not dynamically modeled.';
+}
+\nfunction clearLakeEffectCorridor(){
  if(plumeLayer){map.removeLayer(plumeLayer);plumeLayer=null}
  if(snowLayer){map.removeLayer(snowLayer);snowLayer=null}
 }
@@ -216,7 +252,7 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
  const rhm=envText.match(/RH\s*≥80%:\s*(\d+)\s*levels/i);
  const dgzm=envText.match(/saturated\s+(\d+)\s*\/\s*\d+\s*levels/i)||envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
  const moistLevels=rhm?Number(rhm[1]):0,dgzLevels=dgzm?Number(dgzm[1]):0;
- const fetchKm=calculateDirectionalFetchKm(dir);
+ const geometry=getFetchGeometry(dir);const fetchKm=geometry?geometry.fetchKm:calculateDirectionalFetchKm(dir);\n  renderFetchGeometry(dir,fetchKm,axisPct);
   $('fetchLength').textContent=Number.isFinite(fetchKm)&&fetchKm>0?fetchKm.toFixed(1)+' km':'—';
   $('fetchLengthDetail').textContent=Number.isFinite(fetchKm)&&fetchKm>0?(fetchKm>=65?'Meets 65 km minimum':fetchKm>=25?'Below 65 km minimum · moderate path':fetchKm>=10?'Short directional path':'Very limited directional path'):'Unable to estimate from current geometry';
   $('downwindBearing').textContent=Number.isFinite(dir)?Math.round((dir+180)%360)+'°':'—';
