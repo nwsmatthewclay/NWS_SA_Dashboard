@@ -172,7 +172,8 @@ function renderWindForecast(hour){
  points.forEach(p=>{
   const lat=Number(p.lat),lon=Number(p.lon),dir=Number(p.direction),speed=Number(p.speed_kt);
   if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(dir)||!Number.isFinite(speed))return;
-  if(lat<43.60||lat>45.06||lon< -73.52||lon> -73.05)return;
+  // Phase 4 quality gate: discard implausible coordinates and speeds before diagnostics.
+  if(lat<43.60||lat>45.06||lon< -73.52||lon> -73.05||speed<0||speed>150||dir<0||dir>360)return;
   valid.push({lat,lon,dir:((dir%360)+360)%360,speed});
  });
  // Full-grid vector mean; direction is meteorological (direction FROM).
@@ -187,6 +188,11 @@ function renderWindForecast(hour){
  const windCoherence=meanSpeed>0?Math.max(0,Math.min(1,vectorSpeed/meanSpeed)):0;
  const meanDir=(sumU||sumV)?(Math.atan2(-sumU,-sumV)*180/Math.PI+360)%360:null;
  const axisPct=valid.length?100*along/valid.length:0;
+ // Phase 2: summarize north/central/south lake wind regimes independently.
+ renderRegionalDiagnostics(valid);
+ const glwuRegional=['North','Central','South'].map(region=>summarizeWind(valid.filter(p=>regionForPoint(p)===region)));
+ // Phase 5: optional HRRR comparison; missing external data never alters screening.
+ renderModelAgreement(Number(frame.forecast_hour)||0,glwuRegional);
  // Update fetch summary and screening for the selected forecast hour.
  updateLakeEffectCorridor(meanDir,vectorSpeed,meanSpeed,axisPct,frame.forecast_hour);
  // Draw at most 20 samples spaced across the complete valid grid.
