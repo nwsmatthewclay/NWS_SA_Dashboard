@@ -4291,7 +4291,7 @@ function drawWarningPolygons(products){
     const popup='<div style="min-width:240px"><b style="color:'+color+'">'+rep.name+'</b><br><b>VTEC</b> '+rep.code+'<br><b>Segments</b> '+segments.length+'<br><b>Issued</b> '+fmtTime(rep.onset)+'<br><b>Expires</b> '+fmtTime(rep.expires)+'<br><b>Update By</b> '+fmtTime(rep.updateBy)+popupExportButton(rep)+'</div>';
     geometries.forEach(function(g){
       const gj=L.geoJSON(g,{style:style,onEachFeature:function(feature,layer){
-        layer.on({mouseover:function(){layer.setStyle({weight:weight+2,fillOpacity:Math.min(style.fillOpacity+0.10,currentPolygonHoverFillOpacity(rep));layer.bringToFront();},mouseout:function(){layer.setStyle(style);}});
+        layer.on({mouseover:function(){layer.setStyle({weight:weight+2,fillOpacity:Math.min(style.fillOpacity+0.10,currentPolygonHoverFillOpacity(rep))});layer.bringToFront();},mouseout:function(){layer.setStyle(style);}});
       }}).bindPopup(popup).addTo(polygonLayer);
       if(!rep._mapLayer) rep._mapLayer=gj;
     });
