@@ -60,7 +60,7 @@ button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radiu
    <div class="panel-head"><div><div class="eyebrow">02 / Lake geometry</div><h2>Fetch & downwind corridor</h2></div><span class="status">Lake Champlain · N–S axis</span></div>
    <div class="lake-scene">
     <div id="champlainMap" class="map" aria-label="Map of Lake Champlain with estimated downwind cloud and snow corridors"></div><div class="factor" id="fetchGeometryPanel" style="margin-top:10px"><div class="factor-top"><strong>Directional fetch geometry</strong><span class="pill" id="fetchGeometryStatus">Waiting for wind</span></div><div class="setup-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="setup-stat"><div class="label">Upwind shoreline</div><div class="value" id="upwindShore">—</div><div class="detail">Wind source side</div></div><div class="setup-stat"><div class="label">Downwind shoreline</div><div class="value" id="downwindShore">—</div><div class="detail">Potential convergence zone</div></div><div class="setup-stat"><div class="label">Lake-axis component</div><div class="value" id="axisComponent">—</div><div class="detail">Wind aligned with lake length</div></div></div><p class="section-note" id="fetchGeometryNote">The map will show an upwind-to-downwind transect, lake-crossing fetch, and a conceptual downwind convergence corridor. Shoreline locations are estimates from the current lake geometry.</p></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>24-hour lake wind forecast</strong><span class="pill" id="windForecastLabel">Loading GRIB2 field…</span></div><input id="windForecastHour" type="range" min="0" max="24" step="1" value="0" style="width:100%;margin:10px 0 4px;accent-color:#61d9ef"><div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)"><span>Now</span><span id="windForecastValid">Waiting for latest GLWU export</span><span>+24 h</span></div><div class="sub" style="margin-top:6px">Use ← / → or ↑ / ↓ to step through forecast hours; Home returns to hour 0 and End jumps to the latest available hour. Only 20 representative arrows are drawn for readability; the full valid grid is used for mean-wind and north–south alignment diagnostics. Wind forcing can shift the favored downwind shoreline; this is not itself a cloud or snowfall forecast.</div></div>
-    <div class="legend"><span><i class="swatch" style="background:#61d9ef"></i>Lake shoreline</span><span><i class="swatch" style="background:#a5e9f4"></i>Potential cloud corridor</span><span><i class="swatch" style="background:#78aaff"></i>Conditional snow corridor</span></div><div class="map-note">Wind-oriented conceptual corridor, not a calibrated probability. Shoreline is loaded from Vermont Center for Geographic Information when available; fallback outline is approximate. Thermodynamics, ice coverage, moisture and radar confirmation are still required.</div>
+    <div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>Spatial wind diagnostics</strong><span class="pill" id="regionalWindStatus">Waiting for forecast</span></div><table class="table" style="margin-top:6px"><thead><tr><th>Region</th><th>Mean wind</th><th>Vector wind</th><th>Direction</th><th>Coherence</th></tr></thead><tbody id="regionalWindRows"><tr><td colspan="5" class="sub">Select a forecast hour to calculate regional winds.</td></tr></tbody></table><p class="section-note">North, central, and south diagnostics use the GLWU grid points in each latitude band. Coherence is vector-mean speed divided by scalar mean speed; low values indicate directional variability or cancellation.</p></div><div class="factor" style="margin-top:10px;padding:10px 12px"><div class="factor-top"><strong>Model wind agreement · optional HRRR comparison</strong><span class="pill" id="modelAgreementStatus">Initializing</span></div><div id="modelAgreementText" class="section-note">GLWU is the lake-grid primary source. HRRR point winds are retrieved independently when the external forecast service is available.</div><table class="table"><tbody id="modelAgreementRows"><tr><td class="sub">HRRR comparison will populate when available.</td></tr></tbody></table></div><div class="legend"><span><i class="swatch" style="background:#61d9ef"></i>Lake shoreline</span><span><i class="swatch" style="background:#a5e9f4"></i>Potential cloud corridor</span><span><i class="swatch" style="background:#78aaff"></i>Conditional snow corridor</span></div><div class="map-note">Wind-oriented conceptual corridor, not a calibrated probability. Shoreline is loaded from Vermont Center for Geographic Information when available; fallback outline is approximate. Thermodynamics, ice coverage, moisture and radar confirmation are still required.</div>
    </div>
   </article>
  </section>
@@ -120,6 +120,41 @@ $('refreshRap').addEventListener('click',getRap);
 let map,plumeLayer,snowLayer;
 const shore=[[45.01,-73.37],[44.96,-73.39],[44.88,-73.40],[44.79,-73.42],[44.69,-73.43],[44.58,-73.42],[44.48,-73.41],[44.38,-73.39],[44.29,-73.38],[44.20,-73.37],[44.12,-73.36],[44.04,-73.35],[43.96,-73.34],[43.88,-73.33],[43.80,-73.32],[43.73,-73.31],[43.66,-73.30],[43.61,-73.29],[43.65,-73.23],[43.73,-73.22],[43.83,-73.23],[43.93,-73.24],[44.03,-73.25],[44.13,-73.26],[44.23,-73.27],[44.33,-73.28],[44.43,-73.29],[44.53,-73.30],[44.63,-73.31],[44.73,-73.32],[44.83,-73.33],[44.92,-73.34]];
 let windForecastFrames=[],windForecastLayer=null;
+const hrrrWindCache={};
+const lakeWindSites=[{name:'North',lat:44.78,lon:-73.32},{name:'Central',lat:44.27,lon:-73.32},{name:'South',lat:43.82,lon:-73.32}];
+function summarizeWind(points){
+ const valid=points.filter(p=>Number.isFinite(p.dir)&&Number.isFinite(p.speed)&&p.speed>=0&&p.speed<=150);
+ if(!valid.length)return null;
+ let u=0,v=0,scalar=0;
+ valid.forEach(p=>{const rad=p.dir*Math.PI/180;u+=-p.speed*Math.sin(rad);v+=-p.speed*Math.cos(rad);scalar+=p.speed});
+ const mean=scalar/valid.length,vector=Math.hypot(u,v)/valid.length,coh=mean>0?Math.max(0,Math.min(1,vector/mean)):0;
+ const dir=(u||v)?(Math.atan2(-u,-v)*180/Math.PI+360)%360:null;
+ return {count:valid.length,mean,vector,coh,dir};
+}
+function regionForPoint(p){return p.lat>=44.60?'North':p.lat>=44.15?'Central':'South'}
+function renderRegionalDiagnostics(valid){
+ const regions=['North','Central','South'],out=[];
+ regions.forEach(region=>{const stats=summarizeWind(valid.filter(p=>regionForPoint(p)===region));
+ if(stats)out.push('<tr><td>'+region+' · '+stats.count+' pts</td><td>'+stats.mean.toFixed(1)+' kt</td><td>'+stats.vector.toFixed(1)+' kt</td><td>'+(stats.dir==null?'—':Math.round(stats.dir)+'°')+'</td><td>'+Math.round(stats.coh*100)+'%</td></tr>');
+ else out.push('<tr><td>'+region+'</td><td colspan="4" class="sub">Insufficient valid points</td></tr>')});
+ $('regionalWindRows').innerHTML=out.join('');$('regionalWindStatus').textContent=valid.length+' valid points · 3 regions';
+}
+async function getHRRRWind(hour){
+ const key=String(hour);if(hrrrWindCache[key])return hrrrWindCache[key];
+ const fetches=lakeWindSites.map(site=>fetch('https://api.open-meteo.com/v1/forecast?latitude='+site.lat+'&longitude='+site.lon+'&hourly=wind_speed_10m,wind_direction_10m&models=hrrr&wind_speed_unit=kn&timezone=UTC&forecast_days=2',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HRRR API HTTP '+r.status);return r.json()}));
+ const data=await Promise.all(fetches);const results=data.map((j,i)=>{const times=j.hourly?.time||[],idx=times.findIndex(t=>new Date(t).getUTCHours()===new Date(Date.now()+hour*3600000).getUTCHours()&&Math.abs(new Date(t)-new Date(Date.now()+hour*3600000))<90*60*1000);return {site:lakeWindSites[i].name,speed:idx>=0?Number(j.hourly.wind_speed_10m[idx]):null,dir:idx>=0?Number(j.hourly.wind_direction_10m[idx]):null,time:idx>=0?times[idx]:null}});
+ hrrrWindCache[key]=results;return results;
+}
+async function renderModelAgreement(hour,glwuRegional){
+ const status=$('modelAgreementStatus'),body=$('modelAgreementRows'),textEl=$('modelAgreementText');
+ status.textContent='Fetching HRRR comparison…';
+ try{const hrrr=await getHRRRWind(hour);const rows=hrrr.map((h,i)=>{const g=glwuRegional[i],valid=Number.isFinite(h.dir)&&Number.isFinite(h.speed)&&g;const diff=valid?Math.abs(((h.dir-g.dir+540)%360)-180):null;return {h,g,diff,valid}});
+ body.innerHTML=rows.map(x=>'<tr><td>'+x.h.site+'</td><td>'+(x.valid?x.g.mean.toFixed(1)+' kt / '+Math.round(x.g.dir)+'°':'GLWU unavailable')+'</td><td>'+(x.valid?x.h.speed.toFixed(1)+' kt / '+Math.round(x.h.dir)+'°':'HRRR unavailable')+'</td><td>'+(x.valid?Math.round(x.diff)+'°':'—')+'</td></tr>').join('');
+ const valid=rows.filter(x=>x.valid),avg=valid.length?valid.reduce((a,x)=>a+x.diff,0)/valid.length;
+ status.textContent=valid.length?valid.length+'/3 regional comparisons':'Comparison incomplete';
+ textEl.textContent=valid.length?'Directional difference is the absolute circular difference between regional GLWU and HRRR directions. Mean regional direction difference: '+Math.round(avg)+'°. This is a model comparison, not an independent verification.':'HRRR or GLWU regional data unavailable for selected hour; no agreement score is calculated.';
+ }catch(e){status.textContent='HRRR comparison unavailable';body.innerHTML='<tr><td colspan="4" class="sub">'+e.message+'</td></tr>';textEl.textContent='GLWU diagnostics remain available. HRRR comparison failed and is not used in the screening decision.'}
+}
 function renderWindForecast(hour){
  if(!map||!windForecastFrames.length)return;
  const requestedHour=Number(hour);
