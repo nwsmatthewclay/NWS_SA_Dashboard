@@ -12147,8 +12147,9 @@ async function saveMapImage(){
     if(tempMap._exportRoadLayer) drawExportRasterTilesOnCanvas(mapCanvas, tempMap, tempMap._exportRoadLayer);
     const cityLabelCount = drawExportCityLabelsOnCanvas(mapCanvas, tempMap);
     if(!cityLabelCount){
-      console.error('Export blocked: city labels were not drawn. The shared export pipeline requires city labels.', {dataCount:exportCityData.length, zoom:tempMap.getZoom(), extent:selectedExportExtent, mode:selectedExportMode, region:settings.regionId});
-      throw new Error('Export canceled because no city reference labels were available.');
+      // City labels are optional cartographic context. A slow/unavailable
+      // reference service must never prevent an otherwise valid hazard export.
+      console.warn('Export continuing without city labels.', {dataCount:exportCityData.length, zoom:tempMap.getZoom(), extent:selectedExportExtent, mode:selectedExportMode, region:settings.regionId});
     }
 
     // The temporary map is rendered at the exact dimensions of the final
