@@ -12127,7 +12127,8 @@ async function saveMapImage(){
     // Composite vector layers and transportation onto the raster map.
     // City labels are then painted as the FINAL map layer, guaranteeing
     // that they remain visible above the warning polygons.
-    drawExportUniformHazardFills(mapCanvas, tempMap);\n    drawExportVectorsOnCanvas(mapCanvas, tempMap);
+    drawExportUniformHazardFills(mapCanvas, tempMap);
+    drawExportVectorsOnCanvas(mapCanvas, tempMap);
     // In all-hazard exports, explicitly hatch areas where different active
     // hazards overlap. Roads and city labels are drawn afterward so they stay
     // crisp and readable.
