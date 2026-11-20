@@ -8277,7 +8277,7 @@ function buildAllHazardsCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   });
 
   const cells=[
-    ['ISSUED', earliestIssued ? fmtDateTime(earliestIssued) : '—'],
+    ['ISSUED', earliestIssued ? fmtTime(earliestIssued) : '—'],
     ['ACTIVE HAZARDS', String(activeProducts.length)],
     ['WFO', officeDisplay || (settings.regionType==='office' ? settings.regionId : 'Selected Region')],
     ['LAST UPDATED', new Date().toLocaleString('en-US',{timeZone:settings.tz,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+' '+(tzAbbrev(settings.tz)||'')]
@@ -8369,7 +8369,7 @@ function buildAllHazardsCompositeCanvas(mapCanvas, nwsLogo, locatorData){
       const nameLines=wrapText(name,nameW,'850 '+size+'px '+FONT).slice(0,2);
       nameLines.forEach(function(line,j){ctx.fillText(line,nameX,y+18+j*(size+3));});
 
-      const exp=prod.expires ? fmtDateTime(prod.expires) : 'No expiration';
+      const exp=prod.expires ? fmtTime(prod.expires) : 'No expiration';
       const expY=y+rowH-16;
       ctx.fillStyle=MUTED;ctx.font='700 14px '+FONT;
       ctx.fillText('Expires '+exp,nameX,expY);
