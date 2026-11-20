@@ -7366,6 +7366,35 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
 
       sy=r.y+10;
     }
+    if(narrative.details){
+      // ADDITIONAL DETAILS is forecaster-authored information from the NWS
+      // text product. Preserve and display it in the exported graphic rather
+      // than silently dropping it from the canvas composition.
+      ctx.save();
+      ctx.strokeStyle='#f5f7fa';
+      ctx.lineWidth=3;
+      ctx.beginPath();
+      ctx.arc(sx+17,sy+14,15,0,Math.PI*2);
+      ctx.stroke();
+      ctx.fillStyle='#f5f7fa';
+      ctx.font='900 20px '+FONT;
+      ctx.textAlign='center';
+      ctx.fillText('i',sx+17,sy+21);
+      ctx.restore();
+      const r=drawExportNarrativeSection(ctx,{
+        label:'ADDITIONAL DETAILS',
+        text:narrative.details,
+        x:sx+48,
+        y:sy,
+        width:sw-48,
+        accent:bannerColor,
+        maxLines:4,
+        fontSize:16,
+        minFontSize:13,
+        availableHeight:125
+      });
+      sy=r.y+10;
+    }
     if(narrative.safety){drawCheckBox(sx,sy-1,34,'#f5f7fa');const r=drawExportNarrativeSection(ctx,{label:'SAFETY ACTIONS',text:compactExportSafety(narrative.safety),x:sx+48,y:sy,width:sw-48,accent:bannerColor,maxLines:Math.min(policy.safetyLines,3),fontSize:16,minFontSize:14,availableHeight:130});sy=r.y+10;}
 
     // The at-risk section is intentionally kept at the bottom of the narrative
