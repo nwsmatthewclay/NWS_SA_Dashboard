@@ -322,7 +322,7 @@ async function loadWindForecast(){
   $('screenStatus').style.color='var(--gold)';
  }
 }
-function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],10);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.015),{maxZoom:10});};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.03),{maxZoom:9});$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
+function initMap(){if(!window.L)return;map=L.map('champlainMap').setView([44.25,-73.32],11);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors · Lake geometry: VCGI',subdomains:['a','b','c'],maxZoom:19}).addTo(map);const style={color:'#61d9ef',weight:2,fillColor:'#2c92b8',fillOpacity:.48};const fallback=()=>{const lake=L.polygon(shore,style).addTo(map).bindTooltip('Lake Champlain · approximate fallback shoreline');map.fitBounds(lake.getBounds().pad(.01),{maxZoom:11});map.setView([44.25,-73.32],11);};fetch('https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_services/VCGI_BASEMAP_SP_v2/MapServer/26/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('VCGI HTTP '+r.status);return r.json()}).then(g=>{if(!g.features||!g.features.length)throw Error('No shoreline features');const lake=L.geoJSON(g,{style}).addTo(map).bindTooltip('Lake Champlain · VCGI 1:5,000 lake polygon');map.fitBounds(lake.getBounds().pad(.01),{maxZoom:11});map.setView([44.25,-73.32],11);$('healthBadge').title='VCGI shoreline loaded';}).catch(e=>{console.warn('VCGI shoreline unavailable; using approximate outline',e);fallback();});L.circleMarker([44.47,-73.15],{radius:5,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(map).bindTooltip('KBTV · RAP reference');L.circleMarker([44.02,-73.43],{radius:5,color:'#fff',fillColor:'#63dfb0',fillOpacity:1}).addTo(map).bindTooltip('Valcour buoy area');}
 function calculateDirectionalFetchKm(directionFrom){
  if(!Number.isFinite(directionFrom))return 0;
  const origin={lat:44.27,lon:-73.32},bearing=((directionFrom+180)%360)*Math.PI/180;
@@ -371,27 +371,20 @@ function renderFetchGeometry(dir,fetchKm,axisPct,weightedFetch){
  if(fetchGeometryLayer){map.removeLayer(fetchGeometryLayer);fetchGeometryLayer=null}
  const g=getFetchGeometry(dir);
  if(!g){$('fetchGeometryStatus').textContent='No directional geometry';$('upwindShore').textContent='—';$('downwindShore').textContent='—';$('axisComponent').textContent='—';return}
- fetchGeometryLayer=L.layerGroup().addTo(map);
- // Three latitude-spaced transects reveal how the cross-lake path changes along the lake.
+ // Geometry remains available in diagnostics, but directional transect lines and markers
+ // are intentionally omitted from the operational map to keep the lake unobstructed.
  const transects=[{lat:44.72,label:'North'},{lat:44.27,label:'Central'},{lat:43.91,label:'South'}],crossings=[];
  transects.forEach(t=>{
   const origin=[t.lat,-73.32],hits=rayPolygonIntersections(origin,g.downBearing,shore);
   const upstream=hits.filter(x=>x<0).sort((a,b)=>b-a)[0],downstream=hits.filter(x=>x>0).sort((a,b)=>a-b)[0];
-  if(!Number.isFinite(upstream)||!Number.isFinite(downstream))return;
-  const up=pointAtKm(origin[0],origin[1],dir,Math.abs(upstream)),downPt=pointAtKm(origin[0],origin[1],g.downBearing,downstream);
-  crossings.push({label:t.label,origin,up,down:downPt,km:Math.abs(upstream)+downstream});
-  L.polyline([up,origin,downPt],{color:t.label==='Central'?'#ffdb7d':'#72e2e8',weight:t.label==='Central'?3:2,dashArray:t.label==='Central'?'7 5':'4 6',opacity:.85}).addTo(fetchGeometryLayer).bindTooltip(t.label+' transect · '+(Math.abs(upstream)+downstream).toFixed(1)+' km');
+  if(Number.isFinite(upstream)&&Number.isFinite(downstream))crossings.push({label:t.label,km:Math.abs(upstream)+downstream});
  });
- L.circleMarker(g.up,{radius:6,color:'#fff',fillColor:'#ffd166',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Central upwind shoreline · approximate');
- L.circleMarker(g.down,{radius:6,color:'#fff',fillColor:'#72e2e8',fillOpacity:1}).addTo(fetchGeometryLayer).bindTooltip('Central downwind shoreline · approximate');
- const midpoint=pointAtKm(g.center[0],g.center[1],g.downBearing,g.downDist*.5);
- L.polyline([g.center,midpoint],{color:'#72e2e8',weight:4,opacity:.85}).addTo(fetchGeometryLayer).bindTooltip('Central lake-crossing trajectory');
- const valid=crossings.length?crossings.map(x=>x.km):[g.fetchKm],min=Math.min(...valid),max=Math.max(...valid),avg=valid.reduce((a,b)=>a+b,0)/valid.length;
+ const valid=crossings.length?crossings.map(x=>x.km):[g.fetchKm],avg=valid.reduce((a,b)=>a+b,0)/valid.length;
  $('fetchGeometryStatus').textContent=valid.length+' transects · '+avg.toFixed(1)+' km mean';
  $('upwindShore').textContent=bearingName(dir)+' side';
  $('downwindShore').textContent=bearingName(g.downBearing)+' side';
  $('axisComponent').textContent=Math.round(axisPct)+'%';
- $('fetchGeometryNote').textContent='Three approximate north/central/south map transects are drawn for visualization. The screening fetch now uses a five-transect weighted mean (north-to-south weights 25/20/30/15/10%) rather than one central ray. Sample spread: '+(weightedFetch?weightedFetch.spreadKm.toFixed(1)+' km':'unavailable')+'. Transect values remain approximate fallback shoreline geometry; this is not yet a GIS-validated lake-exposure model.';
+ $('fetchGeometryNote').textContent='Upwind/downwind transect lines are hidden on the map. Fetch remains calculated from the five-transect weighted shoreline geometry (north-to-south weights 25/20/30/15/10%). Sample spread: '+(weightedFetch?weightedFetch.spreadKm.toFixed(1)+' km':'unavailable')+'. Shoreline estimates remain approximate and are not GIS-validated.';
 }
 
 function clearLakeEffectCorridor(){
