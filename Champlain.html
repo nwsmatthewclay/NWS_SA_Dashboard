@@ -223,6 +223,18 @@ function getFetchGeometry(dir){
  const up=pointAtKm(center[0],center[1],dir,Math.abs(upDist)),downPt=pointAtKm(center[0],center[1],down,downDist);
  return {center,up,down:downPt,fetchKm:Math.abs(upDist)+downDist,downBearing:down,upDist:Math.abs(upDist),downDist};
 }
+function calculateWeightedDirectionalFetch(dir){
+ if(!Number.isFinite(dir))return null;
+ const down=(dir+180)%360,transects=[{lat:44.78,lon:-73.32,w:.25},{lat:44.52,lon:-73.32,w:.20},{lat:44.27,lon:-73.32,w:.30},{lat:44.02,lon:-73.32,w:.15},{lat:43.82,lon:-73.32,w:.10}],samples=[];
+ transects.forEach(t=>{
+  const hits=rayPolygonIntersections([t.lat,t.lon],down,shore),up=hits.filter(x=>x<0).sort((a,b)=>b-a)[0],dn=hits.filter(x=>x>0).sort((a,b)=>a-b)[0];
+  if(Number.isFinite(up)&&Number.isFinite(dn))samples.push({km:Math.abs(up)+dn,weight:t.w,lat:t.lat});
+ });
+ if(!samples.length)return null;
+ const weight=samples.reduce((a,x)=>a+x.weight,0),mean=samples.reduce((a,x)=>a+x.km*x.weight,0)/weight;
+ const variance=samples.reduce((a,x)=>a+x.weight*Math.pow(x.km-mean,2),0)/weight;
+ return {meanKm:mean,spreadKm:Math.sqrt(variance),samples};
+}
 function renderFetchGeometry(dir,fetchKm,axisPct){
  if(fetchGeometryLayer){map.removeLayer(fetchGeometryLayer);fetchGeometryLayer=null}
  const g=getFetchGeometry(dir);
@@ -247,7 +259,7 @@ function renderFetchGeometry(dir,fetchKm,axisPct){
  $('upwindShore').textContent=bearingName(dir)+' side';
  $('downwindShore').textContent=bearingName(g.downBearing)+' side';
  $('axisComponent').textContent=Math.round(axisPct)+'%';
- $('fetchGeometryNote').textContent='Three approximate north/central/south cross-lake transects: '+valid.map((v,i)=>crossings[i].label+' '+v.toFixed(1)+' km').join(' · ')+'. Range '+min.toFixed(1)+'–'+max.toFixed(1)+' km; mean '+avg.toFixed(1)+' km. Central fetch summary remains '+g.fetchKm.toFixed(1)+' km. This is conceptual fallback geometry, not a validated shoreline GIS calculation.';
+ $('fetchGeometryNote').textContent='Three approximate north/central/south map transects are drawn for visualization. The screening fetch now uses a five-transect weighted mean (north-to-south weights 25/20/30/15/10%) rather than one central ray. Sample spread: '+(weightedFetch?weightedFetch.spreadKm.toFixed(1)+' km':'unavailable')+'. Transect values remain approximate fallback shoreline geometry; this is not yet a GIS-validated lake-exposure model.';
 }
 \nfunction clearLakeEffectCorridor(){
  if(plumeLayer){map.removeLayer(plumeLayer);plumeLayer=null}
@@ -262,10 +274,10 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
  const rhm=envText.match(/RH\s*≥80%:\s*(\d+)\s*levels/i);
  const dgzm=envText.match(/saturated\s+(\d+)\s*\/\s*\d+\s*levels/i)||envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
  const moistLevels=rhm?Number(rhm[1]):0,dgzLevels=dgzm?Number(dgzm[1]):0;
- const geometry=getFetchGeometry(dir);const fetchKm=geometry?geometry.fetchKm:calculateDirectionalFetchKm(dir);
+ const geometry=getFetchGeometry(dir),weightedFetch=calculateWeightedDirectionalFetch(dir);const fetchKm=weightedFetch?weightedFetch.meanKm:(geometry?geometry.fetchKm:calculateDirectionalFetchKm(dir));
   renderFetchGeometry(dir,fetchKm,axisPct);
   $('fetchLength').textContent=Number.isFinite(fetchKm)&&fetchKm>0?fetchKm.toFixed(1)+' km':'—';
-  $('fetchLengthDetail').textContent=Number.isFinite(fetchKm)&&fetchKm>0?(fetchKm>=65?'Meets 65 km minimum':fetchKm>=25?'Below 65 km minimum · moderate path':fetchKm>=10?'Short directional path':'Very limited directional path'):'Unable to estimate from current geometry';
+  $('fetchLengthDetail').textContent=Number.isFinite(fetchKm)&&fetchKm>0?(fetchKm>=65?'Weighted mean meets 65 km minimum':fetchKm>=25?'Weighted mean below 65 km · moderate path':fetchKm>=10?'Short weighted path':'Very limited weighted path')+' · '+(weightedFetch?'5-transect weighted model':'fallback'):'Unable to estimate from current geometry';
   $('downwindBearing').textContent=Number.isFinite(dir)?Math.round((dir+180)%360)+'°':'—';
   $('downwindDetail').textContent=Number.isFinite(dir)?'Airflow directed toward '+Math.round((dir+180)%360)+'°':'Forecast wind unavailable';
   const checks=[
