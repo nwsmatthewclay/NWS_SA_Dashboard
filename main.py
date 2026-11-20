@@ -1745,11 +1745,19 @@ def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hou
             flush=True,
         )
         payload = {
+            "schema_version": 2,
             "source": "NOAA/NCEP GLWU Lake Champlain 500-m GRIB2",
             "grid": GLWU_GRID,
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "max_forecast_hour": max_hour,
+            "forecast_hours_present": present_hours,
+            "forecast_hours_missing": missing_hours,
+            "frame_count": len(frames),
+            "total_vectors": sum(len(frame["points"]) for frame in frames),
             "stride": stride,
+            "units": {"wind_speed": "kt", "wind_direction": "degrees"},
+            "wind_direction_convention": "meteorological direction FROM",
+            "spatial_bounds": {"north": 45.05, "south": 43.55, "west": -73.55, "east": -73.05},
             "note": "Surface wind field only. Cloud and snow potential require atmospheric model fields and are not predicted by this wind product.",
             "frames": frames,
         }
