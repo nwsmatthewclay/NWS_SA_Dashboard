@@ -79,12 +79,19 @@ button{background:#143149;color:var(--ink);border:1px solid #2b506b;border-radiu
  #screenReasonsPanel{max-height:190px}
 }
 @media(min-width:1001px) and (max-height:800px){.map{height:390px!important;min-height:340px!important}}
+
+/* Async data loading indicator */
+.loading-indicator{display:inline-flex;align-items:center;gap:7px;color:var(--cyan);font-size:11px;font-weight:700;white-space:nowrap}
+.loading-indicator[hidden]{display:none!important}
+.loading-spinner{width:14px;height:14px;border:2px solid #72e2e840;border-top-color:var(--cyan);border-radius:50%;animation:champlain-spin .75s linear infinite;flex:0 0 auto}
+@keyframes champlain-spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){.loading-indicator{font-size:10px}}
 </style>
 </head>
 <body>
 <header>
  <div class="brand"><div class="mark" aria-hidden="true">≋</div><div><h1>CHAMPLAIN <span style="color:var(--cyan)">/</span> LAKE-EFFECT LAB</h1><p>Lake-induced cloud & snow diagnostics · NWS Burlington CWA</p></div></div>
- <div class="righthead"><div>EXPERIMENTAL WORKBENCH</div><strong id="updated">Connecting to observations…</strong><div>All times UTC unless noted</div></div>
+ <div class="righthead"><div>EXPERIMENTAL WORKBENCH</div><div style="display:flex;align-items:center;justify-content:flex-end;gap:10px"><span class="loading-indicator" id="pageLoading"><span class="loading-spinner" aria-hidden="true"></span><span id="loadingLabel">Loading data…</span></span><strong id="updated">Connecting to observations…</strong></div><div>All times UTC unless noted</div></div>
 </header>
 <main>
  <section class="hero">
@@ -476,6 +483,6 @@ forecastSlider.addEventListener('keydown',e=>{
   if(next!==current){forecastSlider.value=String(next);forecastSlider.dispatchEvent(new Event('input',{bubbles:true}));}
  }
 });
-refresh().then(()=>loadWindForecast());setInterval(()=>refresh().then(()=>{if(!windForecastFrames.length)loadWindForecast()}),5*60*1000);
+const pageLoading=$("pageLoading");refresh().then(()=>loadWindForecast()).finally(()=>{pageLoading.hidden=true});setInterval(()=>{pageLoading.hidden=false;$("loadingLabel").textContent="Refreshing observations…";refresh().then(()=>{if(!windForecastFrames.length){$("loadingLabel").textContent="Loading forecast…";return loadWindForecast()}}).finally(()=>{pageLoading.hidden=true})},5*60*1000);
 </script>
 </body></html>
