@@ -10755,8 +10755,12 @@ function drawExportUniformHazardFills(mapCanvas, leafletMap){
     ? getHazardFocusProducts()
     : (selectedExportMode === 'map-only' ? getMapOnlyExportProducts() : getExportVisibleProducts());
   const colorGroups = new Map();
+  const singleHazardColor = selectedExportMode === 'single' && selectedExportProduct()
+    ? getExportHazardColor(selectedExportProduct()) : null;
   visible.forEach(function(product){
-    const color = getExportHazardColor(product);
+    // Focused exports normalize every segment of the selected advisory to the
+    // selected product's exact color. All-hazard exports group by hazard color.
+    const color = singleHazardColor || getExportHazardColor(product);
     const geometries = collectSelectedExportHazardGeometries(product)
       .map(function(item){ return item && item.geometry; }).filter(Boolean);
     if(!geometries.length) return;
@@ -10765,22 +10769,28 @@ function drawExportUniformHazardFills(mapCanvas, leafletMap){
   });
   const width=mapCanvas.width, height=mapCanvas.height;
   const maskCanvas=document.createElement('canvas'); maskCanvas.width=width; maskCanvas.height=height;
+  const overlayCanvas=document.createElement('canvas'); overlayCanvas.width=width; overlayCanvas.height=height;
   const mctx=maskCanvas.getContext('2d');
+  const octx=overlayCanvas.getContext('2d');
   const ctx=mapCanvas.getContext('2d');
   colorGroups.forEach(function(geometries,color){
     mctx.clearRect(0,0,width,height);
+    octx.clearRect(0,0,width,height);
     mctx.beginPath();
     geometries.forEach(function(geometry){ drawGeoJSONGeometryToMask(mctx,leafletMap,geometry); });
     mctx.fillStyle='#fff';
     try{mctx.fill('evenodd');}catch(e){mctx.fill();}
-    ctx.save();
-    ctx.globalAlpha=0.5;
-    ctx.fillStyle=color;
-    ctx.fillRect(0,0,width,height);
-    ctx.globalCompositeOperation='destination-in';
-    ctx.drawImage(maskCanvas,0,0);
-    ctx.restore();
-    ctx.globalCompositeOperation='source-over';
+    // Build the translucent hazard layer separately, mask it, then composite
+    // it over the basemap. Never destination-in the map itself (that erases
+    // the terrain outside the warning).
+    octx.globalAlpha=0.5;
+    octx.fillStyle=color;
+    octx.fillRect(0,0,width,height);
+    octx.globalCompositeOperation='destination-in';
+    octx.drawImage(maskCanvas,0,0);
+    octx.globalCompositeOperation='source-over';
+    octx.globalAlpha=1;
+    ctx.drawImage(overlayCanvas,0,0);
   });
 }
 
