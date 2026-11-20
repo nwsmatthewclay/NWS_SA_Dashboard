@@ -148,14 +148,36 @@ function renderTimeConsistency(glwuValidTime){
  box.textContent='GLWU selected valid '+fmtTime(glwuValidTime)+'. RAP profile '+rapSummary+'. HRRR is matched to the selected GLWU valid time. Surface observations are current observations, not forecast-hour dependent.';
 }
 async function renderModelAgreement(glwuRegional,validTime){
- const status=$('modelAgreementStatus'),body=$('modelAgreementRows'),textEl=$('modelAgreementText');status.textContent='Fetching HRRR comparison…';
+ const status=$('modelAgreementStatus'),body=$('modelAgreementRows'),textEl=$('modelAgreementText');
+ status.textContent='Fetching HRRR comparison…';
  try{
-  const datasets=await getHRRRWind(),target=validTime?new Date(validTime):new Date();
-  const rows=datasets.map((j,i)=>{const times=j.hourly?.time||[];let idx=-1,best=Infinity;times.forEach((t,k)=>{const d=Math.abs(new Date(t+'Z').getTime()-target.getTime());if(d<best){best=d;idx=k}});if(best>90*60*1000)idx=-1;const h=idx>=0?{speed:Number(j.hourly.wind_speed_10m[idx]),dir:Number(j.hourly.wind_direction_10m),time:times[idx]}:null,g=glwuRegional[i],valid=h&&g&&Number.isFinite(h.speed)&&Number.isFinite(h.dir)&&Number.isFinite(g.dir);const diff=valid?Math.abs(((h.dir-g.dir+540)%360)-180):null;return {site:lakeWindSites[i].name,h,g,diff,valid}});
+  const datasets=await getHRRRWind();
+  const target=validTime?new Date(validTime):new Date();
+  const rows=[];
+  for(let i=0;i<datasets.length;i++){
+   const j=datasets[i],times=(j.hourly&&j.hourly.time)||[];
+   let idx=-1,best=Infinity;
+   for(let k=0;k<times.length;k++){
+    const d=Math.abs(new Date(times[k]+'Z').getTime()-target.getTime());
+    if(d<best){best=d;idx=k}
+   }
+   if(best>90*60*1000)idx=-1;
+   let h=null;
+   if(idx>=0)h={speed:Number(j.hourly.wind_speed_10m[idx]),dir:Number(j.hourly.wind_direction_10m[idx]),time:times[idx]};
+   const g=glwuRegional[i],ok=!!(h&&g&&Number.isFinite(h.speed)&&Number.isFinite(h.dir)&&Number.isFinite(g.dir));
+   const diff=ok?Math.abs(((h.dir-g.dir+540)%360)-180):null;
+   rows.push({site:lakeWindSites[i].name,h,g,diff,valid:ok});
+  }
   body.innerHTML=rows.map(x=>'<tr><td>'+x.site+'</td><td>'+(x.valid?x.g.mean.toFixed(1)+' kt / '+Math.round(x.g.dir)+'°':'GLWU unavailable')+'</td><td>'+(x.valid?x.h.speed.toFixed(1)+' kt / '+Math.round(x.h.dir)+'°':'HRRR unavailable')+'</td><td>'+(x.valid?Math.round(x.diff)+'°':'—')+'</td></tr>').join('');
-  const valid=rows.filter(x=>x.valid),avg=valid.length?valid.reduce((a,x)=>a+x.diff,0)/valid.length;status.textContent=valid.length?valid.length+'/3 comparisons':'Comparison incomplete';
+  const valid=rows.filter(x=>x.valid);
+  const avg=valid.length?valid.reduce((sum,x)=>sum+x.diff,0)/valid.length:NaN;
+  status.textContent=valid.length?valid.length+'/3 comparisons':'Comparison incomplete';
   textEl.textContent=valid.length?'Direction difference is the circular difference between regional GLWU and HRRR directions. Mean regional difference: '+Math.round(avg)+'°. This is model comparison, not independent verification.':'HRRR or GLWU regional data unavailable for selected valid time; no agreement score calculated.';
- }catch(e){status.textContent='HRRR comparison unavailable';body.innerHTML='<tr><td colspan="4" class="sub">'+e.message+'</td></tr>';textEl.textContent='GLWU diagnostics remain available. HRRR comparison failed and is not used in the screening decision.'}
+ }catch(e){
+  status.textContent='HRRR comparison unavailable';
+  body.innerHTML='<tr><td colspan="4" class="sub">'+e.message+'</td></tr>';
+  textEl.textContent='GLWU diagnostics remain available. HRRR comparison failed and is not used in the screening decision.';
+ }
 }
 function renderWindForecast(hour){
  if(!map||!windForecastFrames.length)return;
