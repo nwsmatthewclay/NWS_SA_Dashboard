@@ -2402,9 +2402,9 @@ function addSelectedProductToExportMap(prod){
     // different threat levels.
     const representative = selectedExportMode === 'single' ? selectedExportProduct() : null;
     const color = representative ? getExportHazardColor(representative) : getExportHazardColor(item);
-    const baseFillOpacity = selectedExportExtent === 'state'
-        ? Math.min((isSpsProduct(item) ? SPS_ZONE_FILL_OPACITY : EXPORT_STATE_ZONE_FILL_OPACITY) * hazardOpacityMultiplier, 1)
-        : currentZoneFillOpacity(item);
+    // Export fills use one consistent transparency across every product and extent.
+    // The product color is resolved from the shared HAZARD_COLORS table.
+    const baseFillOpacity = 0.5;
     const style = {
       color: color,
       weight: (representative ? (representative.sig === 'W' ? 3 : 2.5) : (item.sig === 'W' ? 3 : 2.5)),
@@ -2471,14 +2471,14 @@ function addAllActiveProductsToExportMap(){
       seen.add(key);
       L.geoJSON(geometry, { style: {
         color: color || '#cdd8e6', weight: weight || 2.5, opacity: 0.95,
-        fillColor: color || '#cdd8e6', fillOpacity: product ? currentPolygonFillOpacity(product) : 0,
+        fillColor: color || '#cdd8e6', fillOpacity: product ? 0.5 : 0,
         lineCap: 'round', lineJoin: 'round'
       }}).addTo(exportMap);
     }catch(e){ console.warn('Could not add all-hazard export geometry:', e); }
   }
 
   all.forEach(function(prod){
-    const color = prod.color || '#cdd8e6';
+    const color = getExportHazardColor(prod);
     const weight = prod.sig === 'W' ? 3 : (prod.sig === 'A' ? 2.5 : 2);
     if(prod.geometry) addGeometry(prod.geometry, color, weight, prod);
     else if(Array.isArray(prod.resolvedGeometries) && prod.resolvedGeometries.length && prod.geometryType !== 'PUBLIC_ZONE') (prod.resolvedGeometries || []).forEach(function(g){ addGeometry(g, color, weight, prod); });
@@ -2492,7 +2492,7 @@ function addAllActiveProductsToExportMap(){
   all.forEach(function(prod){
     if(prod.geometryType !== 'PUBLIC_ZONE') return;
     if(!geoLayer || !Array.isArray(prod.zoneKeys) || !prod.zoneKeys.length){
-      if(Array.isArray(prod.resolvedGeometries)) prod.resolvedGeometries.forEach(function(g){ addGeometry(g, prod.color, prod.sig === 'W' ? 3 : 2.5, prod); });
+      if(Array.isArray(prod.resolvedGeometries)) prod.resolvedGeometries.forEach(function(g){ addGeometry(g, getExportHazardColor(prod), prod.sig === 'W' ? 3 : 2.5, prod); });
       return;
     }
     const wanted = new Set(prod.zoneKeys);
@@ -2500,19 +2500,19 @@ function addAllActiveProductsToExportMap(){
       const props = layer.feature && layer.feature.properties;
       if(!props) return;
       if(wanted.has(zoneKey(props.STATE, props.ZONE))){
-        addGeometry(layer.feature.geometry, prod.color, prod.sig === 'W' ? 3 : 2.5, prod);
+        addGeometry(layer.feature.geometry, getExportHazardColor(prod), prod.sig === 'W' ? 3 : 2.5, prod);
       }
     });
   });
 
   all.forEach(function(prod){
     if(prod.geometryType !== 'COUNTY') return;
-    (prod.countyKeys || []).forEach(function(key){ addGeometry(countyGeomByKey[key], prod.color, prod.sig === 'W' ? 3 : 2.5, prod); });
+    (prod.countyKeys || []).forEach(function(key){ addGeometry(countyGeomByKey[key], getExportHazardColor(prod), prod.sig === 'W' ? 3 : 2.5, prod); });
   });
 
   all.forEach(function(prod){
     if(prod.geometryType !== 'FIRE_ZONE') return;
-    (prod.fireZoneKeys || []).forEach(function(key){ addGeometry(fireZoneGeomByKey[key], prod.color, prod.sig === 'W' ? 3 : 2.5, prod); });
+    (prod.fireZoneKeys || []).forEach(function(key){ addGeometry(fireZoneGeomByKey[key], getExportHazardColor(prod), prod.sig === 'W' ? 3 : 2.5, prod); });
   });
   all.forEach(function(prod){
     if(prod.geometryType !== 'SPS_ZONE') return;
