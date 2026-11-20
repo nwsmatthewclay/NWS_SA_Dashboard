@@ -11424,11 +11424,55 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
     return false;
   }
 
-  eligible.forEach(function(item){
-    if(selected.length < maximumLabels){
-      tryPlaceCity(item, LABEL_GAP);
+  // Geographic distribution pass: place the strongest operational anchor first,
+  // then favor candidates that are farther from already-selected references.
+  // This prevents a population-ranked list from clustering labels in one corner
+  // of the export while leaving other parts of the map without orientation.
+  if(eligible.length && selected.length < maximumLabels){
+    tryPlaceCity(eligible[0], LABEL_GAP);
+  }
+
+  function minimumDistanceToSelected(item){
+    if(!selected.length) return Infinity;
+    let minimum = Infinity;
+    selected.forEach(function(entry){
+      const dx = item.x - entry.item.x;
+      const dy = item.y - entry.item.y;
+      const distance = Math.sqrt(dx*dx + dy*dy);
+      if(distance < minimum) minimum = distance;
+    });
+    return minimum;
+  }
+
+  while(selected.length < maximumLabels){
+    const remaining = eligible.filter(function(item){
+      return !selectedKeys.has(
+        String(item.city.state || '').toUpperCase() + '|' +
+        normalizedPlaceName(item.city.name)
+      );
+    });
+    if(!remaining.length) break;
+
+    // Priority remains a tie-breaker, while spatial separation is the main
+    // driver after the first anchor.  A small priority component preserves
+    // major cities without overwhelming geographic coverage.
+    remaining.sort(function(a,b){
+      const distanceA = minimumDistanceToSelected(a);
+      const distanceB = minimumDistanceToSelected(b);
+      const scoreA = distanceA + Math.min(a.priority, 1000000000) / 1000000000 * 40;
+      const scoreB = distanceB + Math.min(b.priority, 1000000000) / 1000000000 * 40;
+      return scoreB - scoreA;
+    });
+
+    let placed = false;
+    for(let r = 0; r < remaining.length; r++){
+      if(tryPlaceCity(remaining[r], LABEL_GAP)){
+        placed = true;
+        break;
+      }
     }
-  });
+    if(!placed) break;
+  }
 
   // -----------------------------------------------------------------------
   // Minimum-label pass.
