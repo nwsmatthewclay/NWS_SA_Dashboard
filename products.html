@@ -2410,7 +2410,7 @@ function addSelectedProductToExportMap(prod){
       weight: (representative ? (representative.sig === 'W' ? 3 : 2.5) : (item.sig === 'W' ? 3 : 2.5)),
       opacity: 0.95,
       fillColor: color,
-      fillOpacity: selectedExportMode === 'single' ? 1 : baseFillOpacity,
+      fillOpacity: baseFillOpacity, // Always honor export hazard opacity; single-hazard mode must not force opaque fills.
       lineCap: 'round',
       lineJoin: 'round'
     };
@@ -9994,17 +9994,49 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
 
   // Give WHERE and SAFETY ACTIONS the space their partner-facing text needs,
   // while keeping one shared body font size across the entire right column.
-  const sectionHeights=[213,255,213,359];
-  const whatY=mainY;
-  const whereY=whatY+sectionHeights[0];
-  const impactsY=whereY+sectionHeights[1];
-  const safetyY=impactsY+sectionHeights[2];
   const what=narrative&&narrative.what?narrative.what:(topProduct&&topProduct.headline?topProduct.headline:'Weather hazard information is in effect.');
   const where=narrative&&narrative.where?narrative.where:(topProduct&&topProduct.areaDesc?topProduct.areaDesc:'See map for affected areas.');
   const baseImpacts=narrative&&narrative.impacts?narrative.impacts:'Impacts may occur in the affected area. Stay alert for changing conditions.';
   const additionalDetails=narrative&&narrative.details?String(narrative.details).trim():'';
   const impacts=additionalDetails && !String(baseImpacts).toLowerCase().includes(additionalDetails.toLowerCase()) ? String(baseImpacts).trim()+'\n\nADDITIONAL DETAILS: '+additionalDetails : baseImpacts;
-  const rightBodyFont=chooseRightBodyFont(sectionHeights,[what,where,impacts],getSafetyItemsForLayout(),SIDE_W-124);
+
+  // Content-first section sizing: estimate each card's text footprint at a
+  // comfortable 21px body size, then distribute unused vertical space evenly.
+  // Long sections therefore grow instead of forcing the entire column into
+  // tiny text, while short sections no longer leave giant empty cards.
+  const safetyItemsForSizing=getSafetyItemsForLayout();
+  const sizingTexts=[what,where,impacts];
+  ctx.font='700 21px '+FONT;
+  const lineH=29;
+  function estimatedCardHeight(text){
+    const items=String(text||'').replace(/[\\r\\n]+/g,' ').replace(/\\s+/g,' ').trim()
+      .split(/(?<=[.!?])\\s+(?=[A-Z])/).filter(Boolean);
+    let lineCount=0;
+    items.forEach(function(item){lineCount+=Math.max(1,wrapExportText(ctx,item,SIDE_W-140).length);});
+    return Math.max(150, lineCount*lineH + items.length*8 + 112);
+  }
+  const requiredHeights=sizingTexts.map(estimatedCardHeight);
+  const safetyRequired=Math.max(150,safetyItemsForSizing.reduce(function(sum,item){
+    return sum+Math.max(1,wrapBalanced(item,SIDE_W-142).length)*lineH+11;
+  },0)+112);
+  requiredHeights.push(safetyRequired);
+  const sectionTotal=requiredHeights.reduce((a,b)=>a+b,0);
+  let sectionHeights=requiredHeights.map(function(h){
+    return sectionTotal>MAIN_H ? Math.max(150,Math.round(h*MAIN_H/sectionTotal)) : h;
+  });
+  let used=sectionHeights.reduce((a,b)=>a+b,0);
+  if(used<MAIN_H){
+    const extra=Math.floor((MAIN_H-used)/sectionHeights.length);
+    sectionHeights=sectionHeights.map(function(h){return h+extra;});
+    sectionHeights[sectionHeights.length-1]+=MAIN_H-sectionHeights.reduce((a,b)=>a+b,0);
+  }else if(used>MAIN_H){
+    sectionHeights[sectionHeights.length-1]-=used-MAIN_H;
+  }
+  const whatY=mainY;
+  const whereY=whatY+sectionHeights[0];
+  const impactsY=whereY+sectionHeights[1];
+  const safetyY=impactsY+sectionHeights[2];
+  const rightBodyFont=chooseRightBodyFont(sectionHeights,[what,where,impacts],safetyItemsForSizing,SIDE_W-124);
   drawSection(whatY,sectionHeights[0],'THREAT SNAPSHOT',what,'WHAT',rightBodyFont);
   drawSection(whereY,sectionHeights[1],'WHERE',where,'WHERE',rightBodyFont);
   drawSection(impactsY,sectionHeights[2],'IMPACTS',impacts,'IMPACTS',rightBodyFont);
