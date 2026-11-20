@@ -9987,7 +9987,9 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   const safetyY=impactsY+sectionHeights[2];
   const what=narrative&&narrative.what?narrative.what:(topProduct&&topProduct.headline?topProduct.headline:'Weather hazard information is in effect.');
   const where=narrative&&narrative.where?narrative.where:(topProduct&&topProduct.areaDesc?topProduct.areaDesc:'See map for affected areas.');
-  const impacts=narrative&&narrative.impacts?narrative.impacts:'Impacts may occur in the affected area. Stay alert for changing conditions.';
+  const baseImpacts=narrative&&narrative.impacts?narrative.impacts:'Impacts may occur in the affected area. Stay alert for changing conditions.';
+  const additionalDetails=narrative&&narrative.details?String(narrative.details).trim():'';
+  const impacts=additionalDetails && !String(baseImpacts).toLowerCase().includes(additionalDetails.toLowerCase()) ? String(baseImpacts).trim()+'\n\nADDITIONAL DETAILS: '+additionalDetails : baseImpacts;
   const rightBodyFont=chooseRightBodyFont(sectionHeights,[what,where,impacts],getSafetyItemsForLayout(),SIDE_W-124);
   drawSection(whatY,sectionHeights[0],'WHAT',what,'WHAT',rightBodyFont);
   drawSection(whereY,sectionHeights[1],'WHERE',where,'WHERE',rightBodyFont);
@@ -11232,7 +11234,7 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
     typeof selectedExportMode !== 'undefined' &&
     selectedExportMode === 'single';
 
-  const minimumLabels = isSmallHazardExport ? 0 : (isStateExport ? 8 : 6);
+  const minimumLabels = isSmallHazardExport ? 3 : (isStateExport ? 8 : 6);
 
   let visibleTiers;
   let maximumLabels;
@@ -11241,7 +11243,7 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
     // Keep small-hazard maps clean, but allow a few more orientation points
     // at close zoom. Collision checks still prevent overlapping city labels.
     visibleTiers = exportZoom >= 9 ? [1, 2, 3] : [1, 2];
-    maximumLabels = exportZoom >= 9 ? 6 : 4;
+    maximumLabels = exportZoom >= 9 ? 8 : 6;
   }else if(exportZoom <= 6){
     visibleTiers = [1];
     maximumLabels = isStateExport ? 8 : 6;
