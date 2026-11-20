@@ -11432,6 +11432,10 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
     tryPlaceCity(eligible[0], LABEL_GAP);
   }
 
+  const maxEligiblePriority = eligible.reduce(function(maximum,item){
+    return Math.max(maximum, Number(item.priority) || 0);
+  }, 1);
+
   function minimumDistanceToSelected(item){
     if(!selected.length) return Infinity;
     let minimum = Infinity;
@@ -11459,8 +11463,8 @@ function drawExportCityLabelsOnCanvas(mapCanvas, leafletMap){
     remaining.sort(function(a,b){
       const distanceA = minimumDistanceToSelected(a);
       const distanceB = minimumDistanceToSelected(b);
-      const scoreA = distanceA + Math.min(a.priority, 1000000000) / 1000000000 * 40;
-      const scoreB = distanceB + Math.min(b.priority, 1000000000) / 1000000000 * 40;
+      const scoreA = distanceA + ((Number(a.priority) || 0) / maxEligiblePriority) * 40;
+      const scoreB = distanceB + ((Number(b.priority) || 0) / maxEligiblePriority) * 40;
       return scoreB - scoreA;
     });
 
