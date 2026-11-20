@@ -4261,74 +4261,41 @@ function highlightZones(prods){
 }
 
 function drawWarningPolygons(products){
-
   if(!polygonLayer) return;
-
   polygonLayer.clearLayers();
 
+  // Treat segmented UGCs as one VTEC event for map styling. Different
+  // segment snowfall details remain in the source products, but share one color.
+  const groups = new Map();
   products.forEach(function(p){
-
-    // Any NWS CAP product carrying actual GeoJSON geometry gets drawn here.
-    // Products without embedded geometry may have one or more boundaries
-    // resolved directly from CAP affectedZones by resolveMissingProductGeometries().
+    const v = parseVtec(p.vtecRaw);
+    const key = v ? [v.office,v.phenomenon,v.significance,v.etn].join('.') : (p.id || p.code || p.name);
+    if(!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(p);
+  });
+  groups.forEach(function(segments){
+    const rep = segments[0];
+    const hazardKey = String(rep.phen||'').toUpperCase()+'.'+String(rep.sig||'').toUpperCase();
+    const color = HAZARD_COLORS[hazardKey] || rep.color || '#cdd8e6';
     const geometries = [];
-    if(p.geometry){
-      geometries.push(p.geometry);
-    }else if(Array.isArray(p.resolvedGeometries)){
-      p.resolvedGeometries.forEach(function(g){
-        if(g) geometries.push(g);
-      });
-    }
-    if(geometries.length === 0) return;
-
-    const polygonColor = p.color || '#cdd8e6';
-    const polygonWeight = p.sig === 'W' ? 3 : (p.sig === 'A' ? 2.5 : 2);
-    const style = {
-      color: polygonColor,
-      weight: polygonWeight,
-      fillColor: polygonColor,
-      fillOpacity: currentPolygonFillOpacity(p)
-    };
-
-    const popupHtml =
-      '<div style="min-width:240px">' +
-        '<div style="font-weight:700;font-size:15px;color:' + polygonColor + ';margin-bottom:8px;">' +
-          p.name +
-        '</div>' +
-        '<table style="width:100%;font-size:12px">' +
-          '<tr><td><b>VTEC</b></td><td>' + p.code + '</td></tr>' +
-          '<tr><td><b>Issued</b></td><td>' + fmtTime(p.onset) + '</td></tr>' +
-          '<tr><td><b>Expires</b></td><td>' + fmtTime(p.expires) + '</td></tr>' +
-          '<tr><td><b>Update By</b></td><td>' + fmtTime(p.updateBy) + '</td></tr>' +
-        '</table>' +
-        popupExportButton(p) +
-      '</div>';
-
-    geometries.forEach(function(geometry){
-      const gj = L.geoJSON(geometry,{
-        style: style,
-        onEachFeature:function(feature,layer){
-          layer.on({
-            mouseover:function(){
-              layer.setStyle({
-                weight: style.weight + 2,
-                fillOpacity: Math.min(style.fillOpacity + 0.10, currentPolygonHoverFillOpacity(p))
-              });
-              layer.bringToFront();
-            },
-            mouseout:function(){
-              layer.setStyle(style);
-            }
-          });
-        }
-      })
-      .bindPopup(popupHtml)
-      .addTo(polygonLayer);
-
-      if(!p._mapLayer) p._mapLayer = gj;
+    const seen = new Set();
+    segments.forEach(function(p){
+      const list=[];
+      if(p.geometry) list.push(p.geometry);
+      else if(Array.isArray(p.resolvedGeometries)) p.resolvedGeometries.forEach(function(g){if(g)list.push(g);});
+      list.forEach(function(g){const k=JSON.stringify(g);if(!seen.has(k)){seen.add(k);geometries.push(g);}});
+    });
+    if(!geometries.length) return;
+    const weight=rep.sig==='W'?3:(rep.sig==='A'?2.5:2);
+    const style={color:color,weight:weight,fillColor:color,fillOpacity:currentPolygonFillOpacity(rep)};
+    const popup='<div style="min-width:240px"><b style="color:'+color+'">'+rep.name+'</b><br><b>VTEC</b> '+rep.code+'<br><b>Segments</b> '+segments.length+'<br><b>Issued</b> '+fmtTime(rep.onset)+'<br><b>Expires</b> '+fmtTime(rep.expires)+'<br><b>Update By</b> '+fmtTime(rep.updateBy)+popupExportButton(rep)+'</div>';
+    geometries.forEach(function(g){
+      const gj=L.geoJSON(g,{style:style,onEachFeature:function(feature,layer){
+        layer.on({mouseover:function(){layer.setStyle({weight:weight+2,fillOpacity:Math.min(style.fillOpacity+0.10,currentPolygonHoverFillOpacity(rep));layer.bringToFront();},mouseout:function(){layer.setStyle(style);}});
+      }}).bindPopup(popup).addTo(polygonLayer);
+      if(!rep._mapLayer) rep._mapLayer=gj;
     });
   });
-
 }
 
 // County-form products (SPC Tornado/Severe Thunderstorm Watches, and
