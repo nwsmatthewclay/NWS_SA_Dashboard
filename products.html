@@ -9830,7 +9830,9 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
   }
 
   function chooseRightBodyFont(sectionHeights, texts, safetyItems, textW){
-    const sizes=[22,21,20,19,18,17];
+    // Keep reducing the narrative font until every section can accommodate its content.
+    // Smaller sizes are reserved for unusually long warning text rather than clipping early.
+    const sizes=[22,21,20,19,18,17,16,15,14,13,12];
     for(let si=0;si<sizes.length;si++){
       const size=sizes[si];
       ctx.font='700 '+size+'px '+FONT;
@@ -9849,7 +9851,7 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
         if(safetyHeight<=safetyAvailable) return size;
       }
     }
-    return 17;
+    return 12;
   }
 
   function drawSection(y,h,label,text,kind,bodySize){
