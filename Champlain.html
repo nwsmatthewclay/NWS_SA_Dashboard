@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <title>Champlain | Lake-Effect Cloud & Snow Lab</title>
 <style>
@@ -261,7 +262,8 @@ function renderFetchGeometry(dir,fetchKm,axisPct){
  $('axisComponent').textContent=Math.round(axisPct)+'%';
  $('fetchGeometryNote').textContent='Three approximate north/central/south map transects are drawn for visualization. The screening fetch now uses a five-transect weighted mean (north-to-south weights 25/20/30/15/10%) rather than one central ray. Sample spread: '+(weightedFetch?weightedFetch.spreadKm.toFixed(1)+' km':'unavailable')+'. Transect values remain approximate fallback shoreline geometry; this is not yet a GIS-validated lake-exposure model.';
 }
-\nfunction clearLakeEffectCorridor(){
+
+function clearLakeEffectCorridor(){
  if(plumeLayer){map.removeLayer(plumeLayer);plumeLayer=null}
  if(snowLayer){map.removeLayer(snowLayer);snowLayer=null}
 }
