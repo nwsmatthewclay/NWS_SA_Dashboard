@@ -5800,6 +5800,80 @@ function buildProducts(alerts){
 
   });
 
+  // Consolidate segmented CAP alerts into one dashboard product by VTEC identity.
+  // A single VTEC product (same office/phenomenon/significance/ETN) may be
+  // split into multiple CAP messages only because its area description or snow
+  // totals vary by segment. Treat those as one hazard and combine all zones.
+  const consolidated = [];
+  const byVtecProduct = new Map();
+
+  function mergeUnique(target, values){
+    (values || []).forEach(function(v){
+      if(v != null && target.indexOf(v) === -1) target.push(v);
+    });
+  }
+
+  function mergeProductGeometry(a, b){
+    if(!a) return b || null;
+    if(!b) return a;
+    const parts = [];
+    function collect(g){
+      if(!g) return;
+      if(g.type === 'GeometryCollection' && Array.isArray(g.geometries)){
+        g.geometries.forEach(collect);
+      }else if(g.type === 'Polygon'){
+        parts.push(g.coordinates);
+      }else if(g.type === 'MultiPolygon'){
+        (g.coordinates || []).forEach(function(poly){ parts.push(poly); });
+      }
+    }
+    collect(a); collect(b);
+    return parts.length ? {type:'MultiPolygon',coordinates:parts} : a;
+  }
+
+  out.forEach(function(product){
+    const parsed = parseVtec(product.vtecRaw);
+    const groupKey = parsed && parsed.office && parsed.phenomenon && parsed.significance && parsed.etn
+      ? [parsed.office, parsed.phenomenon, parsed.significance, parsed.etn].join('.')
+      : null;
+    if(!groupKey){
+      consolidated.push(product);
+      return;
+    }
+    const existing = byVtecProduct.get(groupKey);
+    if(!existing){
+      byVtecProduct.set(groupKey, product);
+      consolidated.push(product);
+      return;
+    }
+    // Combine all spatial and descriptive segment data into the first record.
+    mergeUnique(existing.zoneKeys, product.zoneKeys);
+    mergeUnique(existing.countyKeys, product.countyKeys);
+    mergeUnique(existing.fireZoneKeys, product.fireZoneKeys);
+    mergeUnique(existing.marineKeys, product.marineKeys);
+    mergeUnique(existing.affectedZoneUrls, product.affectedZoneUrls);
+    existing.geometry = mergeProductGeometry(existing.geometry, product.geometry);
+    mergeUnique(existing.resolvedGeometries, product.resolvedGeometries);
+    if(product.areaDesc && existing.areaDesc.indexOf(product.areaDesc) === -1){
+      existing.areaDesc = existing.areaDesc ? existing.areaDesc + '; ' + product.areaDesc : product.areaDesc;
+    }
+    if(product.headline && existing.headline.indexOf(product.headline) === -1){
+      existing.headline = existing.headline ? existing.headline + ' | ' + product.headline : product.headline;
+    }
+    if(product.description && existing.description.indexOf(product.description) === -1){
+      existing.description = existing.description ? existing.description + '\n\n' + product.description : product.description;
+    }
+    if(product.instruction && existing.instruction.indexOf(product.instruction) === -1){
+      existing.instruction = existing.instruction ? existing.instruction + '\n\n' + product.instruction : product.instruction;
+    }
+    // Keep the longest valid hazard duration/update deadline across segments.
+    if(product.expires && (!existing.expires || product.expires > existing.expires)) existing.expires = product.expires;
+    if(product.updateBy && (!existing.updateBy || product.updateBy > existing.updateBy)) existing.updateBy = product.updateBy;
+  });
+
+  out.length = 0;
+  consolidated.forEach(function(p){ out.push(p); });
+
   out.sort((a,b) => severityScore(b) - severityScore(a) || a.updateBy - b.updateBy);
 
   return out;
