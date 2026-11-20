@@ -149,6 +149,7 @@ function renderWindForecast(hour){
  });
  const meanSpeed=valid.length?sumSpeed/valid.length:0;
  const vectorSpeed=valid.length?Math.hypot(sumU,sumV)/valid.length:0;
+ const windCoherence=meanSpeed>0?Math.max(0,Math.min(1,vectorSpeed/meanSpeed)):0;
  const meanDir=(sumU||sumV)?(Math.atan2(-sumU,-sumV)*180/Math.PI+360)%360:null;
  const axisPct=valid.length?100*along/valid.length:0;
  // Update fetch summary and screening for the selected forecast hour.
@@ -166,7 +167,7 @@ function renderWindForecast(hour){
  windForecastLayer=L.layerGroup(markers).addTo(map);
  $('windForecastLabel').textContent='+'+frame.forecast_hour+' h · '+markers.length+' of '+valid.length+' points shown';
  $('windForecastValid').textContent=(frame.valid_time?'Valid '+fmtTime(frame.valid_time)+' · ':'')+
-  (valid.length?'full-grid mean '+meanSpeed.toFixed(1)+' kt, vector mean '+vectorSpeed.toFixed(1)+' kt'+(meanDir==null?'':' from '+Math.round(meanDir)+'°')+' · N–S alignment '+Math.round(axisPct)+'%':'No valid wind points');
+  (valid.length?'full-grid mean '+meanSpeed.toFixed(1)+' kt, vector mean '+vectorSpeed.toFixed(1)+' kt'+(meanDir==null?'':' from '+Math.round(meanDir)+'°')+' · directional coherence '+Math.round(windCoherence*100)+'% · N–S alignment '+Math.round(axisPct)+'%'+(windCoherence<0.70?' · spatial direction variability elevated':''):'No valid wind points');
 }
 async function loadWindForecast(){
  try{
@@ -177,9 +178,9 @@ async function loadWindForecast(){
   windForecastFrames=j.frames;
   const slider=$('windForecastHour');
   const availableMax=Math.max(...windForecastFrames.map(x=>Number(x.forecast_hour)||0));
-  // Keep the control at 24 hours; report the actual data horizon separately.
-  slider.max='24';
-  const requested=Math.min(Number(slider.value)||0,24);
+  // Restrict the slider to forecast hours actually present in the published file.
+  slider.max=String(availableMax);
+  const requested=Math.min(Number(slider.value)||0,availableMax);
   slider.value=String(requested);
   $('windForecastValid').title=availableMax<24?'Published source data currently ends at +'+availableMax+' h; hours beyond that require a refreshed 24-hour forecast export.':'Full 24-hour forecast available.';
   renderWindForecast(requested);
