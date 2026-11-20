@@ -1792,9 +1792,19 @@ function buildHazardFocusNarrative(productsList){
   }).filter(Boolean);
   if(!narratives.length) return null;
 
+  // Each CAP record in a segmented hazard can describe a different geographic
+  // segment.  Do not rely solely on the bulletin's parsed WHERE paragraph:
+  // it can be identical across segments or omit segment-specific areas.
+  // Explicitly include the CAP area description from every grouped segment.
+  const segmentAreas = list.map(function(p){
+    return cleanNwsNarrative(p.areaDesc || '').trim();
+  }).filter(Boolean);
+
   const combined = {
     what: mergeUniqueNarrativeParts(narratives.map(function(n){ return n.what; })),
-    where: mergeUniqueNarrativeParts(narratives.map(function(n){ return n.where; })),
+    where: mergeUniqueNarrativeParts(
+      narratives.map(function(n){ return n.where; }).concat(segmentAreas)
+    ),
     impacts: mergeUniqueNarrativeParts(narratives.map(function(n){ return n.impacts; })),
     details: mergeUniqueNarrativeParts(narratives.map(function(n){ return n.details; })),
     safety: mergeUniqueNarrativeParts(narratives.map(function(n){ return n.safety; }))
