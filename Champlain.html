@@ -252,7 +252,8 @@ function updateLakeEffectCorridor(dir,vectorSpeed,meanSpeed,axisPct,forecastHour
  const rhm=envText.match(/RH\s*≥80%:\s*(\d+)\s*levels/i);
  const dgzm=envText.match(/saturated\s+(\d+)\s*\/\s*\d+\s*levels/i)||envText.match(/dendritic-growth-zone levels[^:]*:\s*(\d+)/i);
  const moistLevels=rhm?Number(rhm[1]):0,dgzLevels=dgzm?Number(dgzm[1]):0;
- const geometry=getFetchGeometry(dir);const fetchKm=geometry?geometry.fetchKm:calculateDirectionalFetchKm(dir);\n  renderFetchGeometry(dir,fetchKm,axisPct);
+ const geometry=getFetchGeometry(dir);const fetchKm=geometry?geometry.fetchKm:calculateDirectionalFetchKm(dir);
+  renderFetchGeometry(dir,fetchKm,axisPct);
   $('fetchLength').textContent=Number.isFinite(fetchKm)&&fetchKm>0?fetchKm.toFixed(1)+' km':'—';
   $('fetchLengthDetail').textContent=Number.isFinite(fetchKm)&&fetchKm>0?(fetchKm>=65?'Meets 65 km minimum':fetchKm>=25?'Below 65 km minimum · moderate path':fetchKm>=10?'Short directional path':'Very limited directional path'):'Unable to estimate from current geometry';
   $('downwindBearing').textContent=Number.isFinite(dir)?Math.round((dir+180)%360)+'°':'—';
