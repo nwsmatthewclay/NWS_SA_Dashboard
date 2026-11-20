@@ -2410,7 +2410,7 @@ function addSelectedProductToExportMap(prod){
       weight: (representative ? (representative.sig === 'W' ? 3 : 2.5) : (item.sig === 'W' ? 3 : 2.5)),
       opacity: 0.95,
       fillColor: color,
-      fillOpacity: baseFillOpacity, // Always honor export hazard opacity; single-hazard mode must not force opaque fills.
+      fillOpacity: 0, // Export fills are drawn by a unified color mask to prevent overlap alpha stacking.
       lineCap: 'round',
       lineJoin: 'round'
     };
@@ -2471,7 +2471,7 @@ function addAllActiveProductsToExportMap(){
       seen.add(key);
       L.geoJSON(geometry, { style: {
         color: color || '#cdd8e6', weight: weight || 2.5, opacity: 0.95,
-        fillColor: color || '#cdd8e6', fillOpacity: product ? 0.5 : 0,
+        fillColor: color || '#cdd8e6', fillOpacity: 0,
         lineCap: 'round', lineJoin: 'round'
       }}).addTo(exportMap);
     }catch(e){ console.warn('Could not add all-hazard export geometry:', e); }
@@ -2516,7 +2516,7 @@ function addAllActiveProductsToExportMap(){
   });
   all.forEach(function(prod){
     if(prod.geometryType !== 'SPS_ZONE') return;
-    const color = prod.color || '#cdd8e6';
+    const color = getExportHazardColor(prod);
     (prod.zoneKeys || []).forEach(function(key){
       if(!geoLayer) return;
       geoLayer.eachLayer(function(layer){
@@ -10748,6 +10748,41 @@ function drawExportHazardOverlapOnCanvas(mapCanvas, leafletMap){
   }
 }
 
+function drawExportUniformHazardFills(mapCanvas, leafletMap){
+  if(!mapCanvas || !leafletMap) return;
+  const visible = selectedExportMode === 'single'
+    ? [selectedExportProduct()].filter(Boolean)
+    : (selectedExportMode === 'map-only' ? getMapOnlyExportProducts() : getExportVisibleProducts());
+  const colorGroups = new Map();
+  visible.forEach(function(product){
+    const color = getExportHazardColor(product);
+    const geometries = collectSelectedExportHazardGeometries(product)
+      .map(function(item){ return item && item.geometry; }).filter(Boolean);
+    if(!geometries.length) return;
+    if(!colorGroups.has(color)) colorGroups.set(color, []);
+    colorGroups.get(color).push(...geometries);
+  });
+  const width=mapCanvas.width, height=mapCanvas.height;
+  const maskCanvas=document.createElement('canvas'); maskCanvas.width=width; maskCanvas.height=height;
+  const mctx=maskCanvas.getContext('2d');
+  const ctx=mapCanvas.getContext('2d');
+  colorGroups.forEach(function(geometries,color){
+    mctx.clearRect(0,0,width,height);
+    mctx.beginPath();
+    geometries.forEach(function(geometry){ drawGeoJSONGeometryToMask(mctx,leafletMap,geometry); });
+    mctx.fillStyle='#fff';
+    try{mctx.fill('evenodd');}catch(e){mctx.fill();}
+    ctx.save();
+    ctx.globalAlpha=0.5;
+    ctx.fillStyle=color;
+    ctx.fillRect(0,0,width,height);
+    ctx.globalCompositeOperation='destination-in';
+    ctx.drawImage(maskCanvas,0,0);
+    ctx.restore();
+    ctx.globalCompositeOperation='source-over';
+  });
+}
+
 function drawExportVectorsOnCanvas(mapCanvas, leafletMap){
 
   const container = leafletMap.getContainer();
@@ -12092,7 +12127,7 @@ async function saveMapImage(){
     // Composite vector layers and transportation onto the raster map.
     // City labels are then painted as the FINAL map layer, guaranteeing
     // that they remain visible above the warning polygons.
-    drawExportVectorsOnCanvas(mapCanvas, tempMap);
+    drawExportUniformHazardFills(mapCanvas, tempMap);\n    drawExportVectorsOnCanvas(mapCanvas, tempMap);
     // In all-hazard exports, explicitly hatch areas where different active
     // hazards overlap. Roads and city labels are drawn afterward so they stay
     // crisp and readable.
