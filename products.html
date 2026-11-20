@@ -2407,7 +2407,7 @@ function addSelectedProductToExportMap(prod){
         : currentZoneFillOpacity(item);
     const style = {
       color: color,
-      weight: (item.sig === 'W' ? 3 : 2.5),
+      weight: (representative ? (representative.sig === 'W' ? 3 : 2.5) : (item.sig === 'W' ? 3 : 2.5)),
       opacity: 0.95,
       fillColor: color,
       fillOpacity: selectedExportMode === 'single' ? 0.08 : baseFillOpacity,
@@ -9881,7 +9881,7 @@ function buildCompositeCanvas(mapCanvas, nwsLogo, locatorData){
     const lineH=Math.max(25,Math.round(effectiveSize*1.34));
     let cursor=topY, maxY=cardY+cardH-14;
     bulletItems.forEach(function(item){
-      const lines=wrapBalanced(item,textW-16);
+      const lines=wrapExportText(ctx,item,textW-16);
       if(cursor+lines.length*lineH>maxY){console.warn('Export text overflow in '+label+': card content truncated at '+effectiveSize+'px.');return;}
       ctx.fillStyle=bannerColor;ctx.beginPath();ctx.arc(textX,cursor-7,4,0,Math.PI*2);ctx.fill();
       ctx.fillStyle=TEXT;ctx.font='700 '+effectiveSize+'px '+FONT;lines.forEach(function(line,i){ctx.fillText(line,textX+12,cursor+i*lineH);});
