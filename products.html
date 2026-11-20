@@ -3249,9 +3249,8 @@ function createTemporaryExportMap(){
     // during export so the road network and warning polygons stand out more.
     // City names are supplied separately by a Census-derived ArcGIS place
     // service and are drawn LAST on the export canvas, above the warning.
-    const exportBasemapUrl = selectedExportMode === 'map-only'
-      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
-      : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}';
+    // Keep the topographic basemap consistent across every export mode.
+    const exportBasemapUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
 
     const exportTileLayer = L.tileLayer(
       exportBasemapUrl,
@@ -10750,8 +10749,10 @@ function drawExportHazardOverlapOnCanvas(mapCanvas, leafletMap){
 
 function drawExportUniformHazardFills(mapCanvas, leafletMap){
   if(!mapCanvas || !leafletMap) return;
+  // Hazard Focus exports include every segment belonging to the selected
+  // advisory (same office/phenomenon/significance/ETN), not just the selected record.
   const visible = selectedExportMode === 'single'
-    ? [selectedExportProduct()].filter(Boolean)
+    ? getHazardFocusProducts()
     : (selectedExportMode === 'map-only' ? getMapOnlyExportProducts() : getExportVisibleProducts());
   const colorGroups = new Map();
   visible.forEach(function(product){
