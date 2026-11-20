@@ -1753,11 +1753,26 @@ def glwu_export_champlain_wind_forecast(grib_path: Path, out_path: Path, max_hou
             "note": "Surface wind field only. Cloud and snow potential require atmospheric model fields and are not predicted by this wind product.",
             "frames": frames,
         }
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(out_path, "w", encoding="utf-8") as handle:
-            json.dump(payload, handle, separators=(",", ":"))
         total = sum(len(frame["points"]) for frame in frames)
-        print(f"  Exported Champlain wind forecast: {out_path} ({len(frames)} lead times, {total} vectors)")
+        if len(frames) < 2 or total < 100:
+            raise RuntimeError(
+                f"Wind forecast validation failed: frames={len(frames)}, vectors={total}; refusing to publish."
+            )
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        # Atomic write: never truncate a previously valid forecast if generation fails.
+        temp_path = out_path.with_suffix(out_path.suffix + ".tmp")
+        with open(temp_path, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, separators=(",", ":"))
+        temp_path.replace(out_path)
+        # Canonical Actions-committed copy. This prevents the separate API
+        # publisher from being overwritten by a stale, tracked zero-byte file.
+        canonical_path = OUTPUT_DIR / "champlain_wind_forecast.json"
+        canonical_path.parent.mkdir(parents=True, exist_ok=True)
+        canonical_tmp = canonical_path.with_suffix(canonical_path.suffix + ".tmp")
+        with open(canonical_tmp, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, separators=(",", ":"))
+        canonical_tmp.replace(canonical_path)
+        print(f"  Exported Champlain wind forecast: {out_path} + {canonical_path} ({len(frames)} lead times, {total} vectors)")
     finally:
         grbs.close()
 
