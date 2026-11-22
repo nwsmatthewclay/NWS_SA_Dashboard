@@ -25,7 +25,15 @@ footer{text-align:center;color:#8ba2c5;padding:8px;border-top:1px solid #22365b;
 <body>
 <header><div class="brand"><div class="seal">NOAA</div><div class="seal">NWS</div><div><h1>NWS BURLINGTON</h1><div class="sub">SITUATIONAL AWARENESS (SA) DASHBOARD</div><div class="region">VERMONT AND NORTHERN NEW YORK</div></div></div><div class="header-right"><div class="timebox"><small>SAT, NOV 21, 2026</small><strong id="clock">10:27:46 PM</strong></div><button class="toolsbtn" style="background:#07172b;color:#8fdfff;border:1px solid #38619a;border-radius:9px;padding:10px" onclick="location.reload()">↻</button><div class="statusbox">● OPERATIONAL<small>All systems normal</small></div></div></header>
 <nav><button class="active">⌂ Overview</button><button>▦ Events</button><button>⚠ Hazards</button><button>▥ Threats</button><button>✈ Aviation</button><button>♧ Recreation</button><button>△ Mountain</button><button>⚒ Tools</button></nav>
-<main>
+<section class="panel" id="indexLiveMirror" style="border-color:#20b9e8">
+<div class="panel-title">Operational Status — Mirrored from index.html <span class="hint" id="mirrorState">Connecting to operational dashboard…</span></div>
+<div class="snapshot-cards" id="indexMirrorCards" style="grid-template-columns:repeat(5,1fr)">
+<div class="metric" style="--accent:#14d8ff"><label>Today's DSS Events</label><div class="num" id="mirrorValue0">—</div><div class="foot" id="mirrorSub0">Waiting for index.html</div></div><div class="metric" style="--accent:#398dff"><label>Next DSS Event</label><div class="num" id="mirrorValue1">—</div><div class="foot" id="mirrorSub1">Waiting for index.html</div></div><div class="metric" style="--accent:#ffc928"><label>UVM Lightning</label><div class="num" id="mirrorValue2">—</div><div class="foot" id="mirrorSub2">Waiting for index.html</div></div><div class="metric" style="--accent:#00d68f"><label>BTV Power Outages</label><div class="num" id="mirrorValue3">—</div><div class="foot" id="mirrorSub3">Waiting for index.html</div></div><div class="metric" style="--accent:#a05cff"><label>Active Hazards</label><div class="num" id="mirrorValue4">—</div><div class="foot" id="mirrorSub4">Waiting for index.html</div></div>
+</div>
+<div style="margin-top:9px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="mirrorThreats">
+<div class="metric" style="--accent:#a05cff;min-height:auto"><label>Severe Threat</label><div class="num" id="mirrorThreat0">—</div><div class="foot" id="mirrorThreatSub0">Waiting for operational gauge</div></div><div class="metric" style="--accent:#a05cff;min-height:auto"><label>Tornado Threat</label><div class="num" id="mirrorThreat1">—</div><div class="foot" id="mirrorThreatSub1">Waiting for operational gauge</div></div><div class="metric" style="--accent:#a05cff;min-height:auto"><label>Hydrology Threat</label><div class="num" id="mirrorThreat2">—</div><div class="foot" id="mirrorThreatSub2">Waiting for operational gauge</div></div><div class="metric" style="--accent:#a05cff;min-height:auto"><label>Snow Squall Threat</label><div class="num" id="mirrorThreat3">—</div><div class="foot" id="mirrorThreatSub3">Waiting for operational gauge</div></div>
+</div>
+<div class="foot" style="margin-top:8px">Values are read from the operational page's rendered DOM; test.html does not calculate or substitute these numbers.</div></section><main>
 <section class="snapshot"><div class="panel snapshot-main"><div class="panel-title">▱ Operational Snapshot <span class="hint">Current operational status & focus areas for the BTV CWA</span></div><div class="snapshot-cards">
 <div class="metric" style="--accent:#ff5378"><div class="top"><span class="ico">⚠</span><div><label>ACTIVE HAZARDS</label><div class="num">2</div></div></div><div class="foot">Across the BTV CWA ›</div></div>
 <div class="metric" style="--accent:#b56aff"><div class="top"><span class="ico">♧</span><div><label>ACTIVE DSS</label><div class="num">1</div></div></div><div class="foot">Currently in progress ›</div></div>
@@ -117,5 +125,20 @@ function initLiveMap(){
  Promise.all(['VT','NY'].map(code=>fetch('https://api.weather.gov/alerts/active?area='+code,{headers:{'Accept':'application/geo+json'},cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('NWS '+code+' alerts HTTP '+r.status);return r.json();}))).then(feeds=>{let n=0;const cwaBounds=L.latLngBounds(BTV_BOUNDS);const features=feeds.flatMap(d=>d.features||[]);features.forEach(f=>{const p=f.properties||{};if(p.status&&String(p.status).toLowerCase()!=='actual')return;if(String(p.messageType||'').toLowerCase()==='cancel')return;const exp=Date.parse(p.ends||p.expires||'');if(exp&&!isNaN(exp)&&exp<=Date.now())return;if(!f.geometry)return;const layer=L.geoJSON(f);const bounds=layer.getBounds();if(!bounds.isValid()||!cwaBounds.intersects(bounds))return;alertLayer.addData(f);n++;});window._liveHazardCount=n;status.textContent=n+' active alerts intersecting BTV map area (VT/NY feed)';document.querySelectorAll('.snapshot-cards .metric')[0].querySelector('.num').textContent=n;}).catch(e=>{status.textContent='Alerts feed unavailable';console.warn(e);});
  }
 document.addEventListener('DOMContentLoaded',()=>{loadFeeds().catch(console.error);initLiveMap();setInterval(()=>loadFeeds().catch(console.error),5*60*1000);});
+})();
+</script><iframe id="indexDataSource" src="./index.html" title="Operational dashboard data source" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10000px;top:-10000px;border:0" aria-hidden="true"></iframe><script>
+(function(){
+ const source=document.getElementById('indexDataSource');
+ const ids=[['dssStatusValue','dssStatusSub2'],['nextObligationValue','nextObligationSub'],['lightningCardValue','lightningCardSub'],['outageCardValue','outageCardSub'],['navHazardText','navHazardSummary']];
+ const threatIds=[['envSevereValue','envSevereBadge'],['envTornadoValue','envTornadoBadge'],['envHydroValue','envHydroBadge'],['envSnowSquallValue','envSnowSquallBadge']];
+ function mirror(){
+  try{
+   const d=source.contentDocument;if(!d||!d.body)return;
+   ids.forEach((pair,i)=>{const el=d.getElementById(pair[0]);const sub=d.getElementById(pair[1]);if(!el)return;document.getElementById('mirrorValue'+i).textContent=el.innerText.trim();document.getElementById('mirrorSub'+i).textContent=sub?(sub.innerText||sub.textContent).trim():'Live from index.html';});
+   threatIds.forEach((pair,i)=>{const el=d.getElementById(pair[0]);const sub=d.getElementById(pair[1]);if(!el)return;document.getElementById('mirrorThreat'+i).textContent=el.innerText.trim();document.getElementById('mirrorThreatSub'+i).textContent=sub?(sub.innerText||sub.textContent).trim():'Operational gauge';});
+   const health=d.getElementById('dataHealthText');document.getElementById('mirrorState').textContent=health?(health.textContent.trim()+' · synced'):'Operational page loaded · synced';
+  }catch(e){document.getElementById('mirrorState').textContent='Could not read index.html status values';}
+ }
+ source.addEventListener('load',()=>{mirror();setInterval(mirror,2000);});
 })();
 </script></body></html>
