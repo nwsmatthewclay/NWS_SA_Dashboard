@@ -19,6 +19,8 @@ main{padding:12px;display:grid;gap:10px;max-width:1800px;margin:auto}
 footer{text-align:center;color:#8ba2c5;padding:8px;border-top:1px solid #22365b;font-size:11px}
 @media(max-width:1100px){.snapshot{grid-template-columns:1fr}.middle{grid-template-columns:1fr}.bottom{grid-template-columns:1fr 1fr}.bottom .healthpanel{grid-column:1/-1}}
 @media(max-width:750px){header{height:auto;align-items:flex-start;flex-direction:column}.brand h1{font-size:19px}.header-right{width:100%;justify-content:space-between}.snapshot-cards{grid-template-columns:repeat(2,1fr)}.bottom{grid-template-columns:1fr}.bottom .healthpanel{grid-column:auto}.timelinegrid{grid-template-columns:repeat(9,1fr)}.impactgrid{grid-template-columns:repeat(2,1fr)}nav button{min-width:90px}.mapbox{height:250px}}
+</style><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
+#liveMap{height:310px;width:100%;z-index:1}.mapbox{background:none!important;border:0!important}.live-map-status{position:absolute;z-index:500;left:10px;top:10px;background:#081323dd;border:1px solid #42658d;padding:6px 9px;border-radius:7px;color:#9feaff;font-size:11px}.leaflet-container{background:#091223!important}.leaflet-control-layers{background:#081323e8!important;color:#eaf2ff!important;border:1px solid #45618d!important}.leaflet-control-layers label{color:#eaf2ff!important}.live-alert-label{font-size:10px;font-weight:800;text-shadow:0 1px 3px #000;color:#fff}
 </style></head>
 <body>
 <header><div class="brand"><div class="seal">NOAA</div><div class="seal">NWS</div><div><h1>NWS BURLINGTON</h1><div class="sub">SITUATIONAL AWARENESS (SA) DASHBOARD</div><div class="region">VERMONT AND NORTHERN NEW YORK</div></div></div><div class="header-right"><div class="timebox"><small>SAT, NOV 21, 2026</small><strong id="clock">10:27:46 PM</strong></div><button class="toolsbtn" style="background:#07172b;color:#8fdfff;border:1px solid #38619a;border-radius:9px;padding:10px" onclick="location.reload()">↻</button><div class="statusbox">● OPERATIONAL<small>All systems normal</small></div></div></header>
@@ -32,10 +34,88 @@ footer{text-align:center;color:#8ba2c5;padding:8px;border-top:1px solid #22365b;
 <div class="panel queue"><div class="panel-title">♧ Attention Queue <span class="hint">3 ITEMS</span></div><div class="queue-list"><div class="queue-item"><span class="qtag red">ACTIVE</span><div><strong>On-site DSS: Mount Mansfield Recreation</strong><small>In progress (10:00 AM – 4:00 PM)</small></div></div><div class="queue-item"><span class="qtag gold">UPCOMING</span><div><strong>DSS: Outdoor Event – Champlain Valley</strong><small>Begins in 42 minutes (11:10 PM)</small></div></div><div class="queue-item"><span class="qtag blue">INFO</span><div><strong>Coordination Call: EM Partners</strong><small>Tomorrow at 9:00 AM</small></div></div></div></div></section>
 <section class="middle"><div class="leftstack"><div class="panel"><div class="panel-title">▣ Today's DSS Operations <span class="hint">View Full Table →</span></div><div class="tablewrap"><table><thead><tr><th>DATE</th><th>TIME (EST)</th><th>EVENT NAME</th><th>DSS TYPE</th><th>CONTACT</th><th>STATUS</th></tr></thead><tbody><tr><td>Nov 21</td><td>10:00 – 16:00</td><td>Mount Mansfield Recreation</td><td>On-site DSS</td><td>Stowe Mtn Resort</td><td><span class="pill active">● ACTIVE</span></td></tr><tr><td>Nov 21</td><td>23:10 – 02:00</td><td>Outdoor Event – Champlain Valley</td><td>Event DSS</td><td>Event Organizer</td><td><span class="pill upcoming">● UPCOMING (42 min)</span></td></tr><tr><td>Nov 22</td><td>09:00 – 10:00</td><td>EM Coordination Call</td><td>Coordination</td><td>VT DEMHS</td><td><span class="pill scheduled">● SCHEDULED</span></td></tr><tr><td>Nov 22</td><td>13:00 – 18:00</td><td>Winter Recreation – Northern VT</td><td>On-site DSS</td><td>Ski Area Ops</td><td><span class="pill scheduled">● SCHEDULED</span></td></tr></tbody></table></div></div>
 <div class="panel timeline"><div class="panel-title">◷ Operational Timeline – Today <span class="hint">▰ On-site DSS　▰ Event DSS　▰ Coordination　▰ Spot Forecast</span></div><div class="timelinegrid"><div class="hour">08 AM</div><div class="hour">09 AM</div><div class="hour">10 AM</div><div class="hour">11 AM</div><div class="hour">12 PM</div><div class="hour">01 PM</div><div class="hour">02 PM</div><div class="hour">03 PM</div><div class="hour">04 PM</div><div class="hour">05 PM</div><div class="hour">06 PM</div><div class="hour">07 PM</div><div class="hour">08 PM</div><div class="hour">09 PM</div><div class="hour">10 PM</div><div class="hour">11 PM</div><div class="hour">12 AM</div><div class="track"><div class="eventbar purple">△ Mount Mansfield Recreation (On-site DSS)</div><div class="eventbar blue">▣ Outdoor Event (Event DSS)</div><div class="nowline"></div><div class="nowlabel">NOW</div></div></div></div></div>
-<div class="panel"><div class="panel-title">⚑ BTV CWA: Hazards & Radar <span class="hint">Radar ☑ Hazards ☑ Zones ☐ Lightning</span></div><div class="mapbox"><div class="radar"></div><div class="zone"></div><div class="lake"></div><span class="city" style="top:13%;left:67%">St. Albans</span><span class="city" style="top:29%;left:51%">Plattsburgh</span><span class="city" style="top:38%;left:55%">Burlington</span><span class="city" style="top:57%;left:24%">Saranac Lake</span><span class="city" style="top:67%;left:71%">Montpelier</span><span class="city" style="top:84%;left:54%">Rutland</span><span class="city" style="top:54%;left:86%">St. Johnsbury</span><div class="mapcontrols"><button>＋</button><button>−</button><button>⌖</button></div><div class="maplegend"><b>Active Hazards (2)</b><br><span style="color:#a15aff">■</span> Winter Weather Advisory (1)　 <span style="color:#ce9dff">■</span> Wind Advisory (1)</div></div></div></section>
+<div class="panel"><div class="panel-title">⚑ BTV CWA: Hazards & Radar <span class="hint">Radar ☑ Hazards ☑ Zones ☐ Lightning</span></div><div class="mapbox"><div id="liveMap"></div><div class="live-map-status" id="mapStatus">Loading live map layers…</div></div></div></section>
 <section class="bottom"><div class="panel"><div class="panel-title">♧ Environmental Threats (BTV Vicinity) <span class="hint">Updated 10:27 PM</span></div><div class="gauges"><div class="gauge" style="--g:#00d68f"><div class="ring"><b>14/100</b></div><strong>SEVERE</strong><small>Very Low</small><div class="spark"></div></div><div class="gauge" style="--g:#ffb800"><div class="ring"><b>28/100</b></div><strong>TORNADO</strong><small>Low</small><div class="spark"></div></div><div class="gauge" style="--g:#00d68f"><div class="ring"><b>21/100</b></div><strong>HYDROLOGY</strong><small>Very Low</small><div class="spark"></div></div><div class="gauge" style="--g:#00d68f"><div class="ring"><b>0/100</b></div><strong>SNOW SQUALL</strong><small>Very Low</small><div class="spark"></div></div></div></div>
 <div class="panel"><div class="panel-title">◷ Next 24 Hours: Weather Impacts</div><div class="impactgrid"><div class="impact"><strong>10 PM – 4 AM</strong><div class="wx">🌨</div><b>Snow Showers</b><small>Mtns / N NE</small></div><div class="impact"><strong>4 AM – 10 AM</strong><div class="wx">☁</div><b>Flurries</b><small>Light / Isolated</small></div><div class="impact"><strong>10 AM – 4 PM</strong><div class="wx">🌬</div><b>Breezy</b><small>Gusts 25–35 mph</small></div><div class="impact"><strong>4 PM – 10 PM</strong><div class="wx">🌤</div><b>Improving</b><small>Lower impacts</small></div></div></div>
 <div class="panel healthpanel"><div class="panel-title">▤ Data Health</div><div class="health"><div class="healthrow"><span><i class="dot">●</i> NWS Hazards</span><span>2 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> Spot Forecasts</span><span>3 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> DSS Events</span><span>1 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> Environmental Data</span><span>2 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> Coordination Calls</span><span>1 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> Outages (BTV)</span><span>4 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> Lightning</span><span>2 min ago</span></div><div class="healthrow"><span><i class="dot">●</i> Forecast Zones</span><span>Loaded</span></div><footer>✓ All critical data feeds are current.</footer></div></div></section>
 <section class="panel tools"><b>⚡ QUICK TOOLS</b><button>◫ Product Viewer</button><button>❄ WinterRadar</button><button>△ Mountain Dashboard</button><button>≋ Recreation (Champlain)</button><button>✈ Aviation (TAF/METAR)</button><button>◎ Mesoscale Detective</button><button>More Tools ▾</button></section>
-</main><footer>●　NWS Burlington　 •　 Supporting Our Community Across Vermont and Northern New York　 •　 Concept test page — sample values only</footer>
-<script>function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}tick();setInterval(tick,1000);</script></body></html>
+</main><footer>●　NWS Burlington　 •　 Supporting Our Community Across Vermont and Northern New York　 •　 Live data test page — connected to SA dashboard feeds</footer>
+<script>function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}tick();setInterval(tick,1000);</script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+const DATA_BASE_URL='';
+const TZ='America/New_York';
+const BTV_BOUNDS=[[42.2042,-76.1462],[45.6986,-71.2793]];
+const dateFmt=new Intl.DateTimeFormat('en-US',{timeZone:TZ,month:'numeric',day:'numeric',year:'numeric'});
+const timeFmt=new Intl.DateTimeFormat('en-US',{timeZone:TZ,hour:'numeric',minute:'2-digit'});
+function todayKey(){return dateFmt.format(new Date());}
+function parseDate(s){if(!s)return null;const p=String(s).split('/');if(p.length!==3)return null;return new Date(Number(p[2]),Number(p[0])-1,Number(p[1]));}
+function dateKey(d){return dateFmt.format(d);}
+function getTimeCol(type,row,headers){const t=String(type||'');if(t.includes('Heads-up'))return row[headers.indexOf('Email Due By')]||'';if(t.includes('Active radar watch'))return row[headers.indexOf('Radar Start')]||'';if(t.includes('On-Site DSS'))return row[headers.indexOf('DSS Start')]||'';return ''}
+function getEndCol(type,row,headers){const t=String(type||'');if(t.includes('Active radar watch'))return row[headers.indexOf('Radar End')]||'';if(t.includes('On-Site DSS'))return row[headers.indexOf('DSS End')]||'';return ''}
+function isCancelled(row,headers){return String(row[headers.indexOf('Cancelled')]||'').toLowerCase()==='true';}
+function cleanRows(data){if(!Array.isArray(data)||!data.length)return {headers:[],rows:[]};return {headers:data[0],rows:data.slice(1).filter(r=>!isCancelled(r,data[0]))};}
+function setMetric(i,value,foot){const card=document.querySelectorAll('.snapshot-cards .metric')[i];if(card){card.querySelector('.num').textContent=value;card.querySelector('.foot').textContent=foot;}}
+function updateTable(headers,rows,calls){
+ const body=document.querySelector('.middle table tbody');if(!body)return;body.innerHTML='';
+ const today=todayKey(), now=new Date(), tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);
+ const idx={date:headers.indexOf('Event Date'),name:headers.indexOf('Event Name'),type:headers.indexOf('DSS Type'),contact:headers.indexOf('Contact Name'),info:headers.indexOf('Contact Info'),slides:headers.indexOf('Slides Link')};
+ let show=rows.filter(r=>dateKey(parseDate(r[idx.date]))===today||dateKey(parseDate(r[idx.date]))===dateKey(tomorrow));
+ show.sort((a,b)=>parseDate(a[idx.date])-parseDate(b[idx.date]));
+ if(!show.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#a9bad6;font-style:italic">No DSS events in the current data for today or tomorrow.</td></tr>';return;}
+ show.forEach(r=>{const tr=document.createElement('tr');const type=r[idx.type]||'';let time=getTimeCol(type,r,headers);let end=getEndCol(type,r,headers);time=time+(end?' – '+end:'')||'—';tr.innerHTML='<td>'+r[idx.date]+'</td><td>'+time+'</td><td>'+r[idx.name]+'</td><td>'+type+'</td><td>'+r[idx.contact]+'</td><td>'+r[idx.info]+'</td>';body.appendChild(tr);});
+}
+function updateQueue(rows,headers,calls){
+ const box=document.querySelector('.queue-list');box.innerHTML='';const today=todayKey();const now=new Date();
+ const dateIdx=headers.indexOf('Event Date'),nameIdx=headers.indexOf('Event Name'),typeIdx=headers.indexOf('DSS Type');
+ const next=rows.filter(r=>{const d=parseDate(r[dateIdx]);return d&&d>=new Date(now.getFullYear(),now.getMonth(),now.getDate());}).sort((a,b)=>parseDate(a[dateIdx])-parseDate(b[dateIdx])).slice(0,3);
+ next.forEach((r,i)=>{const tag=dateKey(parseDate(r[dateIdx]))===today?'TODAY':'UPCOMING';const item=document.createElement('div');item.className='queue-item';item.innerHTML='<span class="qtag '+(tag==='TODAY'?'red':'gold')+'">'+tag+'</span><div><strong>'+r[nameIdx]+'</strong><small>'+r[typeIdx]+' · '+r[dateIdx]+' · '+getTimeCol(r[typeIdx],r,headers)+'</small></div>';box.appendChild(item);});
+ const callCount=Array.isArray(calls)?Math.max(0,calls.length-1):0;
+ if(callCount>0){const item=document.createElement('div');item.className='queue-item';item.innerHTML='<span class="qtag blue">CALL</span><div><strong>'+callCount+' coordination records</strong><small>Loaded from calls.json</small></div>';box.appendChild(item);}
+ if(!next.length&&!callCount){box.innerHTML='<div class="queue-item"><span class="qtag blue">CLEAR</span><div><strong>No upcoming DSS events found</strong><small>Based on current events.json feed</small></div></div>';}
+ document.querySelector('.queue .panel-title .hint').textContent=(next.length+ (callCount?1:0))+' LIVE ITEMS';
+}
+function updateSnapshot(headers,rows,calls){
+ const today=todayKey(),tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+ const d=headers.indexOf('Event Date'),t=headers.indexOf('DSS Type');
+ const todays=rows.filter(r=>dateKey(parseDate(r[d]))===today);
+ const future=rows.filter(r=>{const dt=parseDate(r[d]);return dt&&dt>=new Date();});
+ const active=todays.filter(r=>{const type=r[t];return type&& (type.includes('On-Site DSS')||type.includes('Active radar watch'));});
+ const callCount=Array.isArray(calls)?Math.max(0,calls.length-1):0;
+ setMetric(0,'—','Hazards are live on the map below');
+ setMetric(1,active.length,'Active DSS/watch records today');
+ setMetric(2,future.length,'Upcoming records in events feed');
+ setMetric(3,callCount,'Coordination records loaded');
+ const focus=document.querySelector('.focusline span');if(focus)focus.textContent=active.length?active.length+' active DSS/watch item(s) today. '+future.length+' upcoming event records loaded.':future.length?future.length+' upcoming DSS records found; no active DSS/watch records today.':'No DSS events found in current data. Check the live hazard map for active alerts.';
+}
+async function fetchJson(name){const res=await fetch(DATA_BASE_URL+name,{cache:'no-store'});if(!res.ok)throw Error(name+' HTTP '+res.status);return res.json();}
+async function loadFeeds(){
+ const feeds=[['events.json','DSS events'],['calls.json','Coordination calls'],['threats.json','Threat levels'],['lightning.json','Lightning'],['outages.json','Power outages']];
+ const health=document.querySelector('.health');const rows=health.querySelectorAll('.healthrow');
+ feeds.forEach((f,i)=>{if(rows[i])rows[i].querySelector('span:last-child').textContent='Loading…';});
+ const [events,calls,threats,lightning,outages]=await Promise.all(feeds.map(f=>fetchJson(f).catch(e=>({error:e.message}))));
+ if(events.error){document.querySelector('.snapshot-main .panel-title .hint').textContent='Events feed unavailable';return;}
+ const data=cleanRows(events);updateTable(data.headers,data.rows,calls.error?[]:calls);updateQueue(data.rows,data.headers,calls.error?[]:calls);updateSnapshot(data.headers,data.rows,calls.error?[]:calls);
+ const tKeys=['severe','tornado','hydro','snowsquall'];const gauges=document.querySelectorAll('.gauges .gauge');
+ tKeys.forEach((k,i)=>{const d=threats[k]||{};if(!gauges[i])return;gauges[i].querySelector('.ring b').textContent=(d.score==null?'—':Math.round(d.score))+'/100';gauges[i].querySelector('small').textContent=d.label||'Unknown';});
+ if(lightning&& !lightning.error){const card=document.querySelectorAll('.snapshot-cards .metric')[2];}
+ if(outages&&!outages.error){const healthText='Outages: '+outages.total+' customers';}
+ const feedStates=[events,calls,threats,lightning,outages];feedStates.forEach((f,i)=>{if(rows[i])rows[i].querySelector('span:last-child').textContent=f.error?'Failed':'Live';});
+ const foot=document.querySelector('.health footer');if(foot)foot.textContent=feedStates.every(f=>!f.error)?'✓ Dashboard feeds loaded successfully (live JSON).':'⚠ One or more feeds could not be loaded.';
+ document.querySelector('.snapshot-main .panel-title .hint').textContent='Live data from dashboard JSON feeds';
+}
+function initLiveMap(){
+ if(!window.L){document.getElementById('mapStatus').textContent='Leaflet failed to load';return;}
+ const map=L.map('liveMap',{zoomControl:true}).fitBounds(BTV_BOUNDS);
+ const base=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri and contributors',maxZoom:19}).addTo(map);
+ const radar=L.tileLayer('https://tile.weather.gov/tiles/radar/1/256/{z}/{x}/{y}.png',{opacity:.72,attribution:'NWS radar'});
+ const alertLayer=L.geoJSON(null,{style:f=>({color:f.properties&&f.properties.color||'#e850ff',weight:2,fillOpacity:.24,fillColor:f.properties&&f.properties.color||'#e850ff'}),onEachFeature:(f,l)=>{const p=f.properties||{};l.bindPopup('<b>'+((p.event)||'NWS Alert')+'</b><br>'+((p.headline)||'')+'<br>'+((p.areaDesc)||'');}}).addTo(map);
+ L.control.layers({'Esri Topographic':base},{'NWS Radar':radar,'Active Alerts':alertLayer},{collapsed:false}).addTo(map);
+ const eventMarkers=L.layerGroup().addTo(map);
+ fetch(DATA_BASE_URL+'events.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{if(!Array.isArray(data)||!data.length)return;const h=data[0];const lat=h.indexOf('Latitude'),lon=h.indexOf('Longitude'),name=h.indexOf('Event Name'),date=h.indexOf('Event Date'),cancel=h.indexOf('Cancelled');data.slice(1).forEach(row=>{if(row[cancel]==='TRUE')return;const a=parseFloat(row[lat]),b=parseFloat(row[lon]);if(isNaN(a)||isNaN(b))return;L.circleMarker([a,b],{radius:6,color:'#8ff5ff',fillColor:'#12caff',fillOpacity:.9}).bindPopup('<b>'+row[name]+'</b><br>'+row[date]).addTo(eventMarkers);});});
+ const status=document.getElementById('mapStatus');status.textContent='Loading active NWS alerts…';
+ fetch('https://api.weather.gov/alerts/active?area=VT,NY',{headers:{'User-Agent':'BTV-SA-Dashboard test page (public dashboard)'},cache:'no-store'}).then(r=>r.json()).then(data=>{let n=0;const cwaBounds=L.latLngBounds(BTV_BOUNDS);(data.features||[]).forEach(f=>{if(!f.geometry)return;const layer=L.geoJSON(f);if(!layer.getBounds().isValid()&& !layer.getBounds().intersects(cwaBounds))return;const bounds=layer.getBounds();if(!bounds.isValid()||!cwaBounds.intersects(bounds))return;alertLayer.addData(f);n++;});status.textContent=n+' active alerts intersecting BTV map area (VT/NY feed)';}).catch(e=>{status.textContent='Alerts feed unavailable';console.warn(e);});
+ }
+document.addEventListener('DOMContentLoaded',()=>{loadFeeds().catch(console.error);initLiveMap();setInterval(()=>loadFeeds().catch(console.error),5*60*1000);});
+})();
+</script></body></html>
