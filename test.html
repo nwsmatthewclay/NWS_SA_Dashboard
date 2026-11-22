@@ -1840,6 +1840,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .data-table tbody td:first-child { color:#b9cce5; font-weight:700; white-space:nowrap; }
 .data-table .time-chip { font-variant-numeric: tabular-nums; white-space:nowrap; }
 .test-data-banner { margin: 0 0 8px; padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(251,191,36,.25); background: rgba(217,119,6,.09); color: #f6c878; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+
+/* Timeline bubbles: enforce readable labels and at least a one-hour visual span. */
+.glance-bar { overflow: visible !important; text-overflow: clip !important; min-width: 92px !important; z-index: 2; padding: 0 9px !important; font-size: 11px !important; }
+.glance-row-track { overflow: visible !important; }
+.glance-bar.point { min-width: 92px !important; width: 92px !important; font-size: 11px !important; }
+.tomorrow-glance-bar { order: 99; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
@@ -1959,15 +1965,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
     </div>
   </div>
 
-<!-- TOMORROW AT A GLANCE (compact one-line strip) -->
-  <div class="tomorrow-glance-bar" id="tomorrowGlanceSection" style="display:none;">
-    <span class="tomorrow-glance-label">Tomorrow</span>
-    <div class="tomorrow-glance-list" id="tomorrowGlanceRows"></div>
-  </div>
-
   <div id="dssWrapper">
     <div class="data-section">
-      <div class="test-data-banner">🧪 TEST MODE · Sample DSS events and coordination calls · JSON disconnected</div>
+      <div class="test-data-banner">LIVE DATA · DSS events and coordination calls from JSON</div>
   <div class="data-section-header">
         <span class="section-icon">📋</span>
         <h2 id="dssTableTitle">Today's DSS Operations</h2>
@@ -1984,6 +1984,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
       </div>
     </div>
+  </div>
+
+<!-- TOMORROW AT A GLANCE (compact one-line strip) -->
+  <div class="tomorrow-glance-bar" id="tomorrowGlanceSection" style="display:none;">
+    <span class="tomorrow-glance-label">Tomorrow</span>
+    <div class="tomorrow-glance-list" id="tomorrowGlanceRows"></div>
   </div>
 
   <!-- DID YOU KNOW — rotating DSS trivia, shown only on quiet days (2 or
@@ -3016,7 +3022,12 @@ function renderGlanceTimeline(opts) {
 
     var startPct = minutesToPct(row.startMin);
     var endPct   = minutesToPct(row.endMin);
-    var widthPct = row.allDay ? 98 : Math.min(Math.max(endPct - startPct, 3), 98);
+    if (!row.allDay && !row.isPoint && row.endMin - row.startMin < 60) { row.endMin = Math.min(1440, row.startMin + 60); endPct = minutesToPct(row.endMin); }
+    var trackWidthPx = trackEl.clientWidth || 600;
+    var durationPct = row.allDay ? 98 : Math.min(Math.max(endPct - startPct, (60 / 1440) * 100), 98); // minimum 60 minutes
+    var labelWidthPx = Math.min(trackWidthPx, Math.max(92, String(row.time || '').length * 7.2 + 18));
+    var labelWidthPct = (labelWidthPx / trackWidthPx) * 100;
+    var widthPct = row.allDay ? 98 : Math.min(Math.max(durationPct, labelWidthPct), 98);
 
     var bar = document.createElement('div');
     var isActiveNow = opts.isToday && !row.allDay && nowMinutes >= row.startMin && nowMinutes <= row.endMin;
@@ -4686,24 +4697,28 @@ function loadData(rows, calls) {
 }
 
 function refreshDashboard() {
-  // TEST PAGE ONLY: intentionally use fake events so the compact table can be evaluated on a quiet day.
-  var today = btvDate();
-  var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-  function dateCell(d) { return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear(); }
-  var headers = ['Event Name','DSS Type','Event Date','Contact Info','Slides Link','Radar Start','Radar End','Email Due By','DSS Start','DSS End','Contact Name','Latitude','Longitude','Cancelled'];
-  var fakeEvents = [headers,
-    ['Mount Mansfield Ski Area','On-Site DSS',dateCell(today),'Stowe Mountain Resort Operations','https://example.com/slides','','','','9:00 AM','2:00 PM','Forecast Office',44.53,-72.79,'FALSE'],
-    ['Champlain Valley Outdoor Event','Heads-up email',dateCell(today),'Event organizer — event coordination','https://example.com/slides','','','','','', 'BTV DSS Team',44.48,-73.20,'FALSE'],
-    ['Lake Champlain Wind Event','Active radar watch',dateCell(today),'Event lead — field contact','https://example.com/slides','12:30 PM','3:30 PM','','','','BTV Radar Desk',44.62,-73.28,'FALSE'],
-    ['Northern Vermont Winter Festival','On-Site DSS',dateCell(tomorrow),'Festival coordination','https://example.com/slides','','','','10:00 AM','1:00 PM','BTV DSS Team',44.42,-72.65,'FALSE']
-  ];
-  var fakeCalls = [
-    ['Date','Time','Call Name','Join / Details','','Cancelled'],
-    [dateCell(today),'8:30 AM','Morning Event Coordination','https://example.com/coordination','','FALSE'],
-    [dateCell(today),'1:00 PM','Lake Champlain Event Check-In','https://example.com/coordination','','FALSE']
-  ];
-  try { loadData(fakeEvents, fakeCalls); }
-  catch (e) { console.error('Test data render error:', e); document.getElementById('dssStatusSub2').textContent = 'Render error'; }
+  fetch(DATA_BASE_URL + 'events.json')
+    .then(function(r) { return r.json(); })
+    .then(function(events) {
+      fetch(DATA_BASE_URL + 'calls.json')
+        .then(function(r) { return r.json(); })
+        .then(function(calls) {
+          try { loadData(events, calls); }
+          catch (e) {
+            console.error('loadData error:', e);
+            document.getElementById('dssStatusSub2').textContent = 'Render error';
+          }
+        })
+        .catch(function(err) {
+          console.error('calls.json fetch failed:', err);
+          document.getElementById('dssStatusSub2').textContent = 'Failed to load calls';
+        });
+    })
+    .catch(function(err) {
+      console.error('events.json fetch failed:', err);
+      document.getElementById('dssStatusSub2').textContent = 'Failed to load events';
+    });
+
   updateLightningCard();
   updateOutageCard();
   refreshThreatGauges();
