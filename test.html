@@ -82,7 +82,7 @@ function updateSnapshot(headers,rows,calls){
  const future=rows.filter(r=>{const dt=parseDate(r[d]);return dt&&dt>=new Date();});
  const active=todays.filter(r=>{const type=r[t];return type&& (type.includes('On-Site DSS')||type.includes('Active radar watch'));});
  const callCount=Array.isArray(calls)?Math.max(0,calls.length-1):0;
- setMetric(0,'—','Hazards are live on the map below');
+ setMetric(0,window._liveHazardCount==null?'…':window._liveHazardCount,'Live NWS alerts intersecting map area');
  setMetric(1,active.length,'Active DSS/watch records today');
  setMetric(2,future.length,'Upcoming records in events feed');
  setMetric(3,callCount,'Coordination records loaded');
@@ -109,12 +109,12 @@ function initLiveMap(){
  const map=L.map('liveMap',{zoomControl:true}).fitBounds(BTV_BOUNDS);
  const base=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri and contributors',maxZoom:19}).addTo(map);
  const radar=L.tileLayer('https://tile.weather.gov/tiles/radar/1/256/{z}/{x}/{y}.png',{opacity:.72,attribution:'NWS radar'});
- const alertLayer=L.geoJSON(null,{style:f=>({color:f.properties&&f.properties.color||'#e850ff',weight:2,fillOpacity:.24,fillColor:f.properties&&f.properties.color||'#e850ff'}),onEachFeature:(f,l)=>{const p=f.properties||{};l.bindPopup('<b>'+((p.event)||'NWS Alert')+'</b><br>'+((p.headline)||'')+'<br>'+((p.areaDesc)||'');}}).addTo(map);
+ window._liveHazardCount=0;const alertLayer=L.geoJSON(null,{style:f=>({color:f.properties&&f.properties.color||'#e850ff',weight:2,fillOpacity:.24,fillColor:f.properties&&f.properties.color||'#e850ff'}),onEachFeature:(f,l)=>{const p=f.properties||{};l.bindPopup('<b>'+((p.event)||'NWS Alert')+'</b><br>'+((p.headline)||'')+'<br>'+((p.areaDesc)||'');}}).addTo(map);
  L.control.layers({'Esri Topographic':base},{'NWS Radar':radar,'Active Alerts':alertLayer},{collapsed:false}).addTo(map);
  const eventMarkers=L.layerGroup().addTo(map);
  fetch(DATA_BASE_URL+'events.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{if(!Array.isArray(data)||!data.length)return;const h=data[0];const lat=h.indexOf('Latitude'),lon=h.indexOf('Longitude'),name=h.indexOf('Event Name'),date=h.indexOf('Event Date'),cancel=h.indexOf('Cancelled');data.slice(1).forEach(row=>{if(row[cancel]==='TRUE')return;const a=parseFloat(row[lat]),b=parseFloat(row[lon]);if(isNaN(a)||isNaN(b))return;L.circleMarker([a,b],{radius:6,color:'#8ff5ff',fillColor:'#12caff',fillOpacity:.9}).bindPopup('<b>'+row[name]+'</b><br>'+row[date]).addTo(eventMarkers);});});
  const status=document.getElementById('mapStatus');status.textContent='Loading active NWS alerts…';
- fetch('https://api.weather.gov/alerts/active?area=VT,NY',{headers:{'User-Agent':'BTV-SA-Dashboard test page (public dashboard)'},cache:'no-store'}).then(r=>r.json()).then(data=>{let n=0;const cwaBounds=L.latLngBounds(BTV_BOUNDS);(data.features||[]).forEach(f=>{if(!f.geometry)return;const layer=L.geoJSON(f);if(!layer.getBounds().isValid()&& !layer.getBounds().intersects(cwaBounds))return;const bounds=layer.getBounds();if(!bounds.isValid()||!cwaBounds.intersects(bounds))return;alertLayer.addData(f);n++;});status.textContent=n+' active alerts intersecting BTV map area (VT/NY feed)';}).catch(e=>{status.textContent='Alerts feed unavailable';console.warn(e);});
+ fetch('https://api.weather.gov/alerts/active?area=VT,NY',{headers:{'User-Agent':'BTV-SA-Dashboard test page (public dashboard)'},cache:'no-store'}).then(r=>r.json()).then(data=>{let n=0;const cwaBounds=L.latLngBounds(BTV_BOUNDS);(data.features||[]).forEach(f=>{if(!f.geometry)return;const layer=L.geoJSON(f);if(!layer.getBounds().isValid()&& !layer.getBounds().intersects(cwaBounds))return;const bounds=layer.getBounds();if(!bounds.isValid()||!cwaBounds.intersects(bounds))return;alertLayer.addData(f);n++;});window._liveHazardCount=n;status.textContent=n+' active alerts intersecting BTV map area (VT/NY feed)';document.querySelectorAll('.snapshot-cards .metric')[0].querySelector('.num').textContent=n;}).catch(e=>{status.textContent='Alerts feed unavailable';console.warn(e);});
  }
 document.addEventListener('DOMContentLoaded',()=>{loadFeeds().catch(console.error);initLiveMap();setInterval(()=>loadFeeds().catch(console.error),5*60*1000);});
 })();
