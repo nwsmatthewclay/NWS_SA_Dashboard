@@ -3001,6 +3001,34 @@ function renderGlanceTimeline(opts) {
     return;
   }
 
+  // Group Heads-Up Email deadline markers only when exact deadlines match.
+  // Radar Watches, On-Site DSS, and calls remain individual timeline entries.
+  var groupedTimelineRows = [];
+  var emailGroups = {};
+  rows.forEach(function(row) {
+    if (row.kind === 'headsup') {
+      var key = String(row.endMin);
+      if (!emailGroups[key]) emailGroups[key] = [];
+      emailGroups[key].push(row);
+    } else {
+      groupedTimelineRows.push(row);
+    }
+  });
+  Object.keys(emailGroups).forEach(function(key) {
+    var group = emailGroups[key];
+    if (group.length === 1) groupedTimelineRows.push(group[0]);
+    else {
+      var names = group.map(function(item) { return item.label; });
+      groupedTimelineRows.push({
+        kind: 'headsup', label: group.length + ' Heads-Up Emails',
+        time: group[0].time, startMin: group[0].startMin, endMin: group[0].endMin,
+        isPast: group.every(function(item) { return item.isPast; }),
+        groupNames: names, groupCount: group.length
+      });
+    }
+  });
+  rows = groupedTimelineRows;
+
   rows.sort(function(a, b) { return a.startMin - b.startMin; });
 
   var nowPct = minutesToPct(nowMinutes);
@@ -3035,8 +3063,8 @@ function renderGlanceTimeline(opts) {
     bar.style.background = 'linear-gradient(90deg, ' + style.border + ', ' + style.color + ')';
     if (isActiveNow) bar.style.setProperty('--bar-glow-color', style.border);
     bar.style.justifyContent = 'center';
-    bar.title = row.label + ' — ' + row.time + (isActiveNow ? ' (active now)' : '');
-    bar.textContent = row.allDay ? 'ALL DAY' : row.time;
+    bar.title = (row.groupNames ? row.groupNames.join('\\n') : row.label) + ' — ' + row.time + (isActiveNow ? ' (active now)' : '');
+    bar.textContent = row.allDay ? 'ALL DAY' : (row.groupCount ? row.groupCount + ' Heads-Up Emails · ' + row.time : row.label + ' · ' + row.time);
 
     var barLat = parseFloat(row.lat), barLon = parseFloat(row.lon);
     if (!isNaN(barLat) && !isNaN(barLon)) {
@@ -4400,6 +4428,34 @@ function checkMidnightRollover() {
 }
 
 function loadData(rows, calls) {
+  // TEMP TEST MODE: hardcoded busy-day events for timeline layout testing.
+  // Remove this block to restore live JSON event/call data.
+  var TEST_TIMELINE_MODE = true;
+  if (TEST_TIMELINE_MODE) {
+    var mockHeaders = rows[0];
+    var mockDate = btvDate();
+    var mockDateText = (mockDate.getMonth()+1) + '/' + mockDate.getDate() + '/' + mockDate.getFullYear();
+    function mockEvent(name, type, email, radarStart, radarEnd, onsiteStart, onsiteEnd, contact, lat, lon) {
+      var r = new Array(mockHeaders.length).fill('');
+      function set(col, value) { var idx = mockHeaders.indexOf(col); if (idx >= 0) r[idx] = value; }
+      set('Event Name', name); set('DSS Type', type); set('Event Date', mockDateText);
+      set('Email Due By', email); set('Radar Start', radarStart); set('Radar End', radarEnd);
+      set('DSS Start', onsiteStart); set('DSS End', onsiteEnd); set('Contact Name', contact);
+      set('Contact Info', contact + ' · TEST DATA'); set('Slides Link', '');
+      set('Latitude', lat); set('Longitude', lon); set('Cancelled', 'FALSE');
+      return r;
+    }
+    rows = [mockHeaders,
+      mockEvent('Ski Area Heads-Up A', 'Heads-up email', '6:00 AM', '', '', '', '', 'Ski Area', 44.53, -72.78),
+      mockEvent('Ski Area Heads-Up B', 'Heads-up email', '6:00 AM', '', '', '', '', 'Ski Area', 44.48, -72.73),
+      mockEvent('Community Event Heads-Up', 'Heads-up email', '6:00 AM', '', '', '', '', 'Event Staff', 44.47, -73.20),
+      mockEvent('Northern VT Watch', 'Active radar watch', '', '11:00 AM', '7:00 PM', '', '', 'EM Group', 44.65, -72.05),
+      mockEvent('Champlain Valley Watch', 'Active radar watch', '', '12:00 PM', '8:00 PM', '', '', 'VT DEM', 44.25, -73.20),
+      mockEvent('Southern VT Watch', 'Active radar watch', '', '2:00 PM', '8:00 PM', '', '', 'Multiple', 43.45, -72.75),
+      mockEvent('UVM On-Site DSS', 'On-Site DSS', '', '', '', '9:00 AM', '12:00 PM', 'UVM EM', 44.47, -73.19)
+    ];
+    calls = [];
+  }
   dssRows  = rows;
   callRows = calls || [];
   if (!calls) calls = [];
