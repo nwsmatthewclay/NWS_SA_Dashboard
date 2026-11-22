@@ -1822,6 +1822,24 @@ body{background:#050816!important;background-image:radial-gradient(ellipse 60% 4
 .footer{background:rgba(4,8,20,.96)!important;border-top:1px solid rgba(139,92,246,.4)!important}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #00e5ff!important;outline-offset:2px!important;box-shadow:0 0 14px rgba(0,225,255,.35)!important}
 
+
+/* TEST PAGE — crisp, compact event rows (not spreadsheet styling) */
+.data-section-header { padding-bottom: 7px; }
+.data-table { border-collapse: separate !important; border-spacing: 0 6px !important; font-size: 13px !important; }
+.data-table thead th { border: 0 !important; box-shadow: none !important; background: transparent !important; color: #8fa9ca !important; font-size: 9px !important; letter-spacing: .14em !important; padding: 5px 10px 7px !important; }
+.data-table tbody tr { transition: transform .15s ease, filter .15s ease; }
+.data-table tbody tr:hover { transform: translateY(-1px); filter: brightness(1.12); }
+.data-table tbody td { background: rgba(15,23,42,.72) !important; border-top: 1px solid rgba(111,147,197,.14) !important; border-bottom: 1px solid rgba(111,147,197,.14) !important; padding: 9px 11px !important; }
+.data-table tbody td:first-child { border-left: 1px solid rgba(111,147,197,.14) !important; border-radius: 9px 0 0 9px; }
+.data-table tbody td:last-child { border-right: 1px solid rgba(111,147,197,.14) !important; border-radius: 0 9px 9px 0; }
+.data-table tr.row-radar td { background: linear-gradient(90deg,rgba(239,68,68,.10),rgba(15,23,42,.76)) !important; }
+.data-table tr.row-headsup td { background: linear-gradient(90deg,rgba(59,130,246,.09),rgba(15,23,42,.76)) !important; }
+.data-table tr.row-onsite td { background: linear-gradient(90deg,rgba(167,139,250,.10),rgba(15,23,42,.76)) !important; }
+.data-table tr.row-call td { background: linear-gradient(90deg,rgba(245,158,11,.09),rgba(15,23,42,.76)) !important; }
+.data-table tr.row-spot td { background: linear-gradient(90deg,rgba(45,212,191,.09),rgba(15,23,42,.76)) !important; }
+.data-table tbody td:first-child { color:#b9cce5; font-weight:700; white-space:nowrap; }
+.data-table .time-chip { font-variant-numeric: tabular-nums; white-space:nowrap; }
+.test-data-banner { margin: 0 0 8px; padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(251,191,36,.25); background: rgba(217,119,6,.09); color: #f6c878; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
@@ -1949,7 +1967,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
   <div id="dssWrapper">
     <div class="data-section">
-      <div class="data-section-header">
+      <div class="test-data-banner">🧪 TEST MODE · Sample DSS events and coordination calls · JSON disconnected</div>
+  <div class="data-section-header">
         <span class="section-icon">📋</span>
         <h2 id="dssTableTitle">Today's DSS Operations</h2>
         <span class="data-section-link" id="dssViewFullTableLink">View Full Table →</span>
@@ -4667,28 +4686,24 @@ function loadData(rows, calls) {
 }
 
 function refreshDashboard() {
-  fetch(DATA_BASE_URL + 'events.json')
-    .then(function(r) { return r.json(); })
-    .then(function(events) {
-      fetch(DATA_BASE_URL + 'calls.json')
-        .then(function(r) { return r.json(); })
-        .then(function(calls) {
-          try { loadData(events, calls); }
-          catch (e) {
-            console.error('loadData error:', e);
-            document.getElementById('dssStatusSub2').textContent = 'Render error';
-          }
-        })
-        .catch(function(err) {
-          console.error('calls.json fetch failed:', err);
-          document.getElementById('dssStatusSub2').textContent = 'Failed to load calls';
-        });
-    })
-    .catch(function(err) {
-      console.error('events.json fetch failed:', err);
-      document.getElementById('dssStatusSub2').textContent = 'Failed to load events';
-    });
-
+  // TEST PAGE ONLY: intentionally use fake events so the compact table can be evaluated on a quiet day.
+  var today = btvDate();
+  var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+  function dateCell(d) { return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear(); }
+  var headers = ['Event Name','DSS Type','Event Date','Contact Info','Slides Link','Radar Start','Radar End','Email Due By','DSS Start','DSS End','Contact Name','Latitude','Longitude','Cancelled'];
+  var fakeEvents = [headers,
+    ['Mount Mansfield Ski Area','On-Site DSS',dateCell(today),'Stowe Mountain Resort Operations','https://example.com/slides','','','','9:00 AM','2:00 PM','Forecast Office',44.53,-72.79,'FALSE'],
+    ['Champlain Valley Outdoor Event','Heads-up email',dateCell(today),'Event organizer — event coordination','https://example.com/slides','','','','','', 'BTV DSS Team',44.48,-73.20,'FALSE'],
+    ['Lake Champlain Wind Event','Active radar watch',dateCell(today),'Event lead — field contact','https://example.com/slides','12:30 PM','3:30 PM','','','','BTV Radar Desk',44.62,-73.28,'FALSE'],
+    ['Northern Vermont Winter Festival','On-Site DSS',dateCell(tomorrow),'Festival coordination','https://example.com/slides','','','','10:00 AM','1:00 PM','BTV DSS Team',44.42,-72.65,'FALSE']
+  ];
+  var fakeCalls = [
+    ['Date','Time','Call Name','Join / Details','','Cancelled'],
+    [dateCell(today),'8:30 AM','Morning Event Coordination','https://example.com/coordination','','FALSE'],
+    [dateCell(today),'1:00 PM','Lake Champlain Event Check-In','https://example.com/coordination','','FALSE']
+  ];
+  try { loadData(fakeEvents, fakeCalls); }
+  catch (e) { console.error('Test data render error:', e); document.getElementById('dssStatusSub2').textContent = 'Render error'; }
   updateLightningCard();
   updateOutageCard();
   refreshThreatGauges();
