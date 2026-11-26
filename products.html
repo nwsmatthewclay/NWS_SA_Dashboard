@@ -107,6 +107,19 @@
   .help-grid{grid-template-columns:1fr;}
 }
 
+  .multi-hazard-badge{
+    background:rgba(5,12,28,.94)!important;
+    color:#fff!important;
+    border:2px solid #fff!important;
+    border-radius:50%!important;
+    width:25px!important;height:25px!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    font-size:12px!important;font-weight:900!important;
+    box-shadow:0 0 9px rgba(0,225,255,.6),0 2px 5px rgba(0,0,0,.45)!important;
+    padding:0!important;
+  }
+  .multi-hazard-badge:before{display:none!important;}
+
 /* NEON GLASS THEME — products.html dashboard */
 :root{color-scheme:dark}
 body{background:#050816!important;background-image:radial-gradient(ellipse 60% 45% at 12% 0%,rgba(0,225,255,.18),transparent 70%),radial-gradient(ellipse 65% 55% at 90% 5%,rgba(150,60,255,.24),transparent 72%),linear-gradient(135deg,#050816 0%,#0b1125 52%,#070a18 100%)!important;color:#edf4ff!important}
@@ -4290,6 +4303,22 @@ function highlightZones(prods){
       const color = entry.best.color || '#cdd8e6';
       layer._baseWeight = 2;
       layer.setStyle({ color: color, weight: 2, fillOpacity: currentZoneFillOpacity(entry.best), fillColor: color, opacity: 0.9 });
+
+      // Show each forecast zone only once. When multiple distinct hazard
+      // types are active, add a centered count badge to make that overlap
+      // immediately visible without stacking colored polygons.
+      const distinctHazards = Array.from(new Set(entry.all.map(function(a){
+        return String(a.phen||'') + '.' + String(a.sig||'');
+      })));
+      if(distinctHazards.length > 1){
+        layer.bindTooltip(String(distinctHazards.length), {
+          permanent:true, direction:'center', className:'multi-hazard-badge',
+          opacity:1, interactive:false
+        });
+      }else{
+        layer.unbindTooltip();
+      }
+
       const list = entry.all
         .slice()
         .sort((a,b) => rankOf(b.sig) - rankOf(a.sig))
@@ -4305,6 +4334,7 @@ function highlightZones(prods){
         { maxWidth: 280 }
       );
     } else {
+      layer.unbindTooltip();
       layer._baseWeight = ZONE_BASE_LINE_WEIGHT;
       layer.setStyle({ color: ZONE_BASE_LINE_COLOR, weight: ZONE_BASE_LINE_WEIGHT, fillOpacity:ZONE_BASE_FILL_OPACITY, fillColor:'#3a4f6c', opacity: ZONE_BASE_LINE_OPACITY });
       layer.bindPopup('<b>'+p.NAME+'</b><br>Zone '+p.STATE_ZONE+'<hr style="border-color:#2a3f5c;margin:6px 0;">No active products');
