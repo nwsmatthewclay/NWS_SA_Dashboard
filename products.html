@@ -107,19 +107,8 @@
   .help-grid{grid-template-columns:1fr;}
 }
 
-  .multi-hazard-badge{
-    background:rgba(5,12,28,.94)!important;
-    color:#fff!important;
-    border:2px solid #fff!important;
-    border-radius:50%!important;
-    width:25px!important;height:25px!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    font-size:12px!important;font-weight:900!important;
-    box-shadow:0 0 9px rgba(0,225,255,.6),0 2px 5px rgba(0,0,0,.45)!important;
-    padding:0!important;
-  }
-  .multi-hazard-badge:before{display:none!important;}
-
+  /* Multi-hazard hatching is applied directly to the forecast-zone SVG paths. */
+  .multi-hazard-hatch{pointer-events:none;}
 /* NEON GLASS THEME — products.html dashboard */
 :root{color-scheme:dark}
 body{background:#050816!important;background-image:radial-gradient(ellipse 60% 45% at 12% 0%,rgba(0,225,255,.18),transparent 70%),radial-gradient(ellipse 65% 55% at 90% 5%,rgba(150,60,255,.24),transparent 72%),linear-gradient(135deg,#050816 0%,#0b1125 52%,#070a18 100%)!important;color:#edf4ff!important}
@@ -4292,6 +4281,26 @@ function bestProductPerZone(prods){
 // prods = the zone/county products to actually shade. Pass [] to reset every
 // zone back to its plain outline (used when the zone/county toggle is off) —
 // the outline itself always stays, only the hazard color fill is removed.
+function ensureMultiHazardPattern(){
+  if(!map || !map.getPanes().overlayPane) return;
+  const svg = map.getPanes().overlayPane.querySelector('svg');
+  if(!svg || svg.querySelector('#multiHazardHatchPattern')) return;
+  let defs = svg.querySelector('defs');
+  if(!defs){ defs=document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.insertBefore(defs,svg.firstChild); }
+  const pattern=document.createElementNS('http://www.w3.org/2000/svg','pattern');
+  pattern.setAttribute('id','multiHazardHatchPattern');
+  pattern.setAttribute('patternUnits','userSpaceOnUse');
+  pattern.setAttribute('width','10');
+  pattern.setAttribute('height','10');
+  pattern.setAttribute('patternTransform','rotate(45)');
+  const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1','0'); line.setAttribute('y1','0');
+  line.setAttribute('x2','0'); line.setAttribute('y2','10');
+  line.setAttribute('stroke','#ffffff'); line.setAttribute('stroke-width','2');
+  line.setAttribute('stroke-opacity','0.82');
+  pattern.appendChild(line); defs.appendChild(pattern);
+}
+
 function highlightZones(prods){
   if(!geoLayer) return;
   const zoneMap = bestProductPerZone(prods);
@@ -4304,19 +4313,16 @@ function highlightZones(prods){
       layer._baseWeight = 2;
       layer.setStyle({ color: color, weight: 2, fillOpacity: currentZoneFillOpacity(entry.best), fillColor: color, opacity: 0.9 });
 
-      // Show each forecast zone only once. When multiple distinct hazard
-      // types are active, add a centered count badge to make that overlap
-      // immediately visible without stacking colored polygons.
+      // Transparent hatch overlay signals overlapping distinct hazard types,
+      // while the base fill retains the highest-priority hazard's color.
       const distinctHazards = Array.from(new Set(entry.all.map(function(a){
         return String(a.phen||'') + '.' + String(a.sig||'');
       })));
-      if(distinctHazards.length > 1){
-        layer.bindTooltip(String(distinctHazards.length), {
-          permanent:true, direction:'center', className:'multi-hazard-badge',
-          opacity:1, interactive:false
-        });
-      }else{
-        layer.unbindTooltip();
+      ensureMultiHazardPattern();
+      if(layer._path){
+        layer._path.setAttribute('fill', distinctHazards.length > 1
+          ? 'url(#multiHazardHatchPattern)' : color);
+        layer._path.setAttribute('fill-opacity', String(currentZoneFillOpacity(entry.best)));
       }
 
       const list = entry.all
@@ -4334,7 +4340,10 @@ function highlightZones(prods){
         { maxWidth: 280 }
       );
     } else {
-      layer.unbindTooltip();
+      if(layer._path){
+        layer._path.setAttribute('fill', '#3a4f6c');
+        layer._path.setAttribute('fill-opacity', String(ZONE_BASE_FILL_OPACITY));
+      }
       layer._baseWeight = ZONE_BASE_LINE_WEIGHT;
       layer.setStyle({ color: ZONE_BASE_LINE_COLOR, weight: ZONE_BASE_LINE_WEIGHT, fillOpacity:ZONE_BASE_FILL_OPACITY, fillColor:'#3a4f6c', opacity: ZONE_BASE_LINE_OPACITY });
       layer.bindPopup('<b>'+p.NAME+'</b><br>Zone '+p.STATE_ZONE+'<hr style="border-color:#2a3f5c;margin:6px 0;">No active products');
