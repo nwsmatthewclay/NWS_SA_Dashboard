@@ -3026,12 +3026,11 @@ function renderGlanceTimeline(opts) {
 
     var startPct = minutesToPct(row.startMin);
     var endPct   = minutesToPct(row.endMin);
-    var displayLabel = row.allDay ? 'ALL DAY' : (row.groupCount ? row.groupCount + ' Heads-Up Emails · ' + row.time : row.label + ' · ' + row.time);
-    var estimatedLabelWidthPx = Math.max(92, displayLabel.length * 7.2 + 18);
-    var trackWidthPx = trackEl.clientWidth || 600;
-    var labelWidthPct = Math.min((estimatedLabelWidthPx / trackWidthPx) * 100, 98);
+    // Keep event names in the left-hand label; timeline bubbles show only time.
+    // Heads-up emails always represent the two-hour window leading up to the deadline.
+    var displayLabel = row.allDay ? 'ALL DAY' : (row.groupCount ? row.groupCount + ' Heads-Up Emails · ' + row.time : row.time);
     var durationPct = row.allDay ? 98 : Math.max(endPct - startPct, 3);
-    var widthPct = row.allDay ? 98 : Math.min(Math.max(durationPct, labelWidthPct), 98);
+    var widthPct = row.allDay ? 98 : Math.min(Math.max(durationPct, 3), 98);
 
     var bar = document.createElement('div');
     var isActiveNow = opts.isToday && !row.allDay && nowMinutes >= row.startMin && nowMinutes <= row.endMin;
@@ -3040,7 +3039,7 @@ function renderGlanceTimeline(opts) {
     if (isActiveNow) bar.style.setProperty('--bar-glow-color', style.border);
     bar.style.justifyContent = 'center';
     bar.title = (row.groupNames ? row.groupNames.join('\\n') : row.label) + ' — ' + row.time + (isActiveNow ? ' (active now)' : '');
-    bar.textContent = row.allDay ? 'ALL DAY' : (row.groupCount ? row.groupCount + ' Heads-Up Emails · ' + row.time : row.label + ' · ' + row.time);
+    bar.textContent = row.allDay ? 'ALL DAY' : row.time;
 
     var barLat = parseFloat(row.lat), barLon = parseFloat(row.lon);
     if (!isNaN(barLat) && !isNaN(barLon)) {
