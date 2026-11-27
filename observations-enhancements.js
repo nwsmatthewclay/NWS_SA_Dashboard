@@ -41,9 +41,12 @@ function normalizedStationCode(value){
 function resolveHistoryStation(selected){
  if(!selected)return {stationId:null,source:null};
  if(selected.source==="IEM_ASOS")return {stationId:selected.station_id,source:"IEM_ASOS"};
- const code=normalizedStationCode(selected.provider_station_id);
- const asos=stations.find(x=>x.source==="IEM_ASOS"&&normalizedStationCode(x.provider_station_id)===code);
- if(asos)return {stationId:asos.station_id,source:"IEM_ASOS"};
+ const network=String(selected.network||"").toLowerCase();
+ if(selected.source==="NWS"||network.includes("nws/asos")){
+  const code=normalizedStationCode(selected.provider_station_id);
+  const asos=stations.find(x=>x.source==="IEM_ASOS"&&normalizedStationCode(x.provider_station_id)===code);
+  if(asos)return {stationId:asos.station_id,source:"IEM_ASOS"};
+ }
  return {stationId:selected.station_id,source:selected.source||null};
 }
 function rangeFromControls(){
