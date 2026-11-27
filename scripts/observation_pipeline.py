@@ -166,7 +166,8 @@ def ingest_nws(geometries):
         try:
             feature = request_json(f"https://api.weather.gov/stations/{sid}")
             props = feature.get("properties", {})
-            lat, lon = props.get("latitude"), props.get("longitude")
+            coords = (feature.get("geometry") or {}).get("coordinates") or []
+            lon, lat = (coords[0], coords[1]) if len(coords) >= 2 else (props.get("longitude"), props.get("latitude"))
             st = station_record("NWS", sid, props.get("name"), lat, lon, "NWS/ASOS")
             if st is None:
                 continue
@@ -189,7 +190,7 @@ def ingest_nws(geometries):
                     count += 1
         except Exception as exc:
             SOURCE_STATUS.append({"source": "NWS API", "station": sid, "status": "error", "detail": str(exc)[:180]})
-    SOURCE_STATUS.append({"source": "NWS API", "status": "ok", "observation_values": count})
+    SOURCE_STATUS.append({"source": "NWS API", "status": "ok" if count else "no_values", "observation_values": count})
 
 
 def ingest_iem_asos(geometries):
@@ -290,6 +291,29 @@ def ingest_synoptic(geometries):
                           "normalized_values": count})
 
 
+def ingest_nysm_inventory(geometries):
+    """Register public NYSM station locations; intentionally fetch no observations."""
+    payload = request_json(
+        "https://nysgeohub.ny.gov/arcgis/rest/services/Weather/NYS_Mesonet/MapServer/0/query",
+        {"where": "1=1", "outFields": "station_na,lon,lat,code,Elev",
+         "returnGeometry": "false", "f": "json"},
+    )
+    count = 0
+    for feature in payload.get("features", []) or []:
+        attrs = feature.get("attributes", {})
+        st = station_record("NYS_Mesonet_metadata", attrs.get("code"),
+                            attrs.get("station_na"), attrs.get("lat"), attrs.get("lon"),
+                            "NYS Mesonet (metadata only)")
+        if st:
+            st["elevation_m"] = attrs.get("Elev")
+            st["observation_access"] = "pending_data_policy_approval"
+            count += 1
+    SOURCE_STATUS.append({"source": "NYS Mesonet station inventory", "status": "ok",
+                          "statewide_station_count": len(payload.get("features", []) or []),
+                          "btv_cwa_station_count": count,
+                          "observations_enabled": False})
+
+
 def write_outputs():
     day = NOW.strftime("%Y-%m-%d")
     outdir = BASE / day
@@ -314,7 +338,7 @@ def write_outputs():
 
 if __name__ == "__main__":
     CWA_GEOMETRIES = load_btv_geometry()
-    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic):
+    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_nysm_inventory):
         try:
             adapter(CWA_GEOMETRIES)
         except Exception as exc:
