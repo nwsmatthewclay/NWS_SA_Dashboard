@@ -147,7 +147,7 @@ export default {
         // Derive multi-hour totals only from deduplicated routine METAR I1
         // reports, retaining each hourly component for quality control.
         const requestedIceHours = statistic
-          ? Number((statistic.match(/^(\\d+)h_accumulation$/) || [])[1] || 0)
+          ? Number((statistic.match(/^(\d+)h_accumulation$/) || [])[1] || 0)
           : 0;
         if (requestedIceHours > 1) {
           const hourly = candidateRows.filter((row) => {
