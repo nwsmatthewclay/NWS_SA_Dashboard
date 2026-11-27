@@ -84,6 +84,10 @@ export default {
       const end = url.searchParams.get("end");
       const minValue = url.searchParams.has("min") ? Number(url.searchParams.get("min")) : null;
       const maxValue = url.searchParams.has("max") ? Number(url.searchParams.get("max")) : null;
+      if ((minValue !== null && !Number.isFinite(minValue)) ||
+          (maxValue !== null && !Number.isFinite(maxValue))) {
+        return json({ error: "min/max must be numeric" }, 400);
+      }
       const startMs = start ? Date.parse(start) : null;
       const endMs = end ? Date.parse(end) : null;
       if ((start && !Number.isFinite(startMs)) || (end && !Number.isFinite(endMs))) {
@@ -102,8 +106,13 @@ export default {
         return true;
       }).sort((a, b) => Date.parse(b.observation_time) - Date.parse(a.observation_time));
       const total = filtered.length;
-      const limit = Math.min(1000, Math.max(1, Number(url.searchParams.get("limit") || 250)));
-      const offset = Math.max(0, Number(url.searchParams.get("offset") || 0));
+      const requestedLimit = Number(url.searchParams.get("limit") || 250);
+      const requestedOffset = Number(url.searchParams.get("offset") || 0);
+      if (!Number.isInteger(requestedLimit) || !Number.isInteger(requestedOffset) || requestedOffset < 0) {
+        return json({ error: "limit and offset must be whole numbers; offset cannot be negative" }, 400);
+      }
+      const limit = Math.min(1000, Math.max(1, requestedLimit));
+      const offset = requestedOffset;
       return json({
         total,
         limit,
