@@ -291,8 +291,8 @@ def ingest_iem_asos(geometries):
             ("wind_mph", "wind_speed", "mph"), ("gust_mph", "wind_gust", "mph"),
             ("drct", "wind_direction", "degree"),
         ]
-        # ASOS hourly ice-accretion values are taken only from the routine
-        # METAR near :53Z, never SPECI or intervening special reports.
+        # Only actual routine METARs contribute ASOS precipitation and ice.
+        # SPECI and non-METAR high-frequency samples are excluded.
         if routine_metar:
             mapping.extend([
                 ("ice_accretion_1hr", "ice_accretion_1h", "inch"),
@@ -329,7 +329,8 @@ def ingest_iem_asos(geometries):
                 metar_fields.append(("ice_accretion_1h_in", "metar_ice_accretion_1h", "inch"))
             for field, variable, unit in metar_fields:
                 if parsed.get(field) is not None:
-                    add_observation(st, variable, parsed[field], unit, ts, parsed[field], unit,
+                    issued = metar_report_datetime(metar, parse_time(ts)) if field.startswith("ice_accretion_") else None
+                    add_observation(st, variable, parsed[field], unit, issued or ts, parsed[field], unit,
                                     raw_report=metar, metadata={"ice_sensor_status": parsed["ice_sensor_status"],
                                               "hourly_selection": "METAR_only" if field == "ice_accretion_1h_in" and routine_metar else None,
                                               "precipitation_period_hours": parsed.get("precip_3h_or_6h_period_hours") if field == "precip_3h_or_6h_in" else (1 if field == "precip_1h_in" else 24 if field == "precip_24h_in" else None)})
