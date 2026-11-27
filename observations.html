@@ -326,8 +326,15 @@ async function exportCsv(){
  try{
   const all=[];const pageSize=1000;let offset=0,expected=null;
   while(expected===null||offset<expected){const p=queryParams(pageSize,offset);const data=await getJson("/observations?"+p.toString());expected=data.total||0;all.push(...(data.results||[]));offset+=pageSize;if(!data.results?.length)break}
-  const cols=["report_type","observation_time","station_name","provider_station_id","station_id","element","variable","value","unit","radial_value","radial_unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit","metadata"];
-  const csv=[cols.join(","),...all.map(r=>cols.map(k=>{const v=r[k]??"";return '"'+String(v).replaceAll('"','""')+'"'}).join(","))].join("\r\n");
+  // Station coordinates are maintained in the station inventory, not repeated
+  // on every observation. Join them here so the CSV is immediately mappable in GIS.
+  const stationById=new Map(stations.map(s=>[String(s.station_id),s]));
+  const cols=["report_type","observation_time","station_name","provider_station_id","station_id","latitude","longitude","element","variable","value","unit","radial_value","radial_unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit","metadata"];
+  const csv=[cols.join(","),...all.map(r=>{
+   const s=stationById.get(String(r.station_id))||{};
+   const row={...r,latitude:r.latitude??s.latitude??"",longitude:r.longitude??s.longitude??""};
+   return cols.map(k=>{const v=row[k]??"";return '"'+String(v).replaceAll('"','""')+'"'}).join(",");
+  })].join("\r\n");
   const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="btv_observation_reports_"+new Date().toISOString().slice(0,16).replaceAll(":","")+"Z.csv";a.click();URL.revokeObjectURL(url);
   btn.textContent="Exported "+all.length.toLocaleString()+" rows";
  }catch(e){alert("CSV export failed: "+e.message)}finally{setTimeout(()=>{btn.disabled=false;btn.textContent="Export all matching CSV"},1800)}
