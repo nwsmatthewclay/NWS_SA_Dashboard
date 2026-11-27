@@ -117,7 +117,7 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
                     raw_unit=None, period_start=None, period_end=None,
                     qc="unknown", raw_report=None, metadata=None):
     observed = parse_time(timestamp)
-    if station is None or observed is None or value in (None, "", "M", "T"):
+    if station is None or observed is None or (value in (None, "", "M", "T") and raw_value != "T"):
         return
     if observed < START - timedelta(days=1) or observed > NOW + timedelta(minutes=5):
         return
