@@ -2,7 +2,7 @@
 
 import unittest
 
-from scripts.observation_pipeline import geometry_contains, in_btv, local_report_time, normalized_dimensions
+from scripts.observation_pipeline import geometry_contains, in_btv, local_report_time, normalized_dimensions, canonical_station_key
 
 
 class TestObservationPipelineGeometry(unittest.TestCase):
@@ -38,6 +38,14 @@ class TestObservationPipelineGeometry(unittest.TestCase):
         self.assertEqual(normalized_dimensions("precipitation_1h"), ("precipitation", "1h_accumulation"))
         self.assertEqual(normalized_dimensions("daily_new_snow"), ("snowfall", "daily_report"))
         self.assertEqual(normalized_dimensions("ice_accretion_1h"), ("ice_accretion", "1h_accumulation"))
+
+    def test_station_aliases_collapse_asos_and_coop_duplicates(self):
+        self.assertEqual(canonical_station_key("NWS", "KBTV"), "ASOS:BTV")
+        self.assertEqual(canonical_station_key("IEM_ASOS", "BTV"), "ASOS:BTV")
+        self.assertEqual(canonical_station_key("Synoptic", "KBTV"), "ASOS:BTV")
+        self.assertEqual(canonical_station_key("IEM_COOP", "CORV1"), "COOP:CORV1")
+        self.assertEqual(canonical_station_key("IEM_RR3_COOP", "CORV1"), "COOP:CORV1")
+        self.assertEqual(canonical_station_key("Synoptic", "COOPCORV1"), "COOP:CORV1")
 
     def test_multipolygon(self):
         geometry = {"type": "MultiPolygon", "coordinates": [
