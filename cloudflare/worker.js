@@ -110,117 +110,40 @@ export default {
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
       let candidateRows = rows;
 
-      // Hourly precipitation is intentionally a single routine ASOS METAR
-      // sample per physical station and UTC hour. Discard legacy/provider
-      // duplicates (including SPECI and NWS/Synoptic hourly values), then
-      // retain the candidate closest to the scheduled :53 issue time.
-      if (element === "precipitation") {
-        const isHourlyPrecip = (row) =>
-          row.element === "precipitation" && row.accumulation_hours === 1;
-        const nonHourly = candidateRows.filter((row) => !isHourlyPrecip(row));
+      // Ice accretion is intentionally sourced ONLY from the I1 group in
+      // routine METAR reports. Do not mix I3/I6 groups, IEM-derived periods,
+      // SPECI, or other networks into this hourly report series.
+      if (element === "ice_accretion") {
+        const expectedMinute = {
+          KBTV: 54, KPBG: 53, KSLK: 51, KMPV: 51,
+          KMSS: 53, KMVL: 54, KVSF: 53,
+        };
         const selected = new Map();
-        for (const row of candidateRows.filter(isHourlyPrecip)) {
-          if (row.source !== "IEM_ASOS" ||
-              row.variable !== "metar_precipitation_1h" ||
+        for (const row of candidateRows) {
+          if (row.element !== "ice_accretion" ||
+              row.accumulation_hours !== 1 ||
+              row.source !== "IEM_ASOS" ||
+              row.variable !== "metar_ice_accretion_1h" ||
               row.metadata?.hourly_selection !== "METAR_only") continue;
           const time = Date.parse(row.observation_time);
           if (!Number.isFinite(time)) continue;
           const hour = Math.floor(time / 3600000);
+          const station = String(row.provider_station_id || row.station_id || "").split(":").pop();
+          const targetMinute = expectedMinute[station];
+          const minute = new Date(time).getUTCMinutes();
+          const distance = targetMinute === undefined
+            ? 0
+            : Math.min(Math.abs(minute - targetMinute), 60 - Math.abs(minute - targetMinute));
           const key = row.station_id + "|" + hour;
           const prior = selected.get(key);
-          if (!prior || time > prior.time) selected.set(key, { row, time });
+          if (!prior || distance < prior.distance ||
+              (distance === prior.distance && time > prior.time)) {
+            selected.set(key, { row, time, distance });
+          }
         }
-        candidateRows = nonHourly.concat([...selected.values()].map((item) => item.row));
+        candidateRows = [...selected.values()].map(item => item.row);
       }
 
-      if (element === "ice_accretion") {
-        const isHourlyIce = (row) =>
-          row.element === "ice_accretion" && row.accumulation_hours === 1;
-        const nonHourly = candidateRows.filter((row) => !isHourlyIce(row));
-        const selected = new Map();
-        const retainedOtherSources = [];
-        for (const row of candidateRows.filter(isHourlyIce)) {
-          if (row.source !== "IEM_ASOS") {
-            retainedOtherSources.push(row);
-            continue;
-          }
-          // For ASOS, any routine METAR is eligible; SPECI is excluded.
-          if (row.metadata?.hourly_selection !== "METAR_only") continue;
-          const time = Date.parse(row.observation_time);
-          if (!Number.isFinite(time)) continue;
-          const key = row.station_id + "|" + Math.floor(time / 3600000);
-          const prior = selected.get(key);
-          if (!prior || time > prior.time) selected.set(key, { row, time });
-        }
-        candidateRows = nonHourly.concat(retainedOtherSources,
-          [...selected.values()].map((item) => item.row));
-      }
-      const requestedIceHours = element === "ice_accretion" && statistic
-        ? Number((statistic.match(/^(\d+)h_accumulation$/) || [])[1] || 0) : 0;
-      if (requestedIceHours > 0) {
-        // Sum every available 1-hour ice-accretion report inside the requested
-        // search window. Missing hours are not assumed to be zero; report count
-        // and component timestamps remain visible as coverage context.
-        const hourly = candidateRows.filter((row) =>
-          row.element === "ice_accretion" && row.accumulation_hours === 1 &&
-          typeof row.value === "number" &&
-          (!source || row.source === source) &&
-          (!stationId || row.station_id === stationId) &&
-          (!qcStatus || row.qc_status === qcStatus) &&
-          (startMs === null || Date.parse(row.observation_time) >= startMs) &&
-          (endMs === null || Date.parse(row.observation_time) <= endMs)
-        );
-        const groups = new Map();
-        for (const row of hourly) {
-          const key = row.station_id + "|" + row.source;
-          if (!groups.has(key)) groups.set(key, new Map());
-          const time = Date.parse(row.observation_time);
-          const old = groups.get(key).get(time);
-          const rank = row.variable === "ice_accretion_1h" ? 2 : 1;
-          const oldRank = old?.variable === "ice_accretion_1h" ? 2 : 1;
-          if (!old || rank > oldRank) groups.get(key).set(time, row);
-        }
-        const native = candidateRows.filter((row) => row.element === "ice_accretion" &&
-          row.accumulation_hours === requestedIceHours &&
-          (!source || row.source === source) &&
-          (!stationId || row.station_id === stationId) &&
-          (!qcStatus || row.qc_status === qcStatus) &&
-          (startMs === null || Date.parse(row.observation_time) >= startMs) &&
-          (endMs === null || Date.parse(row.observation_time) <= endMs));
-        const nativeSites = new Set(native.map((row) => row.station_id + "|" + row.source));
-        const derived = [];
-        for (const [key, reportMap] of groups) {
-          const components = [...reportMap.values()].sort((a,b) =>
-            Date.parse(a.observation_time) - Date.parse(b.observation_time));
-          if (!components.length || nativeSites.has(key)) continue;
-          const last = components[components.length - 1];
-          const first = components[0];
-          derived.push({
-            ...last,
-            variable: "ice_accretion_" + requestedIceHours + "h_reported_sum",
-            statistic: requestedIceHours + "h_accumulation",
-            accumulation_hours: requestedIceHours,
-            value: Number(components.reduce((sum,row)=>sum+Number(row.value),0).toFixed(3)),
-            observation_time: last.observation_time,
-            period_start: first.observation_time,
-            period_end: last.observation_time,
-            raw_value: null, raw_unit: null, qc_status: "derived_reported_sum",
-            metadata: {
-              derivation: "sum_of_available_1h_reports_within_search_window",
-              requested_window_hours: requestedIceHours,
-              source_report_count: components.length,
-              complete_hourly_coverage_not_asserted: true,
-              component_reports: components.map(row => ({
-                variable: row.variable, value: row.value, unit: row.unit,
-                observation_time: row.observation_time,
-                raw_value: row.raw_value, raw_unit: row.raw_unit,
-                qc_status: row.qc_status
-              }))
-            }
-          });
-        }
-        candidateRows = candidateRows.concat(derived);
-      }
       let filtered = candidateRows.filter((row) => {
         const time = Date.parse(row.observation_time);
         const value = typeof row.value === "number" ? row.value : null;
