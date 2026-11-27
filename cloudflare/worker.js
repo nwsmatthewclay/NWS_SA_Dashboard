@@ -98,6 +98,15 @@ export default {
       if ((start && !Number.isFinite(startMs)) || (end && !Number.isFinite(endMs))) {
         return json({ error: "start/end must be ISO-8601 timestamps" }, 400);
       }
+      const qcStatus = url.searchParams.get("qc_status");
+      const sort = url.searchParams.get("sort") || "time_desc";
+      const sorters = {
+        time_desc: (a, b) => Date.parse(b.observation_time) - Date.parse(a.observation_time),
+        time_asc: (a, b) => Date.parse(a.observation_time) - Date.parse(b.observation_time),
+        value_desc: (a, b) => (Number(b.value) - Number(a.value)) || (Date.parse(b.observation_time) - Date.parse(a.observation_time)),
+        value_asc: (a, b) => (Number(a.value) - Number(b.value)) || (Date.parse(b.observation_time) - Date.parse(a.observation_time)),
+      };
+      if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
       const filtered = rows.filter((row) => {
         const time = Date.parse(row.observation_time);
         const value = typeof row.value === "number" ? row.value : null;
@@ -107,12 +116,13 @@ export default {
         if (accumulationHours !== null && row.accumulation_hours !== accumulationHours) return false;
         if (source && row.source !== source) return false;
         if (stationId && row.station_id !== stationId) return false;
+        if (qcStatus && row.qc_status !== qcStatus) return false;
         if (startMs !== null && time < startMs) return false;
         if (endMs !== null && time > endMs) return false;
         if (minValue !== null && (value === null || value < minValue)) return false;
         if (maxValue !== null && (value === null || value > maxValue)) return false;
         return true;
-      }).sort((a, b) => Date.parse(b.observation_time) - Date.parse(a.observation_time));
+      }).sort(sorters[sort]);
       const total = filtered.length;
       const requestedLimit = Number(url.searchParams.get("limit") || 250);
       const requestedOffset = Number(url.searchParams.get("offset") || 0);
