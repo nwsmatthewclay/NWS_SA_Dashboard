@@ -17,6 +17,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       OBSERVATION_INGEST_TOKEN: ${{ secrets.OBSERVATION_INGEST_TOKEN }}
+      QUALITY_REVIEW_TOKEN: ${{ secrets.QUALITY_REVIEW_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -35,3 +36,7 @@ jobs:
       - name: Set Worker ingest secret
         if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
         run: printf '%s' "$OBSERVATION_INGEST_TOKEN" | wrangler secret put INGEST_SECRET --config cloudflare/wrangler.toml
+
+      - name: Set quality review secret
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.OBSERVATION_INGEST_TOKEN != '' && env.QUALITY_REVIEW_TOKEN != '' }}
+        run: printf '%s' "$QUALITY_REVIEW_TOKEN" | wrangler secret put QUALITY_REVIEW_TOKEN --config cloudflare/wrangler.toml
