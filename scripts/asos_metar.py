@@ -14,6 +14,12 @@ def knots_to_mph(value):
 def _hundredths(value):
     return None if "/" in value else int(value) / 100.0
 
+def is_metar_report(raw: str) -> bool:
+    """True only for routine METAR reports, excluding SPECI and other report types."""
+    tokens = (raw or "").strip().upper().split()
+    return bool(tokens and tokens[0] == "METAR")
+
+
 def is_speci_report(raw: str) -> bool:
     """Return True when an IEM ASOS report is explicitly identified as SPECI."""
     tokens = (raw or "").strip().upper().split()
