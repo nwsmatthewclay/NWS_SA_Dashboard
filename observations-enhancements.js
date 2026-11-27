@@ -11,10 +11,40 @@ function fmt(v){return Number(v).toLocaleString("en-US",{maximumFractionDigits:3
 function time(v){if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})+"Z";}
 function api(){return "https://btv-observation-api.jusmessinwityah1.workers.dev";}
 async function get(path){const r=await fetch(api()+path,{cache:"no-store"});if(!r.ok)throw new Error("API "+r.status+" for "+path);return r.json();}
+function stationGroup(station){
+ const type=String(station.report_type||"").toLowerCase(),source=String(station.source||"").toLowerCase(),network=String(station.network||"").toLowerCase();
+ if(type==="asos"||source==="iem_asos"||network.includes("asos/awos"))return "ASOS/AWOS";
+ if(type==="coop"||source==="iem_coop")return "COOP";
+ if(type==="cocorahs"||source==="cocorahs")return "CoCoRaHS";
+ return "Public";
+}
+function stationLabel(station){
+ const name=station.name||station.station_name||station.provider_station_id||station.station_id;
+ return name+" · "+station.provider_station_id+" ("+(station.source||"")+")";
+}
 function populateStations(){
  const s=$("tsStation");if(!s)return;const prior=s.value;s.innerHTML='<option value="">Select a station…</option>';
- stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(x=>s.add(new Option((x.name||x.provider_station_id)+" · "+x.provider_station_id,x.station_id)));
+ ["ASOS/AWOS","COOP","CoCoRaHS","Public"].forEach(group=>{
+  const members=stations.filter(x=>stationGroup(x)===group).sort((a,b)=>stationLabel(a).localeCompare(stationLabel(b)));
+  if(!members.length)return;
+  const optgroup=document.createElement("optgroup");optgroup.label=group;
+  members.forEach(x=>optgroup.appendChild(new Option(stationLabel(x),x.station_id)));
+  s.appendChild(optgroup);
+ });
  if(Array.from(s.options).some(o=>o.value===prior))s.value=prior;
+}
+function normalizedStationCode(value){
+ let code=String(value||"").split(":").pop().toUpperCase();
+ if(/^K[A-Z0-9]{3}$/.test(code))code=code.slice(1);
+ return code;
+}
+function resolveHistoryStation(selected){
+ if(!selected)return {stationId:null,source:null};
+ if(selected.source==="IEM_ASOS")return {stationId:selected.station_id,source:"IEM_ASOS"};
+ const code=normalizedStationCode(selected.provider_station_id);
+ const asos=stations.find(x=>x.source==="IEM_ASOS"&&normalizedStationCode(x.provider_station_id)===code);
+ if(asos)return {stationId:asos.station_id,source:"IEM_ASOS"};
+ return {stationId:selected.station_id,source:selected.source||null};
 }
 function rangeFromControls(){
  if($("tsPeriod").value==="custom"){
@@ -47,12 +77,12 @@ function renderCharts(series,station){
    sets.push(mk("Flat ice","value",colors[el]));
    if(rows.some(r=>Number.isFinite(Number(r.radial_value))))sets.push(mk("Radial ice (40%)","radial_value","#4b91a2"));
   }else sets.push(mk(labels[el]||el,"value",colors[el]||"#476b52"));
-  cards.push({id:"observationTsChart"+cards.length,title:labels[el]||el,sets,rows,unit:units[el]||rows[0].unit||""});
+  cards.push({id:"observationTsChart"+cards.length,title:labels[el]||el,sets,rows,labels:chartLabels,unit:units[el]||rows[0].unit||""});
  });
  if(!cards.length){root.innerHTML='<div class="summary-empty" style="grid-column:1/-1">No observations were found for the selected station, variables and timeframe. Try a longer period or different variables.</div>';return;}
  root.innerHTML=cards.map(c=>'<div class="chart-card"><h3>'+safe(c.title)+'</h3><div class="chart-canvas"><canvas id="'+c.id+'"></canvas></div><div class="chart-caption">'+c.rows.length+' reports · '+safe(c.unit)+' · original report times</div></div>').join("");
  cards.forEach(c=>{
-  const chart=new Chart($(c.id),{type:"line",data:{labels:c.labels,datasets:c.sets},options:{responsive:true,maintainAspectRatio:false,parsing:{xAxisKey:"x",yAxisKey:"y"},interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:c.sets.length>1,labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>{const r=c.rows[ctx.dataIndex];const period=r&&r.accumulation_hours?" · "+r.accumulation_hours+"h report":"";return ctx.dataset.label+": "+fmt(ctx.parsed.y)+" "+c.unit+period;}}}},scales:{x:{type:"category",ticks:{maxTicksLimit:7,maxRotation:0,font:{size:9}},grid:{display:false}},y:{title:{display:true,text:c.unit,font:{size:10}},ticks:{font:{size:9}},grid:{color:"#ece9e1"}}}}});
+  const chart=new Chart($(c.id),{type:"line",data:{labels:c.labels,datasets:c.sets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:c.sets.length>1,labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>{const r=c.rows[ctx.dataIndex];const period=r&&r.accumulation_hours?" · "+r.accumulation_hours+"h report":"";return ctx.dataset.label+": "+fmt(ctx.parsed.y)+" "+c.unit+period;}}}},scales:{x:{type:"category",ticks:{maxTicksLimit:7,maxRotation:0,font:{size:9}},grid:{display:false}},y:{title:{display:true,text:c.unit,font:{size:10}},ticks:{font:{size:9}},grid:{color:"#ece9e1"}}}}});
   charts.push(chart);
  });
  $("tsStatus").textContent=cards.length+" variables plotted · "+(station.name||station.provider_station_id);
@@ -63,14 +93,14 @@ async function loadTimeSeries(){
  if(!vars.length){$("tsStatus").textContent="Select at least one variable";return;}
  const btn=$("tsLoadBtn");btn.disabled=true;btn.textContent="Loading…";$("tsStatus").textContent="Retrieving station history…";
  try{
-  const range=rangeFromControls(),hours=Number($("tsPeriod").value),extra={};
+  const range=rangeFromControls(),hours=Number($("tsPeriod").value),extra={},selected=stations.find(x=>x.station_id===id),history=resolveHistoryStation(selected);
   if($("tsPeriod").value!=="custom"&&["1","3","6","12","24","48","72","120"].includes(String(hours))){extra.period=hours;}
   const result=await Promise.all(vars.map(async el=>{
    const opts={};
    if(el==="precipitation"&&extra.period){opts.statistic=hours+"h_accumulation";opts.accumulation_hours=hours;}
-   return [el,await fetchRows(el,range,id,opts)];
+   return [el,await fetchRows(el,range,history.stationId,opts)];
   }));
-  const station=stations.find(x=>x.station_id===id)||{name:id};renderCharts(Object.fromEntries(result),station);
+  const station=selected||{name:id};renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
  }catch(e){$("tsStatus").textContent="Time series failed: "+e.message;$("tsCharts").innerHTML='<div class="summary-empty" style="grid-column:1/-1">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Load time series";}
 }
