@@ -107,6 +107,7 @@ async function refreshLatestData(){
   sourceSelect.value=[...sourceSelect.options].some(o=>o.value===selectedSource)?selectedSource:"";
   stationSelect.value=[...stationSelect.options].some(o=>o.value===selectedStation)?selectedStation:"";
   setHealth(true,"API connected · latest snapshot loaded");
+  if(window.initObservationEnhancements)window.initObservationEnhancements();
   await retrieve();
   $("updatedText").textContent="Snapshot generated "+fmtTime(m.generated_at)+" · refreshed just now";
  }catch(e){
@@ -126,6 +127,7 @@ async function initialize(){
   sources.forEach(v=>{const o=new Option(v,v);$("source").add(o)});
   stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>{const o=new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id);$("station").add(o)});
   setHealth(true,"API connected · snapshot available");
+  if(window.initObservationEnhancements)window.initObservationEnhancements();
   await retrieve();
  }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="10" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
 }
@@ -253,7 +255,7 @@ function drawObservationMap(points){
  const bounds=L.latLngBounds(points.map(p=>[p.latitude,p.longitude]));if(bounds.isValid())observationMap.fitBounds(bounds.pad(.18),{maxZoom:8});
  for(const p of points){
   const color=mapColor(p.mapValue,min,max),marker=L.circleMarker([p.latitude,p.longitude],{radius:7,weight:1.5,color:"#fff",fillColor:color,fillOpacity:.98});
-  marker.bindPopup('<div class="map-popup"><strong>'+esc(p.station_name||p.provider_station_id)+'</strong><br>'+esc(title)+': <b>'+fmt(p.mapValue)+' '+esc(unit)+'</b><br>'+esc(fmtTime(p.observation_time))+'<br>'+esc(p.source||"")+' · '+esc(p.qc_status||"")+'</div>');
+  marker.bindPopup('<div class="map-popup"><strong>'+esc(p.station_name||p.provider_station_id)+'</strong><br>'+esc(title)+': <b>'+fmt(p.mapValue)+' '+esc(unit)+'</b><br>'+esc(fmtTime(p.observation_time))+'<br>'+esc(p.source||"")+' · '+esc(p.qc_status||"")+'<br><button type="button" class="btn" data-open-timeseries="'+esc(p.station_id)+'">View station time series</button></div>');
   if($("mapMarkers").checked)marker.addTo(stationLayer);
   if($("mapLabels").checked)L.marker([p.latitude,p.longitude],{interactive:false,icon:L.divIcon({className:"",html:'<span style="display:block;transform:translate(-50%,-23px);white-space:nowrap;padding:2px 4px;border-radius:4px;background:#fffdf0dd;border:1px solid #d6d1c2;color:#28382d;font:700 10px Arial">'+fmt(p.mapValue)+'</span>',iconSize:[1,1],iconAnchor:[0,0]})}).addTo(stationLayer);
  }
