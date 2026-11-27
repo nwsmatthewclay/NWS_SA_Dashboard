@@ -532,18 +532,19 @@ def ingest_cocorahs_daily(geometries):
 
 def ingest_rr3_coop(geometries):
     """Ingest supplemental BTV COOP observer reports from IEM's RR3BTV AFOS archive."""
-    inventory = request_json("https://mesonet.agron.iastate.edu/geojson/network/VT_COOP.geojson")
     station_lookup = {}
-    for feature in inventory.get("features", []) or []:
-        props = feature.get("properties", {})
-        coords = (feature.get("geometry") or {}).get("coordinates") or []
-        sid = str(props.get("sid") or props.get("station") or props.get("nwsli") or "").upper()
-        if not sid or len(coords) < 2:
-            continue
-        st = station_record("IEM_RR3_COOP", sid, props.get("name") or sid,
-                            coords[1], coords[0], "VT_COOP supplemental RR3")
-        if st:
-            station_lookup[sid] = st
+    for state in ("VT", "NY"):
+        inventory = request_json(f"https://mesonet.agron.iastate.edu/geojson/network/{state}_COOP.geojson")
+        for feature in inventory.get("features", []) or []:
+            props = feature.get("properties", {})
+            coords = (feature.get("geometry") or {}).get("coordinates") or []
+            sid = str(props.get("sid") or props.get("station") or props.get("nwsli") or "").upper()
+            if not sid or len(coords) < 2:
+                continue
+            st = station_record("IEM_RR3_COOP", sid, props.get("name") or sid,
+                                coords[1], coords[0], f"{state}_COOP supplemental RR3")
+            if st:
+                station_lookup[sid] = st
 
     response = SESSION.get("https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py", params={
         "pil": "RR3BTV", "fmt": "text", "limit": 500,
