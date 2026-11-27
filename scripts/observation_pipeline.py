@@ -18,9 +18,9 @@ from pathlib import Path
 
 import requests
 try:
-    from .asos_metar import normalize_iem_wind, parse_metar
+    from .asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar
 except ImportError:  # direct execution from the scripts directory
-    from asos_metar import normalize_iem_wind, parse_metar
+    from asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar
 
 BASE = Path(os.getenv("OBSERVATION_OUTPUT_DIR", "observation_data"))
 DAYS = int(os.getenv("OBSERVATION_LOOKBACK_DAYS", "5"))
@@ -277,19 +277,26 @@ def ingest_iem_asos(geometries):
     count = 0
     for original in rows:
         row = normalize_iem_wind(original)
+        metar = row.get("metar", "")
+        # SPECI observations are additional reports, not separate hourly samples.
+        if is_speci_report(metar):
+            continue
+        ts = row.get("valid")
+        routine_hourly = is_routine_hourly_metar(metar, parse_time(ts))
         sid = row.get("station")
         st = station_record("IEM_ASOS", sid, sid, row.get("lat"), row.get("lon"), "ASOS/AWOS")
         if st is None:
             continue
-        ts = row.get("valid")
         mapping = [
             ("tmpf", "temperature", "degF"), ("dwpf", "dewpoint", "degF"),
             ("wind_mph", "wind_speed", "mph"), ("gust_mph", "wind_gust", "mph"),
-            ("drct", "wind_direction", "degree"), ("p01i", "precipitation_1h", "inch"),
+            ("drct", "wind_direction", "degree"),
             ("ice_accretion_1hr", "ice_accretion_1h", "inch"),
             ("ice_accretion_3hr", "ice_accretion_3h", "inch"),
             ("ice_accretion_6hr", "ice_accretion_6h", "inch"),
         ]
+        if routine_hourly:
+            mapping.append(("p01i", "precipitation_1h", "inch"))
         for field, variable, unit in mapping:
             value = row.get(field)
             if value not in (None, "", "M", "T"):
@@ -301,11 +308,9 @@ def ingest_iem_asos(geometries):
                     count += 1
                 except (TypeError, ValueError):
                     pass
-        metar = row.get("metar", "")
         if metar:
             parsed = parse_metar(metar, parse_time(ts))
             for field, variable, unit in (
-                ("precip_1h_in", "metar_precipitation_1h", "inch"),
                 ("precip_3h_or_6h_in", "metar_precipitation_3h_or_6h", "inch"),
                 ("precip_24h_in", "metar_precipitation_24h", "inch"),
                 ("ice_accretion_1h_in", "metar_ice_accretion_1h", "inch"),
