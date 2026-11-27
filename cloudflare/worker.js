@@ -117,13 +117,14 @@ export default {
         const expectedMinute = {
           KBTV: 54, KPBG: 53, KSLK: 51, KMPV: 51,
           KMSS: 53, KMVL: 54, KVSF: 53,
+          BTV: 54, PBG: 53, SLK: 51, MPV: 51, MSS: 53, MVL: 54, VSF: 53,
         };
         const selected = new Map();
         for (const row of candidateRows) {
           if (row.element !== "ice_accretion" ||
               row.accumulation_hours !== 1 ||
               row.source !== "IEM_ASOS" ||
-              row.variable !== "metar_ice_accretion_1h" ||
+              !["metar_ice_accretion_1h", "ice_accretion_1h"].includes(row.variable) ||
               row.metadata?.hourly_selection !== "METAR_only") continue;
           const time = Date.parse(row.observation_time);
           if (!Number.isFinite(time)) continue;
