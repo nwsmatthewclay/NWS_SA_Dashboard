@@ -33,6 +33,14 @@ function populateStations(){
   s.appendChild(optgroup);
  });
  if(Array.from(s.options).some(o=>o.value===prior))s.value=prior;
+ const qualitySelect=$("qualityStation");
+ if(qualitySelect){
+  const qualityPrior=qualitySelect.value;
+  qualitySelect.innerHTML='<option value="">Choose a station…</option>';
+  stations.slice().sort((a,b)=>stationLabel(a).localeCompare(stationLabel(b))).forEach(x=>qualitySelect.add(new Option(stationLabel(x),x.station_id)));
+  if(Array.from(qualitySelect.options).some(o=>o.value===qualityPrior))qualitySelect.value=qualityPrior;
+  updateSiteQualityControl();
+ }
 }
 function normalizedStationCode(value){
  let code=String(value||"").split(":").pop().toUpperCase();
@@ -125,8 +133,50 @@ async function refreshQuality(){
 function renderQuality(){
  const active=qualityState.active||[],history=(qualityState.history||[]).slice().reverse().slice(0,50);
  $("qualityStatus").textContent=active.length+" active quarantine"+(active.length===1?"":"s");
+ updateSiteQualityControl();
  $("qualityActiveList").innerHTML=active.length?'<div class="summary-grid">'+active.map(entry=>'<div class="summary-card"><div class="summary-label">'+safe(labels[entry.element]||entry.element)+' · '+safe(entry.provider_station_id||entry.station_id)+'</div><div class="summary-value">'+safe(entry.station_name||entry.provider_station_id||entry.station_id)+'</div><div class="summary-meta">Flagged '+safe(time(entry.flagged_at))+' UTC by '+safe(entry.flagged_by)+'</div><div class="summary-meta">'+safe(entry.reason)+'</div><div style="margin-top:12px"><button class="btn" type="button" data-restore-quality="'+safe(entry.key)+'">Confirm data is good / restore</button></div></div>').join("")+'</div>':'<div class="summary-empty">No active site quarantines. All reporting sites are currently included.</div>';
  $("qualityHistoryList").innerHTML=history.length?'<div class="table-wrap"><table><thead><tr><th>Action</th><th>Site</th><th>Element</th><th>Reason</th><th>Person</th><th>Time (UTC)</th></tr></thead><tbody>'+history.map(item=>'<tr><td>'+safe(item.action)+'</td><td>'+safe(item.station_name||item.provider_station_id||item.station_id)+'</td><td>'+safe(labels[item.element]||item.element)+'</td><td>'+safe(item.reason)+'</td><td>'+safe(item.action==="restored"?item.restored_by:item.flagged_by)+'</td><td>'+safe(time(item.action==="restored"?item.restored_at:item.flagged_at))+'</td></tr>').join("")+'</tbody></table></div>':'<div class="summary-empty">No quality actions recorded yet.</div>';
+}
+function updateSiteQualityControl(){
+ const select=$("qualityStation"),element=$("qualityElement"),button=$("qualityToggleBtn");
+ if(!select||!element||!button)return;
+ const station=stations.find(x=>x.station_id===select.value),el=element.value;
+ if(!station){button.disabled=true;button.textContent="Choose a site and element";$("qualitySelectionStatus").textContent="Choose a station and weather element.";return;}
+ const code=normalizedStationCode(station.provider_station_id);
+ const active=(qualityState.active||[]).find(entry=>entry.element===el&&
+  (entry.provider_station_id?normalizedStationCode(entry.provider_station_id)===code:entry.station_id===station.station_id));
+ button.disabled=false;
+ button.textContent=active?"Turn ON · Restore data":"Turn OFF · Quarantine data";
+ button.classList.toggle("primary",!active);
+ $("qualitySelectionStatus").textContent=active
+  ? "Currently OFF — "+(labels[el]||el)+" from "+(station.name||station.provider_station_id)+" is excluded. Reason: "+active.reason
+  : "Currently ON — "+(labels[el]||el)+" from "+(station.name||station.provider_station_id)+" is included.";
+}
+async function toggleSelectedSiteQuality(){
+ const station=stations.find(x=>x.station_id===$("qualityStation").value);
+ if(!station)return;
+ const element=$("qualityElement").value,actor=$("qualityActor").value.trim(),token=$("qualityReviewerToken").value;
+ if(!actor){alert("Enter your name so the quality action can be audited.");return;}
+ const code=normalizedStationCode(station.provider_station_id);
+ const active=(qualityState.active||[]).find(entry=>entry.element===element&&
+  (entry.provider_station_id?normalizedStationCode(entry.provider_station_id)===code:entry.station_id===station.station_id));
+ const button=$("qualityToggleBtn");button.disabled=true;
+ try{
+  if(active){
+   if(!token)throw new Error("A reviewer authorization token is required to turn this data back ON.");
+   await postQuality("/quality/restore",{key:active.key,actor},token);
+   $("qualityReviewerToken").value="";
+  }else{
+   const reason=$("qualityReason").value.trim();
+   if(!reason)throw new Error("Enter a reason before turning this site and element OFF.");
+   await postQuality("/quality/flag",{station_id:station.station_id,provider_station_id:station.provider_station_id,station_name:station.name||station.provider_station_id,element,actor,reason});
+   $("qualityReason").value="";
+  }
+  await refreshQuality();
+  if(typeof retrieve==="function")await retrieve();
+  if($("mapPanel").style.display!=="none"){mapDirty=true;updateObservationMap();}
+ }catch(error){alert("Could not change site status: "+error.message);}
+ finally{updateSiteQualityControl();}
 }
 async function flagObservation(button){
  const actor=prompt("Your name (recorded in the quality audit):");
@@ -232,6 +282,9 @@ function init(){
  $("summaryTab").addEventListener("click",()=>showView("summary"));
  $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
  $("qualityRefreshBtn").addEventListener("click",()=>refreshQuality().catch(e=>alert("Quality refresh failed: "+e.message)));
+ $("qualityStation").addEventListener("change",updateSiteQualityControl);
+ $("qualityElement").addEventListener("change",updateSiteQualityControl);
+ $("qualityToggleBtn").addEventListener("click",toggleSelectedSiteQuality);
  $("tsPeriod").addEventListener("change",()=>$("tsCustom").style.display=$("tsPeriod").value==="custom"?"flex":"none");
  $("tsLoadBtn").addEventListener("click",loadTimeSeries);
  $("generateSummaryBtn").addEventListener("click",generateSummary);
