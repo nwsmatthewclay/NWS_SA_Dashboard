@@ -53,7 +53,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
   <label><input type="checkbox" id="mapMarkers" checked> Station markers</label>
   <label><input type="checkbox" id="mapFill" checked> Filled contours</label>
   <label><input type="checkbox" id="mapLines" checked> Contour lines</label>
-  <label><input type="checkbox" id="mapLabels" checked> Station values</label>
+  <label><input type="checkbox" id="mapLabels"> Station values</label>
   <span class="map-status" id="mapStatus"></span>
  </div>
  <div id="observationMap"></div>
@@ -246,23 +246,39 @@ function drawObservationMap(points){
   if($("mapMarkers").checked)marker.addTo(stationLayer);
   if($("mapLabels").checked)L.marker([p.latitude,p.longitude],{interactive:false,icon:L.divIcon({className:"",html:'<span style="display:block;transform:translate(-50%,-23px);white-space:nowrap;padding:2px 4px;border-radius:4px;background:#fffdf0dd;border:1px solid #d6d1c2;color:#28382d;font:700 10px Arial">'+fmt(p.mapValue)+'</span>',iconSize:[1,1],iconAnchor:[0,0]})}).addTo(stationLayer);
  }
- if(points.length>=4&&!["wind_direction","present_weather"].includes(el)&&($("mapFill").checked||$("mapLines").checked)&&window.d3?.contours){
+ if(points.length>=5&&!["wind_direction","present_weather"].includes(el)&&($("mapFill").checked||$("mapLines").checked)&&window.d3?.contours){
+  // Local IDW interpolation limited to the station-network convex hull.
+  const coords=points.map(p=>[p.longitude,p.latitude]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lower=[],upper=[];
+  for(const p of coords){while(lower.length>=2&&cross(lower[lower.length-2],lower[lower.length-1],p)<=0)lower.pop();lower.push(p)}
+  for(let i=coords.length-1;i>=0;i--){const p=coords[i];while(upper.length>=2&&cross(upper[upper.length-2],upper[upper.length-1],p)<=0)upper.pop();upper.push(p)}
+  const hull=lower.slice(0,-1).concat(upper.slice(0,-1));
+  const inHull=(x,y)=>{let inside=false;for(let i=0,j=hull.length-1;i<hull.length;j=i++){const a=hull[i],b=hull[j];if(((a[1]>y)!==(b[1]>y))&&(x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]))inside=!inside}return inside};
+  const sortedVals=vals.slice().sort((a,b)=>a-b),quantile=q=>sortedVals[Math.min(sortedVals.length-1,Math.max(0,Math.floor((sortedVals.length-1)*q)))];
+  const contourMin=quantile(.05),contourMax=quantile(.95);
   const latMin=Math.min(...points.map(p=>p.latitude)),latMax=Math.max(...points.map(p=>p.latitude)),lonMin=Math.min(...points.map(p=>p.longitude)),lonMax=Math.max(...points.map(p=>p.longitude));
-  const nx=180,ny=150,grid=new Array(nx*ny);
+  const nx=220,ny=180,grid=new Array(nx*ny).fill(-1e9),maxDistanceKm=38;
   for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
-   const lon=lonMin+x/(nx-1)*(lonMax-lonMin),lat=latMax-y/(ny-1)*(latMax-latMin);let n=0,d=0,exact=false;
-   for(const p of points){const dx=(lon-p.longitude)*Math.cos(lat*Math.PI/180),dy=lat-p.latitude,d2=dx*dx+dy*dy;if(d2<1e-10){n=p.mapValue;d=1;exact=true;break}const wt=1/Math.pow(d2,1.5);n+=wt*p.mapValue;d+=wt}
-   grid[y*nx+x]=exact?n:n/d;
+   const lon=lonMin+x/(nx-1)*(lonMax-lonMin),lat=latMax-y/(ny-1)*(latMax-latMin);
+   if(!inHull(lon,lat))continue;
+   const nearby=points.map(p=>{const dx=(lon-p.longitude)*111.32*Math.cos(lat*Math.PI/180),dy=(lat-p.latitude)*111.32;return {p,km:Math.hypot(dx,dy)}}).sort((a,b)=>a.km-b.km).slice(0,8);
+   if(!nearby.length||nearby[0].km>maxDistanceKm)continue;
+   let numerator=0,denominator=0,exact=null;
+   for(const item of nearby){if(item.km<.15){exact=item.p.mapValue;break}const weight=1/Math.pow(Math.max(item.km,.5),2);numerator+=weight*item.p.mapValue;denominator+=weight}
+   const value=exact===null?numerator/denominator:exact;
+   grid[y*nx+x]=Math.max(contourMin,Math.min(contourMax,value));
   }
-  const thresholds=Array.from({length:8},(_,i)=>min+(max-min)*(i+1)/9),shapes=d3.contours().size([nx,ny]).thresholds(thresholds)(grid),canvas=document.createElement("canvas");
+  const thresholds=Array.from({length:9},(_,i)=>contourMin+(contourMax-contourMin)*(i+1)/10);
+  const shapes=d3.contours().size([nx,ny]).thresholds(thresholds)(grid),canvas=document.createElement("canvas");
   canvas.width=nx;canvas.height=ny;const ctx=canvas.getContext("2d");
   for(const shape of shapes){ctx.beginPath();for(const polygon of shape.coordinates)for(const ring of polygon){ring.forEach(([x,y],i)=>{if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y)});ctx.closePath()}
-   ctx.fillStyle=mapColor(shape.value,min,max);ctx.globalAlpha=.28;if($("mapFill").checked)ctx.fill("evenodd");ctx.globalAlpha=1;
-   if($("mapLines").checked){ctx.strokeStyle=mapColor(shape.value,min,max);ctx.lineWidth=.8;ctx.stroke()}
+   ctx.fillStyle=mapColor(shape.value,contourMin,contourMax);ctx.globalAlpha=.22;if($("mapFill").checked)ctx.fill("evenodd");ctx.globalAlpha=1;
+   if($("mapLines").checked){ctx.strokeStyle=mapColor(shape.value,contourMin,contourMax);ctx.lineWidth=.65;ctx.stroke()}
   }
-  mapOverlay=L.imageOverlay(canvas.toDataURL(),[[latMin,lonMin],[latMax,lonMax]],{opacity:.9,interactive:false}).addTo(observationMap);
+  mapOverlay=L.imageOverlay(canvas.toDataURL(),[[latMin,lonMin],[latMax,lonMax]],{opacity:.86,interactive:false}).addTo(observationMap);
  }
- $("mapStatus").textContent=["wind_direction","present_weather"].includes(el)?"Station observations only · categorical/directional data are not interpolated":points.length<4?"Station plot only · at least four stations needed for contours":"IDW contours · "+points.length+" stations";
+ $("mapStatus").textContent=["wind_direction","present_weather"].includes(el)?"Station observations only · categorical/directional data are not interpolated":points.length<4?"Station plot only · at least four stations needed for contours":"Local IDW contours · 8 nearest stations · 38 km influence · robust scale";
 }
 async function updateObservationMap(){
  if(!$("element").value){$("mapStatus").textContent="Choose a weather element first.";return}
