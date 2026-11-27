@@ -73,12 +73,24 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
  <div id="summaryResults"><div class="summary-empty">Choose an analysis period and generate a summary. Unavailable categories will be omitted rather than reported as zero.</div></div>
 <section class="view-content" id="siteQualityPanel" style="display:none">
  <div class="table-head"><div><h2 style="font:800 16px Manrope;margin:0">Site Data Quality</h2><div class="summary-intro">Quarantines persist across refreshes and apply only to the selected station and weather element. Other observations from that station remain available.</div></div><span class="count" id="qualityStatus">Loading quality records…</span></div>
- <div class="view-toolbar" style="align-items:end">
-  <div class="field"><label for="qualityReviewerName">Reviewer name</label><input id="qualityReviewerName" type="text" maxlength="80" placeholder="Name of person confirming data quality"></div>
-  <div class="field"><label for="qualityReviewerToken">Reviewer authorization token</label><input id="qualityReviewerToken" type="password" autocomplete="off" placeholder="Configured by dashboard administrator"></div>
-  <button class="btn" id="qualityRefreshBtn" type="button">Refresh quality status</button>
+ <div class="summary-card" style="margin-bottom:16px">
+  <div class="summary-label">MANAGE A SITE</div>
+  <div class="view-toolbar" style="align-items:end">
+   <div class="field"><label for="qualityStation">Station</label><select id="qualityStation"><option value="">Choose a station…</option></select></div>
+   <div class="field"><label for="qualityElement">Weather element</label><select id="qualityElement">
+    <option value="precipitation">Precipitation</option><option value="temperature">Temperature</option><option value="dewpoint">Dewpoint</option><option value="wind_speed">Wind speed</option><option value="wind_gust">Wind gust</option><option value="wind_direction">Wind direction</option><option value="wind_chill">Wind chill</option><option value="heat_index">Heat index</option><option value="snowfall">Snowfall</option><option value="snow_depth">Snow depth</option><option value="snow_water_equivalent">Snow water equivalent</option><option value="ice_accretion">Hourly ice accretion</option><option value="relative_humidity">Relative humidity</option><option value="present_weather">Present weather</option>
+   </select></div>
+   <div class="field"><label for="qualityActor">Your name</label><input id="qualityActor" type="text" maxlength="80" placeholder="Name recorded in audit history"></div>
+  </div>
+  <div class="view-toolbar" style="align-items:end">
+   <div class="field" style="flex:2"><label for="qualityReason">Reason (required when turning OFF)</label><input id="qualityReason" type="text" maxlength="500" placeholder="e.g. Precipitation gauge appears stuck"></div>
+   <div class="field" style="flex:2"><label for="qualityReviewerToken">Reviewer token (required to turn ON)</label><input id="qualityReviewerToken" type="password" autocomplete="off" placeholder="Authorized reviewer token"></div>
+   <button class="btn primary" id="qualityToggleBtn" type="button" disabled>Choose a site and element</button>
+  </div>
+  <div class="summary-intro" id="qualitySelectionStatus">Choose a station and weather element to see whether it is currently enabled or quarantined.</div>
  </div>
- <div class="summary-intro">To flag a report, use the <strong>Flag site</strong> action in the reports table. Restoring a quarantine requires the reviewer token and a different reviewer name from the person who flagged it.</div>
+ <div class="view-toolbar"><button class="btn" id="qualityRefreshBtn" type="button">Refresh quality status</button></div>
+ <div class="summary-intro">Turning OFF excludes only that station's selected element from the entire dashboard. Turning it back ON requires a different reviewer and the authorization token.</div>
  <div id="qualityActiveList"><div class="summary-empty">Loading active quarantines…</div></div>
  <h3 style="font:800 14px Manrope;margin:22px 0 8px">Recent quality history</h3>
  <div id="qualityHistoryList"><div class="summary-empty">No history loaded.</div></div>
