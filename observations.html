@@ -97,6 +97,30 @@ function queryParams(limit=50,offset=0){
  if(apiElement)p.set("element",apiElement);
  const selectedPeriod=$("statistic").value;
  let effectivePeriod=selectedPeriod;
+ // For precipitation, automatic accumulation must match the selected
+ // search-window duration. The API filters by observation time AND statistic;
+ // without this, recent 6h/12h/120h reports leak into a 1h query.
+ if(selectedElement==="precipitation" && selectedPeriod==="auto"){
+  let hours=null;
+  if($("window").value==="custom"){
+   const start=new Date($("startDate").value).getTime();
+   const end=new Date($("endDate").value).getTime();
+   if(Number.isFinite(start)&&Number.isFinite(end)&&end>start){
+    const duration=(end-start)/3600000;
+    if(Math.abs(duration-Math.round(duration))<0.001)hours=Math.round(duration);
+   }
+  }else{
+   const parsed=Number($("window").value);
+   if(Number.isFinite(parsed)&&parsed>0)hours=parsed;
+  }
+  // Only use defined report-period buckets. For arbitrary custom windows,
+  // leave the period unfiltered rather than silently mislabeling reports.
+  if([1,3,6,12,24,48,72,120].includes(hours)){
+   effectivePeriod=hours+"h_accumulation";
+  }else if(hours!==null){
+   effectivePeriod="";
+  }
+ }
  if(isIceTotal && selectedPeriod==="auto"){
   // Total mode sums the hourly METAR I1 observations over the chosen window.
   // Custom ranges use their elapsed duration, rounded up to whole hours.
@@ -110,6 +134,7 @@ function queryParams(limit=50,offset=0){
  if($("reportType").value)p.set("report_type",$("reportType").value);
  // Ice QC retains all hourly inputs. Apparent-temperature extremes
  // are supported per site; time sorting shows all available 5-minute/hourly reports.
+ // Precipitation auto mode now applies the matching accumulation statistic.
  if(!["ice_accretion","ice_accretion_total"].includes(selectedElement)){
   if($("sort").value==="value_desc")p.set("extreme","highest");
   if($("sort").value==="value_asc")p.set("extreme","lowest");
