@@ -33,6 +33,7 @@ async function readLatestRows(bucket) {
 
 export default {
   async fetch(request, env) {
+    try {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/+$/, "") || "/";
 
@@ -343,5 +344,10 @@ export default {
     }
 
     return json({ error: "Not found" }, 404);
+    } catch (error) {
+      // Ensure unexpected runtime/R2 failures remain readable to browser clients.
+      console.error("BTV Observation API request failed:", error);
+      return json({ error: "Internal server error", message: String(error?.message || error) }, 500);
+    }
   },
 };
