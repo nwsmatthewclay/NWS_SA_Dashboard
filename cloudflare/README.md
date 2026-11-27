@@ -31,7 +31,7 @@ After deployment, set `OBSERVATION_WORKER_URL` to the deployed `workers.dev` URL
 - `GET /observations?variable=temperature&start=2026-11-26T00:00:00Z&end=2026-11-27T00:00:00Z`: filtered observations, newest first.
 - `GET /observations?source=IEM_ASOS&limit=250&offset=0`: source-filtered, paginated reports.
 
-Supported observation filters: `variable`, `source`, `station_id`, ISO-8601 `start`/`end`, numeric `min`/`max`, and `limit`/`offset`. Maximum page size is 1,000.
+Supported observation filters: canonical `element`, `statistic`, `accumulation_hours`, raw `variable`, `source`, `station_id`, ISO-8601 `start`/`end`, numeric `min`/`max`, and `limit`/`offset`. Maximum page size is 1,000. For example, `/observations?element=precipitation&accumulation_hours=24` returns 24-hour precipitation accumulations where the source supplies a defined interval; daily observer reports remain marked as daily reports with no invented start time.
 
 The ingestion endpoints are authenticated and only accept the three fixed `latest/` object keys. Read endpoints are public and contain weather observations and station metadata only.
 
