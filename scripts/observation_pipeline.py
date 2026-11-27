@@ -18,7 +18,7 @@ from pathlib import Path
 
 import requests
 try:
-    from .asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar
+    from .asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime
 except ImportError:  # direct execution from the scripts directory
     from asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar
 
@@ -251,7 +251,6 @@ def ingest_nws(geometries):
                 ("windGust", "wind_gust", "m/s", ms_to_mph, "mph"),
                 ("windDirection", "wind_direction", "degree", lambda x: float(x), "degree"),
                 ("relativeHumidity", "relative_humidity", "%", lambda x: float(x), "%"),
-                ("precipitationLastHour", "precipitation_1h", "m", meters_to_inches, "inch"),
             ]
             for field, variable, raw_unit, convert, unit in mapping:
                 item = latest.get(field) or {}
@@ -295,8 +294,6 @@ def ingest_iem_asos(geometries):
             ("ice_accretion_3hr", "ice_accretion_3h", "inch"),
             ("ice_accretion_6hr", "ice_accretion_6h", "inch"),
         ]
-        if routine_hourly:
-            mapping.append(("p01i", "precipitation_1h", "inch"))
         for field, variable, unit in mapping:
             value = row.get(field)
             if value not in (None, "", "M", "T"):
@@ -310,6 +307,11 @@ def ingest_iem_asos(geometries):
                     pass
         if metar:
             parsed = parse_metar(metar, parse_time(ts))
+            if routine_hourly and parsed.get("precip_1h_in") is not None:
+                issued = metar_report_datetime(metar, parse_time(ts))
+                add_observation(st, "metar_precipitation_1h", parsed["precip_1h_in"], "inch",
+                                issued or ts, parsed["precip_1h_in"], "inch",
+                                raw_report=metar, metadata={"hourly_selection": "routine_METAR_near_53Z"})
             for field, variable, unit in (
                 ("precip_3h_or_6h_in", "metar_precipitation_3h_or_6h", "inch"),
                 ("precip_24h_in", "metar_precipitation_24h", "inch"),
