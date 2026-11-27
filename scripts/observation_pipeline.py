@@ -155,7 +155,7 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
     element, statistic = normalized_dimensions(variable, metadata)
     accumulation_hours = (metadata or {}).get("accumulation_hours") or (metadata or {}).get("precipitation_period_hours")
     if accumulation_hours is None:
-        match = re.search(r"_(\\d+)h(?:r)?$", variable)
+        match = re.search(r"_(\d+)h(?:r)?$", variable)
         if match:
             accumulation_hours = int(match.group(1))
     record = {
