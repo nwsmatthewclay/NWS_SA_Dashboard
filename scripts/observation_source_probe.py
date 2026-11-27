@@ -78,7 +78,7 @@ if nws is not None:
 
 # IEM ASOS/AWOS archive: five-day station-selected sample from airports in the BTV CWA.
 # IEM's processed archive is synchronized approximately every ten minutes.
-from scripts.asos_metar import normalize_iem_wind, parse_metar
+from asos_metar import normalize_iem_wind, parse_metar
 
 asos_name = "IEM ASOS/AWOS"
 asos_stations = "BTV,PBG,MSS,SLK,MPV,EFK,RUT"
@@ -283,7 +283,7 @@ for state in ("VT", "NY"):
 # download observations until authorization is confirmed.
 nysm_name = "NYS Mesonet station inventory"
 nysm = get(nysm_name,
-    "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Mesonet/MapServer/0/query",
+    "https://nysgeohub.ny.gov/arcgis/rest/services/Weather/NYS_Mesonet/MapServer/0/query",
     {"where": "1=1", "outFields": "station_na,lon,lat,code,Elev",
      "returnGeometry": "false", "f": "json"})
 if nysm is not None:
