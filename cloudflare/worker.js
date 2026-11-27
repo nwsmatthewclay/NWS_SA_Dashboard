@@ -43,7 +43,7 @@ async function readLatestRows(bucket) {
     if (!object) return null;
     const decompressed = object.body.pipeThrough(new DecompressionStream("gzip"));
     const body = await new Response(decompressed).text();
-    const rows = body.split("\\n").filter(Boolean).map((line) => JSON.parse(line));
+    const rows = body.split("\n").filter(Boolean).map((line) => JSON.parse(line));
     cachedObservationRows = rows;
     cachedObservationRowsAt = Date.now();
     return rows;
