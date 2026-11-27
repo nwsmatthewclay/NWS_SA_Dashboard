@@ -2,7 +2,7 @@
 
 import unittest
 
-from scripts.observation_pipeline import geometry_contains, in_btv
+from scripts.observation_pipeline import geometry_contains, in_btv, local_report_time
 
 
 class TestObservationPipelineGeometry(unittest.TestCase):
@@ -21,6 +21,14 @@ class TestObservationPipelineGeometry(unittest.TestCase):
         ]}
         self.assertFalse(geometry_contains(polygon, -72.5, 44.5))
         self.assertTrue(geometry_contains(polygon, -72.9, 44.5))
+
+    def test_coop_observation_time_is_local_eastern(self):
+        observed = local_report_time("2024-10-22", "08 AM")
+        self.assertEqual(observed.isoformat(), "2024-10-22T12:00:00+00:00")
+
+    def test_cocorahs_observation_time_can_be_utc(self):
+        observed = local_report_time("2024-10-22", "08:00", "UTC")
+        self.assertEqual(observed.isoformat(), "2024-10-22T08:00:00+00:00")
 
     def test_multipolygon(self):
         geometry = {"type": "MultiPolygon", "coordinates": [
