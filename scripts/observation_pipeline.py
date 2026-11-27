@@ -522,7 +522,7 @@ def write_outputs():
     latest_data_path = latest_dir / "observations.ndjson.gz"
     with gzip.open(latest_data_path, "wt", encoding="utf-8") as handle:
         for item in sorted(OBSERVATIONS, key=lambda x: x["observation_time"]):
-            handle.write(json.dumps(item, separators=(",", ":")) + "\\n")
+            handle.write(json.dumps(item, separators=(",", ":")) + "\n")
     (latest_dir / "stations.json").write_text(
         json.dumps(sorted(STATIONS.values(), key=lambda x: x["station_id"]), indent=2), encoding="utf-8")
     (latest_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
