@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BTV Observation Reports</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{color-scheme:dark;--bg:#080b14;--panel:#0d1423;--panel2:#121c30;--line:#24324b;--text:#e8eef9;--muted:#91a0b8;--blue:#65a7ff;--green:#49d49a;--amber:#f0bd69}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 450px at 80% -10%,#15325255,transparent 65%),var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif;min-height:100vh}
+header{padding:24px clamp(16px,3vw,36px) 18px;border-bottom:1px solid var(--line);background:linear-gradient(110deg,#0c1d31,#10182a 65%,#17152b)}
+.kicker{color:#8fcaff;text-transform:uppercase;letter-spacing:.22em;font-size:10px;font-weight:800}h1{margin:7px 0 5px;font-size:clamp(23px,3vw,34px);letter-spacing:.02em}.sub{color:#aebbd0;font-size:13px}
+main{max-width:1600px;margin:auto;padding:20px clamp(12px,2vw,28px) 40px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.health{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}.dot.ok{background:var(--green);box-shadow:0 0 9px #49d49a88}.dot.bad{background:#fb7185}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}.metric,.panel{background:linear-gradient(155deg,#121d30,#0c1321);border:1px solid var(--line);border-radius:13px}.metric{padding:13px 15px}.metric b{display:block;font-size:22px;letter-spacing:-.03em}.metric span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.09em}
+.panel{padding:16px;margin-bottom:14px}.panel-title{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0 0 13px;color:#c6d9f3}
+.filters{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:11px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{font-size:11px;color:var(--muted);font-weight:700}.field select,.field input{width:100%;height:38px;border:1px solid #30415f;border-radius:8px;background:#080f1d;color:var(--text);padding:0 10px;font:inherit;min-width:0}.field select:focus,.field input:focus{outline:2px solid #3986d6;outline-offset:1px}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{border:1px solid #36527b;background:#142641;color:#d9eaff;border-radius:8px;padding:9px 13px;font:700 12px Inter;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#1c5e9b,#234c83);border-color:#438bd0}.btn:hover{filter:brightness(1.15)}.btn:disabled{opacity:.45;cursor:wait}.note{font-size:11px;color:var(--muted);margin-left:auto}
+.table-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.table-head h2{font-size:16px;margin:0}.count{color:#a9bad1;font-size:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px;max-height:62vh}
+table{width:100%;border-collapse:collapse;min-width:1050px;font-size:12px}thead{position:sticky;top:0;z-index:2;background:#17243a}th{text-align:left;color:#a9c5e8;font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:11px 10px;white-space:nowrap;border-bottom:1px solid #344764}td{padding:10px;border-bottom:1px solid #202d43;color:#e2e9f4;white-space:nowrap}tbody tr:hover{background:#17243a88}tbody tr:last-child td{border-bottom:0}.value{font-weight:800;color:#fff;font-variant-numeric:tabular-nums}.muted{color:var(--muted)}.tag{display:inline-block;border:1px solid #35506e;background:#15263d;border-radius:5px;padding:3px 6px;font-size:10px;color:#b8d7fa}.daily{border-color:#795f32;background:#302719;color:#f3d59d}.empty{text-align:center;padding:35px;color:var(--muted)}.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.pager .group{display:flex;align-items:center;gap:7px}.pager span{font-size:11px;color:var(--muted)}footer{color:#75849b;font-size:11px;padding:10px 2px}
+@media(max-width:1050px){.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:12px}.note{width:100%;margin:0}.metrics{gap:7px}.metric{padding:11px}.metric b{font-size:19px}}
+</style>
+</head>
+<body>
+<header><div class="kicker">National Weather Service · Burlington, Vermont</div><h1>Observation Reports</h1><div class="sub">IRIS-style surface observation retrieval · Official BTV County Warning Area</div></header>
+<main>
+<div class="topline"><div class="health"><span id="healthDot" class="dot"></span><span id="healthText">Connecting to observation API…</span></div><div class="health" id="updatedText">Checking latest observation time…</div></div>
+<section class="metrics">
+<div class="metric"><b id="metricObs">—</b><span>Observations in archive</span></div>
+<div class="metric"><b id="metricStations">—</b><span>Provider station records</span></div>
+<div class="metric"><b id="metricSources">—</b><span>Reporting sources</span></div>
+<div class="metric"><b id="metricLatest">—</b><span>Latest observation (UTC)</span></div>
+</section>
+<section class="panel">
+<h2 class="panel-title">Report criteria</h2>
+<div class="filters">
+<div class="field"><label for="element">Weather element</label><select id="element"><option value="">All elements</option><option value="wind_gust">Wind gust</option><option value="wind_speed">Wind speed</option><option value="wind_direction">Wind direction</option><option value="temperature">Temperature</option><option value="dewpoint">Dewpoint</option><option value="precipitation">Precipitation</option><option value="ice_accretion">Ice accretion</option><option value="snowfall">Snowfall</option><option value="snow_depth">Snow depth</option><option value="snow_water_equivalent">Snow water equivalent</option><option value="relative_humidity">Relative humidity</option><option value="present_weather">Present weather</option></select></div>
+<div class="field"><label for="window">Time window</label><select id="window"><option value="1">Past 1 hour</option><option value="3">Past 3 hours</option><option value="6">Past 6 hours</option><option value="12">Past 12 hours</option><option value="24" selected>Past 24 hours</option><option value="48">Past 48 hours</option><option value="72">Past 72 hours</option><option value="120">Past 5 days</option><option value="custom">Custom date range</option></select></div>
+<div class="field"><label for="statistic">Report type</label><select id="statistic"><option value="">All report types</option><option value="instantaneous">Instantaneous</option><option value="maximum">Daily maximum</option><option value="minimum">Daily minimum</option><option value="daily_report">Daily report</option><option value="reported_accumulation">Reported accumulation</option><option value="1h_accumulation">1-hour accumulation</option><option value="3h_accumulation">3-hour accumulation</option><option value="6h_accumulation">6-hour accumulation</option><option value="24h_accumulation">24-hour accumulation</option></select></div>
+<div class="field"><label for="source">Network / source</label><select id="source"><option value="">All sources</option></select></div>
+<div class="field"><label for="station">Station</label><select id="station"><option value="">All stations</option></select></div>
+<div class="field"><label for="sort">Display order</label><select id="sort"><option value="time_desc">Newest first</option><option value="value_desc">Highest value</option><option value="value_asc">Lowest value</option><option value="time_asc">Oldest first</option></select></div>
+</div>
+<div id="customDates" class="filters" style="display:none;margin-top:11px;grid-template-columns:repeat(2,minmax(180px,260px))">
+<div class="field"><label for="startDate">Start (local time)</label><input type="datetime-local" id="startDate"></div>
+<div class="field"><label for="endDate">End (local time)</label><input type="datetime-local" id="endDate"></div>
+</div>
+<div class="filters" style="margin-top:11px;grid-template-columns:repeat(4,minmax(120px,1fr))">
+<div class="field"><label for="minValue">Minimum value</label><input type="number" id="minValue" step="any" placeholder="No minimum"></div>
+<div class="field"><label for="maxValue">Maximum value</label><input type="number" id="maxValue" step="any" placeholder="No maximum"></div>
+<div class="field"><label for="qc">Quality control</label><select id="qc"><option value="">All QC statuses</option><option value="provider">Provider screened</option><option value="unknown">Unknown / not specified</option></select></div>
+<div class="field"><label for="pageSize">Rows per page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option></select></div>
+</div>
+<div class="actions"><button class="btn primary" id="searchBtn">Retrieve reports</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export all matching CSV</button><button class="btn" id="printBtn">Print report</button><span class="note">Daily observer reports retain their reported observation time; no hourly values are inferred.</span></div>
+</section>
+<section class="panel">
+<div class="table-head"><h2>Observation reports</h2><span class="count" id="resultCount">Waiting for first query…</span></div>
+<div class="table-wrap"><table><thead><tr><th>Observation time (UTC)</th><th>Station</th><th>Element / variable</th><th>Value</th><th>Report type</th><th>Period</th><th>Source / network</th><th>QC</th><th>Ingested (UTC)</th></tr></thead><tbody id="rows"><tr><td colspan="9" class="empty">Loading observation data…</td></tr></tbody></table></div>
+<div class="pager"><div class="group"><button class="btn" id="prevBtn">← Previous</button><button class="btn" id="nextBtn">Next →</button><span id="pageText">Page 1</span></div><span id="pageInfo"></span></div>
+</section>
+<footer>Data scope: official NWS BTV CWA polygon · Local Storm Reports excluded · NYS Mesonet observations are not enabled pending data-policy approval. Values retain source units and converted display units where applicable. Observation time and ingestion time are shown separately.</footer>
+</main>
+<script>
+const API="https://btv-observation-api.jusmessinwityah1.workers.dev";
+const $=id=>document.getElementById(id);
+let manifest=null,stations=[],currentPage=1,total=0,lastQuery={},lastRows=[];
+const fmtTime=v=>{if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})+"Z"};
+const esc=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pretty=v=>String(v??"").replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
+function setHealth(ok,msg){$("healthDot").className="dot "+(ok?"ok":"bad");$("healthText").textContent=msg}
+async function getJson(path){const r=await fetch(API+path,{cache:"no-store"});if(!r.ok)throw new Error("API returned "+r.status+" for "+path);return r.json()}
+async function initialize(){
+ try{
+  const [m,s]=await Promise.all([getJson("/manifest"),getJson("/stations")]);manifest=m;stations=Array.isArray(s)?s:[];
+  $("metricObs").textContent=Number(m.observation_count||0).toLocaleString();$("metricStations").textContent=Number(m.station_record_count||stations.length).toLocaleString();
+  $("metricSources").textContent=Object.keys(m.latest_by_source||{}).length.toString();$("metricLatest").textContent=fmtTime(m.latest_observation_at);
+  $("updatedText").textContent="Snapshot generated "+fmtTime(m.generated_at);
+  const sources=[...new Set(stations.map(x=>x.source).filter(Boolean))].sort();
+  sources.forEach(v=>{const o=new Option(v,v);$("source").add(o)});
+  stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>{const o=new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id);$("station").add(o)});
+  setHealth(true,"API connected · snapshot available");
+  await retrieve();
+ }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="9" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
+}
+function queryParams(limit=50,offset=0){
+ const p=new URLSearchParams();p.set("limit",limit);p.set("offset",offset);p.set("sort",$("sort").value);
+ if($("element").value)p.set("element",$("element").value);
+ if($("statistic").value)p.set("statistic",$("statistic").value);
+ if($("source").value)p.set("source",$("source").value);
+ if($("station").value)p.set("station_id",$("station").value);
+ if($("minValue").value!=="")p.set("min",$("minValue").value);
+ if($("maxValue").value!=="")p.set("max",$("maxValue").value);
+ const win=$("window").value;
+ if(win==="custom"){
+  const a=$("startDate").value,b=$("endDate").value;
+  if(a)p.set("start",new Date(a).toISOString());if(b)p.set("end",new Date(b).toISOString());
+ }else{p.set("start",new Date(Date.now()-Number(win)*3600000).toISOString());p.set("end",new Date().toISOString())}
+ return p;
+}
+function render(rows){
+ lastRows=rows;
+ if(!rows.length){$("rows").innerHTML='<tr><td colspan="9" class="empty">No reports match these criteria. Try a longer time window or a different element.</td></tr>';return}
+ $("rows").innerHTML=rows.map(r=>{
+  const station=stations.find(s=>s.station_id===r.station_id);
+  const period=r.accumulation_hours? r.accumulation_hours+" h":r.statistic==="daily_report"?"Daily":r.period_start&&r.period_end?fmtTime(r.period_start)+" – "+fmtTime(r.period_end):"—";
+  const value=typeof r.value==="number"?Number(r.value).toLocaleString("en-US",{maximumFractionDigits:3}):esc(r.value);
+  const unit=r.unit||"";
+  return '<tr><td>'+esc(fmtTime(r.observation_time))+'</td><td><strong>'+esc(r.station_name||station?.name||r.provider_station_id)+'</strong><br><span class="muted">'+esc(r.provider_station_id)+'</span></td><td>'+esc(pretty(r.element||r.variable))+'<br><span class="muted">'+esc(r.variable)+'</span></td><td class="value">'+value+' '+esc(unit)+'</td><td><span class="tag '+(r.statistic==="daily_report"?"daily":"")+'">'+esc(pretty(r.statistic))+'</span></td><td>'+esc(period)+'</td><td>'+esc(r.source)+'<br><span class="muted">'+esc(r.network||"")+'</span></td><td>'+esc(r.qc_status||"unknown")+'</td><td>'+esc(fmtTime(r.ingested_at))+'</td></tr>';
+ }).join("");
+}
+async function retrieve(){
+ $("searchBtn").disabled=true;$("resultCount").textContent="Retrieving reports…";
+ try{
+  const limit=Number($("pageSize").value);currentPage=1;lastQuery=queryParams(limit,0);
+  const p=new URLSearchParams(lastQuery);const data=await getJson("/observations?"+p.toString());
+  total=data.total||0;render(data.results||[]);
+  $("resultCount").textContent=total.toLocaleString()+" matching reports";
+  $("pageText").textContent="Page 1";$("pageInfo").textContent="Showing "+(total?1:0)+"–"+Math.min(limit,total)+" of "+total.toLocaleString();
+  $("prevBtn").disabled=true;$("nextBtn").disabled=total<=limit;
+ }catch(e){$("resultCount").textContent="Retrieval failed";$("rows").innerHTML='<tr><td colspan="9" class="empty">'+esc(e.message)+'</td></tr>'}
+ finally{$("searchBtn").disabled=false}
+}
+async function changePage(delta){
+ const limit=Number($("pageSize").value),pages=Math.max(1,Math.ceil(total/limit));currentPage=Math.min(pages,Math.max(1,currentPage+delta));
+ $("prevBtn").disabled=$("nextBtn").disabled=true;
+ try{const p=queryParams(limit,(currentPage-1)*limit);const data=await getJson("/observations?"+p.toString());render(data.results||[]);
+ $("pageText").textContent="Page "+currentPage;$("pageInfo").textContent="Showing "+(((currentPage-1)*limit)+1)+"–"+Math.min(currentPage*limit,total)+" of "+total.toLocaleString();
+ $("prevBtn").disabled=currentPage===1;$("nextBtn").disabled=currentPage>=pages;
+ }catch(e){$("resultCount").textContent="Page load failed: "+e.message}
+}
+async function exportCsv(){
+ const btn=$("csvBtn");btn.disabled=true;btn.textContent="Preparing CSV…";
+ try{
+  const all=[];const pageSize=1000;let offset=0,expected=null;
+  while(expected===null||offset<expected){const p=queryParams(pageSize,offset);const data=await getJson("/observations?"+p.toString());expected=data.total||0;all.push(...(data.results||[]));offset+=pageSize;if(!data.results?.length)break}
+  const cols=["observation_time","station_name","provider_station_id","station_id","element","variable","value","unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit"];
+  const csv=[cols.join(","),...all.map(r=>cols.map(k=>{const v=r[k]??"";return '"'+String(v).replaceAll('"','""')+'"'}).join(","))].join("\r\n");
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="btv_observation_reports_"+new Date().toISOString().slice(0,16).replaceAll(":","")+"Z.csv";a.click();URL.revokeObjectURL(url);
+  btn.textContent="Exported "+all.length.toLocaleString()+" rows";
+ }catch(e){alert("CSV export failed: "+e.message)}finally{setTimeout(()=>{btn.disabled=false;btn.textContent="Export all matching CSV"},1800)}
+}
+$("searchBtn").addEventListener("click",retrieve);$("prevBtn").addEventListener("click",()=>changePage(-1));$("nextBtn").addEventListener("click",()=>changePage(1));
+$("csvBtn").addEventListener("click",exportCsv);$("printBtn").addEventListener("click",()=>window.print());
+$("window").addEventListener("change",()=>{$("customDates").style.display=$("window").value==="custom"?"grid":"none"});
+$("resetBtn").addEventListener("click",()=>{["element","statistic","source","station","minValue","maxValue"].forEach(id=>$(id).value="");$("window").value="24";$("sort").value="time_desc";$("qc").value="";$("customDates").style.display="none";retrieve()});
+$("qc").addEventListener("change",()=>{if(!$("qc").value){retrieve();return} $("resultCount").textContent="QC filtering is applied to the displayed page; select All QC statuses to restore the complete server result set.";});
+initialize();
+</script>
+</body></html>
