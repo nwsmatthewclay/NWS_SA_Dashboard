@@ -125,6 +125,10 @@ def station_record(source, station_id, name, lat, lon, network=None):
     alias = {"source": source, "provider_station_id": str(station_id), "network": network}
     if alias not in item["source_aliases"]:
         item["source_aliases"].append(alias)
+    # Keep observation provenance tied to the adapter currently requesting this station.
+    item["source"] = source
+    item["network"] = network
+    item["provider_station_id"] = str(station_id)
     if name and str(name).strip().upper() not in (str(station_id).strip().upper(), "UNKNOWN"):
         if item["name"] == item["provider_station_id"] or len(str(name)) > len(str(item["name"])):
             item["name"] = str(name).strip()
@@ -655,14 +659,17 @@ def ingest_rwis(geometries):
         response.raise_for_status()
         rows = list(csv.DictReader(io.StringIO(response.text)))
         values = 0
+        sample_columns = list(rows[0].keys()) if rows else []
+        sample_row = {k: v for k, v in (rows[0].items() if rows else []) if k.lower() not in ("lat", "lon", "latitude", "longitude")}
         for row in rows:
-            sid = str(row.get("station") or row.get("sid") or row.get("station_id") or "").upper()
+            normalized_row = {str(k).strip().lower(): v for k, v in row.items()}
+            sid = str(next((normalized_row.get(k) for k in ("station", "sid", "station_id", "stid", "stationid", "network_station") if normalized_row.get(k)), "")).upper()
             st = station_lookup.get(sid)
             if st is None and sid:
                 st = station_record("IEM_RWIS", sid, row.get("name") or sid, row.get("lat"), row.get("lon"), network)
             if st is None:
                 continue
-            ts = row.get("valid") or row.get("valid_utc") or row.get("datetime")
+            ts = next((normalized_row.get(k) for k in ("valid", "valid_utc", "datetime", "observation_time", "date_time", "timestamp") if normalized_row.get(k)), None)
             if not ts:
                 continue
             mappings = (
@@ -676,7 +683,7 @@ def ingest_rwis(geometries):
                 (("pcpn", "precip"), "precipitation_1h", "inch", "inch"),
             )
             for fields, variable, unit, raw_unit in mappings:
-                raw = next((row.get(field) for field in fields if row.get(field) not in (None, "", "M", "null")), None)
+                raw = next((normalized_row.get(field) for field in fields if normalized_row.get(field) not in (None, "", "M", "null")), None)
                 if raw is None:
                     continue
                 try:
@@ -688,7 +695,7 @@ def ingest_rwis(geometries):
                     values += 1
                 except (TypeError, ValueError):
                     continue
-            condition = row.get("scond0") or row.get("surface_condition") or row.get("road_condition")
+            condition = normalized_row.get("scond0") or normalized_row.get("surface_condition") or normalized_row.get("road_condition")
             if condition not in (None, "", "M", "null"):
                 add_observation(st, "road_condition", str(condition), "code", ts, condition, "IEM RWIS code",
                                 qc="provider", metadata={"network": network, "source_product": "IEM_RWIS"})
@@ -696,7 +703,8 @@ def ingest_rwis(geometries):
         total_rows += len(rows)
         total_values += values
         SOURCE_STATUS.append({"source": f"IEM {network}", "status": "ok", "stations": len(station_lookup),
-                              "rows": len(rows), "normalized_values": values})
+                              "rows": len(rows), "normalized_values": values,
+                              "sample_columns": sample_columns, "sample_row": sample_row})
     SOURCE_STATUS.append({"source": "IEM RWIS total", "status": "ok" if total_values else "no_values",
                           "stations": total_stations, "rows": total_rows, "normalized_values": total_values})
 
