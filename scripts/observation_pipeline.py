@@ -123,6 +123,8 @@ def normalized_dimensions(variable, metadata=None):
     if variable in ("wind_speed", "wind_gust", "wind_direction", "relative_humidity"):
         return variable, "instantaneous"
     if "precipitation" in variable:
+        if variable.startswith("daily_"):
+            return "precipitation", "daily_report"
         hours = metadata.get("accumulation_hours") or metadata.get("precipitation_period_hours")
         return "precipitation", f"{hours}h_accumulation" if hours else "reported_accumulation"
     if variable == "daily_new_snow":
@@ -151,6 +153,11 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
         return
     SEEN.add(key)
     element, statistic = normalized_dimensions(variable, metadata)
+    accumulation_hours = (metadata or {}).get("accumulation_hours") or (metadata or {}).get("precipitation_period_hours")
+    if accumulation_hours is None:
+        match = re.search(r"_(\\d+)h(?:r)?$", variable)
+        if match:
+            accumulation_hours = int(match.group(1))
     record = {
         "station_id": station["station_id"],
         "provider_station_id": station["provider_station_id"],
@@ -159,7 +166,7 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
         "station_name": station["name"],
         "latitude": station["latitude"], "longitude": station["longitude"],
         "variable": variable, "element": element, "statistic": statistic,
-        "accumulation_hours": (metadata or {}).get("accumulation_hours") or (metadata or {}).get("precipitation_period_hours"),
+        "accumulation_hours": accumulation_hours,
         "value": value, "unit": unit,
         "observation_time": observed.isoformat(),
         "latest_observation_at": observed.isoformat(),
