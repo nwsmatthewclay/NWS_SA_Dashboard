@@ -23,12 +23,37 @@ function authorized(request, env) {
   return Boolean(env.INGEST_SECRET) && header === `Bearer ${env.INGEST_SECRET}`;
 }
 
+// Reuse the parsed archive inside a Worker isolate. The summary and time-series
+// views can issue many concurrent element queries; without single-flight caching,
+// every request independently downloads, decompresses and parses the full archive.
+let cachedObservationRows = null;
+let cachedObservationRowsAt = 0;
+let observationRowsLoad = null;
+const OBSERVATION_CACHE_TTL_MS = 30000;
+
 async function readLatestRows(bucket) {
-  const object = await bucket.get("latest/observations.ndjson.gz");
-  if (!object) return null;
-  const decompressed = object.body.pipeThrough(new DecompressionStream("gzip"));
-  const body = await new Response(decompressed).text();
-  return body.split("\n").filter(Boolean).map((line) => JSON.parse(line));
+  const now = Date.now();
+  if (cachedObservationRows && now - cachedObservationRowsAt < OBSERVATION_CACHE_TTL_MS) {
+    return cachedObservationRows;
+  }
+  if (observationRowsLoad) return observationRowsLoad;
+
+  observationRowsLoad = (async () => {
+    const object = await bucket.get("latest/observations.ndjson.gz");
+    if (!object) return null;
+    const decompressed = object.body.pipeThrough(new DecompressionStream("gzip"));
+    const body = await new Response(decompressed).text();
+    const rows = body.split("\\n").filter(Boolean).map((line) => JSON.parse(line));
+    cachedObservationRows = rows;
+    cachedObservationRowsAt = Date.now();
+    return rows;
+  })();
+
+  try {
+    return await observationRowsLoad;
+  } finally {
+    observationRowsLoad = null;
+  }
 }
 
 export default {
