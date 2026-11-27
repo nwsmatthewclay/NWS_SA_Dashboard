@@ -36,7 +36,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <div class="two"><div class="field"><label for="minValue">Minimum value</label><input type="number" id="minValue" step="any" placeholder="Any"></div><div class="field"><label for="maxValue">Maximum value</label><input type="number" id="maxValue" step="any" placeholder="Any"></div></div>
 <div class="two"><div class="field"><label for="qc">Quality control</label><select id="qc"><option value="">All statuses</option><option value="provider">Provider screened</option><option value="unknown">Unknown / not specified</option></select></div><div class="field"><label for="pageSize">Rows per page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option></select></div></div>
 <div class="actions"><button class="btn primary wide" id="searchBtn">Retrieve reports</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export CSV</button><button class="btn wide" id="printBtn">Print report</button></div>
-<div class="note">Ice accretion totals are calculated by summing consecutive 1-hour reports when a matching native accumulation is unavailable. A complete set of hourly reports is required; missing hours are not estimated.</div>
+<div class="note">Ice accretion displays routine ASOS METAR I1 (1-hour) groups only. SPECI reports and I3/I6 groups are excluded; the selected time window controls how many hourly reports are returned, not the accumulation period.</div>
 </aside>
 <section class="results"><div class="metrics">
 <div class="metric"><b id="metricObs">—</b><span>Observations in archive</span></div><div class="metric"><b id="metricStations">—</b><span>Provider station records</span></div><div class="metric"><b id="metricSources">—</b><span>Reporting sources</span></div><div class="metric"><b id="metricLatest">—</b><span>Latest observation (UTC)</span></div>
@@ -73,8 +73,10 @@ function queryParams(limit=50,offset=0){
  if($("element").value)p.set("element",$("element").value);
  const selectedPeriod=$("statistic").value;
  let effectivePeriod=selectedPeriod;
- if($("element").value==="ice_accretion" && selectedPeriod==="auto" && $("window").value!=="custom"){
-  effectivePeriod=Number($("window").value)+"h_accumulation";
+ if($("element").value==="ice_accretion"){
+  // A 24-hour search returns individual routine METAR I1 groups in that
+  // window; never request or combine I3/I6 groups.
+  effectivePeriod="1h_accumulation";
  }
  if(effectivePeriod && effectivePeriod!=="auto")p.set("statistic",effectivePeriod);
  if($("element").value==="ice_accretion" && effectivePeriod && effectivePeriod!=="auto")p.set("accumulation_hours",Number((effectivePeriod.match(/^(\d+)h_accumulation$/)||[])[1]||0));
