@@ -112,13 +112,17 @@ export default {
       const requestedIceHours = element === "ice_accretion" && statistic
         ? Number((statistic.match(/^(\d+)h_accumulation$/) || [])[1] || 0) : 0;
       if (requestedIceHours > 0) {
-        // Build rolling N-hour ice totals from consecutive hourly reports.
+        // Sum every available 1-hour ice-accretion report inside the requested
+        // search window. Missing hours are not assumed to be zero; report count
+        // and component timestamps remain visible as coverage context.
         const hourly = rows.filter((row) =>
           row.element === "ice_accretion" && row.accumulation_hours === 1 &&
           typeof row.value === "number" &&
           (!source || row.source === source) &&
           (!stationId || row.station_id === stationId) &&
-          (!qcStatus || row.qc_status === qcStatus)
+          (!qcStatus || row.qc_status === qcStatus) &&
+          (startMs === null || Date.parse(row.observation_time) >= startMs) &&
+          (endMs === null || Date.parse(row.observation_time) <= endMs)
         );
         const groups = new Map();
         for (const row of hourly) {
@@ -131,46 +135,43 @@ export default {
           if (!old || rank > oldRank) groups.get(key).set(time, row);
         }
         const native = rows.filter((row) => row.element === "ice_accretion" &&
-          row.accumulation_hours === requestedIceHours);
-        const nativeEnds = new Set(native.map((row) =>
-          row.station_id + "|" + row.source + "|" + Date.parse(row.observation_time)));
+          row.accumulation_hours === requestedIceHours &&
+          (!source || row.source === source) &&
+          (!stationId || row.station_id === stationId) &&
+          (!qcStatus || row.qc_status === qcStatus) &&
+          (startMs === null || Date.parse(row.observation_time) >= startMs) &&
+          (endMs === null || Date.parse(row.observation_time) <= endMs));
+        const nativeSites = new Set(native.map((row) => row.station_id + "|" + row.source));
         const derived = [];
         for (const [key, reportMap] of groups) {
-          const reports = [...reportMap.values()].sort((a,b) =>
+          const components = [...reportMap.values()].sort((a,b) =>
             Date.parse(a.observation_time) - Date.parse(b.observation_time));
-          for (let i = requestedIceHours - 1; i < reports.length; i++) {
-            const components = reports.slice(i - requestedIceHours + 1, i + 1);
-            const times = components.map((row) => Date.parse(row.observation_time));
-            if (times.slice(1).some((time,j) => time-times[j] < 45*60000 || time-times[j] > 75*60000)) continue;
-            const endTime = times[times.length - 1];
-            const startTime = endTime - requestedIceHours * 3600000;
-            if (startMs !== null && endTime < startMs) continue;
-            if (endMs !== null && endTime > endMs) continue;
-            const last = components[components.length - 1];
-            if (nativeEnds.has(last.station_id + "|" + last.source + "|" + endTime)) continue;
-            derived.push({
-              ...last,
-              variable: "ice_accretion_" + requestedIceHours + "h_derived",
-              statistic: requestedIceHours + "h_accumulation",
-              accumulation_hours: requestedIceHours,
-              value: Number(components.reduce((sum,row)=>sum+Number(row.value),0).toFixed(3)),
-              observation_time: new Date(endTime).toISOString(),
-              period_start: new Date(startTime).toISOString(),
-              period_end: new Date(endTime).toISOString(),
-              raw_value: null, raw_unit: null, qc_status: "derived_complete",
-              metadata: {
-                derivation: "sum_of_consecutive_1h_reports",
-                accumulation_hours: requestedIceHours,
-                source_report_count: components.length,
-                component_reports: components.map(row => ({
-                  variable: row.variable, value: row.value, unit: row.unit,
-                  observation_time: row.observation_time,
-                  raw_value: row.raw_value, raw_unit: row.raw_unit,
-                  qc_status: row.qc_status
-                }))
-              }
-            });
-          }
+          if (!components.length || nativeSites.has(key)) continue;
+          const last = components[components.length - 1];
+          const first = components[0];
+          derived.push({
+            ...last,
+            variable: "ice_accretion_" + requestedIceHours + "h_reported_sum",
+            statistic: requestedIceHours + "h_accumulation",
+            accumulation_hours: requestedIceHours,
+            value: Number(components.reduce((sum,row)=>sum+Number(row.value),0).toFixed(3)),
+            observation_time: last.observation_time,
+            period_start: first.observation_time,
+            period_end: last.observation_time,
+            raw_value: null, raw_unit: null, qc_status: "derived_reported_sum",
+            metadata: {
+              derivation: "sum_of_available_1h_reports_within_search_window",
+              requested_window_hours: requestedIceHours,
+              source_report_count: components.length,
+              complete_hourly_coverage_not_asserted: true,
+              component_reports: components.map(row => ({
+                variable: row.variable, value: row.value, unit: row.unit,
+                observation_time: row.observation_time,
+                raw_value: row.raw_value, raw_unit: row.raw_unit,
+                qc_status: row.qc_status
+              }))
+            }
+          });
         }
         candidateRows = rows.concat(derived);
       }
