@@ -126,6 +126,9 @@ def normalized_dimensions(variable, metadata=None):
         if variable.startswith("daily_"):
             return "precipitation", "daily_report"
         hours = metadata.get("accumulation_hours") or metadata.get("precipitation_period_hours")
+        if hours is None:
+            match = re.search(r"_(\d+)h(?:r)?$", variable)
+            hours = int(match.group(1)) if match else None
         return "precipitation", f"{hours}h_accumulation" if hours else "reported_accumulation"
     if variable == "daily_new_snow":
         return "snowfall", "daily_report"
@@ -134,7 +137,9 @@ def normalized_dimensions(variable, metadata=None):
     if variable == "daily_new_snow_water_equivalent" or variable == "daily_snow_water_equivalent":
         return "snow_water_equivalent", "daily_report"
     if "ice_accretion" in variable:
-        return "ice_accretion", "reported_accumulation"
+        match = re.search(r"_(\d+)h$", variable)
+        hours = int(match.group(1)) if match else None
+        return "ice_accretion", f"{hours}h_accumulation" if hours else "reported_accumulation"
     if variable == "present_weather":
         return "present_weather", "reported_code"
     return variable, "reported"
