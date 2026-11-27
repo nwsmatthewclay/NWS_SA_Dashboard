@@ -110,7 +110,7 @@ export default {
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
       let candidateRows = rows;
       const requestedIceHours = element === "ice_accretion" && statistic
-        ? Number((statistic.match(/^(\\d+)h_accumulation$/) || [])[1] || 0) : 0;
+        ? Number((statistic.match(/^(\d+)h_accumulation$/) || [])[1] || 0) : 0;
       if (requestedIceHours > 0) {
         // Build rolling N-hour ice totals from consecutive hourly reports.
         const hourly = rows.filter((row) =>
