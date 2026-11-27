@@ -122,7 +122,7 @@ export default {
         for (const row of candidateRows.filter(isHourlyPrecip)) {
           if (row.source !== "IEM_ASOS" ||
               row.variable !== "metar_precipitation_1h" ||
-              row.metadata?.hourly_selection !== "routine_METAR_near_53Z") continue;
+              row.metadata?.hourly_selection !== "METAR_not_SPECI") continue;
           const time = Date.parse(row.observation_time);
           if (!Number.isFinite(time)) continue;
           const hour = Math.floor(time / 3600000);
