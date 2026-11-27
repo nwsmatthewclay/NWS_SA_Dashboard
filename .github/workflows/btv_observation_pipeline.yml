@@ -8,6 +8,8 @@ on:
     paths:
       - "scripts/observation_pipeline.py"
       - "scripts/asos_metar.py"
+      - "cloudflare/worker.js"
+      - "cloudflare/wrangler.toml"
       - "tests/test_observation_pipeline.py"
       - ".github/workflows/btv_observation_pipeline.yml"
 
@@ -37,11 +39,31 @@ jobs:
       - name: Run pipeline unit tests
         run: python -m unittest discover -s tests -p 'test_observation*.py' -v
 
+      - name: Validate Cloudflare Worker syntax
+        run: node --check cloudflare/worker.js
+
       - name: Ingest observations
         env:
           SYNOPTIC_API_KEY: ${{ secrets.SYNOPTIC_API_KEY }}
           OBSERVATION_LOOKBACK_DAYS: "5"
         run: python scripts/observation_pipeline.py
+
+      - name: Publish latest snapshot to Cloudflare R2 API
+        if: ${{ secrets.OBSERVATION_WORKER_URL != '' && secrets.OBSERVATION_INGEST_TOKEN != '' }}
+        env:
+          OBSERVATION_WORKER_URL: ${{ secrets.OBSERVATION_WORKER_URL }}
+          OBSERVATION_INGEST_TOKEN: ${{ secrets.OBSERVATION_INGEST_TOKEN }}
+        run: |
+          set -euo pipefail
+          BASE_URL="${OBSERVATION_WORKER_URL%/}"
+          for KEY in observations.ndjson.gz stations.json manifest.json; do
+            curl --fail-with-body --silent --show-error \
+              -X PUT \
+              -H "Authorization: Bearer $OBSERVATION_INGEST_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@observation_data/latest/$KEY" \
+              "$BASE_URL/ingest/latest/$KEY"
+          done
 
       - name: Upload normalized observation archive
         uses: actions/upload-artifact@v4
