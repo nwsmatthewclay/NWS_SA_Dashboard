@@ -137,6 +137,34 @@ export default {
         }
         candidateRows = nonHourly.concat([...selected.values()].map((item) => item.row));
       }
+
+      if (element === "ice_accretion") {
+        const isHourlyIce = (row) =>
+          row.element === "ice_accretion" && row.accumulation_hours === 1;
+        const nonHourly = candidateRows.filter((row) => !isHourlyIce(row));
+        const selected = new Map();
+        const retainedOtherSources = [];
+        for (const row of candidateRows.filter(isHourlyIce)) {
+          if (row.source !== "IEM_ASOS") {
+            retainedOtherSources.push(row);
+            continue;
+          }
+          // For ASOS, only the routine METAR near :53Z is eligible.
+          if (row.metadata?.hourly_selection !== "routine_METAR_near_53Z") continue;
+          const time = Date.parse(row.observation_time);
+          if (!Number.isFinite(time)) continue;
+          const key = row.station_id + "|" + Math.floor(time / 3600000);
+          const minute = new Date(time).getUTCMinutes();
+          const distance = Math.abs(minute - 53);
+          const prior = selected.get(key);
+          if (!prior || distance < prior.distance ||
+              (distance === prior.distance && time > prior.time)) {
+            selected.set(key, { row, distance, time });
+          }
+        }
+        candidateRows = nonHourly.concat(retainedOtherSources,
+          [...selected.values()].map((item) => item.row));
+      }
       const requestedIceHours = element === "ice_accretion" && statistic
         ? Number((statistic.match(/^(\d+)h_accumulation$/) || [])[1] || 0) : 0;
       if (requestedIceHours > 0) {
