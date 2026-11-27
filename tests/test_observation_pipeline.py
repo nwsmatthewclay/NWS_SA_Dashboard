@@ -2,7 +2,7 @@
 
 import unittest
 
-from scripts.observation_pipeline import geometry_contains, in_btv, local_report_time
+from scripts.observation_pipeline import geometry_contains, in_btv, local_report_time, normalized_dimensions
 
 
 class TestObservationPipelineGeometry(unittest.TestCase):
@@ -29,6 +29,14 @@ class TestObservationPipelineGeometry(unittest.TestCase):
     def test_cocorahs_observation_time_can_be_utc(self):
         observed = local_report_time("2024-10-22", "08:00", "UTC")
         self.assertEqual(observed.isoformat(), "2024-10-22T08:00:00+00:00")
+
+    def test_canonical_element_mapping(self):
+        self.assertEqual(normalized_dimensions("daily_max_temperature"), ("temperature", "maximum"))
+        self.assertEqual(normalized_dimensions("daily_precipitation"), ("precipitation", "reported_accumulation"))
+        self.assertEqual(normalized_dimensions("precipitation_accumulation", {"accumulation_hours": 24}),
+                         ("precipitation", "24h_accumulation"))
+        self.assertEqual(normalized_dimensions("daily_new_snow"), ("snowfall", "daily_report"))
+        self.assertEqual(normalized_dimensions("ice_accretion_1h"), ("ice_accretion", "reported_accumulation"))
 
     def test_multipolygon(self):
         geometry = {"type": "MultiPolygon", "coordinates": [
