@@ -120,6 +120,19 @@ if asos is not None:
             latest_metar_precip_24h_in=latest_metar.get("precip_24h_in"),
             latest_present_weather=latest.get("wxcodes"),
             latest_hourly_precip_in=latest.get("p01i"),
+            sample_reports=[{
+                "station": row.get("station"), "valid": row.get("valid"),
+                "lat": row.get("lat"), "lon": row.get("lon"),
+                "temperature_f": row.get("tmpf"), "dewpoint_f": row.get("dwpf"),
+                "wind_direction_deg": row.get("drct"),
+                "wind_speed_kt": row.get("sknt"), "wind_speed_mph": row.get("wind_mph"),
+                "gust_kt": row.get("gust"), "gust_mph": row.get("gust_mph"),
+                "precip_1h_in": row.get("p01i"), "weather": row.get("wxcodes"),
+                "ice_accretion_1h_in": row.get("ice_accretion_1hr"),
+                "ice_accretion_3h_in": row.get("ice_accretion_3hr"),
+                "ice_accretion_6h_in": row.get("ice_accretion_6hr"),
+                "metar": row.get("metar")
+            } for row in rows[-10:]],
             note="Wind and gusts normalized to mph; source knots retained. IEM archive data may lag real time.")
     else:
         add(asos_name, "HTTP_ERROR", http_status=asos.status_code,
