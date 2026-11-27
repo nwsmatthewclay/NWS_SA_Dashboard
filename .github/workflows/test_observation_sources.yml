@@ -1,6 +1,11 @@
 name: Test IRIS Observation Data Sources
 
 on:
+  push:
+    paths:
+      - 'scripts/**'
+      - 'tests/test_asos_metar.py'
+      - '.github/workflows/test_observation_sources.yml'
   workflow_dispatch:
 
 permissions:
@@ -19,10 +24,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install diagnostic dependency
+      - name: Install diagnostic dependencies
         run: python -m pip install --disable-pip-version-check requests
 
-      - name: Run ASOS/METAR parser tests\n        run: python -m unittest discover -s tests -p 'test_asos_metar.py' -v\n\n      - name: Probe observation data sources
+      - name: Run ASOS/METAR parser tests
+        run: python -m unittest discover -s tests -p 'test_asos_metar.py' -v
+
+      - name: Probe observation data sources
         env:
           SYNOPTIC_API_KEY: ${{ secrets.SYNOPTIC_API_KEY }}
         run: python scripts/observation_source_probe.py
