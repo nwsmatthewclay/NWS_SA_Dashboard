@@ -171,7 +171,7 @@ export default {
         // Sum every available 1-hour ice-accretion report inside the requested
         // search window. Missing hours are not assumed to be zero; report count
         // and component timestamps remain visible as coverage context.
-        const hourly = rows.filter((row) =>
+        const hourly = candidateRows.filter((row) =>
           row.element === "ice_accretion" && row.accumulation_hours === 1 &&
           typeof row.value === "number" &&
           (!source || row.source === source) &&
@@ -190,7 +190,7 @@ export default {
           const oldRank = old?.variable === "ice_accretion_1h" ? 2 : 1;
           if (!old || rank > oldRank) groups.get(key).set(time, row);
         }
-        const native = rows.filter((row) => row.element === "ice_accretion" &&
+        const native = candidateRows.filter((row) => row.element === "ice_accretion" &&
           row.accumulation_hours === requestedIceHours &&
           (!source || row.source === source) &&
           (!stationId || row.station_id === stationId) &&
