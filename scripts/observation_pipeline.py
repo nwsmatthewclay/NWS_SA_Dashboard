@@ -114,6 +114,16 @@ def station_record(source, station_id, name, lat, lon, network=None):
     if not in_btv(CWA_GEOMETRIES, lon, lat):
         return None
     key = canonical_station_key(source, station_id, network)
+    # A small coordinate tolerance catches cross-provider aliases whose station IDs differ
+    # (e.g., Synoptic RWIS IDs versus IEM DOT IDs) without merging nearby highway sites.
+    for existing_key, existing in STATIONS.items():
+        if existing_key == key:
+            continue
+        same_site = (abs(float(existing["latitude"]) - float(lat)) <= 0.00010 and
+                     abs(float(existing["longitude"]) - float(lon)) <= 0.00010)
+        if same_site:
+            key = existing_key
+            break
     item = STATIONS.get(key)
     if item is None:
         report_type = ("ASOS" if key.startswith("ASOS:") else "COOP" if key.startswith("COOP:") else
