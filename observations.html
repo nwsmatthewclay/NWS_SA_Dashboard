@@ -36,10 +36,10 @@ table{width:100%;border-collapse:collapse;min-width:1050px;font-size:12px}thead{
 <div class="filters">
 <div class="field"><label for="element">Weather element</label><select id="element"><option value="">All elements</option><option value="wind_gust">Wind gust</option><option value="wind_speed">Wind speed</option><option value="wind_direction">Wind direction</option><option value="temperature">Temperature</option><option value="dewpoint">Dewpoint</option><option value="precipitation">Precipitation</option><option value="ice_accretion">Ice accretion</option><option value="snowfall">Snowfall</option><option value="snow_depth">Snow depth</option><option value="snow_water_equivalent">Snow water equivalent</option><option value="relative_humidity">Relative humidity</option><option value="present_weather">Present weather</option></select></div>
 <div class="field"><label for="window">Time window</label><select id="window"><option value="1">Past 1 hour</option><option value="3">Past 3 hours</option><option value="6">Past 6 hours</option><option value="12">Past 12 hours</option><option value="24" selected>Past 24 hours</option><option value="48">Past 48 hours</option><option value="72">Past 72 hours</option><option value="120">Past 5 days</option><option value="custom">Custom date range</option></select></div>
-<div class="field"><label for="statistic">Report type</label><select id="statistic"><option value="">All report types</option><option value="instantaneous">Instantaneous</option><option value="maximum">Daily maximum</option><option value="minimum">Daily minimum</option><option value="daily_report">Daily report</option><option value="reported_accumulation">Reported accumulation</option><option value="1h_accumulation">1-hour accumulation</option><option value="3h_accumulation">3-hour accumulation</option><option value="6h_accumulation">6-hour reported only</option><option value="6h_accumulation_combined">6-hour total · include calculated from hourly reports</option><option value="24h_accumulation">24-hour accumulation</option></select></div>
-<div class="field"><label for="source">Network / source</label><select id="source"><option value="">All sources</option></select></div>
+<div class="field"><label for="statistic">Report type</label><select id="statistic"><option value="">All report types</option><option value="instantaneous">Instantaneous</option><option value="maximum">Daily maximum</option><option value="minimum">Daily minimum</option><option value="daily_report">Daily report</option><option value="reported_accumulation">Reported accumulation</option><option value="1h_accumulation">1-hour accumulation</option><option value="3h_accumulation">3-hour accumulation</option><option value="6h_accumulation">6-hour accumulation</option><option value="12h_accumulation">12-hour accumulation</option><option value="24h_accumulation">24-hour accumulation</option><option value="48h_accumulation">48-hour accumulation</option><option value="72h_accumulation">72-hour accumulation</option><option value="120h_accumulation">120-hour accumulation</option></select></div>
+<div class="field"><label for="reportType">Report type / network</label><select id="reportType"><option value="">All report types</option><option value="Public">Public</option><option value="ASOS">ASOS</option><option value="COOP">COOP</option><option value="CoCoRaHS">CoCoRaHS</option></select></div><div class="field"><label for="source">Specific source</label><select id="source"><option value="">All sources</option></select></div>
 <div class="field"><label for="station">Station</label><select id="station"><option value="">All stations</option></select></div>
-<div class="field"><label for="sort">Display order</label><select id="sort"><option value="time_desc">Newest first</option><option value="value_desc">Highest value</option><option value="value_asc">Lowest value</option><option value="time_asc">Oldest first</option></select></div>
+<div class="field"><label for="sort">Display order</label><select id="sort"><option value="time_desc">Newest first</option><option value="value_desc">Highest per site</option><option value="value_asc">Lowest per site</option><option value="time_asc">Oldest first</option></select></div>
 </div>
 <div id="customDates" class="filters" style="display:none;margin-top:11px;grid-template-columns:repeat(2,minmax(180px,260px))">
 <div class="field"><label for="startDate">Start (local time)</label><input type="datetime-local" id="startDate"></div>
@@ -51,7 +51,7 @@ table{width:100%;border-collapse:collapse;min-width:1050px;font-size:12px}thead{
 <div class="field"><label for="qc">Quality control</label><select id="qc"><option value="">All QC statuses</option><option value="provider">Provider screened</option><option value="unknown">Unknown / not specified</option></select></div>
 <div class="field"><label for="pageSize">Rows per page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option></select></div>
 </div>
-<div class="actions"><button class="btn primary" id="searchBtn">Retrieve reports</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export all matching CSV</button><button class="btn" id="printBtn">Print report</button><span class="note">Daily observer reports retain their reported observation time; no hourly values are inferred.</span></div>
+<div class="actions"><button class="btn primary" id="searchBtn">Retrieve reports</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export all matching CSV</button><button class="btn" id="printBtn">Print report</button><span class="note">Accumulation totals use matching report periods; calculated ice totals require complete consecutive hourly reports.</span></div>
 </section>
 <section class="panel">
 <div class="table-head"><h2>Observation reports</h2><span class="count" id="resultCount">Waiting for first query…</span></div>
@@ -85,7 +85,10 @@ async function initialize(){
 function queryParams(limit=50,offset=0){
  const p=new URLSearchParams();p.set("limit",limit);p.set("offset",offset);p.set("sort",$("sort").value);
  if($("element").value)p.set("element",$("element").value);
- if($("statistic").value){const selected=$("statistic").value;p.set("statistic",selected==="6h_accumulation_combined"?"6h_accumulation":selected);if(selected==="6h_accumulation_combined")p.set("derive_ice_hours","6");}
+ if($("statistic").value)p.set("statistic",$("statistic").value);
+ if($("element").value==="ice_accretion" && $("statistic").value)p.set("accumulation_hours",Number(($("statistic").value.match(/^(\\d+)h_accumulation$/)||[])[1]||0));
+ if($("reportType").value)p.set("report_type",$("reportType").value);
+ if($("sort").value==="value_desc")p.set("extreme","highest");if($("sort").value==="value_asc")p.set("extreme","lowest");
  if($("source").value)p.set("source",$("source").value);
  if($("station").value)p.set("station_id",$("station").value);
  if($("minValue").value!=="")p.set("min",$("minValue").value);
@@ -137,7 +140,7 @@ async function exportCsv(){
  try{
   const all=[];const pageSize=1000;let offset=0,expected=null;
   while(expected===null||offset<expected){const p=queryParams(pageSize,offset);const data=await getJson("/observations?"+p.toString());expected=data.total||0;all.push(...(data.results||[]));offset+=pageSize;if(!data.results?.length)break}
-  const cols=["observation_time","station_name","provider_station_id","station_id","element","variable","value","unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit","metadata"];
+  const cols=["report_type","observation_time","station_name","provider_station_id","station_id","element","variable","value","unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit","metadata"];
   const csv=[cols.join(","),...all.map(r=>cols.map(k=>{const v=r[k]??"";return '"'+String(v).replaceAll('"','""')+'"'}).join(","))].join("\r\n");
   const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="btv_observation_reports_"+new Date().toISOString().slice(0,16).replaceAll(":","")+"Z.csv";a.click();URL.revokeObjectURL(url);
   btn.textContent="Exported "+all.length.toLocaleString()+" rows";
@@ -146,7 +149,7 @@ async function exportCsv(){
 $("searchBtn").addEventListener("click",retrieve);$("prevBtn").addEventListener("click",()=>changePage(-1));$("nextBtn").addEventListener("click",()=>changePage(1));
 $("csvBtn").addEventListener("click",exportCsv);$("printBtn").addEventListener("click",()=>window.print());
 $("window").addEventListener("change",()=>{$("customDates").style.display=$("window").value==="custom"?"grid":"none"});
-$("resetBtn").addEventListener("click",()=>{["element","statistic","source","station","minValue","maxValue"].forEach(id=>$(id).value="");$("window").value="24";$("sort").value="time_desc";$("qc").value="";$("customDates").style.display="none";retrieve()});
+$("resetBtn").addEventListener("click",()=>{["element","statistic","reportType","source","station","minValue","maxValue"].forEach(id=>$(id).value="");$("window").value="24";$("sort").value="time_desc";$("qc").value="";$("customDates").style.display="none";retrieve()});
 $("qc").addEventListener("change",retrieve);
 initialize();
 </script>
