@@ -32,9 +32,10 @@ class TestObservationPipelineGeometry(unittest.TestCase):
 
     def test_canonical_element_mapping(self):
         self.assertEqual(normalized_dimensions("daily_max_temperature"), ("temperature", "maximum"))
-        self.assertEqual(normalized_dimensions("daily_precipitation"), ("precipitation", "reported_accumulation"))
+        self.assertEqual(normalized_dimensions("daily_precipitation"), ("precipitation", "daily_report"))
         self.assertEqual(normalized_dimensions("precipitation_accumulation", {"accumulation_hours": 24}),
                          ("precipitation", "24h_accumulation"))
+        self.assertEqual(normalized_dimensions("precipitation_1h"), ("precipitation", "reported_accumulation"))
         self.assertEqual(normalized_dimensions("daily_new_snow"), ("snowfall", "daily_report"))
         self.assertEqual(normalized_dimensions("ice_accretion_1h"), ("ice_accretion", "reported_accumulation"))
 
