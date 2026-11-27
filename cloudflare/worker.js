@@ -298,7 +298,8 @@ export default {
         const best = new Map();
         for (const row of filtered) {
           if (typeof row.value !== "number") continue;
-          const key = row.station_id;
+          const providerId = String(row.provider_station_id || row.station_id || "").toUpperCase().replace(/^K(?=[A-Z0-9]{3}$)/, "");
+          const key = providerId || row.station_id;
           const prior = best.get(key);
           if (!prior || (extreme === "highest" ? row.value > prior.value : row.value < prior.value)) best.set(key,row);
         }
