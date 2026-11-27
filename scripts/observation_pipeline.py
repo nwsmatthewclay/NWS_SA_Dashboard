@@ -452,7 +452,7 @@ def ingest_cocorahs_daily(geometries):
                                     row.get(field), unit, period_end=period_end,
                                     qc="trace" if flag else "observer_report",
                                     metadata={"report_date": row.get("ObservationDate"),
-                                              "report_time_local": row.get("ObservationTime"),
+                                              "report_time_utc": row.get("ObservationTime"),
                                               "submitted_at": row.get("EntryDateTime"),
                                               "period": "daily", "period_start_not_provided": True, "trace_reported": flag == "trace"})
                     count += 1
@@ -485,6 +485,18 @@ def ingest_nysm_inventory(geometries):
 
 
 def write_outputs():
+    latest_by_station = {}
+    latest_by_source = {}
+    for observation in OBSERVATIONS:
+        station_id = observation["station_id"]
+        observed_at = observation["observation_time"]
+        latest_by_station[station_id] = max(latest_by_station.get(station_id, observed_at), observed_at)
+        source = observation["source"]
+        latest_by_source[source] = max(latest_by_source.get(source, observed_at), observed_at)
+    for station_id, station in STATIONS.items():
+        station["latest_observation_at"] = latest_by_station.get(station_id)
+    for observation in OBSERVATIONS:
+        observation["latest_observation_at"] = latest_by_station.get(observation["station_id"])
     day = NOW.strftime("%Y-%m-%d")
     outdir = BASE / day
     outdir.mkdir(parents=True, exist_ok=True)
@@ -498,7 +510,9 @@ def write_outputs():
     manifest = {
         "generated_at": NOW.isoformat(), "latest_observation_at": max(
             (x["observation_time"] for x in OBSERVATIONS), default=None),
-        "observation_count": len(OBSERVATIONS), "station_count": len(STATIONS),
+        "observation_count": len(OBSERVATIONS),
+        "station_record_count": len(STATIONS),
+        "latest_by_source": latest_by_source,
         "sources": SOURCE_STATUS, "data_file": str(data_path),
         "scope": "Official NWS BTV CWA polygon; LSRs excluded; NYSM observations not enabled",
     }
