@@ -140,8 +140,16 @@ export default {
       const reason = String(body.reason || "").trim().slice(0, 500);
       if ((!providerStationId && !stationId) || !/^[a-z0-9_]{1,64}$/.test(element) || !actor || !reason)
         return json({ error: "station, element, reporter and reason are required" }, 400);
+      const archivedRows = await readLatestRows(env.OBSERVATIONS);
+      const knownReport = (archivedRows || []).some((row) =>
+        row.element === element &&
+        (providerStationId
+          ? normalizeSiteCode(row.provider_station_id) === normalizeSiteCode(providerStationId)
+          : row.station_id === stationId));
+      if (!knownReport) return json({ error: "No archived reports found for this station and element" }, 404);
       const state = await readQualityState(env.OBSERVATIONS);
       const key = qualityKey(providerStationId, stationId, element);
+      if (state.active.length >= 100) return json({ error: "The active quarantine limit has been reached" }, 429);
       if (state.active.some((entry) => entry.key === key))
         return json({ error: "This station and element are already quarantined", key }, 409);
       const entry = { key, station_id: stationId || null, provider_station_id: providerStationId || null,
