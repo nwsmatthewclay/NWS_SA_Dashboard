@@ -148,7 +148,7 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
     OBSERVATIONS.append(record)
 
 
-def local_report_time(date_value, time_value):
+def local_report_time(date_value, time_value, timezone_name="America/New_York"):
     if not date_value or not time_value:
         return None
     date_text = str(date_value).strip()
@@ -163,7 +163,7 @@ def local_report_time(date_value, time_value):
                 continue
         if dt:
             break
-    return dt.replace(tzinfo=ZoneInfo("America/New_York")).astimezone(timezone.utc) if dt else None
+    return dt.replace(tzinfo=ZoneInfo(timezone_name)).astimezone(timezone.utc) if dt else None
 
 
 def parse_report_amount(value):
@@ -396,7 +396,6 @@ def ingest_coop_daily(geometries):
             if not observed:
                 continue
             period_end = observed.isoformat()
-            period_start = (observed - timedelta(hours=24)).isoformat()
             for field, variable, unit in (
                 ("high_F", "daily_max_temperature", "degF"),
                 ("low_F", "daily_min_temperature", "degF"),
@@ -407,10 +406,10 @@ def ingest_coop_daily(geometries):
                 value, flag = parse_report_amount(row.get(field))
                 if value is not None or flag == "trace":
                     add_observation(st, variable, value, unit, observed,
-                                    row.get(field), unit, period_start=period_start, period_end=period_end,
+                                    row.get(field), unit, period_end=period_end,
                                     qc="trace" if flag else "observer_report",
                                     metadata={"report_date": row.get("date"), "report_time_local": row.get("time"),
-                                              "period": "daily_24h_approximation", "trace_reported": flag == "trace"})
+                                              "period": "daily", "period_start_not_provided": True, "trace_reported": flag == "trace"})
                     count += 1
             row_count += 1
         SOURCE_STATUS.append({"source": f"IEM COOP {state}", "status": "ok",
@@ -436,11 +435,10 @@ def ingest_cocorahs_daily(geometries):
                                 row.get("Latitude"), row.get("Longitude"), "CoCoRaHS Daily")
             if not st:
                 continue
-            observed = local_report_time(row.get("ObservationDate"), row.get("ObservationTime"))
+            observed = local_report_time(row.get("ObservationDate"), row.get("ObservationTime"), "UTC")
             if not observed:
                 continue
             period_end = observed.isoformat()
-            period_start = (observed - timedelta(hours=24)).isoformat()
             for field, variable, unit in (
                 ("TotalPrecipAmt", "daily_precipitation", "inch"),
                 ("NewSnowDepth", "daily_new_snow", "inch"),
@@ -451,12 +449,12 @@ def ingest_cocorahs_daily(geometries):
                 value, flag = parse_report_amount(row.get(field))
                 if value is not None or flag == "trace":
                     add_observation(st, variable, value, unit, observed,
-                                    row.get(field), unit, period_end=observed.isoformat(),
+                                    row.get(field), unit, period_end=period_end,
                                     qc="trace" if flag else "observer_report",
                                     metadata={"report_date": row.get("ObservationDate"),
                                               "report_time_local": row.get("ObservationTime"),
                                               "submitted_at": row.get("EntryDateTime"),
-                                              "period": "daily", "trace_reported": flag == "trace"})
+                                              "period": "daily", "period_start_not_provided": True, "trace_reported": flag == "trace"})
                     count += 1
             total_rows += 1
     SOURCE_STATUS.append({"source": "CoCoRaHS daily", "status": "ok",
