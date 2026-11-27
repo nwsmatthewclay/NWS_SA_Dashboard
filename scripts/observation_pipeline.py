@@ -290,10 +290,15 @@ def ingest_iem_asos(geometries):
             ("tmpf", "temperature", "degF"), ("dwpf", "dewpoint", "degF"),
             ("wind_mph", "wind_speed", "mph"), ("gust_mph", "wind_gust", "mph"),
             ("drct", "wind_direction", "degree"),
-            ("ice_accretion_1hr", "ice_accretion_1h", "inch"),
-            ("ice_accretion_3hr", "ice_accretion_3h", "inch"),
-            ("ice_accretion_6hr", "ice_accretion_6h", "inch"),
         ]
+        # ASOS hourly ice-accretion values are taken only from the routine
+        # METAR near :53Z, never SPECI or intervening special reports.
+        if routine_hourly:
+            mapping.extend([
+                ("ice_accretion_1hr", "ice_accretion_1h", "inch"),
+                ("ice_accretion_3hr", "ice_accretion_3h", "inch"),
+                ("ice_accretion_6hr", "ice_accretion_6h", "inch"),
+            ])
         for field, variable, unit in mapping:
             value = row.get(field)
             if value not in (None, "", "M", "T"):
@@ -312,16 +317,19 @@ def ingest_iem_asos(geometries):
                 add_observation(st, "metar_precipitation_1h", parsed["precip_1h_in"], "inch",
                                 issued or ts, parsed["precip_1h_in"], "inch",
                                 raw_report=metar, metadata={"hourly_selection": "routine_METAR_near_53Z"})
-            for field, variable, unit in (
+            metar_fields = [
                 ("precip_3h_or_6h_in", "metar_precipitation_3h_or_6h", "inch"),
                 ("precip_24h_in", "metar_precipitation_24h", "inch"),
-                ("ice_accretion_1h_in", "metar_ice_accretion_1h", "inch"),
                 ("ice_accretion_3h_in", "metar_ice_accretion_3h", "inch"),
                 ("ice_accretion_6h_in", "metar_ice_accretion_6h", "inch"),
-            ):
+            ]
+            if routine_hourly:
+                metar_fields.append(("ice_accretion_1h_in", "metar_ice_accretion_1h", "inch"))
+            for field, variable, unit in metar_fields:
                 if parsed.get(field) is not None:
                     add_observation(st, variable, parsed[field], unit, ts, parsed[field], unit,
                                     raw_report=metar, metadata={"ice_sensor_status": parsed["ice_sensor_status"],
+                                              "hourly_selection": "routine_METAR_near_53Z" if field == "ice_accretion_1h_in" and routine_hourly else None,
                                               "precipitation_period_hours": parsed.get("precip_3h_or_6h_period_hours") if field == "precip_3h_or_6h_in" else (1 if field == "precip_1h_in" else 24 if field == "precip_24h_in" else None)})
             for code in parsed["present_weather_codes"]:
                 add_observation(st, "present_weather", code, "code", ts, code, "METAR code",
