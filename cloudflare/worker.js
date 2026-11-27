@@ -122,18 +122,13 @@ export default {
         for (const row of candidateRows.filter(isHourlyPrecip)) {
           if (row.source !== "IEM_ASOS" ||
               row.variable !== "metar_precipitation_1h" ||
-              row.metadata?.hourly_selection !== "METAR_not_SPECI") continue;
+              row.metadata?.hourly_selection !== "METAR_only") continue;
           const time = Date.parse(row.observation_time);
           if (!Number.isFinite(time)) continue;
           const hour = Math.floor(time / 3600000);
           const key = row.station_id + "|" + hour;
-          const minute = new Date(time).getUTCMinutes();
-          const distance = Math.abs(minute - 53);
           const prior = selected.get(key);
-          if (!prior || distance < prior.distance ||
-              (distance === prior.distance && time > prior.time)) {
-            selected.set(key, { row, distance, time });
-          }
+          if (!prior || time > prior.time) selected.set(key, { row, time });
         }
         candidateRows = nonHourly.concat([...selected.values()].map((item) => item.row));
       }
@@ -154,13 +149,8 @@ export default {
           const time = Date.parse(row.observation_time);
           if (!Number.isFinite(time)) continue;
           const key = row.station_id + "|" + Math.floor(time / 3600000);
-          const minute = new Date(time).getUTCMinutes();
-          const distance = Math.abs(minute - 53);
           const prior = selected.get(key);
-          if (!prior || distance < prior.distance ||
-              (distance === prior.distance && time > prior.time)) {
-            selected.set(key, { row, distance, time });
-          }
+          if (!prior || time > prior.time) selected.set(key, { row, time });
         }
         candidateRows = nonHourly.concat(retainedOtherSources,
           [...selected.values()].map((item) => item.row));
@@ -229,7 +219,7 @@ export default {
             }
           });
         }
-        candidateRows = rows.concat(derived);
+        candidateRows = candidateRows.concat(derived);
       }
       let filtered = candidateRows.filter((row) => {
         const time = Date.parse(row.observation_time);
