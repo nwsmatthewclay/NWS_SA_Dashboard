@@ -649,7 +649,7 @@ def ingest_rwis(geometries):
         for feature in inventory.get("features", []) or []:
             props = feature.get("properties", {})
             coords = (feature.get("geometry") or {}).get("coordinates") or []
-            sid = props.get("sid") or props.get("station") or props.get("stid")
+            sid = props.get("sid") or props.get("station") or props.get("stid") or props.get("station_id") or props.get("id")
             if not sid or len(coords) < 2:
                 continue
             st = station_record("IEM_RWIS", sid, props.get("name") or props.get("sname") or sid,
@@ -659,7 +659,7 @@ def ingest_rwis(geometries):
         total_stations += len(station_lookup)
         if not station_lookup:
             SOURCE_STATUS.append({"source": f"IEM {network}", "status": "no_stations",
-                                  "inventory_features": len(inventory.get("features", []) or [])})
+                                  "inventory_features": len(inventory.get("features", []) or []), "sample_property_keys": list((inventory.get("features", [{}])[0].get("properties", {}) or {}).keys()) if inventory.get("features") else [], "sample_properties": (inventory.get("features", [{}])[0].get("properties", {}) or {}) if inventory.get("features") else {}})
             continue
         response = SESSION.get("https://mesonet.agron.iastate.edu/cgi-bin/request/rwis.py", params={
             "network": network, "stations": ",".join(station_lookup), "src": "atmos",
@@ -679,7 +679,7 @@ def ingest_rwis(geometries):
                 st = station_record("IEM_RWIS", sid, row.get("name") or sid, row.get("lat"), row.get("lon"), network)
             if st is None:
                 continue
-            ts = next((normalized_row.get(k) for k in ("valid", "valid_utc", "datetime", "observation_time", "date_time", "timestamp") if normalized_row.get(k)), None)
+            ts = next((normalized_row.get(k) for k in ("valid", "valid_utc", "datetime", "observation_time", "date_time", "timestamp", "obtime") if normalized_row.get(k)), None)
             if not ts:
                 continue
             mappings = (
@@ -689,7 +689,8 @@ def ingest_rwis(geometries):
                 (("sknt", "wind_speed"), "wind_speed", "mph", "knot"),
                 (("gust", "gust_sknt"), "wind_gust", "mph", "knot"),
                 (("drct", "wind_dir"), "wind_direction", "degree", "degree"),
-                (("road_tmpf", "pavement_temp", "surface_temp"), "road_temperature", "degF", "degF"),
+                (("road_tmpf", "pavement_temp", "surface_temp", "tfs0"), "road_temperature", "degF", "degF"),
+                (("subf", "subsurface_temp"), "subsurface_temperature", "degF", "degF"),
                 (("pcpn", "precip"), "precipitation_1h", "inch", "inch"),
             )
             for fields, variable, unit, raw_unit in mappings:
@@ -705,7 +706,7 @@ def ingest_rwis(geometries):
                     values += 1
                 except (TypeError, ValueError):
                     continue
-            condition = normalized_row.get("scond0") or normalized_row.get("surface_condition") or normalized_row.get("road_condition")
+            condition = normalized_row.get("scond0") or normalized_row.get("surface_condition") or normalized_row.get("road_condition") or normalized_row.get("tfs0_text")
             if condition not in (None, "", "M", "null"):
                 add_observation(st, "road_condition", str(condition), "code", ts, condition, "IEM RWIS code",
                                 qc="provider", metadata={"network": network, "source_product": "IEM_RWIS"})
