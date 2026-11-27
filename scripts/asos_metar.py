@@ -6,6 +6,22 @@ from datetime import datetime, timedelta, timezone
 KNOTS_TO_MPH = 1.150779448
 WEATHER_CODES = {"FZRA":"freezing rain","FZDZ":"freezing drizzle","FZFG":"freezing fog","RA":"rain","DZ":"drizzle","SN":"snow","SG":"snow grains","PL":"ice pellets","IC":"ice crystals","GR":"hail","GS":"small hail/snow pellets","UP":"unknown precipitation"}
 
+def wind_speed_to_mph(value, unit: str | None) -> float | None:
+    """Normalize a speed to mph from an explicit source unit."""
+    if value in (None, "", "M"):
+        return None
+    text = str(unit or "").strip().lower().replace("wmounit:", "").replace(" ", "")
+    factors = {
+        "mph": 1.0, "mi/h": 1.0, "mile/hour": 1.0, "miles/hour": 1.0,
+        "kt": KNOTS_TO_MPH, "knot": KNOTS_TO_MPH, "knots": KNOTS_TO_MPH,
+        "m/s": 2.2369362921, "ms-1": 2.2369362921, "m.s-1": 2.2369362921,
+        "km/h": 0.6213711922, "kmh-1": 0.6213711922, "km_h-1": 0.6213711922,
+        "ft/s": 0.6818181818, "fts-1": 0.6818181818,
+    }
+    if text not in factors:
+        raise ValueError(f"Unsupported wind-speed unit: {unit!r}")
+    return round(float(value) * factors[text], 1)
+
 def knots_to_mph(value):
     if value is None or value == "":
         return None
@@ -104,7 +120,7 @@ def normalize_iem_wind(record: dict) -> dict:
     for source,target in (("sknt","wind_mph"),("gust","gust_mph"),("peak_wind_gust","peak_wind_gust_mph")):
         value=out.get(source)
         try:
-            out[target]=knots_to_mph(value) if value not in (None,"","M") else None
+            out[target]=wind_speed_to_mph(value, "knot") if value not in (None,"","M") else None
         except (TypeError,ValueError):
             out[target]=None
     return out
