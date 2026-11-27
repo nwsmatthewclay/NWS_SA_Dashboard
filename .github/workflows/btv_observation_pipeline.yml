@@ -53,7 +53,6 @@ jobs:
 
       - name: Publish latest snapshot to Cloudflare R2 API
         if: ${{ env.OBSERVATION_WORKER_URL != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
-        env:
         run: |
           set -euo pipefail
           BASE_URL="${OBSERVATION_WORKER_URL%/}"
