@@ -5,6 +5,10 @@ from scripts.asos_metar import knots_to_mph, normalize_iem_wind, parse_metar, is
 
 
 class TestASOSMetar(unittest.TestCase):
+    def test_iem_station_prefixed_metar_is_routine(self):
+        self.assertTrue(is_metar_report("KSLK 270551Z AUTO 08013G23KT RMK I1007 I6019"))
+        self.assertFalse(is_metar_report("SPECI KSLK 270545Z AUTO 08013G23KT RMK I1007"))
+
     def test_spei_reports_are_identified(self):
         self.assertTrue(is_speci_report("SPECI KBTV 261205Z 00000KT 1SM FZRA"))
         self.assertFalse(is_speci_report("METAR KBTV 261153Z 00000KT 10SM CLR"))
