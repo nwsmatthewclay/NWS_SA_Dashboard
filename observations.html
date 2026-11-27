@@ -89,7 +89,8 @@ function queryParams(limit=50,offset=0){
  if($("source").value)p.set("source",$("source").value);
  if($("station").value)p.set("station_id",$("station").value);
  if($("minValue").value!=="")p.set("min",$("minValue").value);
- if($("maxValue").value!=="")p.set("max",$("maxValue").value);
+ if($("maxValue").value!=="")p.set("max",$("maxValue").value); 
+ if($("qc").value)p.set("qc_status",$("qc").value);
  const win=$("window").value;
  if(win==="custom"){
   const a=$("startDate").value,b=$("endDate").value;
@@ -143,7 +144,7 @@ $("searchBtn").addEventListener("click",retrieve);$("prevBtn").addEventListener(
 $("csvBtn").addEventListener("click",exportCsv);$("printBtn").addEventListener("click",()=>window.print());
 $("window").addEventListener("change",()=>{$("customDates").style.display=$("window").value==="custom"?"grid":"none"});
 $("resetBtn").addEventListener("click",()=>{["element","statistic","source","station","minValue","maxValue"].forEach(id=>$(id).value="");$("window").value="24";$("sort").value="time_desc";$("qc").value="";$("customDates").style.display="none";retrieve()});
-$("qc").addEventListener("change",()=>{if(!$("qc").value){retrieve();return} $("resultCount").textContent="QC filtering is applied to the displayed page; select All QC statuses to restore the complete server result set.";});
+$("qc").addEventListener("change",retrieve);
 initialize();
 </script>
 </body></html>
