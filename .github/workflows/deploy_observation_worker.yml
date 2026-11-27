@@ -1,0 +1,39 @@
+name: Deploy BTV Observation API
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cloudflare/**"
+      - ".github/workflows/deploy_observation_worker.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Cloudflare deployment secrets
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' || secrets.CLOUDFLARE_ACCOUNT_ID == '' || secrets.OBSERVATION_INGEST_TOKEN == '' }}
+        run: |
+          echo "::error::Add CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and OBSERVATION_INGEST_TOKEN repository Actions secrets."
+          exit 1
+
+      - name: Install Wrangler
+        run: npm install --global wrangler@4
+
+      - name: Set Worker ingest secret
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OBSERVATION_INGEST_TOKEN: ${{ secrets.OBSERVATION_INGEST_TOKEN }}
+        run: printf '%s' "$OBSERVATION_INGEST_TOKEN" | wrangler secret put INGEST_SECRET --config cloudflare/wrangler.toml
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: wrangler deploy --config cloudflare/wrangler.toml
