@@ -13,6 +13,7 @@ import json
 import os
 import re
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import requests
@@ -145,6 +146,35 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
     if metadata:
         record["metadata"] = metadata
     OBSERVATIONS.append(record)
+
+
+def local_report_time(date_value, time_value):
+    if not date_value or not time_value:
+        return None
+    date_text = str(date_value).strip()
+    time_text = str(time_value).strip()
+    dt = None
+    for date_fmt in ("%m/%d/%Y", "%Y-%m-%d", "%m-%d-%Y"):
+        for time_fmt in ("%I:%M %p", "%I:%M:%S %p", "%H:%M", "%H:%M:%S"):
+            try:
+                dt = datetime.strptime(date_text + " " + time_text, date_fmt + " " + time_fmt)
+                break
+            except ValueError:
+                continue
+        if dt:
+            break
+    return dt.replace(tzinfo=ZoneInfo("America/New_York")).astimezone(timezone.utc) if dt else None
+
+
+def parse_report_amount(value):
+    if value in (None, "", "M"):
+        return None, None
+    if str(value).strip().upper() == "T":
+        return None, "trace"
+    try:
+        return float(value), None
+    except (TypeError, ValueError):
+        return None, None
 
 
 def c_to_f(value):
@@ -291,6 +321,102 @@ def ingest_synoptic(geometries):
                           "normalized_values": count})
 
 
+
+def ingest_coop_daily(geometries):
+    for state in ("VT", "NY"):
+        network = f"{state}_COOP"
+        inventory = request_json(f"https://mesonet.agron.iastate.edu/geojson/network/{network}.geojson")
+        station_lookup = {}
+        for feature in inventory.get("features", []) or []:
+            props = feature.get("properties", {})
+            coords = (feature.get("geometry") or {}).get("coordinates") or []
+            if len(coords) < 2:
+                continue
+            sid = props.get("sid") or props.get("station") or props.get("nwsli")
+            if not sid:
+                continue
+            st = station_record("IEM_COOP", sid, props.get("name") or sid, coords[1], coords[0], network)
+            if st:
+                station_lookup[str(sid).upper()] = st
+        response = SESSION.get("https://mesonet.agron.iastate.edu/cgi-bin/request/coopobs.py", params={
+            "network": network, "stations": "_ALL",
+            "sts": START.date().isoformat(), "ets": NOW.date().isoformat(),
+            "what": "view", "delim": "comma",
+        }, timeout=60)
+        response.raise_for_status()
+        rows = csv.DictReader(io.StringIO(response.text))
+        row_count = 0
+        count = 0
+        for row in rows:
+            sid = str(row.get("nwsli") or "").upper()
+            st = station_lookup.get(sid)
+            if not st:
+                continue
+            observed = local_report_time(row.get("date"), row.get("time"))
+            if not observed:
+                continue
+            for field, variable, unit in (
+                ("high_F", "daily_max_temperature", "degF"),
+                ("low_F", "daily_min_temperature", "degF"),
+                ("precip", "daily_precipitation", "inch"),
+                ("snow_inch", "daily_new_snow", "inch"),
+                ("snowd_inch", "daily_snow_depth", "inch"),
+            ):
+                value, flag = parse_report_amount(row.get(field))
+                if value is not None or flag == "trace":
+                    add_observation(st, variable, value, unit, observed,
+                                    row.get(field), unit, period_end=observed.isoformat(),
+                                    qc="trace" if flag else "observer_report",
+                                    metadata={"report_date": row.get("date"), "report_time_local": row.get("time"),
+                                              "period": "daily", "trace_reported": flag == "trace"})
+                    count += 1
+            row_count += 1
+        SOURCE_STATUS.append({"source": f"IEM COOP {state}", "status": "ok",
+                              "in_cwa_stations": len(station_lookup), "daily_reports": row_count,
+                              "normalized_values": count})
+
+
+def ingest_cocorahs_daily(geometries):
+    total_rows = 0
+    count = 0
+    for state in ("VT", "NY"):
+        response = SESSION.get("https://data.cocorahs.org/cocorahs/export/exportreports.aspx", params={
+            "ReportType": "Daily", "Format": "CSV", "State": state,
+            "StartDate": START.strftime("%m/%d/%Y"), "EndDate": NOW.strftime("%m/%d/%Y"),
+            "TimesInGMT": "True",
+        }, timeout=60)
+        response.raise_for_status()
+        rows = csv.DictReader(io.StringIO(response.text))
+        for row in rows:
+            st = station_record("CoCoRaHS", row.get("StationNumber"), row.get("StationName"),
+                                row.get("Latitude"), row.get("Longitude"), "CoCoRaHS Daily")
+            if not st:
+                continue
+            observed = local_report_time(row.get("ObservationDate"), row.get("ObservationTime"))
+            if not observed:
+                continue
+            for field, variable, unit in (
+                ("TotalPrecipAmt", "daily_precipitation", "inch"),
+                ("NewSnowDepth", "daily_new_snow", "inch"),
+                ("NewSnowSWE", "daily_new_snow_water_equivalent", "inch"),
+                ("TotalSnowDepth", "daily_snow_depth", "inch"),
+                ("TotalSnowSWE", "daily_snow_water_equivalent", "inch"),
+            ):
+                value, flag = parse_report_amount(row.get(field))
+                if value is not None or flag == "trace":
+                    add_observation(st, variable, value, unit, observed,
+                                    row.get(field), unit, period_end=observed.isoformat(),
+                                    qc="trace" if flag else "observer_report",
+                                    metadata={"report_date": row.get("ObservationDate"),
+                                              "report_time_local": row.get("ObservationTime"),
+                                              "submitted_at": row.get("EntryDateTime"),
+                                              "period": "daily", "trace_reported": flag == "trace"})
+                    count += 1
+            total_rows += 1
+    SOURCE_STATUS.append({"source": "CoCoRaHS daily", "status": "ok",
+                          "in_cwa_reports": total_rows, "normalized_values": count})
+
+
 def ingest_nysm_inventory(geometries):
     """Register public NYSM station locations; intentionally fetch no observations."""
     payload = request_json(
@@ -338,7 +464,7 @@ def write_outputs():
 
 if __name__ == "__main__":
     CWA_GEOMETRIES = load_btv_geometry()
-    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_nysm_inventory):
+    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_coop_daily, ingest_cocorahs_daily, ingest_nysm_inventory):
         try:
             adapter(CWA_GEOMETRIES)
         except Exception as exc:
