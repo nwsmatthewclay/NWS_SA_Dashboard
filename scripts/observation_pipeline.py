@@ -105,7 +105,7 @@ def station_record(source, station_id, name, lat, lon, network=None):
     key = f"{source}:{station_id}"
     item = {
         "station_id": key, "provider_station_id": str(station_id),
-        "source": source, "name": name or str(station_id),
+        "source": source, "report_type": ("ASOS" if source == "IEM_ASOS" else "COOP" if source == "IEM_COOP" else "CoCoRaHS" if source == "CoCoRaHS" else "Public"), "name": name or str(station_id),
         "latitude": float(lat), "longitude": float(lon),
         "network": network,
     }
