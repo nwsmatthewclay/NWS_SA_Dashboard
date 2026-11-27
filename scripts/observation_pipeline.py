@@ -20,7 +20,7 @@ import requests
 try:
     from .asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime, is_metar_report, wind_speed_to_mph
 except ImportError:  # direct execution from the scripts directory
-    from asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime, is_metar_report
+    from asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime, is_metar_report, wind_speed_to_mph
 
 BASE = Path(os.getenv("OBSERVATION_OUTPUT_DIR", "observation_data"))
 DAYS = int(os.getenv("OBSERVATION_LOOKBACK_DAYS", "5"))
