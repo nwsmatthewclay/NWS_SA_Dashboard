@@ -42,7 +42,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <div class="metric"><b id="metricObs">—</b><span>Observations in archive</span></div><div class="metric"><b id="metricStations">—</b><span>Provider station records</span></div><div class="metric"><b id="metricSources">—</b><span>Reporting sources</span></div><div class="metric"><b id="metricLatest">—</b><span>Latest observation (UTC)</span></div>
 </div>
 <section class="table-panel"><div class="table-head"><h2>Observation reports</h2><span class="count" id="resultCount">Waiting for first query…</span></div>
-<div class="table-wrap"><table><thead><tr><th>Observation time (UTC)</th><th>Station</th><th>Element / variable</th><th>Flat ice</th><th>Radial ice · 40%</th><th>Report period</th><th>Accumulation window</th><th>Category / source</th><th>QC</th><th>Ingested (UTC)</th><th>Calculation details</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading observation data…</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Observation time (UTC)</th><th>Station</th><th>Element / variable</th><th id="valueHead">Flat ice</th><th id="radialHead">Radial ice · 40%</th><th>Report period</th><th>Accumulation window</th><th>Category / source</th><th>QC</th><th>Ingested (UTC)</th><th>Calculation details</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading observation data…</td></tr></tbody></table></div>
 <div class="pager"><div class="group"><button class="btn" id="prevBtn">← Previous</button><button class="btn" id="nextBtn">Next →</button><span id="pageText">Page 1</span></div><span id="pageInfo"></span></div></section>
 <footer>Official NWS BTV CWA polygon · Local Storm Reports excluded · NYS Mesonet observations are not enabled pending data-policy approval. Observation time and ingestion time are separate. Daily observer reports remain daily; no hourly values are inferred.</footer></section></div></main>
 <script>
@@ -88,9 +88,9 @@ function queryParams(limit=50,offset=0){
  if(effectivePeriod && effectivePeriod!=="auto")p.set("statistic",effectivePeriod);
  if(isIceTotal && effectivePeriod && effectivePeriod!=="auto")p.set("accumulation_hours",Number((effectivePeriod.match(/^(\d+)h_accumulation$/)||[])[1]||0));
  if($("reportType").value)p.set("report_type",$("reportType").value);
- // Preserve all hourly ice inputs; extreme-per-station reduction is not
- // appropriate before accumulation/QC processing.
- if(!["ice_accretion","ice_accretion_total","wind_chill","heat_index"].includes($("element").value)){
+ // Ice QC retains all hourly inputs. Apparent-temperature extremes
+ // are supported per site; time sorting shows all available 5-minute/hourly reports.
+ if(!["ice_accretion","ice_accretion_total"].includes(selectedElement)){
   if($("sort").value==="value_desc")p.set("extreme","highest");
   if($("sort").value==="value_asc")p.set("extreme","lowest");
  }
@@ -108,6 +108,9 @@ function queryParams(limit=50,offset=0){
 }
 function render(rows){
  lastRows=rows;
+ const iceMode=["ice_accretion","ice_accretion_total"].includes($("element").value);
+ $("valueHead").textContent=iceMode?"Flat ice":"Value";
+ $("radialHead").style.display=iceMode?"":"none";
  if(!rows.length){$("rows").innerHTML='<tr><td colspan="10" class="empty">No reports match these criteria. Try a longer time window or a different element.</td></tr>';return}
  $("rows").innerHTML=rows.map(r=>{
   const station=stations.find(s=>s.station_id===r.station_id);
@@ -121,8 +124,12 @@ function render(rows){
   const components=r.metadata?.component_reports||[];
   const coverage=r.metadata?.coverage_percent;
   const coverageLabel=coverage===undefined?"":' · '+esc(coverage)+'% coverage';
-  const detail=derived?'<details><summary>'+components.length+' hourly reports'+coverageLabel+'</summary><div style="padding:7px 0;white-space:normal;min-width:270px">'+components.map(c=>'<div>'+esc(fmtTime(c.observation_time))+' · <strong>'+esc(c.value)+' '+esc(c.unit)+'</strong>'+(typeof c.radial_value==="number"?' · radial <strong>'+esc(c.radial_value)+' '+esc(c.radial_unit||c.unit)+'</strong>':"")+'</div>').join('')+'<div class="muted" style="margin-top:6px">'+esc(r.metadata?.missing_hour_count||0)+' missing hourly reports; missing hours are not counted as zero.</div></div></details>':"—";
-  return '<tr><td>'+esc(fmtTime(r.observation_time))+'</td><td><strong>'+esc(r.station_name||station?.name||r.provider_station_id)+'</strong><br><span class="muted">'+esc(r.provider_station_id)+'</span></td><td>'+esc(pretty(r.element||r.variable))+'<br><span class="muted">'+esc(r.variable)+'</span></td><td class="value">'+(isIceRow?value+' '+esc(unit):value+' '+esc(unit))+'</td><td class="value">'+(isIceRow?radialValue+' '+esc(r.radial_unit||unit):"—")+'</td><td><span class="tag '+(derived||r.statistic==="daily_report"?"daily":"")+'">'+esc(reportedSum?"Reported sum · "+r.accumulation_hours+"h window":derived?"Calculated "+r.accumulation_hours+"-hour":pretty(r.statistic))+'</span></td><td>'+esc(period)+'</td><td>'+esc(r.source)+'<br><span class="muted">'+esc(r.network||"")+'</span></td><td>'+esc(r.qc_status||"unknown")+'</td><td>'+esc(fmtTime(r.ingested_at))+'</td><td>'+detail+'</td></tr>';
+  const inputDetails=r.metadata?.inputs
+   ? Object.entries(r.metadata.inputs).map(([k,v])=>'<div>'+esc(pretty(k))+' · <strong>'+esc(v)+(k.endsWith("_f")?"°F":k.endsWith("_mph")?" mph":k.endsWith("_percent")?"%":"")+'</strong></div>').join("")
+   : "";
+  const detail=reportedSum?'<details><summary>'+components.length+' hourly reports'+coverageLabel+'</summary><div style="padding:7px 0;white-space:normal;min-width:270px">'+components.map(c=>'<div>'+esc(fmtTime(c.observation_time))+' · <strong>'+esc(c.value)+' '+esc(c.unit)+'</strong>'+(typeof c.radial_value==="number"?' · radial <strong>'+esc(c.radial_value)+' '+esc(c.radial_unit||c.unit)+'</strong>':"")+'</div>').join('')+'<div class="muted" style="margin-top:6px">'+esc(r.metadata?.missing_hour_count||0)+' missing hourly reports; missing hours are not counted as zero.</div></div></details>':inputDetails?'<details><summary>Calculation inputs</summary><div style="padding:7px 0;white-space:normal;min-width:220px">'+inputDetails+'</div></details>':"—";
+  const periodLabel=reportedSum?"Reported sum · "+r.accumulation_hours+"h window":r.qc_status==="derived_calculated"?"Calculated":derived&&Number.isFinite(Number(r.accumulation_hours))?"Calculated "+r.accumulation_hours+"-hour":pretty(r.statistic);
+  return '<tr><td>'+esc(fmtTime(r.observation_time))+'</td><td><strong>'+esc(r.station_name||station?.name||r.provider_station_id)+'</strong><br><span class="muted">'+esc(r.provider_station_id)+'</span></td><td>'+esc(pretty(r.element||r.variable))+'<br><span class="muted">'+esc(r.variable)+'</span></td><td class="value">'+value+' '+esc(unit)+'</td><td class="value" style="'+(iceMode?"":"display:none")+'">'+(isIceRow?radialValue+' '+esc(r.radial_unit||unit):"")+'</td><td><span class="tag '+(derived||r.statistic==="daily_report"?"daily":"")+'">'+esc(periodLabel)+'</span></td><td>'+esc(period)+'</td><td>'+esc(r.source)+'<br><span class="muted">'+esc(r.network||"")+'</span></td><td>'+esc(r.qc_status||"unknown")+'</td><td>'+esc(fmtTime(r.ingested_at))+'</td><td>'+detail+'</td></tr>';
  }).join("");
 }
 async function retrieve(){
@@ -159,6 +166,7 @@ async function exportCsv(){
 $("searchBtn").addEventListener("click",retrieve);$("prevBtn").addEventListener("click",()=>changePage(-1));$("nextBtn").addEventListener("click",()=>changePage(1));
 $("csvBtn").addEventListener("click",exportCsv);$("printBtn").addEventListener("click",()=>window.print());
 $("window").addEventListener("change",()=>{$("customDates").style.display=$("window").value==="custom"?"grid":"none"});
+$("element").addEventListener("change",()=>{if($("element").value==="wind_chill")$("sort").value="value_asc";else if($("element").value==="heat_index")$("sort").value="value_desc";});
 $("resetBtn").addEventListener("click",()=>{["element","statistic","reportType","source","station","minValue","maxValue"].forEach(id=>$(id).value="");$("window").value="24";$("sort").value="time_desc";$("qc").value="";$("customDates").style.display="none";retrieve()});
 $("qc").addEventListener("change",retrieve);
 initialize();
