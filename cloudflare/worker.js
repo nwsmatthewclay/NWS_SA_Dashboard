@@ -110,6 +110,76 @@ export default {
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
       let candidateRows = rows;
 
+      // Calculate apparent temperature from co-timed normalized station
+      // observations. Temperature/dewpoint are Fahrenheit; wind is mph.
+      if (element === "wind_chill" || element === "heat_index") {
+        const grouped = new Map();
+        for (const row of rows) {
+          if (!["temperature", "dewpoint", "wind_speed"].includes(row.element) ||
+              row.statistic !== "instantaneous" || !Number.isFinite(Number(row.value))) continue;
+          const key = [row.station_id, row.source, row.observation_time].join("|");
+          if (!grouped.has(key)) grouped.set(key, {});
+          const bucket = grouped.get(key);
+          if (row.element === "temperature") bucket.temperature = row;
+          if (row.element === "dewpoint") bucket.dewpoint = row;
+          if (row.element === "wind_speed") bucket.wind_speed = row;
+        }
+        candidateRows = [];
+        for (const inputs of grouped.values()) {
+          const temp = inputs.temperature;
+          if (!temp) continue;
+          const tempF = Number(temp.value);
+          let value, metadata;
+          if (element === "wind_chill") {
+            const wind = inputs.wind_speed;
+            if (!wind || tempF > 50 || Number(wind.value) < 3) continue;
+            const mph = Number(wind.value);
+            value = 35.74 + 0.6215*tempF - 35.75*Math.pow(mph,0.16) +
+              0.4275*tempF*Math.pow(mph,0.16);
+            metadata = {
+              calculation: "NWS_Wind_Chill_Index",
+              inputs: {temperature_f:tempF, wind_speed_mph:mph},
+              formula: "NWS wind chill equation; valid at temperatures <=50 F and wind speeds >=3 mph"
+            };
+          } else {
+            const dew = inputs.dewpoint;
+            if (!dew || tempF < 80) continue;
+            const dewF = Number(dew.value);
+            const tempC = (tempF-32)*5/9, dewC = (dewF-32)*5/9;
+            const rh = Math.max(0,Math.min(100,100*Math.exp(
+              (17.625*dewC/(243.04+dewC))-(17.625*tempC/(243.04+tempC)))));
+            if (rh < 40) continue;
+            const t=tempF, r=rh;
+            let hi=-42.379+2.04901523*t+10.14333127*r-0.22475541*t*r-
+              0.00683783*t*t-0.05481717*r*r+0.00122874*t*t*r+
+              0.00085282*t*r*r-0.00000199*t*t*r*r;
+            if (r<13 && t>=80 && t<=112) hi-=((13-r)/4)*Math.sqrt((17-Math.abs(t-95))/17);
+            else if (r>85 && t>=80 && t<=87) hi+=((r-85)/10)*((87-t)/5);
+            value=hi;
+            metadata={
+              calculation:"NOAA_NWS_Heat_Index_Rothfusz",
+              inputs:{temperature_f:tempF,dewpoint_f:dewF,relative_humidity_percent:Number(rh.toFixed(1))},
+              formula:"NOAA/NWS Rothfusz regression; RH estimated from temperature and dewpoint; valid at temperature >=80 F and RH >=40%"
+            };
+          }
+          const wind=inputs.wind_speed;
+          candidateRows.push({
+            ...temp, element, variable:element, statistic:"instantaneous",
+            value:Number(value.toFixed(1)), unit:"degF",
+            raw_value:Number(value.toFixed(1)), raw_unit:"degF",
+            qc_status:"derived_calculated",
+            metadata:{
+              ...metadata,
+              source_observations:{
+                temperature_time:temp.observation_time,
+                dewpoint_time:inputs.dewpoint?.observation_time||null,
+                wind_speed_time:wind?.observation_time||null
+              }
+            }
+          });
+        }
+      }
+
       // Ice accretion is intentionally sourced ONLY from the I1 group in
       // routine METAR reports. Do not mix I3/I6 groups, IEM-derived periods,
       // SPECI, or other networks into this hourly report series.
