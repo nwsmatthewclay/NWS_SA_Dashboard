@@ -1,3 +1,5 @@
+"""Regression checks for CWA filtering in the observation pipeline."""
+
 import unittest
 
 from scripts.observation_pipeline import geometry_contains, in_btv
