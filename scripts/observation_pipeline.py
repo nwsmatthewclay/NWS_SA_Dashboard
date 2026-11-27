@@ -529,6 +529,83 @@ def ingest_cocorahs_daily(geometries):
                           "in_cwa_reports": total_rows, "normalized_values": count})
 
 
+
+def ingest_rr3_coop(geometries):
+    """Ingest supplemental BTV COOP observer reports from IEM's RR3BTV AFOS archive."""
+    inventory = request_json("https://mesonet.agron.iastate.edu/geojson/network/VT_COOP.geojson")
+    station_lookup = {}
+    for feature in inventory.get("features", []) or []:
+        props = feature.get("properties", {})
+        coords = (feature.get("geometry") or {}).get("coordinates") or []
+        sid = str(props.get("sid") or props.get("station") or props.get("nwsli") or "").upper()
+        if not sid or len(coords) < 2:
+            continue
+        st = station_record("IEM_RR3_COOP", sid, props.get("name") or sid,
+                            coords[1], coords[0], "VT_COOP supplemental RR3")
+        if st:
+            station_lookup[sid] = st
+
+    response = SESSION.get("https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py", params={
+        "pil": "RR3BTV", "fmt": "text", "limit": 500,
+        "sdate": START.strftime("%Y-%m-%dT%H:%MZ"),
+        "edate": NOW.strftime("%Y-%m-%dT%H:%MZ"),
+    }, timeout=60)
+    response.raise_for_status()
+    products = response.text
+    # RR3 .AR lines encode station, report date, local report time and SHEF-like values.
+    report_count = 0
+    value_count = 0
+    unmatched = set()
+    for line in products.splitlines():
+        match = re.search(r"\.AR1?\s+([A-Z0-9]+)\s+(\d{6})\s+[A-Z]\s+DH(\d{4})(.*)", line.strip())
+        if not match:
+            continue
+        sid, date_code, time_code, payload = match.groups()
+        st = station_lookup.get(sid.upper())
+        if not st:
+            unmatched.add(sid.upper())
+            continue
+        try:
+            year = 2000 + int(date_code[:2])
+            report_date = datetime(year, int(date_code[2:4]), int(date_code[4:6])).strftime("%Y-%m-%d")
+            observed = local_report_time(report_date, time_code, "America/New_York")
+        except (ValueError, TypeError):
+            continue
+        if not observed:
+            continue
+        report_count += 1
+        # Preserve observer-reported amounts; trace remains a trace, not zero.
+        fields = re.findall(r"/(TA|PP|SF|SD)\s*([+-]?\d+(?:\.\d+)?|T)", payload.upper())
+        for code, raw in fields:
+            if code == "TA":
+                variable, unit = "temperature", "degF"
+            elif code == "PP":
+                variable, unit = "daily_precipitation", "inch"
+            elif code == "SF":
+                variable, unit = "daily_new_snow", "inch"
+            else:
+                variable, unit = "daily_snow_depth", "inch"
+            value, flag = parse_report_amount(raw)
+            if code == "TA" and value is None:
+                continue
+            if value is not None or flag == "trace":
+                add_observation(st, variable, value, unit, observed, raw, unit,
+                    period_end=observed.isoformat(),
+                    qc="trace" if flag else "observer_report",
+                    raw_report=line.strip(),
+                    metadata={"report_type":"supplemental_RR3_COOP",
+                              "report_date":report_date,"report_time_local":time_code,
+                              "period":"observer_report","trace_reported":flag=="trace"})
+                value_count += 1
+    SOURCE_STATUS.append({"source":"IEM RR3BTV supplemental COOP",
+        "status":"ok" if report_count else "no_reports",
+        "products_bytes":len(products.encode("utf-8")),
+        "matched_station_reports":report_count,"normalized_values":value_count,
+        "unmatched_station_ids":sorted(unmatched)[:30],
+        "note":"Supplemental reports are retained separately from routine COOP daily summaries."})
+
+
+
 def ingest_nysm_inventory(geometries):
     """Register public NYSM station locations; intentionally fetch no observations."""
     payload = request_json(
@@ -599,7 +676,7 @@ def write_outputs():
 
 if __name__ == "__main__":
     CWA_GEOMETRIES = load_btv_geometry()
-    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_coop_daily, ingest_cocorahs_daily, ingest_nysm_inventory):
+    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_nysm_inventory):
         try:
             adapter(CWA_GEOMETRIES)
         except Exception as exc:
