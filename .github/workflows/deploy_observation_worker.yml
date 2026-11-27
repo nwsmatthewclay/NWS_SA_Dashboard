@@ -16,16 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check Cloudflare deployment secrets
+      - name: Skip deployment when credentials are not configured
         if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' || secrets.CLOUDFLARE_ACCOUNT_ID == '' || secrets.OBSERVATION_INGEST_TOKEN == '' }}
-        run: |
-          echo "::error::Add CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and OBSERVATION_INGEST_TOKEN repository Actions secrets."
-          exit 1
+        run: echo "::notice::Cloudflare deployment skipped. Configure the required repository Actions secrets when the R2 bucket is ready."
 
       - name: Install Wrangler
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' && secrets.OBSERVATION_INGEST_TOKEN != '' }}
         run: npm install --global wrangler@4
 
       - name: Set Worker ingest secret
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' && secrets.OBSERVATION_INGEST_TOKEN != '' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -33,6 +33,7 @@ jobs:
         run: printf '%s' "$OBSERVATION_INGEST_TOKEN" | wrangler secret put INGEST_SECRET --config cloudflare/wrangler.toml
 
       - name: Deploy Worker
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' && secrets.OBSERVATION_INGEST_TOKEN != '' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
