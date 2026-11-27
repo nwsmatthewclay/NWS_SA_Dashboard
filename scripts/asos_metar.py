@@ -20,13 +20,36 @@ def is_speci_report(raw: str) -> bool:
     return bool(tokens and tokens[0] == "SPECI")
 
 
-def is_routine_hourly_metar(raw: str, report_time: datetime | None, tolerance_minutes: int = 3) -> bool:
-    """Accept routine METARs near :53 past the hour for hourly precipitation."""
+def metar_report_datetime(raw: str, fallback: datetime | None = None) -> datetime | None:
+    """Decode the METAR DDHHMMZ issue time, resolving its date near fallback."""
+    tokens = (raw or "").strip().upper().split()
+    token = next((t for t in tokens if re.fullmatch(r"\\d{6}Z", t)), None)
+    if not token:
+        return fallback.astimezone(timezone.utc) if fallback else None
+    if fallback is None:
+        return None
+    day, hour, minute = int(token[:2]), int(token[2:4]), int(token[4:6])
+    base = fallback.astimezone(timezone.utc)
+    candidates = []
+    for offset in (-1, 0, 1):
+        month_anchor = (base.replace(day=1) + timedelta(days=offset * 28))
+        try:
+            candidate = month_anchor.replace(day=day, hour=hour, minute=minute, second=0, microsecond=0)
+            candidates.append(candidate)
+        except ValueError:
+            continue
+    return min(candidates, key=lambda d: abs((d - base).total_seconds())) if candidates else None
+
+
+def is_routine_hourly_metar(raw: str, report_time: datetime | None, tolerance_minutes: int = 5) -> bool:
+    """Accept routine METARs whose encoded issue time is near :53 past the hour."""
     tokens = (raw or "").strip().upper().split()
     if not tokens or tokens[0] != "METAR" or report_time is None:
         return False
-    minute = report_time.astimezone(timezone.utc).minute
-    distance = min((minute - 53) % 60, (53 - minute) % 60)
+    issued = metar_report_datetime(raw, report_time)
+    if issued is None:
+        return False
+    distance = abs(issued.minute - 53)
     return distance <= tolerance_minutes
 
 
