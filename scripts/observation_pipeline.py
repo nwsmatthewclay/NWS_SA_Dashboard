@@ -99,17 +99,35 @@ def in_btv(geometries, lon, lat):
     return any(geometry_contains(g, lon, lat) for g in geometries)
 
 
+def canonical_station_key(source, station_id, network=None):
+    sid = str(station_id or "").strip().upper()
+    if source in ("NWS", "IEM_ASOS") or (source == "Synoptic" and re.fullmatch(r"K[A-Z0-9]{3}", sid)):
+        return f"ASOS:{sid[1:] if sid.startswith('K') else sid}"
+    if source in ("IEM_COOP", "IEM_RR3_COOP"):
+        return f"COOP:{sid}"
+    if source == "Synoptic" and sid.startswith("COOP") and len(sid) > 4:
+        return f"COOP:{sid[4:]}"
+    return f"{source}:{sid}"
+
+
 def station_record(source, station_id, name, lat, lon, network=None):
     if not in_btv(CWA_GEOMETRIES, lon, lat):
         return None
-    key = f"{source}:{station_id}"
-    item = {
-        "station_id": key, "provider_station_id": str(station_id),
-        "source": source, "report_type": ("ASOS" if source == "IEM_ASOS" else "COOP" if source == "IEM_COOP" else "CoCoRaHS" if source == "CoCoRaHS" else "Public"), "name": name or str(station_id),
-        "latitude": float(lat), "longitude": float(lon),
-        "network": network,
-    }
-    STATIONS[key] = item
+    key = canonical_station_key(source, station_id, network)
+    item = STATIONS.get(key)
+    if item is None:
+        report_type = ("ASOS" if key.startswith("ASOS:") else "COOP" if key.startswith("COOP:") else
+                       "RWIS" if source == "IEM_RWIS" else "CoCoRaHS" if source == "CoCoRaHS" else "Public")
+        item = {"station_id": key, "provider_station_id": str(station_id),
+                "source": source, "report_type": report_type, "name": name or str(station_id),
+                "latitude": float(lat), "longitude": float(lon), "network": network, "source_aliases": []}
+        STATIONS[key] = item
+    alias = {"source": source, "provider_station_id": str(station_id), "network": network}
+    if alias not in item["source_aliases"]:
+        item["source_aliases"].append(alias)
+    if name and str(name).strip().upper() not in (str(station_id).strip().upper(), "UNKNOWN"):
+        if item["name"] == item["provider_station_id"] or len(str(name)) > len(str(item["name"])):
+            item["name"] = str(name).strip()
     return item
 
 
@@ -607,6 +625,82 @@ def ingest_rr3_coop(geometries):
 
 
 
+def ingest_rwis(geometries):
+    """Ingest Vermont and northern New York RWIS atmospheric/pavement observations via IEM."""
+    total_rows = total_values = total_stations = 0
+    for state in ("VT", "NY"):
+        network = f"{state}_RWIS"
+        inventory = request_json(f"https://mesonet.agron.iastate.edu/geojson/network/{network}.geojson")
+        station_lookup = {}
+        for feature in inventory.get("features", []) or []:
+            props = feature.get("properties", {})
+            coords = (feature.get("geometry") or {}).get("coordinates") or []
+            sid = props.get("sid") or props.get("station") or props.get("stid")
+            if not sid or len(coords) < 2:
+                continue
+            st = station_record("IEM_RWIS", sid, props.get("name") or props.get("sname") or sid,
+                                coords[1], coords[0], network)
+            if st:
+                station_lookup[str(sid).upper()] = st
+        total_stations += len(station_lookup)
+        if not station_lookup:
+            SOURCE_STATUS.append({"source": f"IEM {network}", "status": "no_stations",
+                                  "inventory_features": len(inventory.get("features", []) or [])})
+            continue
+        response = SESSION.get("https://mesonet.agron.iastate.edu/cgi-bin/request/rwis.py", params={
+            "network": network, "stations": ",".join(station_lookup), "src": "atmos",
+            "sts": START.strftime("%Y-%m-%dT%H:%M"), "ets": NOW.strftime("%Y-%m-%dT%H:%M"),
+            "tz": "UTC", "what": "download", "delim": "comma", "gis": "true",
+        }, timeout=90)
+        response.raise_for_status()
+        rows = list(csv.DictReader(io.StringIO(response.text)))
+        values = 0
+        for row in rows:
+            sid = str(row.get("station") or row.get("sid") or row.get("station_id") or "").upper()
+            st = station_lookup.get(sid)
+            if st is None and sid:
+                st = station_record("IEM_RWIS", sid, row.get("name") or sid, row.get("lat"), row.get("lon"), network)
+            if st is None:
+                continue
+            ts = row.get("valid") or row.get("valid_utc") or row.get("datetime")
+            if not ts:
+                continue
+            mappings = (
+                (("tmpf", "air_temp", "temperature"), "temperature", "degF", "degF"),
+                (("dwpf", "dewpoint"), "dewpoint", "degF", "degF"),
+                (("relh", "rh"), "relative_humidity", "%", "%"),
+                (("sknt", "wind_speed"), "wind_speed", "mph", "knot"),
+                (("gust", "gust_sknt"), "wind_gust", "mph", "knot"),
+                (("drct", "wind_dir"), "wind_direction", "degree", "degree"),
+                (("road_tmpf", "pavement_temp", "surface_temp"), "road_temperature", "degF", "degF"),
+                (("pcpn", "precip"), "precipitation_1h", "inch", "inch"),
+            )
+            for fields, variable, unit, raw_unit in mappings:
+                raw = next((row.get(field) for field in fields if row.get(field) not in (None, "", "M", "null")), None)
+                if raw is None:
+                    continue
+                try:
+                    value = float(raw)
+                    if variable in ("wind_speed", "wind_gust"):
+                        value = wind_speed_to_mph(value, "knot")
+                    add_observation(st, variable, value, unit, ts, raw, raw_unit, qc="provider",
+                                    metadata={"network": network, "source_product": "IEM_RWIS"})
+                    values += 1
+                except (TypeError, ValueError):
+                    continue
+            condition = row.get("scond0") or row.get("surface_condition") or row.get("road_condition")
+            if condition not in (None, "", "M", "null"):
+                add_observation(st, "road_condition", str(condition), "code", ts, condition, "IEM RWIS code",
+                                qc="provider", metadata={"network": network, "source_product": "IEM_RWIS"})
+                values += 1
+        total_rows += len(rows)
+        total_values += values
+        SOURCE_STATUS.append({"source": f"IEM {network}", "status": "ok", "stations": len(station_lookup),
+                              "rows": len(rows), "normalized_values": values})
+    SOURCE_STATUS.append({"source": "IEM RWIS total", "status": "ok" if total_values else "no_values",
+                          "stations": total_stations, "rows": total_rows, "normalized_values": total_values})
+
+
 def ingest_nysm_inventory(geometries):
     """Register public NYSM station locations; intentionally fetch no observations."""
     payload = request_json(
@@ -628,6 +722,28 @@ def ingest_nysm_inventory(geometries):
                           "statewide_station_count": len(payload.get("features", []) or []),
                           "btv_cwa_station_count": count,
                           "observations_enabled": False})
+
+
+def deduplicate_observations():
+    """Collapse duplicate provider reports at the same canonical station/time/element."""
+    priority = {"IEM_ASOS": 0, "IEM_COOP": 0, "IEM_RWIS": 0, "NWS": 1,
+                "IEM_RR3_COOP": 1, "Synoptic": 2, "CoCoRaHS": 0}
+    chosen = {}
+    duplicates = 0
+    for row in OBSERVATIONS:
+        key = (row["station_id"], row["variable"], row["observation_time"],
+               row.get("period_start"), row.get("period_end"))
+        previous = chosen.get(key)
+        if previous is None:
+            chosen[key] = row
+            continue
+        duplicates += 1
+        if priority.get(row.get("source"), 5) < priority.get(previous.get("source"), 5):
+            chosen[key] = row
+    OBSERVATIONS[:] = list(chosen.values())
+    SOURCE_STATUS.append({"source": "station/observation deduplication", "status": "ok",
+                          "duplicate_observation_rows_removed": duplicates,
+                          "canonical_station_count": len(STATIONS)})
 
 
 def write_outputs():
@@ -677,11 +793,12 @@ def write_outputs():
 
 if __name__ == "__main__":
     CWA_GEOMETRIES = load_btv_geometry()
-    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_nysm_inventory):
+    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_rwis, ingest_nysm_inventory):
         try:
             adapter(CWA_GEOMETRIES)
         except Exception as exc:
             SOURCE_STATUS.append({"source": adapter.__name__, "status": "error", "detail": str(exc)[:300]})
+    deduplicate_observations()
     write_outputs()
     if not OBSERVATIONS:
         raise SystemExit("No observations were ingested; see manifest source errors.")
