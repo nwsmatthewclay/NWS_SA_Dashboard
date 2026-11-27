@@ -353,7 +353,9 @@ def ingest_synoptic(geometries):
     base = "https://api.synopticdata.com/v2/stations"
     params = {"token": SYNOPTIC_TOKEN, "cwa": "BTV", "within": 180,
               "vars": "air_temp,wind_speed,wind_gust,dew_point_temperature,relative_humidity,wind_direction",
-              "units": "english", "obtimezone": "utc", "complete": 1}
+              # Synoptic defaults English wind speeds to knots; normalized dashboard
+              # values are mph, so request mph explicitly rather than relabeling knots.
+              "units": "english,speed|mph", "obtimezone": "utc", "complete": 1}
     payload = request_json(base + "/latest", params)
     summary = payload.get("SUMMARY", {})
     if str(summary.get("RESPONSE_CODE")) != "1":
