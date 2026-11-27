@@ -6,7 +6,7 @@ const ALLOWED_OBJECTS = new Set([
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, PUT, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, PUT, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
   "Access-Control-Max-Age": "86400",
 };
@@ -16,6 +16,50 @@ function json(data, status = 200) {
     status,
     headers: { "Content-Type": "application/json; charset=utf-8", ...CORS_HEADERS },
   });
+}
+
+const QUALITY_OBJECT_KEY = "quality/site-quarantine.json";
+function normalizeSiteCode(value) {
+  let code = String(value || "").trim().toUpperCase().split(":").pop();
+  if (/^K[A-Z0-9]{3}$/.test(code)) code = code.slice(1);
+  return code;
+}
+function qualityKey(providerStationId, stationId, element) {
+  const site = normalizeSiteCode(providerStationId) || String(stationId || "").trim();
+  return site + "::" + String(element || "").trim().toLowerCase();
+}
+function defaultQualityState() {
+  const flaggedAt = new Date().toISOString();
+  const initial = { key: qualityKey("UVM06", "", "precipitation"), station_id: null,
+    provider_station_id: "UVM06", station_name: "Mt. Mansfield (East)", element: "precipitation",
+    reason: "Precipitation reports identified as unreliable; excluded pending data-quality review.",
+    flagged_by: "Initial operational quarantine", flagged_at: flaggedAt };
+  return { version: 1, updated_at: flaggedAt, active: [initial], history: [{ ...initial, action: "flagged" }] };
+}
+async function readQualityState(bucket) {
+  const object = await bucket.get(QUALITY_OBJECT_KEY);
+  if (!object) return defaultQualityState();
+  const state = JSON.parse(await object.text());
+  return { version: 1, updated_at: state.updated_at || null,
+    active: Array.isArray(state.active) ? state.active : [],
+    history: Array.isArray(state.history) ? state.history : [] };
+}
+async function writeQualityState(bucket, state) {
+  state.updated_at = new Date().toISOString();
+  state.history = (state.history || []).slice(-500);
+  await bucket.put(QUALITY_OBJECT_KEY, JSON.stringify(state, null, 2), {
+    httpMetadata: { contentType: "application/json; charset=utf-8", cacheControl: "no-store" },
+    customMetadata: { updated_at: state.updated_at },
+  });
+}
+function isQuarantined(row, active) {
+  return active.some((entry) => entry.element === row.element &&
+    (entry.provider_station_id
+      ? normalizeSiteCode(entry.provider_station_id) === normalizeSiteCode(row.provider_station_id)
+      : Boolean(entry.station_id) && entry.station_id === row.station_id));
+}
+function qualityMutationOriginAllowed(request) {
+  return request.headers.get("Origin") === "https://nwsmatthewclay.github.io";
 }
 
 function authorized(request, env) {
@@ -81,6 +125,54 @@ export default {
         customMetadata: { uploaded_at: new Date().toISOString() },
       });
       return json({ ok: true, key, bytes: body.byteLength });
+    }
+
+    if (path === "/quality" && request.method === "GET") {
+      return json(await readQualityState(env.OBSERVATIONS));
+    }
+    if (path === "/quality/flag" && request.method === "POST") {
+      if (!qualityMutationOriginAllowed(request)) return json({ error: "Origin not allowed" }, 403);
+      const body = await request.json();
+      const providerStationId = String(body.provider_station_id || "").trim();
+      const stationId = String(body.station_id || "").trim();
+      const element = String(body.element || "").trim().toLowerCase();
+      const actor = String(body.actor || "").trim().slice(0, 80);
+      const reason = String(body.reason || "").trim().slice(0, 500);
+      if ((!providerStationId && !stationId) || !/^[a-z0-9_]{1,64}$/.test(element) || !actor || !reason)
+        return json({ error: "station, element, reporter and reason are required" }, 400);
+      const state = await readQualityState(env.OBSERVATIONS);
+      const key = qualityKey(providerStationId, stationId, element);
+      if (state.active.some((entry) => entry.key === key))
+        return json({ error: "This station and element are already quarantined", key }, 409);
+      const entry = { key, station_id: stationId || null, provider_station_id: providerStationId || null,
+        station_name: String(body.station_name || providerStationId || stationId).trim().slice(0, 160),
+        element, reason, flagged_by: actor, flagged_at: new Date().toISOString() };
+      state.active.push(entry);
+      state.history.push({ ...entry, action: "flagged" });
+      await writeQualityState(env.OBSERVATIONS, state);
+      return json({ ok: true, entry, state });
+    }
+    if (path === "/quality/restore" && request.method === "POST") {
+      if (!qualityMutationOriginAllowed(request)) return json({ error: "Origin not allowed" }, 403);
+      if (!env.QUALITY_REVIEW_TOKEN)
+        return json({ error: "Quality review is not configured. Add the QUALITY_REVIEW_TOKEN Worker secret before restoring sites." }, 503);
+      if ((request.headers.get("Authorization") || "") !== `Bearer ${env.QUALITY_REVIEW_TOKEN}`)
+        return json({ error: "Reviewer authorization failed" }, 401);
+      const body = await request.json();
+      const key = String(body.key || "").trim();
+      const actor = String(body.actor || "").trim().slice(0, 80);
+      if (!key || !actor) return json({ error: "quarantine key and reviewer name are required" }, 400);
+      const state = await readQualityState(env.OBSERVATIONS);
+      const index = state.active.findIndex((entry) => entry.key === key);
+      if (index < 0) return json({ error: "Active quarantine not found" }, 404);
+      const [entry] = state.active.splice(index, 1);
+      if (actor.toLowerCase() === String(entry.flagged_by || "").trim().toLowerCase()) {
+        state.active.push(entry);
+        return json({ error: "A different reviewer must confirm the site is healthy" }, 403);
+      }
+      state.history.push({ ...entry, action: "restored", restored_by: actor, restored_at: new Date().toISOString() });
+      await writeQualityState(env.OBSERVATIONS, state);
+      return json({ ok: true, restored: entry, state });
     }
 
     if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
@@ -301,6 +393,8 @@ export default {
         }
       }
 
+      const qualityState = await readQualityState(env.OBSERVATIONS);
+      candidateRows = candidateRows.filter((row) => !isQuarantined(row, qualityState.active));
       let filtered = candidateRows.filter((row) => {
         const time = Date.parse(row.observation_time);
         const value = typeof row.value === "number" ? row.value : null;
