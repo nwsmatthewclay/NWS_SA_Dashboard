@@ -23,7 +23,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <main><div class="workspace">
 <aside class="sidebar"><div class="side-title"><h2>Report criteria</h2><span class="eyebrow">IRIS-style query</span></div>
 <div class="group-title">01 · Observation</div>
-<div class="field"><label for="element">Weather element</label><select id="element"><option value="">All elements</option><option value="wind_gust">Wind gust</option><option value="wind_speed">Wind speed</option><option value="wind_direction">Wind direction</option><option value="temperature">Temperature</option><option value="dewpoint">Dewpoint</option><option value="precipitation">Precipitation</option><option value="ice_accretion">Ice accretion</option><option value="snowfall">Snowfall</option><option value="snow_depth">Snow depth</option><option value="snow_water_equivalent">Snow water equivalent</option><option value="relative_humidity">Relative humidity</option><option value="present_weather">Present weather</option></select></div>
+<div class="field"><label for="element">Weather element</label><select id="element"><option value="">All elements</option><option value="wind_gust">Wind gust</option><option value="wind_speed">Wind speed</option><option value="wind_direction">Wind direction</option><option value="temperature">Temperature</option><option value="dewpoint">Dewpoint</option><option value="precipitation">Precipitation</option><option value="ice_accretion">Hourly ice accretion</option><option value="ice_accretion_total">Total ice accumulation</option><option value="snowfall">Snowfall</option><option value="snow_depth">Snow depth</option><option value="snow_water_equivalent">Snow water equivalent</option><option value="relative_humidity">Relative humidity</option><option value="present_weather">Present weather</option></select></div>
 <div class="field"><label for="window">Search time window</label><select id="window"><option value="1">Past 1 hour</option><option value="3">Past 3 hours</option><option value="6">Past 6 hours</option><option value="12">Past 12 hours</option><option value="24" selected>Past 24 hours</option><option value="48">Past 48 hours</option><option value="72">Past 72 hours</option><option value="120">Past 5 days</option><option value="custom">Custom date range</option></select></div>
 <div class="field"><label for="statistic">Accumulation period</label><select id="statistic"><option value="auto" selected>Match search window (automatic)</option><option value="">All report types</option><option value="instantaneous">Instantaneous</option><option value="maximum">Daily maximum</option><option value="minimum">Daily minimum</option><option value="daily_report">Daily report</option><option value="reported_accumulation">Reported accumulation</option><option value="1h_accumulation">1-hour accumulation</option><option value="3h_accumulation">3-hour accumulation</option><option value="6h_accumulation">6-hour accumulation</option><option value="12h_accumulation">12-hour accumulation</option><option value="24h_accumulation">24-hour accumulation</option><option value="48h_accumulation">48-hour accumulation</option><option value="72h_accumulation">72-hour accumulation</option><option value="120h_accumulation">120-hour accumulation</option></select></div>
 <div id="customDates" style="display:none"><div class="two"><div class="field"><label for="startDate">Start (local)</label><input type="datetime-local" id="startDate"></div><div class="field"><label for="endDate">End (local)</label><input type="datetime-local" id="endDate"></div></div></div>
@@ -36,7 +36,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <div class="two"><div class="field"><label for="minValue">Minimum value</label><input type="number" id="minValue" step="any" placeholder="Any"></div><div class="field"><label for="maxValue">Maximum value</label><input type="number" id="maxValue" step="any" placeholder="Any"></div></div>
 <div class="two"><div class="field"><label for="qc">Quality control</label><select id="qc"><option value="">All statuses</option><option value="provider">Provider screened</option><option value="unknown">Unknown / not specified</option></select></div><div class="field"><label for="pageSize">Rows per page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option></select></div></div>
 <div class="actions"><button class="btn primary wide" id="searchBtn">Retrieve reports</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export CSV</button><button class="btn wide" id="printBtn">Print report</button></div>
-<div class="note">Ice accretion displays routine ASOS METAR I1 (1-hour) groups only. SPECI reports and I3/I6 groups are excluded; the selected time window controls how many hourly reports are returned, not the accumulation period.</div>
+<div class="note">Hourly ice accretion shows individual routine ASOS METAR I1 (1-hour) reports for quality control. Total ice accumulation sums those hourly reports over the selected search window, by station. SPECI reports and I3/I6 groups are excluded. Missing hours are identified in the calculation details and are never assumed to be zero.</div>
 </aside>
 <section class="results"><div class="metrics">
 <div class="metric"><b id="metricObs">—</b><span>Observations in archive</span></div><div class="metric"><b id="metricStations">—</b><span>Provider station records</span></div><div class="metric"><b id="metricSources">—</b><span>Reporting sources</span></div><div class="metric"><b id="metricLatest">—</b><span>Latest observation (UTC)</span></div>
@@ -70,20 +70,27 @@ async function initialize(){
 }
 function queryParams(limit=50,offset=0){
  const p=new URLSearchParams();p.set("limit",limit);p.set("offset",offset);p.set("sort",$("sort").value);
- if($("element").value)p.set("element",$("element").value);
+ const selectedElement=$("element").value;
+ const isIceHourly=selectedElement==="ice_accretion";
+ const isIceTotal=selectedElement==="ice_accretion_total";
+ const apiElement=isIceTotal?"ice_accretion":selectedElement;
+ if(apiElement)p.set("element",apiElement);
  const selectedPeriod=$("statistic").value;
  let effectivePeriod=selectedPeriod;
- if($("element").value==="ice_accretion" && selectedPeriod==="auto"){
-  // Derive the selected accumulation from the time window; hourly inputs
-  // remain visible inside each result for QC.
-  effectivePeriod=$("window").value==="custom" ? "1h_accumulation" : Number($("window").value)+"h_accumulation";
+ if(isIceTotal && selectedPeriod==="auto"){
+  // Total mode sums the hourly METAR I1 observations over the chosen window.
+  // Custom ranges use their elapsed duration, rounded up to whole hours.
+  const hours=$("window").value==="custom"
+   ? Math.max(1,Math.ceil((new Date($("endDate").value).getTime()-new Date($("startDate").value).getTime())/3600000))
+   : Number($("window").value);
+  effectivePeriod=hours+"h_accumulation";
  }
  if(effectivePeriod && effectivePeriod!=="auto")p.set("statistic",effectivePeriod);
- if($("element").value==="ice_accretion" && effectivePeriod && effectivePeriod!=="auto")p.set("accumulation_hours",Number((effectivePeriod.match(/^(\d+)h_accumulation$/)||[])[1]||0));
+ if(isIceTotal && effectivePeriod && effectivePeriod!=="auto")p.set("accumulation_hours",Number((effectivePeriod.match(/^(\d+)h_accumulation$/)||[])[1]||0));
  if($("reportType").value)p.set("report_type",$("reportType").value);
  // Preserve all hourly ice inputs; extreme-per-station reduction is not
  // appropriate before accumulation/QC processing.
- if($("element").value!=="ice_accretion"){
+ if($("element").value!=="ice_accretion" && $("element").value!=="ice_accretion_total"){
   if($("sort").value==="value_desc")p.set("extreme","highest");
   if($("sort").value==="value_asc")p.set("extreme","lowest");
  }
