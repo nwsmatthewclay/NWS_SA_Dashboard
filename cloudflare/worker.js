@@ -143,6 +143,66 @@ export default {
           }
         }
         candidateRows = [...selected.values()].map(item => item.row);
+
+        // Derive multi-hour totals only from deduplicated routine METAR I1
+        // reports, retaining each hourly component for quality control.
+        const requestedIceHours = statistic
+          ? Number((statistic.match(/^(\\d+)h_accumulation$/) || [])[1] || 0)
+          : 0;
+        if (requestedIceHours > 1) {
+          const hourly = candidateRows.filter((row) => {
+            const time = Date.parse(row.observation_time);
+            return row.accumulation_hours === 1 &&
+              typeof row.value === "number" &&
+              (!source || row.source === source) &&
+              (!stationId || row.station_id === stationId) &&
+              (!qcStatus || row.qc_status === qcStatus) &&
+              (startMs === null || time >= startMs) &&
+              (endMs === null || time <= endMs);
+          });
+          const groups = new Map();
+          for (const row of hourly) {
+            const key = row.station_id + "|" + row.source;
+            if (!groups.has(key)) groups.set(key, new Map());
+            const time = Date.parse(row.observation_time);
+            groups.get(key).set(Math.floor(time / 3600000), row);
+          }
+          const derived = [];
+          for (const componentsMap of groups.values()) {
+            const components = [...componentsMap.values()].sort((a, b) =>
+              Date.parse(a.observation_time) - Date.parse(b.observation_time));
+            if (!components.length) continue;
+            const first = components[0], last = components[components.length - 1];
+            const missingHours = Math.max(0, requestedIceHours - components.length);
+            derived.push({
+              ...last,
+              variable: "ice_accretion_" + requestedIceHours + "h_reported_sum",
+              statistic: requestedIceHours + "h_accumulation",
+              accumulation_hours: requestedIceHours,
+              value: Number(components.reduce((sum, row) => sum + Number(row.value), 0).toFixed(3)),
+              period_start: first.observation_time,
+              period_end: last.observation_time,
+              raw_value: null,
+              raw_unit: null,
+              qc_status: "derived_reported_sum",
+              metadata: {
+                derivation: "sum_of_deduplicated_routine_METAR_I1_reports",
+                requested_window_hours: requestedIceHours,
+                source_report_count: components.length,
+                missing_hour_count: missingHours,
+                coverage_percent: Number((components.length / requestedIceHours * 100).toFixed(1)),
+                complete_hourly_coverage: missingHours === 0,
+                component_reports: components.map(row => ({
+                  variable: row.variable, value: row.value, unit: row.unit,
+                  observation_time: row.observation_time,
+                  raw_value: row.raw_value, raw_unit: row.raw_unit,
+                  qc_status: row.qc_status
+                }))
+              }
+            });
+          }
+          candidateRows = derived;
+        }
       }
 
       let filtered = candidateRows.filter((row) => {
