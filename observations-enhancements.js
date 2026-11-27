@@ -2,6 +2,7 @@
 "use strict";
 let charts=[];
 let summaryText="";
+let qualityState={active:[],history:[]};
 const labels={temperature:"Temperature",dewpoint:"Dewpoint",wind_speed:"Wind speed",wind_gust:"Wind gust",wind_chill:"Wind chill",heat_index:"Heat index",precipitation:"Precipitation",snowfall:"Snowfall",snow_depth:"Snow depth",ice_accretion:"Ice accretion"};
 const colors={temperature:"#c65b42",dewpoint:"#3d83a8",wind_speed:"#476b52",wind_gust:"#b08a42",wind_chill:"#4575b4",heat_index:"#d66a36",precipitation:"#3979ad",snowfall:"#6e9fc1",snow_depth:"#7e8dba",ice_accretion:"#8c6caa"};
 const units={temperature:"°F",dewpoint:"°F",wind_speed:"mph",wind_gust:"mph",wind_chill:"°F",heat_index:"°F",precipitation:"in",snowfall:"in",snow_depth:"in",ice_accretion:"in"};
@@ -107,14 +108,65 @@ async function loadTimeSeries(){
  }catch(e){$("tsStatus").textContent="Time series failed: "+e.message;$("tsCharts").innerHTML='<div class="summary-empty" style="grid-column:1/-1">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Load time series";}
 }
+async function postQuality(path,body,token){
+ const headers={"Content-Type":"application/json"};
+ if(token)headers.Authorization="Bearer "+token;
+ const response=await fetch(api()+path,{method:"POST",headers,body:JSON.stringify(body),cache:"no-store"});
+ const data=await response.json().catch(()=>({error:"The API returned an unreadable response"}));
+ if(!response.ok)throw new Error(data.error||("API "+response.status));
+ return data;
+}
+async function refreshQuality(){
+ $("qualityStatus").textContent="Loading quality records…";
+ const state=await get("/quality");
+ qualityState={active:Array.isArray(state.active)?state.active:[],history:Array.isArray(state.history)?state.history:[]};
+ renderQuality();
+}
+function renderQuality(){
+ const active=qualityState.active||[],history=(qualityState.history||[]).slice().reverse().slice(0,50);
+ $("qualityStatus").textContent=active.length+" active quarantine"+(active.length===1?"":"s");
+ $("qualityActiveList").innerHTML=active.length?'<div class="summary-grid">'+active.map(entry=>'<div class="summary-card"><div class="summary-label">'+safe(labels[entry.element]||entry.element)+' · '+safe(entry.provider_station_id||entry.station_id)+'</div><div class="summary-value">'+safe(entry.station_name||entry.provider_station_id||entry.station_id)+'</div><div class="summary-meta">Flagged '+safe(time(entry.flagged_at))+' UTC by '+safe(entry.flagged_by)+'</div><div class="summary-meta">'+safe(entry.reason)+'</div><div style="margin-top:12px"><button class="btn" type="button" data-restore-quality="'+safe(entry.key)+'">Confirm data is good / restore</button></div></div>').join("")+'</div>':'<div class="summary-empty">No active site quarantines. All reporting sites are currently included.</div>';
+ $("qualityHistoryList").innerHTML=history.length?'<div class="table-wrap"><table><thead><tr><th>Action</th><th>Site</th><th>Element</th><th>Reason</th><th>Person</th><th>Time (UTC)</th></tr></thead><tbody>'+history.map(item=>'<tr><td>'+safe(item.action)+'</td><td>'+safe(item.station_name||item.provider_station_id||item.station_id)+'</td><td>'+safe(labels[item.element]||item.element)+'</td><td>'+safe(item.reason)+'</td><td>'+safe(item.action==="restored"?item.restored_by:item.flagged_by)+'</td><td>'+safe(time(item.action==="restored"?item.restored_at:item.flagged_at))+'</td></tr>').join("")+'</tbody></table></div>':'<div class="summary-empty">No quality actions recorded yet.</div>';
+}
+async function flagObservation(button){
+ const actor=prompt("Your name (recorded in the quality audit):");
+ if(!actor||!actor.trim())return;
+ const reason=prompt("Why should this station's "+(labels[button.dataset.element]||button.dataset.element)+" reports be quarantined?");
+ if(!reason||!reason.trim())return;
+ button.disabled=true;
+ try{
+  await postQuality("/quality/flag",{station_id:button.dataset.stationId,provider_station_id:button.dataset.providerStationId,station_name:button.dataset.stationName,element:button.dataset.element,actor:actor.trim(),reason:reason.trim()});
+  await refreshQuality();
+  if(typeof retrieve==="function")await retrieve();
+  if($("mapPanel").style.display!=="none"){mapDirty=true;updateObservationMap();}
+  alert("Site and element quarantined. Its reports are now excluded from the dashboard.");
+ }catch(error){alert("Could not flag this site: "+error.message);}
+ finally{button.disabled=false;}
+}
+async function restoreQuality(button){
+ const actor=$("qualityReviewerName").value.trim(),token=$("qualityReviewerToken").value;
+ if(!actor){alert("Enter the reviewing person's name first.");return;}
+ if(!token){alert("Enter the quality review authorization token first.");return;}
+ button.disabled=true;
+ try{
+  await postQuality("/quality/restore",{key:button.dataset.restoreQuality,actor},token);
+  $("qualityReviewerToken").value="";
+  await refreshQuality();
+  if(typeof retrieve==="function")await retrieve();
+  if($("mapPanel").style.display!=="none"){mapDirty=true;updateObservationMap();}
+  alert("Quarantine removed. This station's reports are eligible for use again.");
+ }catch(error){alert("Could not restore this site: "+error.message);}
+ finally{button.disabled=false;}
+}
 function showView(view){
- const panels={table:"tablePanel",map:"mapPanel",timeseries:"timeSeriesPanel",summary:"summaryPanel"};
- const tabs={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab"};
+ const panels={table:"tablePanel",map:"mapPanel",timeseries:"timeSeriesPanel",summary:"summaryPanel",sitequality:"siteQualityPanel"};
+ const tabs={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab",sitequality:"siteQualityTab"};
  Object.entries(panels).forEach(([k,id])=>$(id).style.display=k===view?"":"none");
  Object.entries(tabs).forEach(([k,id])=>$(id).classList.toggle("active",k===view));
  if(view==="map"){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false;}},100);}
  if(view==="timeseries"&&!$("tsStation").value&&$("station").value)$("tsStation").value=$("station").value;
  if(view==="summary"&&!summaryText)generateSummary();
+ if(view==="sitequality")refreshQuality().catch(e=>$("qualityStatus").textContent="Quality service unavailable: "+e.message);
 }
 function openStation(id){$("tsStation").value=id;showView("timeseries");loadTimeSeries();}
 window.openTimeSeriesForStation=openStation;
@@ -178,6 +230,8 @@ function init(){
  initialized=true;
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
  $("summaryTab").addEventListener("click",()=>showView("summary"));
+ $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
+ $("qualityRefreshBtn").addEventListener("click",()=>refreshQuality().catch(e=>alert("Quality refresh failed: "+e.message)));
  $("tsPeriod").addEventListener("change",()=>$("tsCustom").style.display=$("tsPeriod").value==="custom"?"flex":"none");
  $("tsLoadBtn").addEventListener("click",loadTimeSeries);
  $("generateSummaryBtn").addEventListener("click",generateSummary);
@@ -187,7 +241,8 @@ function init(){
   const url=URL.createObjectURL(new Blob([summaryText],{type:"text/plain;charset=utf-8"})),a=document.createElement("a");
   a.href=url;a.download="BTV_observation_summary_"+new Date().toISOString().slice(0,10)+".txt";a.click();URL.revokeObjectURL(url);
  });
- document.addEventListener("click",e=>{const b=e.target.closest("[data-open-timeseries]");if(b)openStation(b.getAttribute("data-open-timeseries"));});
+ document.addEventListener("click",e=>{const stationButton=e.target.closest("[data-open-timeseries]");if(stationButton)openStation(stationButton.getAttribute("data-open-timeseries"));const flagButton=e.target.closest("[data-flag-observation]");if(flagButton)flagObservation(flagButton);const restoreButton=e.target.closest("[data-restore-quality]");if(restoreButton)restoreQuality(restoreButton);});
+ refreshQuality().catch(e=>{$("qualityStatus").textContent="Quality service unavailable: "+e.message;});
  window.showObservationView=showView;
 }
 window.initObservationEnhancements=init;
