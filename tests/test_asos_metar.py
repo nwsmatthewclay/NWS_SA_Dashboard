@@ -39,6 +39,13 @@ class TestASOSMetar(unittest.TestCase):
         self.assertEqual(knots_to_mph(0), 0.0)
         self.assertIsNone(knots_to_mph(None))
 
+    def test_unit_aware_wind_normalization(self):
+        self.assertEqual(wind_speed_to_mph(20, "mph"), 20.0)
+        self.assertEqual(wind_speed_to_mph(20, "knot"), 23.0)
+        self.assertEqual(wind_speed_to_mph(36, "wmoUnit:km_h-1"), 22.4)
+        self.assertEqual(wind_speed_to_mph(10, "wmoUnit:m_s-1"), 22.4)
+        self.assertEqual(wind_speed_to_mph(0, "mph"), 0.0)
+
     def test_wind_and_peak_gust(self):
         parsed = parse_metar("METAR KBTV 261951Z 27015G25KT 10SM CLR 04/M02 A3012 RMK PK WND 28032/1940")
         self.assertEqual(parsed["wind_speed_kt"], 15)
