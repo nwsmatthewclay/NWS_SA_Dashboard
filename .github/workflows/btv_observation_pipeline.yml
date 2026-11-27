@@ -1,0 +1,52 @@
+name: BTV Observation Pipeline
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
+  push:
+    paths:
+      - "scripts/observation_pipeline.py"
+      - "scripts/asos_metar.py"
+      - "tests/test_observation_pipeline.py"
+      - ".github/workflows/btv_observation_pipeline.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: btv-observation-pipeline
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Run pipeline unit tests
+        run: python -m unittest discover -s tests -p 'test_observation*.py' -v
+
+      - name: Ingest observations
+        env:
+          SYNOPTIC_API_KEY: ${{ secrets.SYNOPTIC_API_KEY }}
+          OBSERVATION_LOOKBACK_DAYS: "5"
+        run: python scripts/observation_pipeline.py
+
+      - name: Upload normalized observation archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: btv-observation-data-${{ github.run_id }}
+          path: observation_data/
+          if-no-files-found: error
+          retention-days: 14
