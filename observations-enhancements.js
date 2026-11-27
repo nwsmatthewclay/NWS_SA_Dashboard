@@ -135,7 +135,19 @@ async function generateSummary(){
  $("summaryResults").innerHTML='<div class="summary-empty">Retrieving precipitation, snow, ice, apparent temperature and wind observations…</div>';
  try{
   const specs=[["precipitation",{statistic:stat,accumulation_hours:hours}],["snowfall",{}],["ice_accretion",{statistic:stat,accumulation_hours:hours}],["heat_index",{}],["wind_chill",{}],["wind_gust",{}],["snow_depth",{}],["temperature",{}]];
-  const pairs=await Promise.all(specs.map(async ([el,extra])=>[el,await fetchRows(el,range,null,extra)]));
+  // A single unavailable category should not discard all the other valid
+  // summary results. Keep failures visible so missing data is never mistaken
+  // for a zero or a successful empty result.
+  const settled=await Promise.all(specs.map(async ([el,extra])=>({
+   element:el,
+   result:await fetchRows(el,range,null,extra).then(rows=>({ok:true,rows}),error=>({ok:false,error}))
+  })));
+  const pairs=[],failures=[];
+  settled.forEach(item=>{
+   if(item.result.ok)pairs.push([item.element,item.result.rows]);
+   else failures.push(item.element+": "+item.result.error.message);
+  });
+  if(!pairs.length)throw new Error("All observation queries failed. Check the Cloudflare API connection and try again. "+failures.join(" | "));
   const d=Object.fromEntries(pairs);
   const snow=(d.snowfall||[]).filter(r=>Number(r.accumulation_hours)===hours||(hours===24&&r.statistic==="daily_report"));
   const rows=[
@@ -152,8 +164,9 @@ async function generateSummary(){
   const html=rows.map(x=>card(x[0],x[1],x[2],x[3])).filter(Boolean);
   const generated=new Date().toLocaleString("en-US",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})+" UTC";
   const intro="Analysis window: "+time(range.start)+" – "+time(range.end)+" UTC · Generated "+generated+". Precipitation and ice use the selected accumulation period; snowfall is included only when its report duration matches. Heat index and wind chill appear only when valid derived observations exist.";
-  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
-  $("summaryStatus").textContent=html.length+" significant categories found";
+  const warning=failures.length?'<div class="summary-empty" role="status">Some categories could not be retrieved and were omitted: '+safe(failures.join("; "))+'</div>':"";
+  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+warning+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
+  $("summaryStatus").textContent=html.length+" significant categories found"+(failures.length?" · "+failures.length+" categories unavailable":"");
   summaryText="BTV OPERATIONAL OBSERVATION SUMMARY\n"+intro+"\n\n"+rows.filter(x=>x[1]).map(x=>{const r=x[1],s=stations.find(y=>y.station_id===r.station_id);return x[0]+": "+fmt(r.value)+" "+x[2]+" at "+(r.station_name||(s&&s.name)||r.provider_station_id)+" · "+time(r.observation_time)+" UTC · "+(r.source||"")+" · "+(r.accumulation_hours||"")+"h"}).join("\n");
  }catch(e){$("summaryStatus").textContent="Summary failed: "+e.message;$("summaryResults").innerHTML='<div class="summary-empty">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Generate summary";}
