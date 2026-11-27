@@ -23,7 +23,7 @@ def is_speci_report(raw: str) -> bool:
 def metar_report_datetime(raw: str, fallback: datetime | None = None) -> datetime | None:
     """Decode the METAR DDHHMMZ issue time, resolving its date near fallback."""
     tokens = (raw or "").strip().upper().split()
-    token = next((t for t in tokens if re.fullmatch(r"\\d{6}Z", t)), None)
+    token = next((t for t in tokens if re.fullmatch(r"\d{6}Z", t)), None)
     if not token:
         return fallback.astimezone(timezone.utc) if fallback else None
     if fallback is None:
