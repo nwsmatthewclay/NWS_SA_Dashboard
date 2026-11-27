@@ -125,8 +125,11 @@ async function generateSummary(){
  }catch(e){$("summaryStatus").textContent="Summary failed: "+e.message;$("summaryResults").innerHTML='<div class="summary-empty">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Generate summary";}
 }
+let initialized=false;
 function init(){
  populateStations();
+ if(initialized)return;
+ initialized=true;
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
  $("summaryTab").addEventListener("click",()=>showView("summary"));
  $("tsPeriod").addEventListener("change",()=>$("tsCustom").style.display=$("tsPeriod").value==="custom"?"flex":"none");
