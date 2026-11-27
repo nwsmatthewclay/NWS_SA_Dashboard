@@ -79,7 +79,7 @@ function queryParams(limit=50,offset=0){
   effectivePeriod=$("window").value==="custom" ? "1h_accumulation" : Number($("window").value)+"h_accumulation";
  }
  if(effectivePeriod && effectivePeriod!=="auto")p.set("statistic",effectivePeriod);
- if($("element").value==="ice_accretion" && effectivePeriod && effectivePeriod!=="auto")p.set("accumulation_hours",Number((effectivePeriod.match(/^(\\d+)h_accumulation$/)||[])[1]||0));
+ if($("element").value==="ice_accretion" && effectivePeriod && effectivePeriod!=="auto")p.set("accumulation_hours",Number((effectivePeriod.match(/^(\d+)h_accumulation$/)||[])[1]||0));
  if($("reportType").value)p.set("report_type",$("reportType").value);
  // Preserve all hourly ice inputs; extreme-per-station reduction is not
  // appropriate before accumulation/QC processing.
