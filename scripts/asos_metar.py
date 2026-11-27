@@ -22,7 +22,7 @@ def knots_to_mph(value):
 
 
 def _hundredths(group_value):
-    if group_value == "////":
+    if "/" in group_value:
         return None
     return int(group_value) / 100.0
 
