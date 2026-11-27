@@ -13,7 +13,7 @@ function api(){return "https://btv-observation-api.jusmessinwityah1.workers.dev"
 async function get(path){const r=await fetch(api()+path,{cache:"no-store"});if(!r.ok)throw new Error("API "+r.status+" for "+path);return r.json();}
 function stationGroup(station){
  const type=String(station.report_type||"").toLowerCase(),source=String(station.source||"").toLowerCase(),network=String(station.network||"").toLowerCase();
- if(type==="asos"||source==="iem_asos"||network.includes("asos/awos"))return "ASOS/AWOS";
+ if(type==="asos"||source==="iem_asos"||network.includes("asos")||network.includes("awos"))return "ASOS/AWOS";
  if(type==="coop"||source==="iem_coop")return "COOP";
  if(type==="cocorahs"||source==="cocorahs")return "CoCoRaHS";
  return "Public";
