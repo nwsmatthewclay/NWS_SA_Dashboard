@@ -109,6 +109,34 @@ export default {
       };
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
       let candidateRows = rows;
+
+      // Hourly precipitation is intentionally a single routine ASOS METAR
+      // sample per physical station and UTC hour. Discard legacy/provider
+      // duplicates (including SPECI and NWS/Synoptic hourly values), then
+      // retain the candidate closest to the scheduled :53 issue time.
+      if (element === "precipitation") {
+        const isHourlyPrecip = (row) =>
+          row.element === "precipitation" && row.accumulation_hours === 1;
+        const nonHourly = candidateRows.filter((row) => !isHourlyPrecip(row));
+        const selected = new Map();
+        for (const row of candidateRows.filter(isHourlyPrecip)) {
+          if (row.source !== "IEM_ASOS" ||
+              row.variable !== "metar_precipitation_1h" ||
+              row.metadata?.hourly_selection !== "routine_METAR_near_53Z") continue;
+          const time = Date.parse(row.observation_time);
+          if (!Number.isFinite(time)) continue;
+          const hour = Math.floor(time / 3600000);
+          const key = row.station_id + "|" + hour;
+          const minute = new Date(time).getUTCMinutes();
+          const distance = Math.abs(minute - 53);
+          const prior = selected.get(key);
+          if (!prior || distance < prior.distance ||
+              (distance === prior.distance && time > prior.time)) {
+            selected.set(key, { row, distance, time });
+          }
+        }
+        candidateRows = nonHourly.concat([...selected.values()].map((item) => item.row));
+      }
       const requestedIceHours = element === "ice_accretion" && statistic
         ? Number((statistic.match(/^(\d+)h_accumulation$/) || [])[1] || 0) : 0;
       if (requestedIceHours > 0) {
