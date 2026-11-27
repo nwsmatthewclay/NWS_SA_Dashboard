@@ -191,7 +191,7 @@ function drawObservationMap(points){
   if($("mapMarkers").checked)marker.addTo(stationLayer);
   if($("mapLabels").checked)L.marker([p.latitude,p.longitude],{interactive:false,icon:L.divIcon({className:"",html:'<span style="display:block;transform:translate(-50%,-23px);white-space:nowrap;padding:2px 4px;border-radius:4px;background:#fffdf0dd;border:1px solid #d6d1c2;color:#28382d;font:700 10px Arial">'+fmt(p.mapValue)+'</span>',iconSize:[1,1],iconAnchor:[0,0]})}).addTo(stationLayer);
  }
- if(points.length>=4&&($("mapFill").checked||$("mapLines").checked)&&window.d3?.contours){
+ if(points.length>=4&&!["wind_direction","present_weather"].includes(el)&&($("mapFill").checked||$("mapLines").checked)&&window.d3?.contours){
   const latMin=Math.min(...points.map(p=>p.latitude)),latMax=Math.max(...points.map(p=>p.latitude)),lonMin=Math.min(...points.map(p=>p.longitude)),lonMax=Math.max(...points.map(p=>p.longitude));
   const nx=180,ny=150,grid=new Array(nx*ny);
   for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
@@ -207,7 +207,7 @@ function drawObservationMap(points){
   }
   mapOverlay=L.imageOverlay(canvas.toDataURL(),[[latMin,lonMin],[latMax,lonMax]],{opacity:.9,interactive:false}).addTo(observationMap);
  }
- $("mapStatus").textContent=points.length<4?"Station plot only · at least four stations needed for contours":"IDW contours · "+points.length+" stations";
+ $("mapStatus").textContent=["wind_direction","present_weather"].includes(el)?"Station observations only · categorical/directional data are not interpolated":points.length<4?"Station plot only · at least four stations needed for contours":"IDW contours · "+points.length+" stations";
 }
 async function updateObservationMap(){
  if(!$("element").value){$("mapStatus").textContent="Choose a weather element first.";return}
