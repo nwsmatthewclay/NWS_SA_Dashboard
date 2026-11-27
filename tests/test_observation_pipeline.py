@@ -35,9 +35,9 @@ class TestObservationPipelineGeometry(unittest.TestCase):
         self.assertEqual(normalized_dimensions("daily_precipitation"), ("precipitation", "daily_report"))
         self.assertEqual(normalized_dimensions("precipitation_accumulation", {"accumulation_hours": 24}),
                          ("precipitation", "24h_accumulation"))
-        self.assertEqual(normalized_dimensions("precipitation_1h"), ("precipitation", "reported_accumulation"))
+        self.assertEqual(normalized_dimensions("precipitation_1h"), ("precipitation", "1h_accumulation"))
         self.assertEqual(normalized_dimensions("daily_new_snow"), ("snowfall", "daily_report"))
-        self.assertEqual(normalized_dimensions("ice_accretion_1h"), ("ice_accretion", "reported_accumulation"))
+        self.assertEqual(normalized_dimensions("ice_accretion_1h"), ("ice_accretion", "1h_accumulation"))
 
     def test_multipolygon(self):
         geometry = {"type": "MultiPolygon", "coordinates": [
