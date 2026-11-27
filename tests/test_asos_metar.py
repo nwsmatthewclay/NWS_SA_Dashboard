@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime, timezone
 
-from scripts.asos_metar import knots_to_mph, normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime
+from scripts.asos_metar import knots_to_mph, wind_speed_to_mph, normalize_iem_wind, parse_metar, is_metar_report, is_speci_report, is_routine_hourly_metar, metar_report_datetime
 
 
 class TestASOSMetar(unittest.TestCase):
