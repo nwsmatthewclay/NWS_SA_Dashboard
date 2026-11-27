@@ -80,12 +80,12 @@ def parse_metar(raw: str, report_time: datetime | None = None) -> dict:
             result[field] = _hundredths(amount)
             result["ice_sensor_status"] = "missing" if amount == "///" else "reported"
 
-        peak = re.fullmatch(r"PKWND(\d{3})(\d{2,3})/(\d{4})", token)
-        if peak:
-            direction, speed, _ = peak.groups()
-            result["peak_wind_direction_deg"] = int(direction)
-            result["peak_wind_speed_kt"] = int(speed)
-            result["peak_wind_speed_mph"] = knots_to_mph(speed)
+    peak_match = re.search(r"PK\\s*WND\\s+(\\d{3})(\\d{2,3})/(\\d{4})", text)
+    if peak_match:
+        direction, speed, _ = peak_match.groups()
+        result["peak_wind_direction_deg"] = int(direction)
+        result["peak_wind_speed_kt"] = int(speed)
+        result["peak_wind_speed_mph"] = knots_to_mph(speed)
 
         if re.fullmatch(r"P(?:\d{4}|////)", token):
             result["precip_1h_in"] = _hundredths(token[1:])
