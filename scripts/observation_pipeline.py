@@ -303,7 +303,8 @@ def ingest_iem_asos(geometries):
             value = row.get(field)
             if value not in (None, "", "M", "T"):
                 try:
-                    add_observation(st, variable, float(value), unit, ts,
+                    observation_ts = metar_report_datetime(metar, parse_time(ts)) if variable.startswith("ice_accretion_") else ts
+                    add_observation(st, variable, float(value), unit, observation_ts or ts,
                                     row.get({"wind_mph":"sknt","gust_mph":"gust"}.get(field, field)),
                                     "knot" if field in ("wind_mph", "gust_mph") else unit,
                                     qc="provider",
