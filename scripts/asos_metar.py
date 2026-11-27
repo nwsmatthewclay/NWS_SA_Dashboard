@@ -31,9 +31,13 @@ def _hundredths(value):
     return None if "/" in value else int(value) / 100.0
 
 def is_metar_report(raw: str) -> bool:
-    """True only for routine METAR reports, excluding SPECI and other report types."""
+    """Recognize routine IEM METAR strings, including station-prefixed form."""
     tokens = (raw or "").strip().upper().split()
-    return bool(tokens and tokens[0] == "METAR")
+    if not tokens or tokens[0] == "SPECI":
+        return False
+    if tokens[0] == "METAR":
+        return True
+    return len(tokens) > 1 and bool(re.fullmatch(r"K[A-Z0-9]{3}", tokens[0])) and bool(re.fullmatch(r"\d{6}Z", tokens[1]))
 
 
 def is_speci_report(raw: str) -> bool:
