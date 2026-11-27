@@ -24,6 +24,9 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    env:
+      OBSERVATION_WORKER_URL: ${{ secrets.OBSERVATION_WORKER_URL }}
+      OBSERVATION_INGEST_TOKEN: ${{ secrets.OBSERVATION_INGEST_TOKEN }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -49,10 +52,8 @@ jobs:
         run: python scripts/observation_pipeline.py
 
       - name: Publish latest snapshot to Cloudflare R2 API
-        if: ${{ secrets.OBSERVATION_WORKER_URL != '' && secrets.OBSERVATION_INGEST_TOKEN != '' }}
+        if: ${{ env.OBSERVATION_WORKER_URL != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
         env:
-          OBSERVATION_WORKER_URL: ${{ secrets.OBSERVATION_WORKER_URL }}
-          OBSERVATION_INGEST_TOKEN: ${{ secrets.OBSERVATION_INGEST_TOKEN }}
         run: |
           set -euo pipefail
           BASE_URL="${OBSERVATION_WORKER_URL%/}"
