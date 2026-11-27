@@ -28,10 +28,10 @@ jobs:
         if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
         run: npm install --global wrangler@4
 
-      - name: Set Worker ingest secret
-        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
-        run: printf '%s' "$OBSERVATION_INGEST_TOKEN" | wrangler secret put INGEST_SECRET --config cloudflare/wrangler.toml
-
       - name: Deploy Worker
         if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
         run: wrangler deploy --config cloudflare/wrangler.toml
+
+      - name: Set Worker ingest secret
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
+        run: printf '%s' "$OBSERVATION_INGEST_TOKEN" | wrangler secret put INGEST_SECRET --config cloudflare/wrangler.toml
