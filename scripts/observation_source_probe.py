@@ -72,6 +72,50 @@ if nws is not None:
             wind_gust=props.get("windGust", {}).get("value"))
 
 
+# IEM ASOS/AWOS archive: five-day station-selected sample from airports in the BTV CWA.
+# IEM's processed archive is synchronized approximately every ten minutes.
+from scripts.asos_metar import normalize_iem_wind, parse_metar
+
+asos_name = "IEM ASOS/AWOS"
+asos_stations = "BTV,PBG,MSS,SLK,MPV,EFK,RUT"
+asos = get(asos_name, "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py", {
+    "station": asos_stations,
+    "data": "all",
+    "sts": (datetime.now(timezone.utc) - timedelta(days=5)).strftime("%Y-%m-%dT%H:%MZ"),
+    "ets": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
+    "tz": "Etc/UTC",
+    "format": "comma",
+    "latlon": "yes",
+    "elev": "no",
+    "missing": "empty",
+    "trace": "T",
+})
+if asos is not None:
+    if asos.ok and asos.text.strip():
+        rows = [normalize_iem_wind(row) for row in csv.DictReader(io.StringIO(asos.text))]
+        rows.sort(key=lambda row: row.get("valid", ""))
+        latest = rows[-1] if rows else {}
+        latest_metar = parse_metar(latest.get("metar", "")) if latest else {}
+        add(asos_name, "PASS" if rows else "PASS_EMPTY_PERIOD",
+            http_status=asos.status_code,
+            requested_stations=asos_stations.split(","),
+            report_rows=len(rows),
+            station_count=len({row.get("station") for row in rows if row.get("station")}),
+            latest_report_time=latest.get("valid"),
+            latest_station=latest.get("station"),
+            latest_wind_mph=latest.get("wind_mph"),
+            latest_gust_mph=latest.get("gust_mph"),
+            latest_peak_gust_mph=latest.get("peak_wind_gust_mph"),
+            latest_ice_accretion_1h_in=latest.get("ice_accretion_1hr"),
+            latest_ice_accretion_3h_in=latest.get("ice_accretion_3hr"),
+            latest_ice_accretion_6h_in=latest.get("ice_accretion_6hr"),
+            latest_metar_ice_sensor_status=latest_metar.get("ice_sensor_status"),
+            note="Wind and gusts normalized to mph; source knots retained. IEM archive data may lag real time.")
+    else:
+        add(asos_name, "HTTP_ERROR", http_status=asos.status_code,
+            body_preview=asos.text[:160])
+
+
 # Synoptic: station inventory, latest observations, and all requested precip windows.
 synoptic_token = os.getenv("SYNOPTIC_API_KEY", "").strip()
 if not synoptic_token:
