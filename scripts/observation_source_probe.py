@@ -68,8 +68,12 @@ if nws is not None:
         add(nws_name, "PASS", http_status=nws.status_code,
             station="KBTV", timestamp=props.get("timestamp"),
             temperature=props.get("temperature", {}).get("value"),
-            wind_speed=props.get("windSpeed", {}).get("value"),
-            wind_gust=props.get("windGust", {}).get("value"))
+            wind_speed_source_m_s=props.get("windSpeed", {}).get("value"),
+            wind_speed_mph=round(props.get("windSpeed", {}).get("value") * 2.236936, 1)
+                if isinstance(props.get("windSpeed", {}).get("value"), (int, float)) else None,
+            wind_gust_source_m_s=props.get("windGust", {}).get("value"),
+            wind_gust_mph=round(props.get("windGust", {}).get("value") * 2.236936, 1)
+                if isinstance(props.get("windGust", {}).get("value"), (int, float)) else None)
 
 
 # IEM ASOS/AWOS archive: five-day station-selected sample from airports in the BTV CWA.
@@ -84,7 +88,7 @@ asos = get(asos_name, "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py
     "sts": (datetime.now(timezone.utc) - timedelta(days=5)).strftime("%Y-%m-%dT%H:%MZ"),
     "ets": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
     "tz": "Etc/UTC",
-    "format": "comma",
+    "format": "onlycomma",
     "latlon": "yes",
     "elev": "no",
     "missing": "empty",
@@ -110,6 +114,12 @@ if asos is not None:
             latest_ice_accretion_3h_in=latest.get("ice_accretion_3hr"),
             latest_ice_accretion_6h_in=latest.get("ice_accretion_6hr"),
             latest_metar_ice_sensor_status=latest_metar.get("ice_sensor_status"),
+            latest_metar_precip_1h_in=latest_metar.get("precip_1h_in"),
+            latest_metar_precip_3h_or_6h_in=latest_metar.get("precip_3h_or_6h_in"),
+            latest_metar_precip_3h_or_6h_period_hours=latest_metar.get("precip_3h_or_6h_period_hours"),
+            latest_metar_precip_24h_in=latest_metar.get("precip_24h_in"),
+            latest_present_weather=latest.get("wxcodes"),
+            latest_hourly_precip_in=latest.get("p01i"),
             note="Wind and gusts normalized to mph; source knots retained. IEM archive data may lag real time.")
     else:
         add(asos_name, "HTTP_ERROR", http_status=asos.status_code,
