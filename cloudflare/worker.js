@@ -234,6 +234,26 @@ export default {
         }
         filtered = [...best.values()];
       }
+      // Convert ASOS flat-ice accretion to radial ice using the
+      // operational 0.40 factor. Preserve the original flat value unchanged.
+      if (element === "ice_accretion") {
+        filtered = filtered.map((row) => ({
+          ...row,
+          radial_value: Number((Number(row.value) * 0.40).toFixed(3)),
+          radial_unit: row.unit || "inch",
+          metadata: row.metadata?.component_reports
+            ? {
+                ...row.metadata,
+                component_reports: row.metadata.component_reports.map((component) => ({
+                  ...component,
+                  radial_value: Number((Number(component.value) * 0.40).toFixed(3)),
+                  radial_unit: component.unit || row.unit || "inch",
+                })),
+              }
+            : row.metadata,
+        }));
+      }
+
       filtered.sort(sorters[sort]);
       const total = filtered.length;
       const requestedLimit = Number(url.searchParams.get("limit") || 250);
