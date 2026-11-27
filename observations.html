@@ -80,13 +80,13 @@ async function initialize(){
   stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>{const o=new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id);$("station").add(o)});
   setHealth(true,"API connected · snapshot available");
   await retrieve();
- }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="9" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
+ }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="10" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
 }
 function queryParams(limit=50,offset=0){
  const p=new URLSearchParams();p.set("limit",limit);p.set("offset",offset);p.set("sort",$("sort").value);
  if($("element").value)p.set("element",$("element").value);
  if($("statistic").value)p.set("statistic",$("statistic").value);
- if($("element").value==="ice_accretion" && $("statistic").value)p.set("accumulation_hours",Number(($("statistic").value.match(/^(\\d+)h_accumulation$/)||[])[1]||0));
+ if($("element").value==="ice_accretion" && $("statistic").value)p.set("accumulation_hours",Number(($("statistic").value.match(/^(\d+)h_accumulation$/)||[])[1]||0));
  if($("reportType").value)p.set("report_type",$("reportType").value);
  if($("sort").value==="value_desc")p.set("extreme","highest");if($("sort").value==="value_asc")p.set("extreme","lowest");
  if($("source").value)p.set("source",$("source").value);
@@ -103,7 +103,7 @@ function queryParams(limit=50,offset=0){
 }
 function render(rows){
  lastRows=rows;
- if(!rows.length){$("rows").innerHTML='<tr><td colspan="9" class="empty">No reports match these criteria. Try a longer time window or a different element.</td></tr>';return}
+ if(!rows.length){$("rows").innerHTML='<tr><td colspan="10" class="empty">No reports match these criteria. Try a longer time window or a different element.</td></tr>';return}
  $("rows").innerHTML=rows.map(r=>{
   const station=stations.find(s=>s.station_id===r.station_id);
   const period=r.period_start&&r.period_end?fmtTime(r.period_start)+" – "+fmtTime(r.period_end):r.accumulation_hours? r.accumulation_hours+" h":r.statistic==="daily_report"?"Daily":"—";
@@ -124,7 +124,7 @@ async function retrieve(){
   $("resultCount").textContent=total.toLocaleString()+" matching reports";
   $("pageText").textContent="Page 1";$("pageInfo").textContent="Showing "+(total?1:0)+"–"+Math.min(limit,total)+" of "+total.toLocaleString();
   $("prevBtn").disabled=true;$("nextBtn").disabled=total<=limit;
- }catch(e){$("resultCount").textContent="Retrieval failed";$("rows").innerHTML='<tr><td colspan="9" class="empty">'+esc(e.message)+'</td></tr>'}
+ }catch(e){$("resultCount").textContent="Retrieval failed";$("rows").innerHTML='<tr><td colspan="10" class="empty">'+esc(e.message)+'</td></tr>'}
  finally{$("searchBtn").disabled=false}
 }
 async function changePage(delta){
