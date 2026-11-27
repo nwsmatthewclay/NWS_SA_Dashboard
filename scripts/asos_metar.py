@@ -14,7 +14,7 @@ def wind_speed_to_mph(value, unit: str | None) -> float | None:
     factors = {
         "mph": 1.0, "mi/h": 1.0, "mile/hour": 1.0, "miles/hour": 1.0,
         "kt": KNOTS_TO_MPH, "knot": KNOTS_TO_MPH, "knots": KNOTS_TO_MPH,
-        "m/s": 2.2369362921, "ms-1": 2.2369362921, "m.s-1": 2.2369362921,
+        "m/s": 2.2369362921, "ms-1": 2.2369362921, "m.s-1": 2.2369362921, "m_s-1": 2.2369362921,
         "km/h": 0.6213711922, "kmh-1": 0.6213711922, "km_h-1": 0.6213711922,
         "ft/s": 0.6818181818, "fts-1": 0.6818181818,
     }
