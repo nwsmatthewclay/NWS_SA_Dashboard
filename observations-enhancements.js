@@ -41,8 +41,8 @@ function renderCharts(series,station){
  Object.entries(series).forEach(([el,rows])=>{
   if(!rows.length)return;
   rows.sort((a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time));
-  const sets=[];
-  const mk=(name,key,color)=>({label:name,data:rows.map(r=>({x:new Date(r.observation_time).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}),y:Number(r[key])})).filter(p=>Number.isFinite(p.y)),borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:0,spanGaps:false});
+  const sets=[],chartLabels=rows.map(r=>new Date(r.observation_time).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}));
+  const mk=(name,key,color)=>({label:name,data:rows.map(r=>Number.isFinite(Number(r[key]))?Number(r[key]):null),borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:0,spanGaps:false});
   if(el==="ice_accretion"){
    sets.push(mk("Flat ice","value",colors[el]));
    if(rows.some(r=>Number.isFinite(Number(r.radial_value))))sets.push(mk("Radial ice (40%)","radial_value","#4b91a2"));
@@ -52,7 +52,7 @@ function renderCharts(series,station){
  if(!cards.length){root.innerHTML='<div class="summary-empty" style="grid-column:1/-1">No observations were found for the selected station, variables and timeframe. Try a longer period or different variables.</div>';return;}
  root.innerHTML=cards.map(c=>'<div class="chart-card"><h3>'+safe(c.title)+'</h3><div class="chart-canvas"><canvas id="'+c.id+'"></canvas></div><div class="chart-caption">'+c.rows.length+' reports · '+safe(c.unit)+' · original report times</div></div>').join("");
  cards.forEach(c=>{
-  const chart=new Chart($(c.id),{type:"line",data:{datasets:c.sets},options:{responsive:true,maintainAspectRatio:false,parsing:{xAxisKey:"x",yAxisKey:"y"},interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:c.sets.length>1,labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+": "+fmt(ctx.parsed.y)+" "+c.unit}}},scales:{x:{type:"category",ticks:{maxTicksLimit:7,maxRotation:0,font:{size:9}},grid:{display:false}},y:{title:{display:true,text:c.unit,font:{size:10}},ticks:{font:{size:9}},grid:{color:"#ece9e1"}}}}});
+  const chart=new Chart($(c.id),{type:"line",data:{labels:c.labels,datasets:c.sets},options:{responsive:true,maintainAspectRatio:false,parsing:{xAxisKey:"x",yAxisKey:"y"},interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:c.sets.length>1,labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+": "+fmt(ctx.parsed.y)+" "+c.unit}}},scales:{x:{type:"category",ticks:{maxTicksLimit:7,maxRotation:0,font:{size:9}},grid:{display:false}},y:{title:{display:true,text:c.unit,font:{size:10}},ticks:{font:{size:9}},grid:{color:"#ece9e1"}}}}});
   charts.push(chart);
  });
  $("tsStatus").textContent=cards.length+" variables plotted · "+(station.name||station.provider_station_id);
