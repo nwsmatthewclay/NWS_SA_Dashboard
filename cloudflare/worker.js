@@ -107,7 +107,80 @@ export default {
         value_asc: (a, b) => (Number(a.value) - Number(b.value)) || (Date.parse(b.observation_time) - Date.parse(a.observation_time)),
       };
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
-      const filtered = rows.filter((row) => {
+      let candidateRows = rows;
+      const deriveIceHours = Number(url.searchParams.get("derive_ice_hours") || 0);
+      if (deriveIceHours === 6 && element === "ice_accretion" && statistic === "6h_accumulation") {
+        // Prefer native 6-hour reports. Derive only where six consecutive hourly
+        // reports exist for the same station and source.
+        const hourly = rows.filter((row) =>
+          row.element === "ice_accretion" &&
+          row.accumulation_hours === 1 &&
+          ["ice_accretion_1h", "metar_ice_accretion_1h"].includes(row.variable) &&
+          typeof row.value === "number" &&
+          (!source || row.source === source) &&
+          (!stationId || row.station_id === stationId) &&
+          (!qcStatus || row.qc_status === qcStatus)
+        );
+        const stationGroups = new Map();
+        for (const row of hourly) {
+          const key = row.station_id + "|" + row.source;
+          if (!stationGroups.has(key)) stationGroups.set(key, new Map());
+          const time = Date.parse(row.observation_time);
+          const previous = stationGroups.get(key).get(time);
+          const rank = row.variable === "ice_accretion_1h" ? 2 : 1;
+          const previousRank = previous?.variable === "ice_accretion_1h" ? 2 : 1;
+          if (!previous || rank > previousRank) stationGroups.get(key).set(time, row);
+        }
+        const nativeSixHourEnds = new Set(rows
+          .filter((row) => row.element === "ice_accretion" && row.accumulation_hours === 6)
+          .map((row) => row.station_id + "|" + row.source + "|" + Date.parse(row.observation_time)));
+        const derived = [];
+        for (const [stationSource, reportMap] of stationGroups) {
+          const reports = [...reportMap.values()].sort((a,b) =>
+            Date.parse(a.observation_time) - Date.parse(b.observation_time));
+          for (let index = 5; index < reports.length; index++) {
+            const components = reports.slice(index - 5, index + 1);
+            const times = components.map((row) => Date.parse(row.observation_time));
+            const gaps = times.slice(1).map((time, i) => time - times[i]);
+            if (gaps.some((gap) => gap < 45 * 60000 || gap > 75 * 60000)) continue;
+            const endTime = times[5];
+            const startTime = endTime - 6 * 3600000;
+            if (startMs !== null && endTime < startMs) continue;
+            if (endMs !== null && endTime > endMs) continue;
+            const station = components[5];
+            if (nativeSixHourEnds.has(station.station_id + "|" + station.source + "|" + endTime)) continue;
+            const total = components.reduce((sum, row) => sum + Number(row.value), 0);
+            derived.push({
+              ...station,
+              variable: "ice_accretion_6h_derived",
+              statistic: "6h_accumulation",
+              accumulation_hours: 6,
+              value: Number(total.toFixed(3)),
+              observation_time: new Date(endTime).toISOString(),
+              period_start: new Date(startTime).toISOString(),
+              period_end: new Date(endTime).toISOString(),
+              raw_value: null,
+              raw_unit: null,
+              qc_status: "derived_complete",
+              metadata: {
+                derivation: "sum_of_six_consecutive_1h_reports",
+                source_report_count: 6,
+                component_reports: components.map((row) => ({
+                  variable: row.variable,
+                  value: row.value,
+                  unit: row.unit,
+                  observation_time: row.observation_time,
+                  raw_value: row.raw_value,
+                  raw_unit: row.raw_unit,
+                  qc_status: row.qc_status
+                }))
+              }
+            });
+          }
+        }
+        candidateRows = rows.concat(derived);
+      }
+      const filtered = candidateRows.filter((row) => {
         const time = Date.parse(row.observation_time);
         const value = typeof row.value === "number" ? row.value : null;
         if (variable && row.variable !== variable) return false;
