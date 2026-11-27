@@ -18,7 +18,7 @@ from pathlib import Path
 
 import requests
 try:
-    from .asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime, is_metar_report
+    from .asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime, is_metar_report, wind_speed_to_mph
 except ImportError:  # direct execution from the scripts directory
     from asos_metar import normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar, metar_report_datetime, is_metar_report
 
@@ -223,7 +223,7 @@ def c_to_f(value):
 
 
 def ms_to_mph(value):
-    return round(float(value) * 2.2369362921, 1)
+    return wind_speed_to_mph(value, "m/s")
 
 
 def meters_to_inches(value):
@@ -231,7 +231,7 @@ def meters_to_inches(value):
 
 
 def ingest_nws(geometries):
-    stations = ["KBTV", "KPBG", "KMSS", "KSLK", "KMPV", "KEFK", "KRUT"]
+    stations = ["KBTV", "KPBG", "KMSS", "KSLK", "KMPV", "KEFK", "KRUT", "KMVL", "KVSF"]
     count = 0
     for sid in stations:
         try:
@@ -252,11 +252,17 @@ def ingest_nws(geometries):
                 ("windDirection", "wind_direction", "degree", lambda x: float(x), "degree"),
                 ("relativeHumidity", "relative_humidity", "%", lambda x: float(x), "%"),
             ]
-            for field, variable, raw_unit, convert, unit in mapping:
+            for field, variable, default_raw_unit, convert, unit in mapping:
                 item = latest.get(field) or {}
                 raw = item.get("value") if isinstance(item, dict) else None
                 if raw is not None:
-                    add_observation(st, variable, convert(raw), unit, ts, raw, raw_unit)
+                    if variable in ("wind_speed", "wind_gust"):
+                        raw_unit = item.get("unitCode") or default_raw_unit
+                        normalized = wind_speed_to_mph(raw, raw_unit)
+                    else:
+                        raw_unit = default_raw_unit
+                        normalized = convert(raw)
+                    add_observation(st, variable, normalized, unit, ts, raw, raw_unit)
                     count += 1
         except Exception as exc:
             SOURCE_STATUS.append({"source": "NWS API", "station": sid, "status": "error", "detail": str(exc)[:180]})
@@ -264,7 +270,7 @@ def ingest_nws(geometries):
 
 
 def ingest_iem_asos(geometries):
-    station_ids = "BTV,PBG,MSS,SLK,MPV,EFK,RUT"
+    station_ids = "BTV,PBG,MSS,SLK,MPV,EFK,RUT,MVL,VSF"
     response = SESSION.get("https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py", params={
         "station": station_ids, "data": "all",
         "sts": START.strftime("%Y-%m-%dT%H:%MZ"), "ets": NOW.strftime("%Y-%m-%dT%H:%MZ"),
