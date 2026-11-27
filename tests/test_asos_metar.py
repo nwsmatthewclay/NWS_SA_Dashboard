@@ -1,10 +1,29 @@
 import unittest
 from datetime import datetime, timezone
 
-from scripts.asos_metar import knots_to_mph, normalize_iem_wind, parse_metar
+from scripts.asos_metar import knots_to_mph, normalize_iem_wind, parse_metar, is_speci_report, is_routine_hourly_metar
 
 
 class TestASOSMetar(unittest.TestCase):
+    def test_spei_reports_are_identified(self):
+        self.assertTrue(is_speci_report("SPECI KBTV 261205Z 00000KT 1SM FZRA"))
+        self.assertFalse(is_speci_report("METAR KBTV 261153Z 00000KT 10SM CLR"))
+
+    def test_hourly_rainfall_uses_routine_metar_near_53(self):
+        from datetime import datetime, timezone
+        self.assertTrue(is_routine_hourly_metar(
+            "METAR KBTV 261153Z 00000KT 10SM CLR RMK AO2 P0001",
+            datetime(2026, 11, 26, 11, 53, tzinfo=timezone.utc)))
+        self.assertTrue(is_routine_hourly_metar(
+            "METAR KBTV 261150Z 00000KT 10SM CLR",
+            datetime(2026, 11, 26, 11, 50, tzinfo=timezone.utc)))
+        self.assertFalse(is_routine_hourly_metar(
+            "SPECI KBTV 261153Z 00000KT 10SM CLR",
+            datetime(2026, 11, 26, 11, 53, tzinfo=timezone.utc)))
+        self.assertFalse(is_routine_hourly_metar(
+            "METAR KBTV 261200Z 00000KT 10SM CLR",
+            datetime(2026, 11, 26, 12, 0, tzinfo=timezone.utc)))
+
     def test_wind_conversion(self):
         self.assertEqual(knots_to_mph(10), 11.5)
         self.assertEqual(knots_to_mph(0), 0.0)
