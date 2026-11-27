@@ -154,8 +154,8 @@ def local_report_time(date_value, time_value):
     date_text = str(date_value).strip()
     time_text = str(time_value).strip()
     dt = None
-    for date_fmt in ("%m/%d/%Y", "%Y-%m-%d", "%m-%d-%Y"):
-        for time_fmt in ("%I:%M %p", "%I:%M:%S %p", "%H:%M", "%H:%M:%S"):
+    for date_fmt in ("%m/%d/%Y", "%m/%d/%y", "%Y-%m-%d", "%m-%d-%Y"):
+        for time_fmt in ("%I:%M %p", "%I:%M:%S %p", "%H:%M", "%H:%M:%S", "%H%M", "%I %p", "%I%p"):
             try:
                 dt = datetime.strptime(date_text + " " + time_text, date_fmt + " " + time_fmt)
                 break
@@ -301,6 +301,8 @@ def ingest_synoptic(geometries):
             continue
         obs = item.get("OBSERVATIONS", {})
         station_time = obs.get("date_time") or item.get("OBSERVATION_TIME")
+        if isinstance(station_time, list):
+            station_time = station_time[-1] if station_time else None
         variable_map = {
             "air_temp": ("temperature", "degF"), "dew_point_temperature": ("dewpoint", "degF"),
             "wind_speed": ("wind_speed", "mph"), "wind_gust": ("wind_gust", "mph"),
@@ -317,8 +319,41 @@ def ingest_synoptic(geometries):
             if value is not None:
                 add_observation(st, variable, value, unit, ts, value, unit)
                 count += 1
+    precip_payload = request_json(base + "/precip", {
+        "token": SYNOPTIC_TOKEN, "cwa": "BTV", "pmode": "last",
+        "accum_hours": "1,3,6,12,24,48,72,120",
+        "units": "english", "obtimezone": "utc", "complete": 1,
+    })
+    precip_summary = precip_payload.get("SUMMARY", {})
+    if str(precip_summary.get("RESPONSE_CODE")) != "1":
+        raise RuntimeError("Synoptic precipitation API: " + str(precip_summary.get("RESPONSE_MESSAGE", precip_summary)))
+    precip_count = 0
+    precip_stations = precip_payload.get("STATION", []) or []
+    for item in precip_stations:
+        st = station_record("Synoptic", item.get("STID"), item.get("NAME"),
+                            item.get("LATITUDE"), item.get("LONGITUDE"),
+                            item.get("MNET_NAME") or item.get("MNET_ID"))
+        if st is None:
+            continue
+        obs = item.get("OBSERVATIONS", {})
+        for total in obs.get("precipitation", []) or []:
+            amount = total.get("total")
+            end_time = total.get("last_report")
+            start_time = total.get("first_report")
+            hours = total.get("accum_hours")
+            if amount is None or not end_time:
+                continue
+            add_observation(st, "precipitation_accumulation", amount, "inch",
+                            end_time, amount, "inch",
+                            period_start=start_time, period_end=end_time,
+                            qc="provider_derived",
+                            metadata={"accumulation_hours": hours,
+                                      "source_report_count": total.get("count"),
+                                      "report_type": total.get("report_type")})
+            precip_count += 1
     SOURCE_STATUS.append({"source": "Synoptic", "status": "ok", "stations": len(payload.get("STATION", []) or []),
-                          "normalized_values": count})
+                          "normalized_values": count, "precipitation_stations": len(precip_stations),
+                          "precipitation_windows": precip_count})
 
 
 
@@ -360,6 +395,8 @@ def ingest_coop_daily(geometries):
             observed = local_report_time(row.get("date"), row.get("time"))
             if not observed:
                 continue
+            period_end = observed.isoformat()
+            period_start = (observed - timedelta(hours=24)).isoformat()
             for field, variable, unit in (
                 ("high_F", "daily_max_temperature", "degF"),
                 ("low_F", "daily_min_temperature", "degF"),
@@ -370,10 +407,10 @@ def ingest_coop_daily(geometries):
                 value, flag = parse_report_amount(row.get(field))
                 if value is not None or flag == "trace":
                     add_observation(st, variable, value, unit, observed,
-                                    row.get(field), unit, period_end=observed.isoformat(),
+                                    row.get(field), unit, period_start=period_start, period_end=period_end,
                                     qc="trace" if flag else "observer_report",
                                     metadata={"report_date": row.get("date"), "report_time_local": row.get("time"),
-                                              "period": "daily", "trace_reported": flag == "trace"})
+                                              "period": "daily_24h_approximation", "trace_reported": flag == "trace"})
                     count += 1
             row_count += 1
         SOURCE_STATUS.append({"source": f"IEM COOP {state}", "status": "ok",
@@ -402,6 +439,8 @@ def ingest_cocorahs_daily(geometries):
             observed = local_report_time(row.get("ObservationDate"), row.get("ObservationTime"))
             if not observed:
                 continue
+            period_end = observed.isoformat()
+            period_start = (observed - timedelta(hours=24)).isoformat()
             for field, variable, unit in (
                 ("TotalPrecipAmt", "daily_precipitation", "inch"),
                 ("NewSnowDepth", "daily_new_snow", "inch"),
