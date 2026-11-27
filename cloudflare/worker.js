@@ -144,8 +144,8 @@ export default {
             retainedOtherSources.push(row);
             continue;
           }
-          // For ASOS, only the routine METAR near :53Z is eligible.
-          if (row.metadata?.hourly_selection !== "routine_METAR_near_53Z") continue;
+          // For ASOS, any routine METAR is eligible; SPECI is excluded.
+          if (row.metadata?.hourly_selection !== "METAR_only") continue;
           const time = Date.parse(row.observation_time);
           if (!Number.isFinite(time)) continue;
           const key = row.station_id + "|" + Math.floor(time / 3600000);
