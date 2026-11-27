@@ -346,9 +346,14 @@ def ingest_coop_daily(geometries):
         response.raise_for_status()
         rows = csv.DictReader(io.StringIO(response.text))
         row_count = 0
+        raw_count = 0
         count = 0
+        report_ids = []
         for row in rows:
+            raw_count += 1
             sid = str(row.get("nwsli") or "").upper()
+            if len(report_ids) < 8:
+                report_ids.append(sid)
             st = station_lookup.get(sid)
             if not st:
                 continue
@@ -372,8 +377,10 @@ def ingest_coop_daily(geometries):
                     count += 1
             row_count += 1
         SOURCE_STATUS.append({"source": f"IEM COOP {state}", "status": "ok",
-                              "in_cwa_stations": len(station_lookup), "daily_reports": row_count,
-                              "normalized_values": count})
+                              "in_cwa_stations": len(station_lookup), "raw_daily_reports": raw_count,
+                              "matched_daily_reports": row_count, "normalized_values": count,
+                              "sample_report_station_ids": report_ids,
+                              "sample_inventory_station_ids": list(station_lookup)[:8]})
 
 
 def ingest_cocorahs_daily(geometries):
