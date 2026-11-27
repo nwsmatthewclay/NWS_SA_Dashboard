@@ -14,6 +14,22 @@ def knots_to_mph(value):
 def _hundredths(value):
     return None if "/" in value else int(value) / 100.0
 
+def is_speci_report(raw: str) -> bool:
+    """Return True when an IEM ASOS report is explicitly identified as SPECI."""
+    tokens = (raw or "").strip().upper().split()
+    return bool(tokens and tokens[0] == "SPECI")
+
+
+def is_routine_hourly_metar(raw: str, report_time: datetime | None, tolerance_minutes: int = 3) -> bool:
+    """Accept routine METARs near :53 past the hour for hourly precipitation."""
+    tokens = (raw or "").strip().upper().split()
+    if not tokens or tokens[0] != "METAR" or report_time is None:
+        return False
+    minute = report_time.astimezone(timezone.utc).minute
+    distance = min((minute - 53) % 60, (53 - minute) % 60)
+    return distance <= tolerance_minutes
+
+
 def parse_metar(raw: str, report_time: datetime | None = None) -> dict:
     """Decode standard U.S. METAR wind, precip and ASOS ice-accretion remarks."""
     text = (raw or "").strip().upper()
