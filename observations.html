@@ -44,9 +44,9 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <section class="results"><div class="metrics">
 <div class="metric"><b id="metricObs">—</b><span>Observations in archive</span></div><div class="metric"><b id="metricStations">—</b><span>Provider station records</span></div><div class="metric"><b id="metricSources">—</b><span>Reporting sources</span></div><div class="metric"><b id="metricLatest">—</b><span>Latest observation (UTC)</span></div>
 </div>
-<div class="view-tabs"><button class="view-tab active" id="tableTab" type="button">Reports table</button><button class="view-tab" id="mapTab" type="button">Observation Map</button><button class="view-tab" id="timeSeriesTab" type="button">Time Series</button><button class="view-tab" id="summaryTab" type="button">Operational Summary</button></div>
+<div class="view-tabs"><button class="view-tab active" id="tableTab" type="button">Reports table</button><button class="view-tab" id="mapTab" type="button">Observation Map</button><button class="view-tab" id="timeSeriesTab" type="button">Time Series</button><button class="view-tab" id="summaryTab" type="button">Operational Summary</button><button class="view-tab" id="siteQualityTab" type="button">Site Quality</button></div>
 <section class="table-panel" id="tablePanel"><div class="table-head"><h2>Observation reports</h2><span class="count" id="resultCount">Waiting for first query…</span></div>
-<div class="table-wrap"><table><thead><tr><th>Observation time (UTC)</th><th>Station</th><th>Element / variable</th><th id="valueHead">Flat ice</th><th id="radialHead">Radial ice · 40%</th><th>Report period</th><th>Accumulation window</th><th>Category / source</th><th>QC</th><th>Ingested (UTC)</th><th>Calculation details</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading observation data…</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Observation time (UTC)</th><th>Station</th><th>Element / variable</th><th id="valueHead">Flat ice</th><th id="radialHead">Radial ice · 40%</th><th>Report period</th><th>Accumulation window</th><th>Category / source</th><th>QC</th><th>Ingested (UTC)</th><th>Calculation details</th><th>Data quality</th></tr></thead><tbody id="rows"><tr><td colspan="12" class="empty">Loading observation data…</td></tr></tbody></table></div>
 <div class="pager"><div class="group"><button class="btn" id="prevBtn">← Previous</button><button class="btn" id="nextBtn">Next →</button><span id="pageText">Page 1</span></div><span id="pageInfo"></span></div></section>
 <section class="map-panel" id="mapPanel" style="display:none">
  <div class="table-head"><h2 id="mapTitle">Observation map</h2><span class="count" id="mapCount">Select a product and retrieve reports</span></div>
@@ -71,6 +71,18 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
  <div class="table-head"><div><h2 style="font:800 16px Manrope;margin:0">BTV Operational Observation Summary</h2><div class="summary-intro">Identify the most significant reported conditions across the BTV CWA.</div></div><span class="count" id="summaryStatus">Not yet generated</span></div>
  <div class="view-toolbar"><div class="field"><label for="summaryPeriod">Analysis period</label><select id="summaryPeriod"><option value="1">Past 1 hour</option><option value="3">Past 3 hours</option><option value="6">Past 6 hours</option><option value="12">Past 12 hours</option><option value="24" selected>Past 24 hours</option><option value="48">Past 48 hours</option><option value="72">Past 72 hours</option><option value="120">Past 5 days</option></select></div><button class="btn primary" id="generateSummaryBtn" type="button">Generate summary</button><button class="btn" id="summaryPrintBtn" type="button">Print / Save PDF</button><button class="btn" id="summaryTextBtn" type="button">Export text</button></div>
  <div id="summaryResults"><div class="summary-empty">Choose an analysis period and generate a summary. Unavailable categories will be omitted rather than reported as zero.</div></div>
+<section class="view-content" id="siteQualityPanel" style="display:none">
+ <div class="table-head"><div><h2 style="font:800 16px Manrope;margin:0">Site Data Quality</h2><div class="summary-intro">Quarantines persist across refreshes and apply only to the selected station and weather element. Other observations from that station remain available.</div></div><span class="count" id="qualityStatus">Loading quality records…</span></div>
+ <div class="view-toolbar" style="align-items:end">
+  <div class="field"><label for="qualityReviewerName">Reviewer name</label><input id="qualityReviewerName" type="text" maxlength="80" placeholder="Name of person confirming data quality"></div>
+  <div class="field"><label for="qualityReviewerToken">Reviewer authorization token</label><input id="qualityReviewerToken" type="password" autocomplete="off" placeholder="Configured by dashboard administrator"></div>
+  <button class="btn" id="qualityRefreshBtn" type="button">Refresh quality status</button>
+ </div>
+ <div class="summary-intro">To flag a report, use the <strong>Flag site</strong> action in the reports table. Restoring a quarantine requires the reviewer token and a different reviewer name from the person who flagged it.</div>
+ <div id="qualityActiveList"><div class="summary-empty">Loading active quarantines…</div></div>
+ <h3 style="font:800 14px Manrope;margin:22px 0 8px">Recent quality history</h3>
+ <div id="qualityHistoryList"><div class="summary-empty">No history loaded.</div></div>
+</section>
 </section>
 <footer>Official NWS BTV CWA polygon · Local Storm Reports excluded · NYS Mesonet observations are not enabled pending data-policy approval. Observation time and ingestion time are separate. Daily observer reports remain daily; no hourly values are inferred.</footer></section></div></main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -129,7 +141,7 @@ async function initialize(){
   setHealth(true,"API connected · snapshot available");
   if(window.initObservationEnhancements)window.initObservationEnhancements();
   await retrieve();
- }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="10" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
+ }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="12" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
 }
 function queryParams(limit=50,offset=0){
  const p=new URLSearchParams();p.set("limit",limit);p.set("offset",offset);p.set("sort",$("sort").value);
