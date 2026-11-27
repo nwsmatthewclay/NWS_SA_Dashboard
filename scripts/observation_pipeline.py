@@ -113,6 +113,31 @@ def station_record(source, station_id, name, lat, lon, network=None):
     return item
 
 
+def normalized_dimensions(variable, metadata=None):
+    metadata = metadata or {}
+    if variable in ("temperature", "daily_max_temperature", "daily_min_temperature"):
+        statistic = "maximum" if variable == "daily_max_temperature" else "minimum" if variable == "daily_min_temperature" else "instantaneous"
+        return "temperature", statistic
+    if variable == "dewpoint":
+        return "dewpoint", "instantaneous"
+    if variable in ("wind_speed", "wind_gust", "wind_direction", "relative_humidity"):
+        return variable, "instantaneous"
+    if "precipitation" in variable:
+        hours = metadata.get("accumulation_hours") or metadata.get("precipitation_period_hours")
+        return "precipitation", f"{hours}h_accumulation" if hours else "reported_accumulation"
+    if variable == "daily_new_snow":
+        return "snowfall", "daily_report"
+    if variable == "daily_snow_depth":
+        return "snow_depth", "daily_report"
+    if variable == "daily_new_snow_water_equivalent" or variable == "daily_snow_water_equivalent":
+        return "snow_water_equivalent", "daily_report"
+    if "ice_accretion" in variable:
+        return "ice_accretion", "reported_accumulation"
+    if variable == "present_weather":
+        return "present_weather", "reported_code"
+    return variable, "reported"
+
+
 def add_observation(station, variable, value, unit, timestamp, raw_value=None,
                     raw_unit=None, period_start=None, period_end=None,
                     qc="unknown", raw_report=None, metadata=None):
@@ -125,6 +150,7 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
     if key in SEEN:
         return
     SEEN.add(key)
+    element, statistic = normalized_dimensions(variable, metadata)
     record = {
         "station_id": station["station_id"],
         "provider_station_id": station["provider_station_id"],
@@ -132,7 +158,9 @@ def add_observation(station, variable, value, unit, timestamp, raw_value=None,
         "network": station.get("network"),
         "station_name": station["name"],
         "latitude": station["latitude"], "longitude": station["longitude"],
-        "variable": variable, "value": value, "unit": unit,
+        "variable": variable, "element": element, "statistic": statistic,
+        "accumulation_hours": (metadata or {}).get("accumulation_hours") or (metadata or {}).get("precipitation_period_hours"),
+        "value": value, "unit": unit,
         "observation_time": observed.isoformat(),
         "latest_observation_at": observed.isoformat(),
         "ingested_at": NOW.isoformat(),
@@ -273,7 +301,8 @@ def ingest_iem_asos(geometries):
             ):
                 if parsed.get(field) is not None:
                     add_observation(st, variable, parsed[field], unit, ts, parsed[field], unit,
-                                    raw_report=metar, metadata={"ice_sensor_status": parsed["ice_sensor_status"]})
+                                    raw_report=metar, metadata={"ice_sensor_status": parsed["ice_sensor_status"],
+                                              "precipitation_period_hours": parsed.get("precip_3h_or_6h_period_hours") if field == "precip_3h_or_6h_in" else (1 if field == "precip_1h_in" else 24 if field == "precip_24h_in" else None)})
             for code in parsed["present_weather_codes"]:
                 add_observation(st, "present_weather", code, "code", ts, code, "METAR code",
                                 raw_report=metar)
