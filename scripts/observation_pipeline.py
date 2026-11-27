@@ -306,7 +306,8 @@ def ingest_iem_asos(geometries):
                     add_observation(st, variable, float(value), unit, ts,
                                     row.get({"wind_mph":"sknt","gust_mph":"gust"}.get(field, field)),
                                     "knot" if field in ("wind_mph", "gust_mph") else unit,
-                                    qc="provider")
+                                    qc="provider",
+                                    metadata={"hourly_selection": "routine_METAR_near_53Z"} if variable.startswith("ice_accretion_") else None)
                     count += 1
                 except (TypeError, ValueError):
                     pass
