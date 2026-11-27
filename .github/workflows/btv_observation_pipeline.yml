@@ -51,6 +51,23 @@ jobs:
           OBSERVATION_LOOKBACK_DAYS: "5"
         run: python scripts/observation_pipeline.py
 
+      - name: Validate normalized snapshot files
+        run: |
+          python - <<'PY'
+          import gzip, json
+          from pathlib import Path
+          base = Path("observation_data/latest")
+          manifest = json.loads((base / "manifest.json").read_text())
+          stations = json.loads((base / "stations.json").read_text())
+          with gzip.open(base / "observations.ndjson.gz", "rt", encoding="utf-8") as stream:
+              rows = [json.loads(line) for line in stream if line.strip()]
+          assert len(rows) == manifest["observation_count"], (len(rows), manifest["observation_count"])
+          assert stations and rows, "Snapshot must contain stations and observations"
+          assert all(row.get("observation_time") and row.get("ingested_at") for row in rows)
+          assert all(row.get("latest_observation_at") for row in rows)
+          print(f"Validated {len(rows)} observations and {len(stations)} provider station records")
+          PY
+
       - name: Publish latest snapshot to Cloudflare R2 API
         if: ${{ env.OBSERVATION_WORKER_URL != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
         run: |
