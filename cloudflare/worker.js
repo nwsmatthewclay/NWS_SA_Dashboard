@@ -78,6 +78,10 @@ export default {
       const rows = await readLatestRows(env.OBSERVATIONS);
       if (!rows) return json({ error: "Observation archive not available yet" }, 404);
       const variable = url.searchParams.get("variable");
+      const element = url.searchParams.get("element");
+      const statistic = url.searchParams.get("statistic");
+      const accumulationHours = url.searchParams.has("accumulation_hours")
+        ? Number(url.searchParams.get("accumulation_hours")) : null;
       const source = url.searchParams.get("source");
       const stationId = url.searchParams.get("station_id");
       const start = url.searchParams.get("start");
@@ -85,7 +89,8 @@ export default {
       const minValue = url.searchParams.has("min") ? Number(url.searchParams.get("min")) : null;
       const maxValue = url.searchParams.has("max") ? Number(url.searchParams.get("max")) : null;
       if ((minValue !== null && !Number.isFinite(minValue)) ||
-          (maxValue !== null && !Number.isFinite(maxValue))) {
+          (maxValue !== null && !Number.isFinite(maxValue)) ||
+          (accumulationHours !== null && !Number.isFinite(accumulationHours))) {
         return json({ error: "min/max must be numeric" }, 400);
       }
       const startMs = start ? Date.parse(start) : null;
@@ -97,6 +102,9 @@ export default {
         const time = Date.parse(row.observation_time);
         const value = typeof row.value === "number" ? row.value : null;
         if (variable && row.variable !== variable) return false;
+        if (element && row.element !== element) return false;
+        if (statistic && row.statistic !== statistic) return false;
+        if (accumulationHours !== null && row.accumulation_hours !== accumulationHours) return false;
         if (source && row.source !== source) return false;
         if (stationId && row.station_id !== stationId) return false;
         if (startMs !== null && time < startMs) return false;
