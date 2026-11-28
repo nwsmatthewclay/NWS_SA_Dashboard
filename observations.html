@@ -199,7 +199,7 @@ function queryParams(limit=50,offset=0){
  // For precipitation, automatic accumulation must match the selected
  // search-window duration. The API filters by observation time AND statistic;
  // without this, recent 6h/12h/120h reports leak into a 1h query.
- if(selectedElement==="precipitation" && selectedPeriod==="auto"){
+ if(selectedElement==="precipitation" && selectedPeriod==="auto" && $("source").value!=="NYSM"){
   let hours=null;
   if($("window").value==="custom"){
    const start=new Date($("startDate").value).getTime();
