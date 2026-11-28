@@ -33,6 +33,27 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 .metrics .metric{border-left:3px solid var(--green);padding:13px 14px}.metrics .metric b{font-size:clamp(18px,2vw,24px)}.metrics .metric span{letter-spacing:.08em}.quick-presets{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 12px;padding:9px 10px;background:var(--paper2);border:1px solid var(--line);border-radius:11px}.preset-label{font-size:9px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--muted);margin-right:2px}.preset-chip{border:1px solid #d5ddcf;background:#fffefa;color:#415346;border-radius:999px;padding:7px 11px;font:700 10px "DM Sans";cursor:pointer;white-space:nowrap}.preset-chip:hover{background:var(--green2);border-color:#b7cbb4}.preset-chip.active{background:var(--green);border-color:var(--green);color:#fff}.metric-note{font-size:9px;color:var(--muted);margin:-4px 0 10px}
 /* Phase 3: table modernization */
 .table-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}.density-toggle{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#536a58;white-space:nowrap}.table-hint{font-size:9px;color:#879087}.table-wrap table{min-width:760px}.table-wrap th:first-child,.table-wrap td:first-child{position:sticky;left:0;z-index:1;background:#fffefa}.table-wrap th:first-child{z-index:3;background:#e9eee5}.table-wrap td:first-child{font-variant-numeric:tabular-nums}.obs-details{min-width:200px;white-space:normal}.obs-details summary{cursor:pointer;color:#536a58;font-weight:700;font-size:10px}.obs-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:6px;padding:8px 2px;white-space:normal;font-size:10px}.obs-detail-grid .detail-item{padding:6px;background:#f5f6f0;border-radius:6px}.obs-detail-grid strong{display:block;color:#435347;margin-bottom:2px}.source-chip{display:inline-block;border-radius:999px;padding:3px 7px;font-size:9px;font-weight:800;background:#eaf0e8;color:#4d6952;border:1px solid #d7e2d5}.source-chip.asos,.source-chip.asos{background:#e7eef8;border-color:#cfdeef;color:#3e668b}.source-chip.coop{background:#f7eedc;border-color:#e9dbbd;color:#80662d}.source-chip.cocorahs{background:#e8f3ec;border-color:#d0e4d8;color:#426f58}.source-chip.rwis{background:#eee7f5;border-color:#ddd0e9;color:#71558d}.table-compact td{padding:5px 7px;font-size:10px}.table-compact .value{font-size:11px}.table-compact .obs-detail-grid{gap:4px}
+/* Phase 5: briefing-style operational summary */
+#summaryPanel{overflow:hidden}
+#summaryPanel .summary-briefing{border:1px solid #d9e2d6;background:linear-gradient(120deg,#eef3ec,#fffdf8 72%);border-radius:13px;padding:15px 17px;margin:0 0 14px}
+.summary-briefing-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.summary-kicker{font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-weight:900;color:var(--green)}
+.summary-briefing-title h2{font:800 20px Manrope;margin:3px 0 0;color:#2f4635}
+.summary-period-badge{white-space:nowrap;border:1px solid #d5ddcf;background:#fffefa;color:#4c6952;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:800}
+.summary-briefing-meta{font-size:10px;color:#758077;line-height:1.55;margin-top:9px}
+.summary-section{margin:16px 0 18px}
+.summary-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.summary-section-head h3{font:800 13px Manrope;color:#344b39;margin:0}
+.summary-section-head p{font-size:10px;color:#7b857c;margin:3px 0 0}
+.summary-section-count{font-size:9px;color:#7b857c;border:1px solid #e1ded4;background:#f9f7f1;border-radius:999px;padding:4px 7px;white-space:nowrap}
+#summaryPanel .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#summaryPanel .summary-card{position:relative;border-radius:12px;padding:13px 14px;box-shadow:0 2px 8px #4b513b08}
+#summaryPanel .summary-label{font-size:9px;letter-spacing:.12em}
+#summaryPanel .summary-value{font-size:clamp(22px,2.3vw,29px);line-height:1.15;margin:6px 0 3px;font-variant-numeric:tabular-nums}
+#summaryPanel .summary-site{font-size:12px;line-height:1.35}
+#summaryPanel .summary-meta{font-size:10px}
+@media(max-width:600px){#summaryPanel .summary-grid{grid-template-columns:1fr}.summary-briefing-title h2{font-size:18px}.summary-section-head{align-items:flex-start}}
+@media print{#summaryPanel .summary-briefing{background:white!important}.summary-section{break-inside:avoid}#summaryPanel .summary-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
