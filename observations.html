@@ -196,8 +196,7 @@ function archiveQuery(params){
  const startDay=new Date(startMs).toISOString().slice(0,10),endDay=new Date(endMs).toISOString().slice(0,10);
  p.delete("start");p.delete("end");p.set("start",startDay);p.set("end",endDay);
  p.set("start_time",new Date(startMs).toISOString());p.set("end_time",new Date(endMs).toISOString());
- p.delete("report_type");
- if(["value_desc","value_asc"].includes(p.get("sort")))p.set("sort","time_desc");
+
  return "/archive?"+p.toString();
 }
 function queryParams(limit=50,offset=0){
