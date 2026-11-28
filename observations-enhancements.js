@@ -68,16 +68,25 @@ function rangeFromControls(){
  }
  const end=Date.now(),hours=Number($("tsPeriod").value);return {start:new Date(end-hours*3600000).toISOString(),end:new Date(end).toISOString()};
 }
+const queryCache=new Map();let queryActive=0;const queryQueue=[];
+function runLimited(fn){return new Promise((resolve,reject)=>{const run=()=>{queryActive++;Promise.resolve().then(fn).then(resolve,reject).finally(()=>{queryActive--;const next=queryQueue.shift();if(next)next();});};if(queryActive<3)run();else queryQueue.push(run);});}
 async function fetchRows(element,range,stationId,extra){
- const out=[];let offset=0,total=null;
- do{
-  const p=new URLSearchParams({element:element,start:range.start,end:range.end,limit:"1000",offset:String(offset),sort:"time_asc"});
-  if(stationId)p.set("station_id",stationId);
-  Object.entries(extra||{}).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=="")p.set(k,String(v));});
-  const d=await get("/observations?"+p.toString());total=d.total||0;out.push(...(d.results||[]));offset+=1000;
-  if(!(d.results||[]).length)break;
- }while(offset<total);
- return out;
+ const params=new URLSearchParams({element:element,start:range.start,end:range.end,limit:"1000",sort:"time_asc"});
+ if(stationId)params.set("station_id",stationId);
+ Object.entries(extra||{}).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=="")params.set(k,String(v));});
+ const cacheKey="/observations?"+params.toString(),now=Date.now(),cached=queryCache.get(cacheKey);
+ if(cached&&now-cached.at<20000)return cached.rows;
+ return runLimited(async()=>{
+  const out=[];let offset=0,total=null;
+  do{
+   params.set("offset",String(offset));
+   const d=await get("/observations?"+params.toString());total=d.total||0;out.push(...(d.results||[]));offset+=1000;
+   if(!(d.results||[]).length)break;
+  }while(offset<total);
+  queryCache.set(cacheKey,{at:Date.now(),rows:out});
+  for(const [key,val] of queryCache)if(Date.now()-val.at>20000)queryCache.delete(key);
+  return out;
+ });
 }
 function clearCharts(){charts.forEach(c=>c.destroy());charts=[];}
 function renderCharts(series,station){
