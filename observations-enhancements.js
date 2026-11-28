@@ -265,12 +265,18 @@ async function generateSummary(){
    ["Highest temperature",extreme(d.temperature||[],"max"),"°F",false],
    ["Lowest temperature",extreme(d.temperature||[],"min"),"°F",false]
   ];
-  const html=rows.map(x=>card(x[0],x[1],x[2],x[3])).filter(Boolean);
   const generated=new Date().toLocaleString("en-US",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})+" UTC";
   const intro="Analysis window: "+time(range.start)+" – "+time(range.end)+" UTC · Generated "+generated+". Precipitation and ice use the selected accumulation period; snowfall is included only when its report duration matches. Heat index and wind chill appear only when valid derived observations exist.";
   const warning=failures.length?'<div class="summary-empty" role="status">Some categories could not be retrieved and were omitted: '+safe(failures.join("; "))+'</div>':"";
-  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+warning+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
-  $("summaryStatus").textContent=html.length+" significant categories found"+(failures.length?" · "+failures.length+" categories unavailable":"");
+  const groups=[
+   {title:"Precipitation",subtitle:"Liquid precipitation reports",items:[rows[0]]},
+   {title:"Winter conditions",subtitle:"Snowfall, ice accretion and snowpack",items:[rows[1],rows[2],rows[6]]},
+   {title:"Wind",subtitle:"Strongest observed gust",items:[rows[5]]},
+   {title:"Temperature & apparent temperature",subtitle:"Heat, cold and observed temperature extremes",items:[rows[3],rows[4],rows[7],rows[8]]}
+  ];
+  const sectionHtml=groups.map(g=>{const cards=g.items.map(x=>card(x[0],x[1],x[2],x[3])).filter(Boolean);return cards.length?'<section class="summary-section"><div class="summary-section-head"><div><h3>'+safe(g.title)+'</h3><p>'+safe(g.subtitle)+'</p></div><span class="summary-section-count">'+cards.length+' result'+(cards.length===1?'':'s')+'</span></div><div class="summary-grid">'+cards.join("")+'</div></section>':""}).join("");
+  const noResults='<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>';
+  $("summaryResults").innerHTML='<div class="summary-briefing"><div class="summary-briefing-title"><div><div class="summary-kicker">BTV · Observation briefing</div><h2>Observed conditions</h2></div><div class="summary-period-badge">'+hours+'-hour window</div></div><div class="summary-briefing-meta">'+safe(intro)+'</div></div>'+warning+(sectionHtml||noResults);
   summaryText="BTV OPERATIONAL OBSERVATION SUMMARY\n"+intro+"\n\n"+rows.filter(x=>x[1]).map(x=>{const r=x[1],s=stations.find(y=>y.station_id===r.station_id);return x[0]+": "+fmt(r.value)+" "+x[2]+" at "+(r.station_name||(s&&s.name)||r.provider_station_id)+" · "+time(r.observation_time)+" UTC · "+(r.source||"")+" · "+(r.accumulation_hours||"")+"h"}).join("\n");
  }catch(e){$("summaryStatus").textContent="Summary failed: "+e.message;$("summaryResults").innerHTML='<div class="summary-empty">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Generate summary";}
