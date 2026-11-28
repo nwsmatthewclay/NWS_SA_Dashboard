@@ -1,6 +1,13 @@
 """Regression checks for CWA filtering in the observation pipeline."""
 
 import unittest
+import gzip
+import json
+import tempfile
+from pathlib import Path
+from datetime import datetime, timezone
+
+from scripts import observation_pipeline as pipeline
 
 from scripts.observation_pipeline import geometry_contains, in_btv, local_report_time, normalized_dimensions, canonical_station_key
 
@@ -46,6 +53,34 @@ class TestObservationPipelineGeometry(unittest.TestCase):
         self.assertEqual(canonical_station_key("IEM_COOP", "CORV1"), "COOP:CORV1")
         self.assertEqual(canonical_station_key("IEM_RR3_COOP", "CORV1"), "COOP:CORV1")
         self.assertEqual(canonical_station_key("Synoptic", "COOPCORV1"), "COOP:CORV1")
+
+    def test_write_outputs_creates_daily_partition(self):
+        original_base = pipeline.BASE
+        original_observations = pipeline.OBSERVATIONS
+        original_stations = pipeline.STATIONS
+        original_now = pipeline.NOW
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pipeline.BASE = Path(temp_dir)
+            pipeline.NOW = datetime(2026, 11, 27, 12, tzinfo=timezone.utc)
+            pipeline.STATIONS = {"ASOS:BTV": {"station_id": "ASOS:BTV", "latitude": 44.47, "longitude": -73.15}}
+            pipeline.OBSERVATIONS = [{
+                "station_id": "ASOS:BTV", "observation_time": "2026-11-27T11:00:00+00:00",
+                "latest_observation_at": "2026-11-27T11:00:00+00:00", "ingested_at": "2026-11-27T12:00:00+00:00",
+                "variable": "temperature", "element": "temperature", "value": 32.0, "unit": "degF"
+            }]
+            try:
+                pipeline.write_outputs()
+                daily_path = Path(temp_dir) / "archive" / "2026" / "11" / "2026-11-27.ndjson.gz"
+                self.assertTrue(daily_path.exists())
+                with gzip.open(daily_path, "rt", encoding="utf-8") as stream:
+                    rows = [json.loads(line) for line in stream if line.strip()]
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0]["station_id"], "ASOS:BTV")
+            finally:
+                pipeline.BASE = original_base
+                pipeline.OBSERVATIONS = original_observations
+                pipeline.STATIONS = original_stations
+                pipeline.NOW = original_now
 
     def test_multipolygon(self):
         geometry = {"type": "MultiPolygon", "coordinates": [
