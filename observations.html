@@ -115,7 +115,7 @@ function canonicalUiSource(station){
  if(source==="cocorahs"||type==="cocorahs")return "CoCoRaHS";
  if(source==="iem_coop"||source==="iem_rr3_coop"||type==="coop"||network.includes("coop"))return "COOP";
  if(source==="iem_rwis"||type==="rwis"||network.includes("rwis"))return "RWIS";
- if(source.includes("nysm")||source.includes("mesonet")||type==="nysm"||network.includes("nysm")||network.includes("mesonet"))return "NYSM";
+ if(source.includes("nysm")||source.includes("nys mesonet")||source.includes("mesonet")||type.includes("nysm")||type.includes("mesonet")||network.includes("nysm")||network.includes("mesonet"))return "NYSM";
  return "Public Sites";
 }
 function populateMainStationSelect(){
@@ -134,7 +134,7 @@ function populateSourceSelect(){
  const select=$("source"),prior=select.value;
  select.innerHTML='<option value="">All sources</option>';
  ["ASOS/AWOS","CoCoRaHS","COOP","RWIS","NYSM","Public Sites"].forEach(group=>{
-  if(stations.some(s=>canonicalUiSource(s)===group))select.add(new Option(group,group));
+  select.add(new Option(group,group));
  });
  if(Array.from(select.options).some(o=>o.value===prior))select.value=prior;
 }
