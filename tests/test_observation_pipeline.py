@@ -64,7 +64,7 @@ class TestObservationPipelineGeometry(unittest.TestCase):
             pipeline.NOW = datetime(2026, 11, 27, 12, tzinfo=timezone.utc)
             pipeline.STATIONS = {"ASOS:BTV": {"station_id": "ASOS:BTV", "latitude": 44.47, "longitude": -73.15}}
             pipeline.OBSERVATIONS = [{
-                "station_id": "ASOS:BTV", "observation_time": "2026-11-27T11:00:00+00:00",
+                "station_id": "ASOS:BTV", "source": "IEM_ASOS", "observation_time": "2026-11-27T11:00:00+00:00",
                 "latest_observation_at": "2026-11-27T11:00:00+00:00", "ingested_at": "2026-11-27T12:00:00+00:00",
                 "variable": "temperature", "element": "temperature", "value": 32.0, "unit": "degF"
             }]
