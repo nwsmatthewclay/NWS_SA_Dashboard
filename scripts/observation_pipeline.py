@@ -110,6 +110,23 @@ def canonical_station_key(source, station_id, network=None):
     return f"{source}:{sid}"
 
 
+
+def canonical_source_group(source, network=None):
+    raw = str(source or "").strip().lower()
+    net = str(network or "").strip().lower()
+    if raw in ("nws", "iem_asos") or "asos" in net or "awos" in net:
+        return "ASOS/AWOS"
+    if raw == "cocorahs":
+        return "CoCoRaHS"
+    if raw in ("iem_coop", "iem_rr3_coop") or "coop" in net:
+        return "COOP"
+    if raw == "iem_rwis" or "rwis" in net:
+        return "RWIS"
+    if "nysm" in raw or "mesonet" in raw or "nysm" in net or "mesonet" in net:
+        return "NYSM"
+    return "Public Sites"
+
+
 def station_record(source, station_id, name, lat, lon, network=None):
     if not in_btv(CWA_GEOMETRIES, lon, lat):
         return None
@@ -129,14 +146,15 @@ def station_record(source, station_id, name, lat, lon, network=None):
         report_type = ("ASOS" if key.startswith("ASOS:") else "COOP" if key.startswith("COOP:") else
                        "RWIS" if source == "IEM_RWIS" else "CoCoRaHS" if source == "CoCoRaHS" else "Public")
         item = {"station_id": key, "provider_station_id": str(station_id),
-                "source": source, "report_type": report_type, "name": name or str(station_id),
+                "source": canonical_source_group(source, network), "report_type": canonical_source_group(source, network), "name": name or str(station_id),
                 "latitude": float(lat), "longitude": float(lon), "network": network, "source_aliases": []}
         STATIONS[key] = item
     alias = {"source": source, "provider_station_id": str(station_id), "network": network}
     if alias not in item["source_aliases"]:
         item["source_aliases"].append(alias)
     # Keep observation provenance tied to the adapter currently requesting this station.
-    item["source"] = source
+    item["source"] = canonical_source_group(source, network)
+    item["report_type"] = canonical_source_group(source, network)
     item["network"] = network
     item["provider_station_id"] = str(station_id)
     if name and str(name).strip().upper() not in (str(station_id).strip().upper(), "UNKNOWN"):
