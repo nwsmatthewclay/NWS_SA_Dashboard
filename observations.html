@@ -18,6 +18,8 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 @media(max-width:1050px){.workspace{grid-template-columns:290px minmax(0,1fr)}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.table-wrap{max-height:none}}
 @media(max-width:760px){header{align-items:flex-start}.top-health{align-items:flex-start}.workspace{grid-template-columns:1fr}.sidebar{position:static;max-height:none}.results{min-width:0}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.table-panel{padding:10px}}
 @media print{body{background:white}.workspace{display:block}.sidebar,.top-health,.pager,footer{display:none!important}.table-wrap{max-height:none;overflow:visible}.table-panel,.metric{box-shadow:none}}
+
+.view-content{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:10px}.chart-wrap{height:420px;position:relative}.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.summary-card{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:13px}.summary-card b{display:block;font:800 22px Manrope;color:#33483a}.summary-card span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}@media(max-width:760px){.summary-grid{grid-template-columns:1fr 1fr}.chart-wrap{height:320px}}
 </style>
 </head>
 <body>
@@ -43,7 +45,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <section class="results"><div class="metrics">
 <div class="metric"><b id="metricObs">—</b><span>Observations in archive</span></div><div class="metric"><b id="metricStations">—</b><span>Provider station records</span></div><div class="metric"><b id="metricSources">—</b><span>Reporting sources</span></div><div class="metric"><b id="metricLatest">—</b><span>Latest observation (UTC)</span></div>
 </div>
-<div class="view-tabs"><button class="view-tab active" id="tableTab" type="button">Reports table</button><button class="view-tab" id="mapTab" type="button">Map &amp; contours</button></div>
+<div class="view-tabs"><button class="view-tab active" id="tableTab" type="button">Reports table</button><button class="view-tab" id="mapTab" type="button">Map</button><button class="view-tab" id="timeSeriesTab" type="button">Time Series</button><button class="view-tab" id="summaryTab" type="button">Operational Summary</button></div>
 <section class="table-panel" id="tablePanel"><div class="table-head"><h2>Observation reports</h2><span class="count" id="resultCount">Waiting for first query…</span></div>
 <div class="table-wrap"><table><thead><tr><th>Observation time (UTC)</th><th>Station</th><th>Element / variable</th><th id="valueHead">Flat ice</th><th id="radialHead">Radial ice · 40%</th><th>Report period</th><th>Accumulation window</th><th>Category / source</th><th>QC</th><th>Ingested (UTC)</th><th>Calculation details</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading observation data…</td></tr></tbody></table></div>
 <div class="pager"><div class="group"><button class="btn" id="prevBtn">← Previous</button><button class="btn" id="nextBtn">Next →</button><span id="pageText">Page 1</span></div><span id="pageInfo"></span></div></section>
@@ -58,19 +60,19 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
  <div class="map-legend"><span id="mapMin">Low</span><div class="map-gradient"></div><span id="mapMax">High</span></div>
  <div class="map-note">Map shows reported station observations only; no values are interpolated between stations. Select a marker for its value, source and observation time.</div>
 </section>
-<footer>Official NWS BTV CWA polygon · Local Storm Reports excluded · NYS Mesonet observations are not enabled pending data-policy approval. Observation time and ingestion time are separate. Daily observer reports remain daily; no hourly values are inferred.</footer></section></div></main>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<section class="view-content" id="timeSeriesPanel" style="display:none"><div class="table-head"><h2>Observation time series</h2><span class="count" id="timeSeriesStatus">Choose a weather element and retrieve reports</span></div><div class="chart-wrap"><canvas id="observationTimeChart"></canvas></div><div class="map-note">Select a weather element to avoid mixing units. Chart uses matching archive observations.</section><section class="view-content" id="summaryPanel" style="display:none"><div class="table-head"><h2>Operational Summary</h2><span class="count" id="summaryStatus">Summary of matching reports</span></div><div class="summary-grid" id="summaryCards"></div><div id="summaryDetails" style="margin-top:14px;font-size:12px;line-height:1.8"></div></section><footer>Official NWS BTV CWA polygon · Local Storm Reports excluded · NYS Mesonet observations are not enabled pending data-policy approval. Observation time and ingestion time are separate. Daily observer reports remain daily; no hourly values are inferred.</footer></section></div></main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 
 const API="https://btv-observation-api.jusmessinwityah1.workers.dev";
 const $=id=>document.getElementById(id);
 let manifest=null,stations=[],currentPage=1,total=0,lastQuery={},lastRows=[];
-let observationMap=null,stationLayer=null,mapOverlay=null,mapDirty=true,mapPoints=[];
+let observationMap=null,stationLayer=null,mapOverlay=null,mapDirty=true,mapPoints=[],obsChart=null;
 const MAP_BOUNDS_URL="https://mapservices.weather.noaa.gov/static/rest/services/nws_reference_maps/nws_reference_map/FeatureServer/1/query?where=cwa%3D%27BTV%27&outFields=cwa&returnGeometry=true&outSR=4326&f=geojson";
 const fmtTime=v=>{if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})+"Z"};
 const esc=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pretty=v=>String(v??"").replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
-function setHealth(ok,msg){$("healthDot").className="dot "+(ok?"ok":"bad");$("healthText").textContent=msg}
+function excludedStation(s){return /mount mansfield east/i.test(String(s?.name||"")+" "+String(s?.provider_station_id||"")+" "+String(s?.station_id||""));}\nfunction excludedReport(r){return /mount mansfield east/i.test(String(r?.station_name||"")+" "+String(r?.provider_station_id||""));}\nfunction setHealth(ok,msg){$("healthDot").className="dot "+(ok?"ok":"bad");$("healthText").textContent=msg}
 async function getJson(path){const r=await fetch(API+path,{cache:"no-store"});if(!r.ok)throw new Error("API returned "+r.status+" for "+path);return r.json()}
 async function refreshLatestData(){
  const btn=$("refreshBtn"),priorText=btn.textContent;
@@ -89,7 +91,7 @@ async function refreshLatestData(){
   sourceSelect.innerHTML='<option value="">All sources</option>';
   [...new Set(stations.map(x=>x.source).filter(Boolean))].sort().forEach(v=>sourceSelect.add(new Option(v,v)));
   stationSelect.innerHTML='<option value="">All stations</option>';
-  stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>stationSelect.add(new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id)));
+  stations.filter(s=>!excludedStation(s)).slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>stationSelect.add(new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id)));
   sourceSelect.value=[...sourceSelect.options].some(o=>o.value===selectedSource)?selectedSource:"";
   stationSelect.value=[...stationSelect.options].some(o=>o.value===selectedStation)?selectedStation:"";
   setHealth(true,"API connected · latest snapshot loaded");
@@ -110,7 +112,7 @@ async function initialize(){
   $("updatedText").textContent="Snapshot generated "+fmtTime(m.generated_at);
   const sources=[...new Set(stations.map(x=>x.source).filter(Boolean))].sort();
   sources.forEach(v=>{const o=new Option(v,v);$("source").add(o)});
-  stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>{const o=new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id);$("station").add(o)});
+  stations.filter(s=>!excludedStation(s)).slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>{const o=new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id);$("station").add(o)});
   setHealth(true,"API connected · snapshot available");
   await retrieve();
  }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="10" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
@@ -260,7 +262,10 @@ function showObservationView(which){
  if(isMap){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false}},100)}
 }
 
-async function retrieve(){
+async function getAllMatchingRows(){let out=[],offset=0,totalCount=null;while(totalCount===null||offset<totalCount){const p=queryParams(1000,offset),d=await getJson("/observations?"+p.toString());totalCount=d.total||0;out.push(...(d.results||[]).filter(r=>!excludedReport(r)));offset+=1000;if(!d.results?.length)break;}return out;}
+async function loadTimeSeries(){const element=$("element").value;if(!element){$("timeSeriesStatus").textContent="Choose a weather element in the criteria panel.";return;} $("timeSeriesStatus").textContent="Loading matching reports…";try{const rows=await getAllMatchingRows();if(obsChart)obsChart.destroy();if(!rows.length){$("timeSeriesStatus").textContent="No matching observations.";return;}rows.sort((a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time));const labels=rows.map(r=>new Date(r.observation_time).toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"}));const values=rows.map(r=>Number(r.value));obsChart=new Chart($("observationTimeChart"),{type:"line",data:{labels,datasets:[{label:pretty(element)+" ("+(rows[0].unit||"")+")",data:values,borderWidth:2,tension:.2,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{maxTicksLimit:14}},y:{title:{display:true,text:rows[0].unit||""}}}}});$("timeSeriesStatus").textContent=rows.length.toLocaleString()+" reports · "+new Set(rows.map(r=>r.station_id)).size+" stations";}catch(e){$("timeSeriesStatus").textContent="Time series load failed: "+e.message;}}
+async function loadSummary(){ $("summaryStatus").textContent="Loading matching archive reports…";try{const rows=await getAllMatchingRows(),vals=rows.map(r=>Number(r.value)).filter(Number.isFinite),sites=new Set(rows.map(r=>r.station_id)),sources=new Set(rows.map(r=>r.source));const max=vals.length?Math.max(...vals):null,min=vals.length?Math.min(...vals):null,unit=rows.find(r=>r.unit)?.unit||"",latest=rows.reduce((a,r)=>!a||Date.parse(r.observation_time)>Date.parse(a.observation_time)?r:a,null);const cards=[["Matching reports",rows.length.toLocaleString()],["Reporting stations",sites.size.toLocaleString()],["Sources",sources.size.toLocaleString()],["Maximum",max===null?"—":max+" "+unit],["Minimum",min===null?"—":min+" "+unit],["Latest observation",latest?fmtTime(latest.observation_time):"—"]];$("summaryCards").innerHTML=cards.map(x=>'<div class="summary-card"><b>'+esc(x[1])+'</b><span>'+esc(x[0])+'</span></div>').join("");const bySource={};rows.forEach(r=>bySource[r.source||"Unknown"]=(bySource[r.source||"Unknown"]||0)+1);$("summaryDetails").innerHTML="<strong>Reports by source</strong><br>"+Object.entries(bySource).sort((a,b)=>b[1]-a[1]).map(([k,v])=>esc(k)+": "+v.toLocaleString()).join(" · ")+"<br><strong>Selected element:</strong> "+esc(pretty($("element").value||"All elements"))+"<br><strong>Search window:</strong> "+esc($("window").selectedOptions[0]?.textContent||"Custom")+"<br><strong>Excluded station:</strong> Mount Mansfield East";$("summaryStatus").textContent="Operational snapshot loaded · "+rows.length.toLocaleString()+" matching reports";}catch(e){$("summaryStatus").textContent="Summary load failed: "+e.message;}}
+\nasync function retrieve(){
  $("searchBtn").disabled=true;$("resultCount").textContent="Retrieving reports…";
  try{
   const limit=Number($("pageSize").value);currentPage=1;lastQuery=queryParams(limit,0);
@@ -294,7 +299,7 @@ async function exportCsv(){
 $("searchBtn").addEventListener("click",retrieve);
 $("refreshBtn").addEventListener("click",refreshLatestData);
 $("tableTab").addEventListener("click",()=>showObservationView("table"));
-$("mapTab").addEventListener("click",()=>showObservationView("map"));
+$("mapTab").addEventListener("click",()=>showObservationView("map"));$("timeSeriesTab").addEventListener("click",()=>showObservationView("timeSeries"));$("summaryTab").addEventListener("click",()=>showObservationView("summary"));
 ["mapMarkers","mapLabels"].forEach(id=>$(id).addEventListener("change",()=>{if(mapPoints.length)drawObservationMap(mapPoints)}));$("prevBtn").addEventListener("click",()=>changePage(-1));$("nextBtn").addEventListener("click",()=>changePage(1));
 $("csvBtn").addEventListener("click",exportCsv);$("printBtn").addEventListener("click",()=>window.print());
 $("window").addEventListener("change",()=>{$("customDates").style.display=$("window").value==="custom"?"grid":"none"});
