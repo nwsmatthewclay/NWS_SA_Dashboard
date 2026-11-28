@@ -457,6 +457,93 @@ def ingest_synoptic(geometries):
 
 
 
+def resolve_synoptic_nysm_network(networks_payload):
+    """Find the NYSM network in Synoptic's network inventory."""
+    for network in networks_payload.get("MNET", []) or []:
+        name = " ".join(str(network.get(k) or "") for k in ("LONGNAME", "SHORTNAME")).upper()
+        if "NYSM" in name or "NEW YORK STATE MESONET" in name:
+            return str(network.get("ID") or network.get("SHORTNAME") or network.get("LONGNAME"))
+    return None
+
+
+def ingest_synoptic_nysm(geometries):
+    """Ingest NYSM stations/observations from Synoptic, spatially clipped to BTV CWA."""
+    if not SYNOPTIC_TOKEN:
+        SOURCE_STATUS.append({"source": "Synoptic NYSM", "status": "skipped",
+                            "reason": "SYNOPTIC_API_KEY missing"})
+        return
+    base = "https://api.synopticdata.com/v2"
+    networks = request_json(base + "/networks", {"token": SYNOPTIC_TOKEN})
+    summary = networks.get("SUMMARY", {})
+    if str(summary.get("RESPONSE_CODE")) != "1":
+        raise RuntimeError("Synoptic networks API: " + str(summary.get("RESPONSE_MESSAGE", summary)))
+    network_id = resolve_synoptic_nysm_network(networks)
+    if not network_id:
+        SOURCE_STATUS.append({"source": "Synoptic NYSM", "status": "no_network_match",
+                            "network_count": len(networks.get("MNET", []) or [])})
+        return
+
+    station_params = {"token": SYNOPTIC_TOKEN, "network": network_id, "status": "active", "complete": 1}
+    metadata = request_json(base + "/stations/metadata", station_params)
+    meta_summary = metadata.get("SUMMARY", {})
+    if str(meta_summary.get("RESPONSE_CODE")) != "1":
+        raise RuntimeError("Synoptic NYSM metadata API: " + str(meta_summary.get("RESPONSE_MESSAGE", meta_summary)))
+    station_meta = metadata.get("STATION", []) or []
+    station_lookup = {}
+    for item in station_meta:
+        sid = item.get("STID")
+        st = station_record("Synoptic NYSM", sid, item.get("NAME"), item.get("LATITUDE"),
+                            item.get("LONGITUDE"), "NYSM via Synoptic")
+        if st is not None:
+            station_lookup[str(sid)] = st
+
+    latest = request_json(base + "/stations/latest", {
+        "token": SYNOPTIC_TOKEN, "network": network_id, "within": 180,
+        "vars": "air_temp,wind_speed,wind_gust,dew_point_temperature,relative_humidity,wind_direction",
+        "units": "english,speed|mph", "obtimezone": "utc", "complete": 1,
+    })
+    latest_summary = latest.get("SUMMARY", {})
+    if str(latest_summary.get("RESPONSE_CODE")) != "1":
+        raise RuntimeError("Synoptic NYSM latest API: " + str(latest_summary.get("RESPONSE_MESSAGE", latest_summary)))
+    variable_map = {
+        "air_temp": ("temperature", "degF"), "dew_point_temperature": ("dewpoint", "degF"),
+        "wind_speed": ("wind_speed", "mph"), "wind_gust": ("wind_gust", "mph"),
+        "wind_direction": ("wind_direction", "degree"),
+        "relative_humidity": ("relative_humidity", "%"),
+    }
+    count = 0
+    observed_station_ids = set()
+    for item in latest.get("STATION", []) or []:
+        sid = str(item.get("STID") or "")
+        st = station_lookup.get(sid)
+        if st is None:
+            # Provider station IDs can differ between metadata/latest responses;
+            # still register using coordinates if they are present.
+            st = station_record("Synoptic NYSM", sid, item.get("NAME"), item.get("LATITUDE"),
+                                item.get("LONGITUDE"), "NYSM via Synoptic")
+        if st is None:
+            continue
+        observed_station_ids.add(sid)
+        obs = item.get("OBSERVATIONS", {})
+        station_time = obs.get("date_time") or item.get("OBSERVATION_TIME")
+        if isinstance(station_time, list):
+            station_time = station_time[-1] if station_time else None
+        for key, (variable, unit) in variable_map.items():
+            candidate = obs.get(key + "_value_1")
+            if isinstance(candidate, dict):
+                value = candidate.get("value")
+                ts = candidate.get("date_time") or station_time
+            else:
+                value, ts = candidate, station_time
+            if value is not None:
+                add_observation(st, variable, value, unit, ts, value, unit,
+                               qc="provider_reported", metadata={"provider_network": "NYSM", "synoptic_network_id": network_id})
+                count += 1
+    SOURCE_STATUS.append({"source": "Synoptic NYSM", "status": "ok",
+                         "network_id": network_id, "metadata_stations_in_btv": len(station_lookup),
+                         "stations_reporting": len(observed_station_ids), "normalized_values": count})
+
+
 def ingest_coop_daily(geometries):
     for state in ("VT", "NY"):
         network = f"{state}_COOP"
@@ -812,7 +899,7 @@ def write_outputs():
 
 if __name__ == "__main__":
     CWA_GEOMETRIES = load_btv_geometry()
-    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_rwis, ingest_nysm_inventory):
+    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_synoptic_nysm, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_rwis, ingest_nysm_inventory):
         try:
             adapter(CWA_GEOMETRIES)
         except Exception as exc:
