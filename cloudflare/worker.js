@@ -79,7 +79,7 @@ const OBSERVATION_CACHE_TTL_MS = 30000;
 // Build reusable lookup indexes once per archive refresh. These reduce repeated
 // endpoint scans to the requested element/source/station subset.
 function buildObservationIndexes(rows) {
-  const byElement = new Map(), bySource = new Map(), byStation = new Map();
+  const byElement = new Map(), byVariable = new Map(), bySource = new Map(), byStation = new Map();
   for (const row of rows) {
     const add = (map, key) => {
       if (!key) return;
@@ -87,15 +87,18 @@ function buildObservationIndexes(rows) {
       map.get(key).push(row);
     };
     add(byElement, row.element);
+    add(byVariable, row.variable);
     add(bySource, row.source);
     add(byStation, row.station_id);
   }
-  return { byElement, bySource, byStation };
+  return { byElement, byVariable, bySource, byStation };
 }
-function indexedRows({ element = null, source = null, stationId = null } = {}) {
+function indexedRows({ element = null, variable = null, source = null, stationId = null } = {}) {
   if (!cachedObservationRows) return [];
   const indexes = cachedObservationIndexes;
-  let candidates = element ? (indexes?.byElement.get(element) || []) : cachedObservationRows;
+  let candidates = element ? (indexes?.byElement.get(element) || [])
+    : variable ? (indexes?.byVariable.get(variable) || [])
+    : cachedObservationRows;
   if (source) candidates = candidates.filter(row => row.source === source);
   if (stationId) candidates = candidates.filter(row => row.station_id === stationId);
   return candidates;
@@ -151,6 +154,11 @@ export default {
         },
         customMetadata: { uploaded_at: new Date().toISOString() },
       });
+      if (key === "latest/observations.ndjson.gz") {
+        cachedObservationRows = null;
+        cachedObservationRowsAt = 0;
+        cachedObservationIndexes = null;
+      }
       return json({ ok: true, key, bytes: body.byteLength });
     }
 
@@ -315,8 +323,8 @@ export default {
         value_asc: (a, b) => (Number(a.value) - Number(b.value)) || (Date.parse(b.observation_time) - Date.parse(a.observation_time)),
       };
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
-      let candidateRows = element
-        ? indexedRows({ element, source, stationId })
+      let candidateRows = element || variable || source || stationId
+        ? indexedRows({ element, variable, source, stationId })
         : rows;
 
       // Calculate apparent temperature from co-timed normalized station
