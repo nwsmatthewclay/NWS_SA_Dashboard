@@ -54,24 +54,64 @@ jobs:
           OBSERVATION_LOOKBACK_DAYS: "5"
         run: python scripts/observation_pipeline.py
 
-      - name: Validate normalized snapshot files
+      - name: Validate snapshot and daily archive partitions
         run: |
           python - <<'PY'
           import gzip, json
+          from datetime import datetime, timezone
           from pathlib import Path
+
           base = Path("observation_data/latest")
           manifest = json.loads((base / "manifest.json").read_text())
           stations = json.loads((base / "stations.json").read_text())
           with gzip.open(base / "observations.ndjson.gz", "rt", encoding="utf-8") as stream:
               rows = [json.loads(line) for line in stream if line.strip()]
+
           assert len(rows) == manifest["observation_count"], (len(rows), manifest["observation_count"])
           assert stations and rows, "Snapshot must contain stations and observations"
           assert all(row.get("observation_time") and row.get("ingested_at") for row in rows)
           assert all(row.get("latest_observation_at") for row in rows)
-          archive_files = list(Path("observation_data/archive").glob("*/*/*.ndjson.gz"))
+
+          archive_root = Path("observation_data/archive")
+          archive_files = sorted(archive_root.glob("*/*/*.ndjson.gz"))
           assert archive_files, "Daily partition files were not generated"
-          print(f"Validated {len(archive_files)} daily archive partitions")
-          print(f"Validated {len(rows)} observations and {len(stations)} provider station records")
+
+          expected_by_day = {}
+          for row in rows:
+              raw_time = row.get("observation_time")
+              try:
+                  parsed = datetime.fromisoformat(str(raw_time).replace("Z", "+00:00"))
+                  if parsed.tzinfo is None:
+                      parsed = parsed.replace(tzinfo=timezone.utc)
+                  day_key = parsed.astimezone(timezone.utc).strftime("%Y-%m-%d")
+                  expected_by_day.setdefault(day_key, []).append(row)
+              except (TypeError, ValueError):
+                  continue
+
+          actual_by_day = {}
+          for path in archive_files:
+              key = path.name.removesuffix(".ndjson.gz")
+              partition_day = key
+              assert path.relative_to(archive_root).as_posix() == f"{partition_day[:4]}/{partition_day[5:7]}/{partition_day}.ndjson.gz", f"Malformed archive path: {path}"
+              with gzip.open(path, "rt", encoding="utf-8") as stream:
+                  partition_rows = [json.loads(line) for line in stream if line.strip()]
+              assert partition_rows, f"Empty archive partition: {path}"
+              for row in partition_rows:
+                  parsed = datetime.fromisoformat(str(row["observation_time"]).replace("Z", "+00:00"))
+                  if parsed.tzinfo is None:
+                      parsed = parsed.replace(tzinfo=timezone.utc)
+                  assert parsed.astimezone(timezone.utc).strftime("%Y-%m-%d") == partition_day, f"Row placed in wrong partition: {path}"
+              actual_by_day[partition_day] = partition_rows
+
+          assert set(actual_by_day) == set(expected_by_day), (sorted(actual_by_day), sorted(expected_by_day))
+          for day, expected_rows in expected_by_day.items():
+              actual_rows = actual_by_day[day]
+              assert len(actual_rows) == len(expected_rows), (day, len(actual_rows), len(expected_rows))
+          archived_count = sum(len(partition) for partition in actual_by_day.values())
+          expected_archived_count = sum(len(partition) for partition in expected_by_day.values())
+          assert archived_count == expected_archived_count
+          print(f"Validated {len(archive_files)} daily partitions and {archived_count} archived observations")
+          print(f"Validated {len(rows)} snapshot observations and {len(stations)} provider station records")
           PY
 
       - name: Publish latest snapshot to Cloudflare R2 API
