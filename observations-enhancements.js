@@ -304,13 +304,17 @@ async function generateSummary(){
 }
 let initialized=false;
 function init(){
- populateStations();
  if(initialized)return;
  initialized=true;
+ // Bind core display controls before optional data-population routines, so a
+ // station/quality initialization error cannot leave the wallboard button inert.
  const themeButton=$("themeToggle"),textButton=$("textSizeToggle");
- const wallboardButton=$("wallboardToggle");wallboardButton.addEventListener("click",()=>setWallboard(!wallboardActive));
- themeButton.addEventListener("click",()=>{const dark=document.body.classList.toggle("dark-theme");themeButton.textContent=dark?"Light theme":"Dark theme";themeButton.setAttribute("aria-pressed",dark?"true":"false");});
- textButton.addEventListener("click",()=>{const large=document.body.classList.toggle("large-text");textButton.textContent=large?"Standard text":"Larger text";textButton.setAttribute("aria-pressed",large?"true":"false");});
+ const wallboardButton=$("wallboardToggle");
+ if(wallboardButton)wallboardButton.addEventListener("click",()=>setWallboard(!wallboardActive));
+ if(themeButton)themeButton.addEventListener("click",()=>{const dark=document.body.classList.toggle("dark-theme");themeButton.textContent=dark?"Light theme":"Dark theme";themeButton.setAttribute("aria-pressed",dark?"true":"false");});
+ if(textButton)textButton.addEventListener("click",()=>{const large=document.body.classList.toggle("large-text");textButton.textContent=large?"Standard text":"Larger text";textButton.setAttribute("aria-pressed",large?"true":"false");});
+ try{populateStations();}catch(e){console.error("Observation enhancement station initialization failed:",e);}
+
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
  $("summaryTab").addEventListener("click",()=>showView("summary"));
  $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
