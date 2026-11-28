@@ -38,7 +38,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <div class="field"><label for="sort">Display order</label><select id="sort"><option value="time_desc">Newest reports first</option><option value="value_desc">Highest value per site</option><option value="value_asc">Lowest value per site</option><option value="time_asc">Oldest reports first</option></select></div>
 <div class="two"><div class="field"><label for="minValue">Minimum value</label><input type="number" id="minValue" step="any" placeholder="Any"></div><div class="field"><label for="maxValue">Maximum value</label><input type="number" id="maxValue" step="any" placeholder="Any"></div></div>
 <div class="two"><div class="field"><label for="qc">Quality control</label><select id="qc"><option value="">All statuses</option><option value="provider">Provider screened</option><option value="unknown">Unknown / not specified</option></select></div><div class="field"><label for="pageSize">Rows per page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option></select></div></div>
-<div class="actions"><button class="btn primary wide" id="searchBtn">Retrieve reports</button><button class="btn wide" id="refreshBtn" title="Fetch the newest published snapshot and rerun the current query">↻ Refresh latest data</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export CSV</button><button class="btn wide" id="printBtn">Print report</button></div>
+<div class="actions"><button class="btn primary wide" id="searchBtn">Retrieve reports</button><button class="btn wide" id="refreshBtn" title="Fetch the newest published snapshot and rerun the current query">↻ Refresh latest data</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export CSV</button><button class="btn" id="geoJsonBtn">Export GeoJSON</button><button class="btn" id="kmlBtn">Export KML</button><button class="btn wide" id="printBtn">Print report</button></div>
 <div class="note">Wind chill is calculated from co-timed temperature and wind observations where temperature is 50°F or colder and wind is at least 3 mph. Heat index is calculated from temperature and dewpoint-derived relative humidity where temperature is at least 80°F and relative humidity is at least 40%. Both use standard NWS/NOAA equations. Only stations with the required observations are included. Ice-accretion products retain hourly QC and flat/radial measurements.</div>
 </aside>
 <section class="results"><div class="metrics">
@@ -364,14 +364,55 @@ async function changePage(delta){
  $("prevBtn").disabled=currentPage===1;$("nextBtn").disabled=currentPage>=pages;
  }catch(e){$("resultCount").textContent="Page load failed: "+e.message}
 }
+async function fetchAllMatching(){
+ const all=[];const pageSize=1000;let offset=0,expected=null;
+ while(expected===null||offset<expected){
+  const p=queryParams(pageSize,offset),data=await getJson(archiveQuery(p));
+  expected=data.total||0;all.push(...(data.results||[]));offset+=pageSize;
+  if(!(data.results||[]).length)break;
+ }
+ const stationById=new Map(stations.map(s=>[String(s.station_id),s]));
+ return all.map(r=>{const s=stationById.get(String(r.station_id))||{};return {...r,latitude:r.latitude??s.latitude??null,longitude:r.longitude??s.longitude??null};});
+}
+function downloadText(filename,text,mime){
+ const blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function xmlEscape(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]));}
+async function exportGeoJson(){
+ const btn=$("geoJsonBtn");btn.disabled=true;btn.textContent="Preparing GeoJSON…";
+ try{
+  const rows=await fetchAllMatching(),features=[];
+  for(const r of rows){const lat=Number(r.latitude),lon=Number(r.longitude);
+   if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<-90||lat>90||lon<-180||lon>180)continue;
+   const props={...r};delete props.latitude;delete props.longitude;
+   features.push({type:"Feature",geometry:{type:"Point",coordinates:[lon,lat]},properties:props});
+  }
+  const output={type:"FeatureCollection",name:"BTV Observation Reports",features};
+  downloadText("btv_observation_reports_"+new Date().toISOString().slice(0,10)+".geojson",JSON.stringify(output,null,2),"application/geo+json;charset=utf-8");
+  btn.textContent="Exported "+features.length.toLocaleString()+" points";
+ }catch(e){alert("GeoJSON export failed: "+e.message)}
+ finally{setTimeout(()=>{btn.disabled=false;btn.textContent="Export GeoJSON"},1800)}
+}
+async function exportKml(){
+ const btn=$("kmlBtn");btn.disabled=true;btn.textContent="Preparing KML…";
+ try{
+  const rows=await fetchAllMatching(),placemarks=[];
+  for(const r of rows){const lat=Number(r.latitude),lon=Number(r.longitude);
+   if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<-90||lat>90||lon<-180||lon>180)continue;
+   const desc=Object.entries(r).map(([k,v])=>k+": "+(v??"")).join("\n");
+   placemarks.push("<Placemark><name>"+xmlEscape(r.station_name||r.station_id||"Observation")+"</name><description>"+xmlEscape(desc)+"</description><TimeStamp><when>"+xmlEscape(r.observation_time||"")+"</when></TimeStamp><Point><coordinates>"+lon+","+lat+",0</coordinates></Point></Placemark>");
+  }
+  const kml='<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>BTV Observation Reports</name>'+placemarks.join("")+'</Document></kml>';
+  downloadText("btv_observation_reports_"+new Date().toISOString().slice(0,10)+".kml",kml,"application/vnd.google-earth.kml+xml;charset=utf-8");
+  btn.textContent="Exported "+placemarks.length.toLocaleString()+" placemarks";
+ }catch(e){alert("KML export failed: "+e.message)}
+ finally{setTimeout(()=>{btn.disabled=false;btn.textContent="Export KML"},1800)}
+}
 async function exportCsv(){
  const btn=$("csvBtn");btn.disabled=true;btn.textContent="Preparing CSV…";
  try{
-  const all=[];const pageSize=1000;let offset=0,expected=null;
-  while(expected===null||offset<expected){const p=queryParams(pageSize,offset);const data=await getJson(archiveQuery(p));expected=data.total||0;all.push(...(data.results||[]));offset+=pageSize;if(!data.results?.length)break}
-  // Station coordinates are maintained in the station inventory, not repeated
-  // on every observation. Join them here so the CSV is immediately mappable in GIS.
-  const stationById=new Map(stations.map(s=>[String(s.station_id),s]));
+  const all=await fetchAllMatching();
   const cols=["report_type","observation_time","station_name","provider_station_id","station_id","latitude","longitude","element","variable","value","unit","radial_value","radial_unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit","metadata"];
   const csv=[cols.join(","),...all.map(r=>{
    const s=stationById.get(String(r.station_id))||{};
@@ -387,7 +428,7 @@ $("refreshBtn").addEventListener("click",refreshLatestData);
 $("tableTab").addEventListener("click",()=>showObservationView("table"));
 $("mapTab").addEventListener("click",()=>showObservationView("map"));
 ["mapMarkers","mapLabels"].forEach(id=>$(id).addEventListener("change",()=>{if(mapPoints.length)drawObservationMap(mapPoints)}));$("prevBtn").addEventListener("click",()=>changePage(-1));$("nextBtn").addEventListener("click",()=>changePage(1));
-$("csvBtn").addEventListener("click",exportCsv);$("printBtn").addEventListener("click",()=>window.print());
+$("csvBtn").addEventListener("click",exportCsv);$("geoJsonBtn").addEventListener("click",exportGeoJson);$("kmlBtn").addEventListener("click",exportKml);$("printBtn").addEventListener("click",()=>window.print());
 $("window").addEventListener("change",()=>{$("customDates").style.display=$("window").value==="custom"?"grid":"none"});
 $("element").addEventListener("change",()=>{if($("element").value==="wind_chill")$("sort").value="value_asc";else if($("element").value==="heat_index")$("sort").value="value_desc";});
 $("resetBtn").addEventListener("click",()=>{["element","statistic","reportType","source","station","minValue","maxValue"].forEach(id=>$(id).value="");$("window").value="24";$("sort").value="time_desc";$("qc").value="";$("customDates").style.display="none";retrieve()});
