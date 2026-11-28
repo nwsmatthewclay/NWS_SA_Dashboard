@@ -70,7 +70,8 @@ def metar_report_datetime(raw: str, fallback: datetime | None = None) -> datetim
 def is_routine_hourly_metar(raw: str, report_time: datetime | None, tolerance_minutes: int = 5) -> bool:
     """Accept routine METARs whose encoded issue time is near :53 past the hour."""
     tokens = (raw or "").strip().upper().split()
-    if not tokens or tokens[0] != "METAR" or report_time is None:
+    # IEM ASOS commonly returns station-prefixed reports instead of "METAR".
+    if not is_metar_report(raw) or report_time is None:
         return False
     issued = metar_report_datetime(raw, report_time)
     if issued is None:
