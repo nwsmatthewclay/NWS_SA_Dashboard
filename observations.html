@@ -54,6 +54,35 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 #summaryPanel .summary-meta{font-size:10px}
 @media(max-width:600px){#summaryPanel .summary-grid{grid-template-columns:1fr}.summary-briefing-title h2{font-size:18px}.summary-section-head{align-items:flex-start}}
 @media print{#summaryPanel .summary-briefing{background:white!important}.summary-section{break-inside:avoid}#summaryPanel .summary-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* Phase 6: site-quality workspace overhaul */
+#siteQualityPanel{overflow:hidden}
+.quality-header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+.quality-header h2{font:800 18px Manrope;margin:3px 0;color:#344b39}
+.quality-header p,.quality-list-toolbar p,.quality-history-header p{font-size:10px;color:var(--muted);line-height:1.5;margin:5px 0 0;max-width:700px}
+.quality-kicker{font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:var(--green);font-weight:900}
+.quality-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.quality-metric{background:#fffefa;border:1px solid var(--line);border-radius:11px;padding:11px 13px;min-width:0}
+.quality-metric b{display:block;font:800 21px Manrope;color:#344b39;font-variant-numeric:tabular-nums}
+.quality-metric span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:#788178;margin-top:3px}
+.quality-manage{margin-bottom:16px;background:linear-gradient(135deg,#f7f6ef,#fffefa)}
+.quality-list-toolbar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
+.quality-list-toolbar h3,.quality-history-header h3{font:800 14px Manrope;margin:0;color:#344b39}
+.quality-filter-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.quality-filter-controls input,.quality-filter-controls select{height:36px;border:1px solid #d9d7cb;border-radius:8px;background:#fffefa;color:#28372e;padding:0 10px;font:500 11px 'DM Sans';min-width:150px}
+.quality-filter-controls input:focus,.quality-filter-controls select:focus{outline:2px solid #9db79e;outline-offset:1px}
+.quality-active-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.quality-record{border:1px solid #e6d4c3;border-left:4px solid var(--orange);border-radius:11px;padding:12px;background:#fffefa;min-width:0}
+.quality-record-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.quality-status-pill{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#a65e34;background:#f8eadf;border:1px solid #ecd2bd;border-radius:999px;padding:4px 7px;white-space:nowrap}
+.quality-record-element{font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#7e837b}
+.quality-record h4{font:800 15px Manrope;color:#354b39;margin:7px 0 3px;overflow-wrap:anywhere}
+.quality-record-code{font-size:10px;color:#778078}
+.quality-record-reason{margin:10px 0;padding:9px;background:#f7f5ee;border-radius:8px;font-size:11px;line-height:1.5;color:#4b564d;overflow-wrap:anywhere}
+.quality-record-meta{font-size:10px;color:#7c857c;line-height:1.55}
+.quality-record-actions{margin-top:12px;display:flex;justify-content:flex-end}
+.quality-history-header{margin:22px 0 9px}
+@media(max-width:760px){.quality-header{flex-direction:column}.quality-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.quality-filter-controls{width:100%}.quality-filter-controls input{flex:1;min-width:120px}.quality-filter-controls select{flex:1}}
 </style>
 </head>
 <body>
@@ -108,8 +137,9 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
  <div id="summaryResults"><div class="summary-empty">Choose an analysis period and generate a summary. Unavailable categories will be omitted rather than reported as zero.</div></div>
 </section>
 <section class="view-content" id="siteQualityPanel" style="display:none">
- <div class="table-head"><div><h2 style="font:800 16px Manrope;margin:0">Site Data Quality</h2><div class="summary-intro">Quarantines persist across refreshes and apply only to the selected station and weather element. Other observations from that station remain available.</div></div><span class="count" id="qualityStatus">Loading quality records…</span></div>
- <div class="summary-card" style="margin-bottom:16px">
+ <div class="quality-header"><div><div class="quality-kicker">Quality control workspace</div><h2>Site Data Quality</h2><p>Quarantines persist across refreshes and apply only to the selected station and weather element. Other observations from that station remain available.</p></div><span class="count" id="qualityStatus">Loading quality records…</span></div>
+ <div class="quality-metrics" id="qualityMetrics"></div>
+ <div class="quality-manage summary-card">
   <div class="summary-label">MANAGE A SITE</div>
   <div class="view-toolbar" style="align-items:end">
    <div class="field"><label for="qualityStation">Station</label><select id="qualityStation"><option value="">Choose a station…</option></select></div>
@@ -125,12 +155,10 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
   </div>
   <div class="summary-intro" id="qualitySelectionStatus">Choose a station and weather element to see whether it is currently enabled or quarantined.</div>
  </div>
- <div class="view-toolbar"><button class="btn" id="qualityRefreshBtn" type="button">Refresh quality status</button></div>
- <div class="summary-intro">Turning OFF excludes only that station's selected element from the entire dashboard. Turning it back ON requires a different reviewer and the authorization token.</div>
+ <div class="quality-list-toolbar"><div><h3>Active quarantines</h3><p>Only these station-element pairs are currently excluded.</p></div><div class="quality-filter-controls"><input id="qualitySearch" type="search" placeholder="Search station or reason…" aria-label="Search active quarantines"><select id="qualityElementFilter" aria-label="Filter active quarantines by element"><option value="">All elements</option><option value="precipitation">Precipitation</option><option value="temperature">Temperature</option><option value="dewpoint">Dewpoint</option><option value="wind_speed">Wind speed</option><option value="wind_gust">Wind gust</option><option value="wind_direction">Wind direction</option><option value="wind_chill">Wind chill</option><option value="heat_index">Heat index</option><option value="snowfall">Snowfall</option><option value="snow_depth">Snow depth</option><option value="snow_water_equivalent">Snow water equivalent</option><option value="ice_accretion">Hourly ice accretion</option><option value="relative_humidity">Relative humidity</option><option value="present_weather">Present weather</option></select><button class="btn" id="qualityRefreshBtn" type="button">Refresh status</button></div></div>
  <div id="qualityActiveList"><div class="summary-empty">Loading active quarantines…</div></div>
- <h3 style="font:800 14px Manrope;margin:22px 0 8px">Recent quality history</h3>
+ <div class="quality-history-header"><h3>Audit history</h3><p>Recent quarantine and restoration actions.</p></div>
  <div id="qualityHistoryList"><div class="summary-empty">No history loaded.</div></div>
-</section>
 </section>
 <footer>Official NWS BTV CWA polygon · Local Storm Reports excluded · NYS Mesonet observations are not enabled pending data-policy approval. Observation time and ingestion time are separate. Daily observer reports remain daily; no hourly values are inferred.</footer></section></div></main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
