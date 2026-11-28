@@ -75,6 +75,11 @@ let cachedObservationRowsAt = 0;
 let cachedObservationIndexes = null;
 let observationRowsLoad = null;
 const OBSERVATION_CACHE_TTL_MS = 30000;
+let observationCacheHits = 0;
+let observationCacheMisses = 0;
+let observationArchiveLoadMs = null;
+let observationArchiveRows = null;
+let observationArchiveBytes = null;
 
 // Build reusable lookup indexes once per archive refresh. These reduce repeated
 // endpoint scans to the requested element/source/station subset.
@@ -107,19 +112,25 @@ function indexedRows({ element = null, variable = null, source = null, stationId
 async function readLatestRows(bucket) {
   const now = Date.now();
   if (cachedObservationRows && now - cachedObservationRowsAt < OBSERVATION_CACHE_TTL_MS) {
+    observationCacheHits++;
     return cachedObservationRows;
   }
+  observationCacheMisses++;
   if (observationRowsLoad) return observationRowsLoad;
 
   observationRowsLoad = (async () => {
+    const loadStarted = Date.now();
     const object = await bucket.get("latest/observations.ndjson.gz");
     if (!object) return null;
+    observationArchiveBytes = object.size ?? null;
     const decompressed = object.body.pipeThrough(new DecompressionStream("gzip"));
     const body = await new Response(decompressed).text();
     const rows = body.split("\n").filter(Boolean).map((line) => JSON.parse(line));
     cachedObservationRows = rows;
     cachedObservationIndexes = buildObservationIndexes(rows);
     cachedObservationRowsAt = Date.now();
+    observationArchiveRows = rows.length;
+    observationArchiveLoadMs = Date.now() - loadStarted;
     return rows;
   })();
 
@@ -221,6 +232,27 @@ export default {
     if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
 
     if (path === "/health") return json({ ok: true, service: "BTV observation API" });
+    if (path === "/diagnostics") {
+      const loaded = Boolean(cachedObservationRows);
+      const indexes = cachedObservationIndexes;
+      return json({
+        service: "BTV observation API",
+        archive_loaded_in_this_isolate: loaded,
+        archive_rows: observationArchiveRows,
+        compressed_archive_bytes: observationArchiveBytes,
+        cache_age_seconds: loaded ? Math.max(0, Math.round((Date.now() - cachedObservationRowsAt) / 1000)) : null,
+        cache_ttl_seconds: OBSERVATION_CACHE_TTL_MS / 1000,
+        cache_hits: observationCacheHits,
+        cache_misses: observationCacheMisses,
+        last_archive_load_ms: observationArchiveLoadMs,
+        index_counts: loaded ? {
+          elements: indexes?.byElement.size || 0,
+          variables: indexes?.byVariable.size || 0,
+          sources: indexes?.bySource.size || 0,
+          stations: indexes?.byStation.size || 0
+        } : null
+      });
+    }
 
     if (path === "/manifest" || path === "/stations") {
       const key = path === "/manifest" ? "latest/manifest.json" : "latest/stations.json";
