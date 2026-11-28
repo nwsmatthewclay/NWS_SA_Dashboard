@@ -38,6 +38,7 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 <div class="field"><label for="sort">Display order</label><select id="sort"><option value="time_desc">Newest reports first</option><option value="value_desc">Highest value per site</option><option value="value_asc">Lowest value per site</option><option value="time_asc">Oldest reports first</option></select></div>
 <div class="two"><div class="field"><label for="minValue">Minimum value</label><input type="number" id="minValue" step="any" placeholder="Any"></div><div class="field"><label for="maxValue">Maximum value</label><input type="number" id="maxValue" step="any" placeholder="Any"></div></div>
 <div class="two"><div class="field"><label for="qc">Quality control</label><select id="qc"><option value="">All statuses</option><option value="provider">Provider screened</option><option value="unknown">Unknown / not specified</option></select></div><div class="field"><label for="pageSize">Rows per page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option></select></div></div>
+<div class="preset-row" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0"><button type="button" class="btn" id="presetWind" title="Search for wind gust reports of at least 50 mph">Damaging wind ≥50 mph</button><button type="button" class="btn" id="presetSnow" title="Search for snowfall reports of at least 6 inches">Heavy snow ≥6 in</button><button type="button" class="btn" id="presetIce" title="Search for hourly ice accretion reports of at least 0.10 inches">Ice ≥0.10 in</button></div>
 <div class="actions"><button class="btn primary wide" id="searchBtn">Retrieve reports</button><button class="btn wide" id="refreshBtn" title="Fetch the newest published snapshot and rerun the current query">↻ Refresh latest data</button><button class="btn" id="resetBtn">Reset filters</button><button class="btn" id="csvBtn">Export CSV</button><button class="btn" id="geoJsonBtn">Export GeoJSON</button><button class="btn" id="kmlBtn">Export KML</button><button class="btn wide" id="printBtn">Print report</button></div>
 <div class="note">Wind chill is calculated from co-timed temperature and wind observations where temperature is 50°F or colder and wind is at least 3 mph. Heat index is calculated from temperature and dewpoint-derived relative humidity where temperature is at least 80°F and relative humidity is at least 40%. Both use standard NWS/NOAA equations. Only stations with the required observations are included. Ice-accretion products retain hourly QC and flat/radial measurements.</div>
 </aside>
@@ -415,14 +416,22 @@ async function exportCsv(){
   const all=await fetchAllMatching();
   const cols=["report_type","observation_time","station_name","provider_station_id","station_id","latitude","longitude","element","variable","value","unit","radial_value","radial_unit","statistic","accumulation_hours","period_start","period_end","source","network","qc_status","ingested_at","raw_value","raw_unit","metadata"];
   const csv=[cols.join(","),...all.map(r=>{
-   const s=stationById.get(String(r.station_id))||{};
-   const row={...r,latitude:r.latitude??s.latitude??"",longitude:r.longitude??s.longitude??""};
+   const row=r;
    return cols.map(k=>{const v=row[k]??"";return '"'+String(v).replaceAll('"','""')+'"'}).join(",");
   })].join("\r\n");
   const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="btv_observation_reports_"+new Date().toISOString().slice(0,16).replaceAll(":","")+"Z.csv";a.click();URL.revokeObjectURL(url);
   btn.textContent="Exported "+all.length.toLocaleString()+" rows";
  }catch(e){alert("CSV export failed: "+e.message)}finally{setTimeout(()=>{btn.disabled=false;btn.textContent="Export all matching CSV"},1800)}
 }
+function applyPreset(element,minValue,sort="value_desc"){
+ $("element").value=element;$("minValue").value=minValue;$("maxValue").value="";
+ $("statistic").value="auto";$("reportType").value="";$("source").value="";$("station").value="";
+ $("sort").value=sort;$("window").value="24";$("customDates").style.display="none";
+ retrieve();
+}
+$("presetWind").addEventListener("click",()=>applyPreset("wind_gust","50"));
+$("presetSnow").addEventListener("click",()=>applyPreset("snowfall","6"));
+$("presetIce").addEventListener("click",()=>applyPreset("ice_accretion","0.10","time_desc"));
 $("searchBtn").addEventListener("click",retrieve);
 $("refreshBtn").addEventListener("click",refreshLatestData);
 $("tableTab").addEventListener("click",()=>showObservationView("table"));
