@@ -18,7 +18,7 @@ function stationGroup(station){
  if(type==="cocorahs"||source==="cocorahs")return "CoCoRaHS";
  if(type==="coop"||source==="iem_coop"||source==="iem_rr3_coop"||network.includes("coop"))return "COOP";
  if(type==="rwis"||source==="iem_rwis"||network.includes("rwis"))return "RWIS";
- if(type==="nysm"||source.includes("nysm")||source.includes("mesonet")||network.includes("nysm")||network.includes("mesonet"))return "NYSM";
+ if(type.includes("nysm")||type.includes("mesonet")||source.includes("nysm")||source.includes("mesonet")||network.includes("nysm")||network.includes("mesonet"))return "NYSM";
  return "Public Sites";
 }
 function stationLabel(station){
