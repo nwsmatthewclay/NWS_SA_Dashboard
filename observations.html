@@ -94,6 +94,8 @@ button,input,select,textarea{font-family:inherit}
 .view-tab[aria-selected="true"]{box-shadow:0 0 0 2px #ffffff55 inset}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 body.large-text{--scale:1.12}
+/* Fix: scale the dashboard canvas so fixed-size component typography also enlarges. */
+body.large-text{zoom:1.12}
 body.dark-theme{color-scheme:dark;--bg:#171d1a;--paper:#222b25;--paper2:#2a342d;--line:#414c43;--ink:#e5eee5;--muted:#aab6ab;--green:#7ba786;--green2:#2d4033;--orange:#df986b;--orange2:#493426;--gold:#d1b16a;background:var(--bg);color:var(--ink)}
 body.dark-theme header{background:#202923;border-color:var(--line)}body.dark-theme .sub,body.dark-theme .health,body.dark-theme .count,body.dark-theme .table-hint,body.dark-theme .note,body.dark-theme footer,body.dark-theme .summary-meta,body.dark-theme .summary-intro,body.dark-theme .quality-record-meta{color:var(--muted)}
 body.dark-theme .sidebar,body.dark-theme .metric,body.dark-theme .map-panel,body.dark-theme .view-content,body.dark-theme .table-panel,body.dark-theme .summary-card,body.dark-theme .chart-card,body.dark-theme .quality-metric,body.dark-theme .quality-record{background:var(--paper);border-color:var(--line);color:var(--ink)}
