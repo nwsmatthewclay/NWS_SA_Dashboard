@@ -76,6 +76,7 @@ function archivePath(params){
  const a=Date.parse(start),b=Date.parse(end);
  if(!Number.isFinite(a)||!Number.isFinite(b)||b<a)throw new Error("Invalid archive time range");
  const startDay=new Date(a).toISOString().slice(0,10),endDay=new Date(b).toISOString().slice(0,10);
+ if(Math.floor((Date.parse(endDay+"T00:00:00Z")-Date.parse(startDay+"T00:00:00Z"))/86400000)+1>120)throw new Error("Historical archive searches are limited to 120 days.");
  p.delete("start");p.delete("end");p.set("start",startDay);p.set("end",endDay);
  p.set("start_time",new Date(a).toISOString());p.set("end_time",new Date(b).toISOString());
  return "/archive?"+p.toString();
