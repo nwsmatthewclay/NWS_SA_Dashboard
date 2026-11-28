@@ -81,22 +81,27 @@ async function fetchRows(element,range,stationId,extra){
 }
 function clearCharts(){charts.forEach(c=>c.destroy());charts=[];}
 function renderCharts(series,station){
- clearCharts();const root=$("tsCharts"),cards=[];
+ clearCharts();const root=$("tsCharts"),cards=[],tz=$("tsTimezone")?.value||"UTC";
+ const dateLabel=ms=>new Date(ms).toLocaleString("en-US",{timeZone:tz==="UTC"?"UTC":undefined,month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false})+(tz==="UTC"?"Z":"");
  Object.entries(series).forEach(([el,rows])=>{
   if(!rows.length)return;
   rows.sort((a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time));
-  const sets=[],chartLabels=rows.map(r=>new Date(r.observation_time).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}));
-  const mk=(name,key,color)=>({label:name,data:rows.map(r=>r[key]===null||r[key]===undefined||!Number.isFinite(Number(r[key]))?null:Number(r[key])),borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:0,spanGaps:false});
-  if(el==="ice_accretion"){
-   sets.push(mk("Flat ice","value",colors[el]));
-   if(rows.some(r=>Number.isFinite(Number(r.radial_value))))sets.push(mk("Radial ice (40%)","radial_value","#4b91a2"));
-  }else sets.push(mk(labels[el]||el,"value",colors[el]||"#476b52"));
-  cards.push({id:"observationTsChart"+cards.length,title:labels[el]||el,sets,rows,labels:chartLabels,unit:units[el]||rows[0].unit||""});
+  const points=rows.map(r=>({x:Date.parse(r.observation_time),y:r.value===null||r.value===undefined||!Number.isFinite(Number(r.value))?null:Number(r.value)}));
+  const sets=[];
+  if(el==="precipitation"){
+   const cumulative=[];let sum=0;points.forEach(p=>{if(Number.isFinite(p.y))sum+=p.y;cumulative.push({x:p.x,y:sum});});
+   sets.push({type:"bar",label:"Hourly precipitation",data:points,backgroundColor:"#3979ad",borderColor:"#3979ad",borderWidth:1});
+   sets.push({type:"line",label:"Running total",data:cumulative,borderColor:"#2f654b",backgroundColor:"#2f654b",borderWidth:2,pointRadius:1,yAxisID:"y1",tension:0});
+  }else if(el==="ice_accretion"){
+   sets.push({label:"Flat ice",data:points,borderColor:colors[el],backgroundColor:colors[el],borderWidth:2,pointRadius:2,tension:0});
+   if(rows.some(r=>Number.isFinite(Number(r.radial_value))))sets.push({label:"Radial ice (40%)",data:rows.map(r=>({x:Date.parse(r.observation_time),y:Number.isFinite(Number(r.radial_value))?Number(r.radial_value):null})),borderColor:"#4b91a2",backgroundColor:"#4b91a2",borderWidth:2,pointRadius:2,tension:0});
+  }else sets.push({label:labels[el]||el,data:points,borderColor:colors[el]||"#476b52",backgroundColor:colors[el]||"#476b52",borderWidth:2,pointRadius:2,tension:0,spanGaps:false});
+  cards.push({id:"observationTsChart"+cards.length,title:labels[el]||el,sets,rows,unit:units[el]||rows[0].unit||"",precip:el==="precipitation"});
  });
  if(!cards.length){root.innerHTML='<div class="summary-empty" style="grid-column:1/-1">No observations were found for the selected station, variables and timeframe. Try a longer period or different variables.</div>';return;}
- root.innerHTML=cards.map(c=>'<div class="chart-card"><h3>'+safe(c.title)+'</h3><div class="chart-canvas"><canvas id="'+c.id+'"></canvas></div><div class="chart-caption">'+c.rows.length+' reports · '+safe(c.unit)+' · original report times</div></div>').join("");
+ root.innerHTML=cards.map(c=>'<div class="chart-card"><h3>'+safe(c.title)+'</h3><div class="chart-canvas"><canvas id="'+c.id+'"></canvas></div><div class="chart-caption">'+c.rows.length+' reports · '+safe(c.unit)+' · '+safe(tz)+' timestamps'+(c.precip?' · 1-hour bars + running total':'')+'</div></div>').join("");
  cards.forEach(c=>{
-  const chart=new Chart($(c.id),{type:"line",data:{labels:c.labels,datasets:c.sets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:c.sets.length>1,labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:ctx=>{const r=c.rows[ctx.dataIndex];const period=r&&r.accumulation_hours?" · "+r.accumulation_hours+"h report":"";return ctx.dataset.label+": "+fmt(ctx.parsed.y)+" "+c.unit+period;}}}},scales:{x:{type:"category",ticks:{maxTicksLimit:7,maxRotation:0,font:{size:9}},grid:{display:false}},y:{title:{display:true,text:c.unit,font:{size:10}},ticks:{font:{size:9}},grid:{color:"#ece9e1"}}}}});
+  const chart=new Chart($(c.id),{type:c.precip?"bar":"line",data:{datasets:c.sets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:c.sets.length>1,labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{title:items=>items.length?dateLabel(items[0].parsed.x):"",label:ctx=>ctx.dataset.label+": "+fmt(ctx.parsed.y)+" "+(ctx.dataset.yAxisID==="y1"?"in total":c.unit)}}},scales:{x:{type:"linear",ticks:{maxTicksLimit:7,maxRotation:0,font:{size:9},callback:v=>dateLabel(v)},grid:{display:false},title:{display:true,text:"Time ("+tz+")"}},y:{title:{display:true,text:c.unit,font:{size:10}},ticks:{font:{size:9}},grid:{color:"#ece9e1"}},...(c.precip?{y1:{position:"right",title:{display:true,text:"Running total (in)"},grid:{drawOnChartArea:false}}}:{})}}});
   charts.push(chart);
  });
  $("tsStatus").textContent=cards.length+" variables plotted · "+(station.name||station.provider_station_id);
@@ -111,7 +116,7 @@ async function loadTimeSeries(){
   if($("tsPeriod").value!=="custom"&&["1","3","6","12","24","48","72","120"].includes(String(hours))){extra.period=hours;}
   const result=await Promise.all(vars.map(async el=>{
    const opts={};
-   if(el==="precipitation"&&extra.period){opts.statistic=hours+"h_accumulation";opts.accumulation_hours=hours;}
+   if(el==="precipitation"&&extra.period){opts.statistic="1h_accumulation";opts.accumulation_hours=1;}
    return [el,await fetchRows(el,range,history.stationId,opts)];
   }));
   const station=selected||{name:id};renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
