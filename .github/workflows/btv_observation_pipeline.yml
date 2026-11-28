@@ -68,11 +68,11 @@ jobs:
           assert stations and rows, "Snapshot must contain stations and observations"
           assert all(row.get("observation_time") and row.get("ingested_at") for row in rows)
           assert all(row.get("latest_observation_at") for row in rows)
-          print(f"Validated {len(rows)} observations and {len(stations)} provider station records")
-          PY
           archive_files = list(Path("observation_data/archive").glob("*/*/*.ndjson.gz"))
           assert archive_files, "Daily partition files were not generated"
           print(f"Validated {len(archive_files)} daily archive partitions")
+          print(f"Validated {len(rows)} observations and {len(stations)} provider station records")
+          PY
 
       - name: Publish latest snapshot to Cloudflare R2 API
         if: ${{ env.OBSERVATION_WORKER_URL != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
