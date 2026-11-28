@@ -3,9 +3,9 @@
 let charts=[];
 let summaryText="";
 let qualityState={active:[],history:[]};
-const labels={temperature:"Temperature",dewpoint:"Dewpoint",wind_speed:"Wind speed",wind_gust:"Wind gust",wind_chill:"Wind chill",heat_index:"Heat index",precipitation:"Precipitation",snowfall:"Snowfall",snow_depth:"Snow depth",ice_accretion:"Ice accretion"};
-const colors={temperature:"#c65b42",dewpoint:"#3d83a8",wind_speed:"#476b52",wind_gust:"#b08a42",wind_chill:"#4575b4",heat_index:"#d66a36",precipitation:"#3979ad",snowfall:"#6e9fc1",snow_depth:"#7e8dba",ice_accretion:"#8c6caa"};
-const units={temperature:"°F",dewpoint:"°F",wind_speed:"mph",wind_gust:"mph",wind_chill:"°F",heat_index:"°F",precipitation:"in",snowfall:"in",snow_depth:"in",ice_accretion:"in"};
+const labels={temperature:"Temperature",dewpoint:"Dewpoint",wind_speed:"Wind speed",wind_gust:"Wind gust",wind_direction:"Wind direction",wind_chill:"Wind chill",heat_index:"Heat index",precipitation:"Precipitation",snowfall:"Snowfall",snow_depth:"Snow depth",ice_accretion:"Ice accretion"};
+const colors={temperature:"#c65b42",dewpoint:"#3d83a8",wind_speed:"#476b52",wind_gust:"#b08a42",wind_direction:"#637f9c",wind_chill:"#4575b4",heat_index:"#d66a36",precipitation:"#3979ad",snowfall:"#6e9fc1",snow_depth:"#7e8dba",ice_accretion:"#8c6caa"};
+const units={temperature:"°F",dewpoint:"°F",wind_speed:"mph",wind_gust:"mph",wind_direction:"°",wind_chill:"°F",heat_index:"°F",precipitation:"in",snowfall:"in",snow_depth:"in",ice_accretion:"in"};
 const $=id=>document.getElementById(id);
 const safe=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function fmt(v){return Number(v).toLocaleString("en-US",{maximumFractionDigits:3});}
