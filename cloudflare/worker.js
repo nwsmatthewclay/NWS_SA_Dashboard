@@ -72,8 +72,34 @@ function authorized(request, env) {
 // every request independently downloads, decompresses and parses the full archive.
 let cachedObservationRows = null;
 let cachedObservationRowsAt = 0;
+let cachedObservationIndexes = null;
 let observationRowsLoad = null;
 const OBSERVATION_CACHE_TTL_MS = 30000;
+
+// Build reusable lookup indexes once per archive refresh. These reduce repeated
+// endpoint scans to the requested element/source/station subset.
+function buildObservationIndexes(rows) {
+  const byElement = new Map(), bySource = new Map(), byStation = new Map();
+  for (const row of rows) {
+    const add = (map, key) => {
+      if (!key) return;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(row);
+    };
+    add(byElement, row.element);
+    add(bySource, row.source);
+    add(byStation, row.station_id);
+  }
+  return { byElement, bySource, byStation };
+}
+function indexedRows({ element = null, source = null, stationId = null } = {}) {
+  if (!cachedObservationRows) return [];
+  const indexes = cachedObservationIndexes;
+  let candidates = element ? (indexes?.byElement.get(element) || []) : cachedObservationRows;
+  if (source) candidates = candidates.filter(row => row.source === source);
+  if (stationId) candidates = candidates.filter(row => row.station_id === stationId);
+  return candidates;
+}
 
 async function readLatestRows(bucket) {
   const now = Date.now();
@@ -89,6 +115,7 @@ async function readLatestRows(bucket) {
     const body = await new Response(decompressed).text();
     const rows = body.split("\n").filter(Boolean).map((line) => JSON.parse(line));
     cachedObservationRows = rows;
+    cachedObservationIndexes = buildObservationIndexes(rows);
     cachedObservationRowsAt = Date.now();
     return rows;
   })();
@@ -208,8 +235,7 @@ export default {
       const source = url.searchParams.get("source");
       const stationId = url.searchParams.get("station_id");
       const qualityState = await readQualityState(env.OBSERVATIONS);
-      const filtered = rows.filter(row => (!element || row.element === element) &&
-        (!source || row.source === source) && (!stationId || row.station_id === stationId) &&
+      const filtered = indexedRows({ element, source, stationId }).filter(row =>
         !isQuarantined(row, qualityState.active) && Number.isFinite(Date.parse(row.observation_time)) &&
         Number.isFinite(Number(row.value)));
       const latestByStation = new Map();
@@ -289,13 +315,17 @@ export default {
         value_asc: (a, b) => (Number(a.value) - Number(b.value)) || (Date.parse(b.observation_time) - Date.parse(a.observation_time)),
       };
       if (!sorters[sort]) return json({ error: "Unsupported sort option" }, 400);
-      let candidateRows = rows;
+      let candidateRows = element
+        ? indexedRows({ element, source, stationId })
+        : rows;
 
       // Calculate apparent temperature from co-timed normalized station
       // observations. Temperature/dewpoint are Fahrenheit; wind is mph.
       if (element === "wind_chill" || element === "heat_index") {
         const grouped = new Map();
-        for (const row of rows) {
+        const derivedInputRows = ["temperature", "dewpoint", "wind_speed"]
+          .flatMap(key => cachedObservationIndexes?.byElement.get(key) || []);
+        for (const row of derivedInputRows) {
           if (!["temperature", "dewpoint", "wind_speed"].includes(row.element) ||
               row.statistic !== "instantaneous" || !Number.isFinite(Number(row.value))) continue;
           const key = [row.station_id, row.source, row.observation_time].join("|");
