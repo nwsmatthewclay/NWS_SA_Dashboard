@@ -217,13 +217,15 @@ async function restoreQuality(button){
  }catch(error){alert("Could not restore this site: "+error.message);}
  finally{button.disabled=false;}
 }
-let wallboardTimer=null,wallboardIndex=0,wallboardViews=["table","map","summary"],wallboardActive=false;
+let wallboardTimer=null,wallboardRefreshTimer=null,wallboardIndex=0,wallboardViews=["table","map","summary"],wallboardActive=false;
 function setWallboard(active){
  const button=$("wallboardToggle");wallboardActive=!!active;
  document.body.classList.toggle("wallboard-mode",wallboardActive);
  button.textContent=wallboardActive?"Exit wallboard":"Wallboard";button.setAttribute("aria-pressed",wallboardActive?"true":"false");
  if(wallboardTimer){clearInterval(wallboardTimer);wallboardTimer=null;}
+ if(wallboardRefreshTimer){clearInterval(wallboardRefreshTimer);wallboardRefreshTimer=null;}
  if(wallboardActive){wallboardIndex=0;showView(wallboardViews[wallboardIndex]);wallboardTimer=setInterval(()=>{wallboardIndex=(wallboardIndex+1)%wallboardViews.length;showView(wallboardViews[wallboardIndex]);},45000);
+  wallboardRefreshTimer=setInterval(()=>{if(typeof retrieve==="function")retrieve();},300000);
   if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(()=>{});}
  }else if(document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen().catch(()=>{});showView("table");}
 }
