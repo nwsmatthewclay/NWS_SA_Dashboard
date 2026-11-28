@@ -42,6 +42,12 @@ New endpoint:
 
 The existing `/observations`, `/latest`, and `/summary` endpoints remain unchanged during this migration.
 
+## Dashboard historical archive integration
+
+The **Observation Reports** dashboard now uses the date-partitioned `/archive` endpoint for historical report retrieval, table pagination, map queries, CSV exports, and station time-series data. The latest snapshot remains the source for the live status/metrics and station inventory. The archive query supports custom date/time bounds and preserves the selected source, station, element, statistic, accumulation period, QC, and numeric filters. The API response's `missing_days` list is surfaced in report-result status so a sparse archive is not mistaken for a complete period.
+
+The archive endpoint supports report-category filtering, per-station extreme selection (`extreme=highest|lowest`), and sorting by time or value. Time-series queries use the archive and fetch pages up to 1,000 rows, with a short in-browser cache to avoid repeated retrievals.
+
 ## Endpoints
 
 - `GET /health`: service health.
