@@ -321,9 +321,8 @@ function drawObservationMap(points){
 async function updateObservationMap(){
  if(!$("element").value){$("mapStatus").textContent="Choose a weather element first.";return}
  $("mapStatus").textContent="Loading station observations…";
- try{const all=[];let offset=0,expected=null;
-  while(expected===null||offset<expected){const p=queryParams(1000,offset),data=await getJson("/observations?"+p.toString());expected=data.total||0;all.push(...(data.results||[]));offset+=1000;if(!data.results?.length)break}
-  mapPoints=mapRowsForStations(all);drawObservationMap(mapPoints);
+ try{const p=new URLSearchParams({element:$("element").value});if($("source").value)p.set("source",$("source").value);const data=await getJson("/latest?"+p.toString());
+  mapPoints=mapRowsForStations(data.results||[]);drawObservationMap(mapPoints);
  }catch(e){$("mapStatus").textContent="Map retrieval failed: "+e.message}
 }
 function showObservationView(which){
