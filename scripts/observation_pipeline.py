@@ -807,6 +807,100 @@ def ingest_rwis(geometries):
                           "stations": total_stations, "rows": total_rows, "normalized_values": total_values})
 
 
+
+def ingest_nysm_latest(geometries):
+    """Ingest the public NYSM latest-observation CSV (5-minute network snapshot)."""
+    url = "https://www.atmos.albany.edu/products/nysm/nysm_latest.csv"
+    response = SESSION.get(url, timeout=60)
+    response.raise_for_status()
+    rows = list(csv.DictReader(io.StringIO(response.text)))
+    if not rows:
+        raise RuntimeError("NYSM latest CSV returned no station rows")
+    count = 0
+    stations = 0
+    variables = set()
+    sample_columns = list(rows[0].keys())
+    # NYSM values are native metric units in this public feed.
+    mappings = [
+        ("temp_2m [degC]", "temperature", "degF", lambda v: c_to_f(v), "degC"),
+        ("temp_9m [degC]", "temperature_9m", "degF", lambda v: c_to_f(v), "degC"),
+        ("relative_humidity [percent]", "relative_humidity", "%", lambda v: float(v), "%"),
+        ("precip_incremental [mm]", "precipitation_incremental", "inch", lambda v: float(v) / 25.4, "mm"),
+        ("precip_local [mm]", "precipitation_since_midnight", "inch", lambda v: float(v) / 25.4, "mm"),
+        ("precip_max_intensity [mm/min]", "precipitation_max_intensity", "inch/min", lambda v: float(v) / 25.4, "mm/min"),
+        ("avg_wind_speed_prop [m/s]", "wind_speed_prop", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("max_wind_speed_prop [m/s]", "wind_gust_prop", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("wind_speed_stddev_prop [m/s]", "wind_speed_stddev_prop", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("wind_direction_prop [degrees]", "wind_direction_prop", "degree", lambda v: float(v), "degree"),
+        ("wind_direction_stddev_prop [degrees]", "wind_direction_stddev_prop", "degree", lambda v: float(v), "degree"),
+        ("avg_wind_speed_sonic [m/s]", "wind_speed_sonic", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("max_wind_speed_sonic [m/s]", "wind_gust_sonic", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("wind_speed_stddev_sonic [m/s]", "wind_speed_stddev_sonic", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("wind_direction_sonic [degrees]", "wind_direction_sonic", "degree", lambda v: float(v), "degree"),
+        ("wind_direction_stddev_sonic [degrees]", "wind_direction_stddev_sonic", "degree", lambda v: float(v), "degree"),
+        ("solar_insolation [W/m^2]", "solar_insolation", "W/m^2", lambda v: float(v), "W/m^2"),
+        ("station_pressure [mbar]", "station_pressure", "hPa", lambda v: float(v), "mbar"),
+        ("snow_depth [cm]", "snow_depth", "inch", lambda v: float(v) / 2.54, "cm"),
+        ("soil_temp_05cm [degC]", "soil_temperature_5cm", "degF", lambda v: c_to_f(v), "degC"),
+        ("soil_temp_25cm [degC]", "soil_temperature_25cm", "degF", lambda v: c_to_f(v), "degC"),
+        ("soil_temp_50cm [degC]", "soil_temperature_50cm", "degF", lambda v: c_to_f(v), "degC"),
+        ("soil_moisture_05cm [m^3/m^3]", "soil_moisture_5cm", "m3/m3", lambda v: float(v), "m3/m3"),
+        ("soil_moisture_25cm [m^3/m^3]", "soil_moisture_25cm", "m3/m3", lambda v: float(v), "m3/m3"),
+        ("soil_moisture_50cm [m^3/m^3]", "soil_moisture_50cm", "m3/m3", lambda v: float(v), "m3/m3"),
+    ]
+    for row in rows:
+        sid = str(row.get("station") or "").strip().upper()
+        lat, lon = row.get("lat"), row.get("lon")
+        name = row.get("name") or sid
+        ts = row.get("time")
+        st = station_record("NYS Mesonet", sid, name, lat, lon, "NYSM Standard Network · 5-minute")
+        if st is None or not ts:
+            continue
+        stations += 1
+        for field, variable, unit, convert, raw_unit in mappings:
+            raw = row.get(field)
+            if raw in (None, "", "M", "-996", "-999", "nan", "NaN"):
+                continue
+            try:
+                value = convert(float(raw))
+                add_observation(st, variable, value, unit, ts, raw, raw_unit,
+                    qc="provider_qc", metadata={"network": "NYSM Standard", "sampling_interval_minutes": 5,
+                    "source_feed": "nysm_latest.csv"})
+                count += 1
+                variables.add(variable)
+            except (TypeError, ValueError, OverflowError):
+                continue
+        # NYSM's frozen-soil flags are categorical 0/1 observations, not temperatures.
+        for depth, field in ((5, "frozen_soil_05cm [bit]"), (25, "frozen_soil_25cm [bit]"), (50, "frozen_soil_50cm [bit]")):
+            raw = row.get(field)
+            if raw not in (None, "", "M", "-996", "-999"):
+                try:
+                    flag = int(float(raw))
+                    if flag in (0, 1):
+                        add_observation(st, f"frozen_soil_{depth}cm", flag, "flag", ts, raw, "bit",
+                            qc="provider_qc", metadata={"network": "NYSM Standard", "sampling_interval_minutes": 5})
+                        count += 1
+                        variables.add(f"frozen_soil_{depth}cm")
+                except (TypeError, ValueError):
+                    pass
+        # A simple, explicitly derived freezing-precipitation indicator; not ice accretion.
+        try:
+            temp = float(row.get("temp_2m [degC]"))
+            precip = float(row.get("precip_incremental [mm]"))
+            if temp <= 0.0 and precip > 0.0:
+                add_observation(st, "nysm_freezing_precipitation_flag", 1, "flag", ts, 1, "derived flag",
+                    qc="derived_freezing_precipitation", metadata={"temperature_c": temp, "precip_incremental_mm": precip,
+                    "description": "NYSM precipitation increment with 2-m temperature at/below 0C; not direct icing/accretion measurement"})
+                count += 1
+                variables.add("nysm_freezing_precipitation_flag")
+        except (TypeError, ValueError):
+            pass
+    SOURCE_STATUS.append({"source": "NYS Mesonet direct latest feed", "status": "ok" if count else "no_values",
+        "stations_in_btv": stations, "normalized_values": count, "variables": sorted(variables),
+        "feed": url, "sample_columns": sample_columns,
+        "note": "Latest 5-minute values; no SWE/ice accretion sensor values included in this feed."})
+
+
 def ingest_nysm_inventory(geometries):
     """Register public NYSM station locations; intentionally fetch no observations."""
     payload = request_json(
@@ -882,7 +976,7 @@ def write_outputs():
         "station_record_count": len(STATIONS),
         "latest_by_source": latest_by_source,
         "sources": SOURCE_STATUS, "data_file": str(data_path),
-        "scope": "Official NWS BTV CWA polygon; LSRs excluded; NYSM observations not enabled",
+        "scope": "Official NWS BTV CWA polygon; LSRs excluded; NYSM latest-feed observations included",
     }
     (BASE / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     latest_dir = BASE / "latest"
@@ -899,7 +993,7 @@ def write_outputs():
 
 if __name__ == "__main__":
     CWA_GEOMETRIES = load_btv_geometry()
-    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_synoptic_nysm, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_rwis, ingest_nysm_inventory):
+    for adapter in (ingest_nws, ingest_iem_asos, ingest_synoptic, ingest_synoptic_nysm, ingest_nysm_latest, ingest_coop_daily, ingest_cocorahs_daily, ingest_rr3_coop, ingest_rwis):
         try:
             adapter(CWA_GEOMETRIES)
         except Exception as exc:
