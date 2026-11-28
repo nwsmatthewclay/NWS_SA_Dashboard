@@ -200,6 +200,61 @@ export default {
       });
     }
 
+    // Lightweight aggregate endpoints avoid transferring large archives to the browser.
+    if (path === "/latest") {
+      const rows = await readLatestRows(env.OBSERVATIONS);
+      if (!rows) return json({ error: "Observation archive not available yet" }, 404);
+      const element = url.searchParams.get("element");
+      const source = url.searchParams.get("source");
+      const stationId = url.searchParams.get("station_id");
+      const qualityState = await readQualityState(env.OBSERVATIONS);
+      const filtered = rows.filter(row => (!element || row.element === element) &&
+        (!source || row.source === source) && (!stationId || row.station_id === stationId) &&
+        !isQuarantined(row, qualityState.active) && Number.isFinite(Date.parse(row.observation_time)) &&
+        Number.isFinite(Number(row.value)));
+      const latestByStation = new Map();
+      for (const row of filtered) {
+        const key = row.station_id || row.provider_station_id;
+        const prior = latestByStation.get(key);
+        if (!prior || Date.parse(row.observation_time) > Date.parse(prior.observation_time))
+          latestByStation.set(key, row);
+      }
+      return json({ count: latestByStation.size, results: [...latestByStation.values()].sort((a,b)=>String(a.station_name||a.provider_station_id).localeCompare(String(b.station_name||b.provider_station_id))) });
+    }
+
+    if (path === "/summary") {
+      const rows = await readLatestRows(env.OBSERVATIONS);
+      if (!rows) return json({ error: "Observation archive not available yet" }, 404);
+      const hours = Number(url.searchParams.get("hours") || 24);
+      const top = Math.min(10, Math.max(1, Number(url.searchParams.get("top") || 5)));
+      if (!Number.isFinite(hours) || hours < 1 || hours > 120 || !Number.isInteger(top))
+        return json({ error: "hours must be 1-120 and top must be an integer" }, 400);
+      const startMs = Date.now() - hours * 3600000;
+      const qualityState = await readQualityState(env.OBSERVATIONS);
+      const usable = rows.filter(row => Date.parse(row.observation_time) >= startMs &&
+        !isQuarantined(row, qualityState.active) && Number.isFinite(Number(row.value)));
+      const definitions = [
+        ["precipitation","highest","in","precipitation"],
+        ["snowfall","highest","in","snowfall"],
+        ["ice_accretion","highest","in","ice_accretion"],
+        ["heat_index","highest","°F","heat_index"],
+        ["wind_chill","lowest","°F","wind_chill"],
+        ["wind_gust","highest","mph","wind_gust"],
+        ["snow_depth","highest","in","snow_depth"],
+        ["temperature","highest","°F","temperature"],
+        ["temperature","lowest","°F","temperature"]
+      ];
+      const output = {};
+      for (const [element,mode,unit,key] of definitions) {
+        const candidates = usable.filter(row => row.element === element &&
+          (element !== "precipitation" || row.accumulation_hours === hours) &&
+          (element !== "snowfall" || row.accumulation_hours === hours || (hours === 24 && row.statistic === "daily_report")));
+        candidates.sort((a,b)=>mode==="highest"?Number(b.value)-Number(a.value):Number(a.value)-Number(b.value));
+        output[key+(mode==="lowest"?"_min":"_max")] = candidates.slice(0,top).map(row=>({station_id:row.station_id,provider_station_id:row.provider_station_id,station_name:row.station_name,source:row.source,observation_time:row.observation_time,value:row.value,unit:row.unit||unit,latitude:row.latitude,longitude:row.longitude,elevation_m:row.elevation_m,county:row.county,accumulation_hours:row.accumulation_hours}));
+      }
+      return json({ hours, top, generated_at:new Date().toISOString(), results:output });
+    }
+
     if (path === "/observations") {
       const rows = await readLatestRows(env.OBSERVATIONS);
       if (!rows) return json({ error: "Observation archive not available yet" }, 404);
