@@ -9,9 +9,10 @@ function allowedObjectKey(key) {
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, PUT, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, HEAD, PUT, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
   "Access-Control-Max-Age": "86400",
+  "Vary": "Origin",
 };
 
 function json(data, status = 200) {
@@ -41,11 +42,17 @@ function defaultQualityState() {
 }
 async function readQualityState(bucket) {
   const object = await bucket.get(QUALITY_OBJECT_KEY);
-  if (!object) return defaultQualityState();
-  const state = JSON.parse(await object.text());
-  return { version: 1, updated_at: state.updated_at || null,
-    active: Array.isArray(state.active) ? state.active : [],
-    history: Array.isArray(state.history) ? state.history : [] };
+  const state = object ? JSON.parse(await object.text()) : defaultQualityState();
+  const active = Array.isArray(state.active) ? state.active : [];
+  const history = Array.isArray(state.history) ? state.history : [];
+  // Keep the operational Mt. Mansfield East precipitation quarantine present
+  // across existing quality-state files, not only first-time initialization.
+  // Respect a documented restoration in the history so a reviewer can remove it.
+  const defaultSite = defaultQualityState().active[0];
+  const restored = history.some(item => item.action === "restored" && item.key === defaultSite.key);
+  const alreadyActive = active.some(item => item.key === defaultSite.key);
+  if (!restored && !alreadyActive) active.push(defaultSite);
+  return { version: 1, updated_at: state.updated_at || null, active, history };
 }
 async function writeQualityState(bucket, state) {
   state.updated_at = new Date().toISOString();
