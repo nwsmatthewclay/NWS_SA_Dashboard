@@ -270,7 +270,7 @@ function render(rows){
   const period=r.period_start&&r.period_end?fmtTime(r.period_start)+" – "+fmtTime(r.period_end):r.accumulation_hours? r.accumulation_hours+" h":r.statistic==="daily_report"?"Daily":"—";
   const value=typeof r.value==="number"?Number(r.value).toLocaleString("en-US",{maximumFractionDigits:3}):esc(r.value);
   const unit=r.unit||"",radialValue=typeof r.radial_value==="number"?Number(r.radial_value).toLocaleString("en-US",{maximumFractionDigits:3}):"—";
-  const derived=String(r.qc_status||"").startsWith("derived_"),reportedSum=r.qc_status==="derived_reported_sum",components=r.metadata?.component_reports||[],coverage=r.metadata?.coverage_percent;
+  const isIceRow=r.element==="ice_accretion",derived=String(r.qc_status||"").startsWith("derived_"),reportedSum=r.qc_status==="derived_reported_sum",components=r.metadata?.component_reports||[],coverage=r.metadata?.coverage_percent;
   const coverageLabel=coverage===undefined?"": " · "+esc(coverage)+"% coverage";
   const inputDetails=r.metadata?.inputs?Object.entries(r.metadata.inputs).map(([k,v])=>'<div class="detail-item"><strong>'+esc(pretty(k))+'</strong>'+esc(v)+(k.endsWith("_f")?"°F":k.endsWith("_mph")?" mph":k.endsWith("_percent")?"%":"")+'</div>').join(""):"";
   const calcDetails=reportedSum?components.map(c=>'<div class="detail-item"><strong>'+esc(fmtTime(c.observation_time))+'</strong>'+esc(c.value)+' '+esc(c.unit)+(typeof c.radial_value==="number"?' · radial '+esc(c.radial_value)+' '+esc(c.radial_unit||c.unit):"")+'</div>').join("")+( '<div class="detail-item">'+esc(r.metadata?.missing_hour_count||0)+' missing hourly reports; missing hours are not counted as zero.</div>'):inputDetails;
