@@ -536,7 +536,7 @@ export default {
         for (const row of candidateRows) {
           if (row.element !== "ice_accretion" ||
               row.accumulation_hours !== 1 ||
-              row.source !== "IEM_ASOS" ||
+              !["ASOS/AWOS", "IEM_ASOS"].includes(row.source) ||
               !["metar_ice_accretion_1h", "ice_accretion_1h"].includes(row.variable) ||
               row.metadata?.hourly_selection !== "METAR_only") continue;
           const time = Date.parse(row.observation_time);
