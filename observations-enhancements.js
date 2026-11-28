@@ -70,17 +70,27 @@ function rangeFromControls(){
 }
 const queryCache=new Map();let queryActive=0;const queryQueue=[];
 function runLimited(fn){return new Promise((resolve,reject)=>{const run=()=>{queryActive++;Promise.resolve().then(fn).then(resolve,reject).finally(()=>{queryActive--;const next=queryQueue.shift();if(next)next();});};if(queryActive<3)run();else queryQueue.push(run);});}
+function archivePath(params){
+ const p=new URLSearchParams(params);
+ const start=p.get("start"),end=p.get("end");
+ const a=Date.parse(start),b=Date.parse(end);
+ if(!Number.isFinite(a)||!Number.isFinite(b)||b<a)throw new Error("Invalid archive time range");
+ const startDay=new Date(a).toISOString().slice(0,10),endDay=new Date(b).toISOString().slice(0,10);
+ p.delete("start");p.delete("end");p.set("start",startDay);p.set("end",endDay);
+ p.set("start_time",new Date(a).toISOString());p.set("end_time",new Date(b).toISOString());
+ return "/archive?"+p.toString();
+}
 async function fetchRows(element,range,stationId,extra){
  const params=new URLSearchParams({element:element,start:range.start,end:range.end,limit:"1000",sort:"time_asc"});
  if(stationId)params.set("station_id",stationId);
  Object.entries(extra||{}).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=="")params.set(k,String(v));});
- const cacheKey="/observations?"+params.toString(),now=Date.now(),cached=queryCache.get(cacheKey);
+ const cacheKey=archivePath(params),now=Date.now(),cached=queryCache.get(cacheKey);
  if(cached&&now-cached.at<20000)return cached.rows;
  return runLimited(async()=>{
   const out=[];let offset=0,total=null;
   do{
    params.set("offset",String(offset));
-   const d=await get("/observations?"+params.toString());total=d.total||0;out.push(...(d.results||[]));offset+=1000;
+   const d=await get(archivePath(params));total=d.total||0;out.push(...(d.results||[]));offset+=1000;
    if(!(d.results||[]).length)break;
   }while(offset<total);
   queryCache.set(cacheKey,{at:Date.now(),rows:out});
