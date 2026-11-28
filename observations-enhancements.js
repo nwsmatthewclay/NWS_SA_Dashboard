@@ -117,6 +117,7 @@ function renderCharts(series,station){
  $("tsStatus").textContent=cards.length+" variables plotted · "+(station.name||station.provider_station_id);
 }
 async function loadTimeSeries(){
+ const requestId=++tsRequestId;
  const id=$("tsStation").value;if(!id){$("tsStatus").textContent="Select a station first";return;}
  const vars=Array.from($("tsVariables").querySelectorAll("input:checked")).map(x=>x.value);
  if(!vars.length){$("tsStatus").textContent="Select at least one variable";return;}
@@ -129,9 +130,9 @@ async function loadTimeSeries(){
    if(el==="precipitation"){opts.statistic="1h_accumulation";opts.accumulation_hours=1;}
    return [el,await fetchRows(el,range,history.stationId,opts)];
   }));
-  const station=selected||{name:id};renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
- }catch(e){$("tsStatus").textContent="Time series failed: "+e.message;$("tsCharts").innerHTML='<div class="summary-empty" style="grid-column:1/-1">'+safe(e.message)+'</div>';}
- finally{btn.disabled=false;btn.textContent="Load time series";}
+  const station=selected||{name:id};if(requestId!==tsRequestId)return;renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
+ }catch(e){if(requestId!==tsRequestId)return;$("tsStatus").textContent="Time series failed: "+e.message;$("tsCharts").innerHTML='<div class="summary-empty" style="grid-column:1/-1">'+safe(e.message)+'</div>';}
+ finally{if(requestId===tsRequestId){btn.disabled=false;btn.textContent="Load time series";}}
 }
 async function postQuality(path,body,token){
  const headers={"Content-Type":"application/json"};
@@ -278,7 +279,7 @@ async function generateSummary(){
 let initialized=false;
 
 // Station-level QC drilldown: inspect a station's history for the active element.
-let qcStation=null,qcElement=null,qcChart=null,tsLastSeries=null,tsLastStation=null;
+let qcStation=null,qcElement=null,qcChart=null,tsLastSeries=null,tsLastStation=null,tsRequestId=0,qcRequestId=0;
 function qcElementLabel(el){return labels[el]||String(el||"").replaceAll("_"," ");}
 async function loadStationQC(){
  if(!qcStation||!qcElement)return;
