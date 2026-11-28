@@ -19,6 +19,16 @@ main{max-width:1900px;margin:auto;padding:18px clamp(10px,1.6vw,24px) 36px}.work
 @media(max-width:1050px){.workspace{grid-template-columns:290px minmax(0,1fr)}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.table-wrap{max-height:none}}
 @media(max-width:760px){header{align-items:flex-start}.top-health{align-items:flex-start}.workspace{grid-template-columns:1fr}.sidebar{position:static;max-height:none}.results{min-width:0}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.table-panel{padding:10px}}
 @media print{body{background:white}.workspace{display:block}.sidebar,.top-health,.pager,footer{display:none!important}.table-wrap{max-height:none;overflow:visible}.table-panel,.metric{box-shadow:none}}
+
+/* Phase 1: context-aware workspace layout */
+.workspace{grid-template-columns:minmax(270px,30%) minmax(0,70%);transition:grid-template-columns .18s ease}
+.workspace.criteria-hidden{grid-template-columns:minmax(0,1fr)}
+.workspace.criteria-hidden .sidebar{display:none}
+.sidebar{display:flex;flex-direction:column;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto;padding-bottom:0}
+.sidebar .actions{position:sticky;bottom:0;background:var(--paper);padding:10px 0 0;margin-top:auto;border-top:1px solid var(--line);z-index:5}
+.view-tabs{overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:thin;flex-wrap:nowrap}
+.view-tab{flex:0 0 auto}
+@media(max-width:760px){.view-tabs{padding-bottom:3px}.workspace{grid-template-columns:1fr}.sidebar{position:static;max-height:none}.sidebar .actions{position:sticky;bottom:0}}
 </style>
 </head>
 <body>
@@ -298,6 +308,8 @@ async function updateObservationMap(){
 function showObservationView(which){
  const isMap=which==="map";$("tablePanel").style.display=isMap?"none":"";$("mapPanel").style.display=isMap?"":"none";
  $("tableTab").classList.toggle("active",!isMap);$("mapTab").classList.toggle("active",isMap);
+ document.querySelector(".workspace").classList.toggle("criteria-hidden",false);
+ document.body.dataset.observationView=isMap?"map":"table";
  if(isMap){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false}},100)}
 }
 
