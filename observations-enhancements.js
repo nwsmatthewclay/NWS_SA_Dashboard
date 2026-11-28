@@ -132,9 +132,18 @@ async function refreshQuality(){
 }
 function renderQuality(){
  const active=qualityState.active||[],history=(qualityState.history||[]).slice().reverse().slice(0,50);
+ const uniqueSites=new Set(active.map(entry=>entry.provider_station_id||entry.station_id).filter(Boolean)).size;
+ const uniqueElements=new Set(active.map(entry=>entry.element).filter(Boolean)).size;
  $("qualityStatus").textContent=active.length+" active quarantine"+(active.length===1?"":"s");
+ $("qualityMetrics").innerHTML='<div class="quality-metric"><b>'+active.length+'</b><span>Active quarantines</span></div><div class="quality-metric"><b>'+uniqueSites+'</b><span>Sites affected</span></div><div class="quality-metric"><b>'+uniqueElements+'</b><span>Elements affected</span></div><div class="quality-metric"><b>'+history.length+'</b><span>Recent audit actions</span></div>';
  updateSiteQualityControl();
- $("qualityActiveList").innerHTML=active.length?'<div class="summary-grid">'+active.map(entry=>'<div class="summary-card"><div class="summary-label">'+safe(labels[entry.element]||entry.element)+' · '+safe(entry.provider_station_id||entry.station_id)+'</div><div class="summary-value">'+safe(entry.station_name||entry.provider_station_id||entry.station_id)+'</div><div class="summary-meta">Flagged '+safe(time(entry.flagged_at))+' UTC by '+safe(entry.flagged_by)+'</div><div class="summary-meta">'+safe(entry.reason)+'</div><div style="margin-top:12px"><button class="btn" type="button" data-restore-quality="'+safe(entry.key)+'">Confirm data is good / restore</button></div></div>').join("")+'</div>':'<div class="summary-empty">No active site quarantines. All reporting sites are currently included.</div>';
+ const search=($("qualitySearch")?.value||"").trim().toLowerCase(),filter=$("qualityElementFilter")?.value||"";
+ const filtered=active.filter(entry=>{
+  if(filter&&entry.element!==filter)return false;
+  if(!search)return true;
+  return [entry.station_name,entry.provider_station_id,entry.station_id,entry.reason,labels[entry.element]||entry.element].some(v=>String(v||"").toLowerCase().includes(search));
+ });
+ $("qualityActiveList").innerHTML=filtered.length?'<div class="quality-active-grid">'+filtered.map(entry=>'<article class="quality-record"><div class="quality-record-top"><span class="quality-record-element">'+safe(labels[entry.element]||entry.element)+'</span><span class="quality-status-pill">Excluded / OFF</span></div><h4>'+safe(entry.station_name||entry.provider_station_id||entry.station_id||"Unknown site")+'</h4><div class="quality-record-code">'+safe(entry.provider_station_id||entry.station_id||"Station ID unavailable")+'</div><div class="quality-record-reason">'+safe(entry.reason||"No reason recorded")+'</div><div class="quality-record-meta">Flagged '+safe(time(entry.flagged_at))+' UTC · '+safe(entry.flagged_by||"Unknown reviewer")+'</div><div class="quality-record-actions"><button class="btn" type="button" data-restore-quality="'+safe(entry.key)+'">Confirm data is good / restore</button></div></article>').join("")+'</div>':active.length?'<div class="summary-empty">No active quarantines match these filters.</div>':'<div class="summary-empty">No active site quarantines. All reporting sites are currently included.</div>';
  $("qualityHistoryList").innerHTML=history.length?'<div class="table-wrap"><table><thead><tr><th>Action</th><th>Site</th><th>Element</th><th>Reason</th><th>Person</th><th>Time (UTC)</th></tr></thead><tbody>'+history.map(item=>'<tr><td>'+safe(item.action)+'</td><td>'+safe(item.station_name||item.provider_station_id||item.station_id)+'</td><td>'+safe(labels[item.element]||item.element)+'</td><td>'+safe(item.reason)+'</td><td>'+safe(item.action==="restored"?item.restored_by:item.flagged_by)+'</td><td>'+safe(time(item.action==="restored"?item.restored_at:item.flagged_at))+'</td></tr>').join("")+'</tbody></table></div>':'<div class="summary-empty">No quality actions recorded yet.</div>';
 }
 function updateSiteQualityControl(){
@@ -290,6 +299,8 @@ function init(){
  $("summaryTab").addEventListener("click",()=>showView("summary"));
  $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
  $("qualityRefreshBtn").addEventListener("click",()=>refreshQuality().catch(e=>alert("Quality refresh failed: "+e.message)));
+ $("qualitySearch").addEventListener("input",renderQuality);
+ $("qualityElementFilter").addEventListener("change",renderQuality);
  $("qualityStation").addEventListener("change",updateSiteQualityControl);
  $("qualityElement").addEventListener("change",updateSiteQualityControl);
  $("qualityToggleBtn").addEventListener("click",toggleSelectedSiteQuality);
