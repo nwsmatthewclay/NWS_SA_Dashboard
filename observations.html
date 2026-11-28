@@ -72,7 +72,9 @@ const MAP_BOUNDS_URL="https://mapservices.weather.noaa.gov/static/rest/services/
 const fmtTime=v=>{if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})+"Z"};
 const esc=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pretty=v=>String(v??"").replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
-function excludedStation(s){return /mount mansfield east/i.test(String(s?.name||"")+" "+String(s?.provider_station_id||"")+" "+String(s?.station_id||""));}\nfunction excludedReport(r){return /mount mansfield east/i.test(String(r?.station_name||"")+" "+String(r?.provider_station_id||""));}\nfunction setHealth(ok,msg){$("healthDot").className="dot "+(ok?"ok":"bad");$("healthText").textContent=msg}
+function excludedStation(s){return /mount mansfield east/i.test(String(s?.name||"")+" "+String(s?.provider_station_id||"")+" "+String(s?.station_id||""));}
+function excludedReport(r){return /mount mansfield east/i.test(String(r?.station_name||"")+" "+String(r?.provider_station_id||""));}
+function setHealth(ok,msg){$("healthDot").className="dot "+(ok?"ok":"bad");$("healthText").textContent=msg}
 async function getJson(path){const r=await fetch(API+path,{cache:"no-store"});if(!r.ok)throw new Error("API returned "+r.status+" for "+path);return r.json()}
 async function refreshLatestData(){
  const btn=$("refreshBtn"),priorText=btn.textContent;
