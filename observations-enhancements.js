@@ -68,36 +68,16 @@ function rangeFromControls(){
  }
  const end=Date.now(),hours=Number($("tsPeriod").value);return {start:new Date(end-hours*3600000).toISOString(),end:new Date(end).toISOString()};
 }
-const queryCache=new Map();let queryActive=0;const queryQueue=[];
-function runLimited(fn){return new Promise((resolve,reject)=>{const run=()=>{queryActive++;Promise.resolve().then(fn).then(resolve,reject).finally(()=>{queryActive--;const next=queryQueue.shift();if(next)next();});};if(queryActive<3)run();else queryQueue.push(run);});}
-function archivePath(params){
- const p=new URLSearchParams(params);
- const start=p.get("start"),end=p.get("end");
- const a=Date.parse(start),b=Date.parse(end);
- if(!Number.isFinite(a)||!Number.isFinite(b)||b<a)throw new Error("Invalid archive time range");
- const startDay=new Date(a).toISOString().slice(0,10),endDay=new Date(b).toISOString().slice(0,10);
- if(Math.floor((Date.parse(endDay+"T00:00:00Z")-Date.parse(startDay+"T00:00:00Z"))/86400000)+1>120)throw new Error("Historical archive searches are limited to 120 days.");
- p.delete("start");p.delete("end");p.set("start",startDay);p.set("end",endDay);
- p.set("start_time",new Date(a).toISOString());p.set("end_time",new Date(b).toISOString());
- return "/archive?"+p.toString();
-}
 async function fetchRows(element,range,stationId,extra){
- const params=new URLSearchParams({element:element,start:range.start,end:range.end,limit:"1000",sort:"time_asc"});
- if(stationId)params.set("station_id",stationId);
- Object.entries(extra||{}).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=="")params.set(k,String(v));});
- const cacheKey=archivePath(params),now=Date.now(),cached=queryCache.get(cacheKey);
- if(cached&&now-cached.at<20000)return cached.rows;
- return runLimited(async()=>{
-  const out=[];let offset=0,total=null;
-  do{
-   params.set("offset",String(offset));
-   const d=await get(archivePath(params));total=d.total||0;out.push(...(d.results||[]));offset+=1000;
-   if(!(d.results||[]).length)break;
-  }while(offset<total);
-  queryCache.set(cacheKey,{at:Date.now(),rows:out});
-  for(const [key,val] of queryCache)if(Date.now()-val.at>20000)queryCache.delete(key);
-  return out;
- });
+ const out=[];let offset=0,total=null;
+ do{
+  const p=new URLSearchParams({element:element,start:range.start,end:range.end,limit:"1000",offset:String(offset),sort:"time_asc"});
+  if(stationId)p.set("station_id",stationId);
+  Object.entries(extra||{}).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=="")p.set(k,String(v));});
+  const d=await get("/observations?"+p.toString());total=d.total||0;out.push(...(d.results||[]));offset+=1000;
+  if(!(d.results||[]).length)break;
+ }while(offset<total);
+ return out;
 }
 function clearCharts(){charts.forEach(c=>c.destroy());charts=[];}
 function renderCharts(series,station){
@@ -128,7 +108,6 @@ function renderCharts(series,station){
  $("tsStatus").textContent=cards.length+" variables plotted · "+(station.name||station.provider_station_id);
 }
 async function loadTimeSeries(){
- const requestId=++tsRequestId;
  const id=$("tsStation").value;if(!id){$("tsStatus").textContent="Select a station first";return;}
  const vars=Array.from($("tsVariables").querySelectorAll("input:checked")).map(x=>x.value);
  if(!vars.length){$("tsStatus").textContent="Select at least one variable";return;}
@@ -141,9 +120,9 @@ async function loadTimeSeries(){
    if(el==="precipitation"){opts.statistic="1h_accumulation";opts.accumulation_hours=1;}
    return [el,await fetchRows(el,range,history.stationId,opts)];
   }));
-  const station=selected||{name:id};if(requestId!==tsRequestId)return;renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
- }catch(e){if(requestId!==tsRequestId)return;$("tsStatus").textContent="Time series failed: "+e.message;$("tsCharts").innerHTML='<div class="summary-empty" style="grid-column:1/-1">'+safe(e.message)+'</div>';}
- finally{if(requestId===tsRequestId){btn.disabled=false;btn.textContent="Load time series";}}
+  const station=selected||{name:id};renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
+ }catch(e){$("tsStatus").textContent="Time series failed: "+e.message;$("tsCharts").innerHTML='<div class="summary-empty" style="grid-column:1/-1">'+safe(e.message)+'</div>';}
+ finally{btn.disabled=false;btn.textContent="Load time series";}
 }
 async function postQuality(path,body,token){
  const headers={"Content-Type":"application/json"};
@@ -261,28 +240,43 @@ function extreme(rows,mode){
  return valid.reduce((best,r)=>!best||(mode==="min"?r.value<best.value:r.value>best.value)?r:best,null);
 }
 async function generateSummary(){
- const btn=$("generateSummaryBtn"),hours=Number($("summaryPeriod").value),endMs=Date.now(),range={start:new Date(endMs-hours*3600000).toISOString(),end:new Date(endMs).toISOString()};
+ const btn=$("generateSummaryBtn"),hours=Number($("summaryPeriod").value),end=Date.now(),range={start:new Date(end-hours*3600000).toISOString(),end:new Date(end).toISOString()},stat=hours+"h_accumulation";
  btn.disabled=true;btn.textContent="Analyzing…";$("summaryStatus").textContent="Reviewing observations across the BTV CWA…";
- $("summaryResults").innerHTML='<div class="summary-empty">Retrieving aggregated summary from the observation Worker…</div>';
+ $("summaryResults").innerHTML='<div class="summary-empty">Retrieving precipitation, snow, ice, apparent temperature and wind observations…</div>';
  try{
-  const data=await get("/summary?hours="+encodeURIComponent(hours)+"&top=5");
-  const d=data.results||{};
+  const specs=[["precipitation",{statistic:stat,accumulation_hours:hours}],["snowfall",{}],["ice_accretion",{statistic:stat,accumulation_hours:hours}],["heat_index",{}],["wind_chill",{}],["wind_gust",{}],["snow_depth",{}],["temperature",{}]];
+  // A single unavailable category should not discard all the other valid
+  // summary results. Keep failures visible so missing data is never mistaken
+  // for a zero or a successful empty result.
+  const settled=await Promise.all(specs.map(async ([el,extra])=>({
+   element:el,
+   result:await fetchRows(el,range,null,extra).then(rows=>({ok:true,rows}),error=>({ok:false,error}))
+  })));
+  const pairs=[],failures=[];
+  settled.forEach(item=>{
+   if(item.result.ok)pairs.push([item.element,item.result.rows]);
+   else failures.push(item.element+": "+item.result.error.message);
+  });
+  if(!pairs.length)throw new Error("All observation queries failed. Check the Cloudflare API connection and try again. "+failures.join(" | "));
+  const d=Object.fromEntries(pairs);
+  const snow=(d.snowfall||[]).filter(r=>Number(r.accumulation_hours)===hours||(hours===24&&r.statistic==="daily_report"));
   const rows=[
-   ["Highest precipitation · "+hours+"h",d.precipitation_max?.[0],"in",false],
-   ["Greatest snowfall · "+hours+"h",d.snowfall?.[0],"in",false],
-   ["Greatest ice accretion · "+hours+"h",d.ice_accretion_max?.[0],"in",true],
-   ["Maximum heat index",d.heat_index_max?.[0],"°F",false],
-   ["Lowest wind chill",d.wind_chill_min?.[0],"°F",false],
-   ["Strongest wind gust",d.wind_gust_max?.[0],"mph",false],
-   ["Greatest snow depth",d.snow_depth_max?.[0],"in",false],
-   ["Highest temperature",d.temperature_max?.[0],"°F",false],
-   ["Lowest temperature",d.temperature_min?.[0],"°F",false]
+   ["Highest precipitation · "+hours+"h",extreme(d.precipitation||[],"max"),"in",false],
+   ["Greatest snowfall · "+hours+"h",extreme(snow,"max"),"in",false],
+   ["Greatest ice accretion · "+hours+"h",extreme(d.ice_accretion||[],"max"),"in",true],
+   ["Maximum heat index",extreme(d.heat_index||[],"max"),"°F",false],
+   ["Lowest wind chill",extreme(d.wind_chill||[],"min"),"°F",false],
+   ["Strongest wind gust",extreme(d.wind_gust||[],"max"),"mph",false],
+   ["Greatest snow depth",extreme(d.snow_depth||[],"max"),"in",false],
+   ["Highest temperature",extreme(d.temperature||[],"max"),"°F",false],
+   ["Lowest temperature",extreme(d.temperature||[],"min"),"°F",false]
   ];
   const html=rows.map(x=>card(x[0],x[1],x[2],x[3])).filter(Boolean);
-  const generated=new Date(data.generated_at||Date.now()).toLocaleString("en-US",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})+" UTC";
+  const generated=new Date().toLocaleString("en-US",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})+" UTC";
   const intro="Analysis window: "+time(range.start)+" – "+time(range.end)+" UTC · Generated "+generated+". Precipitation and ice use the selected accumulation period; snowfall is included only when its report duration matches. Heat index and wind chill appear only when valid derived observations exist.";
-  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
-  $("summaryStatus").textContent=html.length+" significant categories found";
+  const warning=failures.length?'<div class="summary-empty" role="status">Some categories could not be retrieved and were omitted: '+safe(failures.join("; "))+'</div>':"";
+  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+warning+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
+  $("summaryStatus").textContent=html.length+" significant categories found"+(failures.length?" · "+failures.length+" categories unavailable":"");
   summaryText="BTV OPERATIONAL OBSERVATION SUMMARY\n"+intro+"\n\n"+rows.filter(x=>x[1]).map(x=>{const r=x[1],s=stations.find(y=>y.station_id===r.station_id);return x[0]+": "+fmt(r.value)+" "+x[2]+" at "+(r.station_name||(s&&s.name)||r.provider_station_id)+" · "+time(r.observation_time)+" UTC · "+(r.source||"")+(r.accumulation_hours?" · "+r.accumulation_hours+"h accumulation":"")}).join("\n");
  }catch(e){$("summaryStatus").textContent="Summary failed: "+e.message;$("summaryResults").innerHTML='<div class="summary-empty">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Generate summary";}
@@ -290,7 +284,7 @@ async function generateSummary(){
 let initialized=false;
 
 // Station-level QC drilldown: inspect a station's history for the active element.
-let qcStation=null,qcElement=null,qcChart=null,tsLastSeries=null,tsLastStation=null,tsRequestId=0,qcRequestId=0;
+let qcStation=null,qcElement=null,qcChart=null,tsLastSeries=null,tsLastStation=null;
 function qcElementLabel(el){return labels[el]||String(el||"").replaceAll("_"," ");}
 async function loadStationQC(){
  if(!qcStation||!qcElement)return;
@@ -323,17 +317,17 @@ function init(){
  populateStations();
  if(initialized)return;
  initialized=true;
- if($("stationQcClose"))$("stationQcClose").addEventListener("click",()=>{$("stationQcPanel").style.display="none";});
- if($("stationQcReload"))$("stationQcReload").addEventListener("click",loadStationQC);
- if($("stationQcPeriod"))$("stationQcPeriod").addEventListener("change",loadStationQC);
- if($("stationQcPanel"))document.addEventListener("click",e=>{const row=e.target.closest("#rows tr");if(!row||e.target.closest("button"))return;const idx=Array.from($("rows").children).indexOf(row);if(idx>=0&&lastRows[idx])openStationQC(lastRows[idx]);});
- if($("timeSeriesTab"))$("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
- if($("summaryTab"))$("summaryTab").addEventListener("click",()=>showView("summary"));
- if($("siteQualityTab"))$("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
- if($("qualityRefreshBtn"))$("qualityRefreshBtn").addEventListener("click",()=>refreshQuality().catch(e=>alert("Quality refresh failed: "+e.message)));
- if($("qualityStation"))$("qualityStation").addEventListener("change",updateSiteQualityControl);
- if($("qualityElement"))$("qualityElement").addEventListener("change",updateSiteQualityControl);
- if($("qualityToggleBtn"))$("qualityToggleBtn").addEventListener("click",toggleSelectedSiteQuality);
+ $("stationQcClose").addEventListener("click",()=>{$("stationQcPanel").style.display="none";});
+ $("stationQcReload").addEventListener("click",loadStationQC);
+ $("stationQcPeriod").addEventListener("change",loadStationQC);
+ document.addEventListener("click",e=>{const row=e.target.closest("#rows tr");if(!row||e.target.closest("button"))return;const idx=Array.from($("rows").children).indexOf(row);if(idx>=0&&lastRows[idx])openStationQC(lastRows[idx]);});
+ $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
+ $("summaryTab").addEventListener("click",()=>showView("summary"));
+ $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
+ $("qualityRefreshBtn").addEventListener("click",()=>refreshQuality().catch(e=>alert("Quality refresh failed: "+e.message)));
+ $("qualityStation").addEventListener("change",updateSiteQualityControl);
+ $("qualityElement").addEventListener("change",updateSiteQualityControl);
+ $("qualityToggleBtn").addEventListener("click",toggleSelectedSiteQuality);
  $("tsPeriod").addEventListener("change",()=>$("tsCustom").style.display=$("tsPeriod").value==="custom"?"flex":"none");
  $("tsLoadBtn").addEventListener("click",loadTimeSeries);
  $("tsTimezone").addEventListener("change",()=>{if(tsLastSeries&&tsLastStation)renderCharts(tsLastSeries,tsLastStation);});
