@@ -999,6 +999,24 @@ def write_outputs():
         "scope": "Official NWS BTV CWA polygon; LSRs excluded; NYSM latest-feed observations included",
     }
     (BASE / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    # Write date-partitioned archive chunks in parallel with the legacy latest archive.
+    # This is a local-output migration step; ingestion/upload routing is handled separately.
+    archive_dir = BASE / "archive"
+    daily_groups = {}
+    for observation in OBSERVATIONS:
+        observed = parse_time(observation.get("observation_time"))
+        if observed is None:
+            continue
+        day_key = observed.strftime("%Y-%m-%d")
+        daily_groups.setdefault(day_key, []).append(observation)
+    for day_key, day_rows in daily_groups.items():
+        day_date = datetime.strptime(day_key, "%Y-%m-%d")
+        day_path = archive_dir / day_date.strftime("%Y") / day_date.strftime("%m") / f"{day_key}.ndjson.gz"
+        day_path.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(day_path, "wt", encoding="utf-8") as handle:
+            for item in sorted(day_rows, key=lambda x: x["observation_time"]):
+                handle.write(json.dumps(item, separators=(",", ":")) + "\\n")
+
     latest_dir = BASE / "latest"
     latest_dir.mkdir(parents=True, exist_ok=True)
     latest_data_path = latest_dir / "observations.ndjson.gz"
