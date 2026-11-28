@@ -463,7 +463,7 @@ initialize();
       if(typeof ensureObservationMap==="function")ensureObservationMap();
       setTimeout(()=>{if(typeof observationMap!=="undefined"&&observationMap)observationMap.invalidateSize();if(typeof updateObservationMap==="function")updateObservationMap();},150);
     }
-    if(view==="timeseries"){const s=document.getElementById("tsStation"),main=document.getElementById("station");if(s&&!s.value&&main)s.value=main.value;}
+    if(view==="timeseries"){const s=document.getElementById("tsStation"),main=document.getElementById("station");if(s&&!s.value&&main)s.value=main.value;if(typeof loadTimeSeries==="function")loadTimeSeries();}
     if(view==="summary"&&typeof generateSummary==="function")generateSummary();
     if(view==="sitequality"&&typeof refreshQuality==="function")refreshQuality().catch(e=>{const x=document.getElementById("qualityStatus");if(x)x.textContent="Quality service unavailable: "+e.message;});
   }
