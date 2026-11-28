@@ -257,8 +257,6 @@ export default {
         return json({ error: "hours must be 1-120 and top must be an integer" }, 400);
       const startMs = Date.now() - hours * 3600000;
       const qualityState = await readQualityState(env.OBSERVATIONS);
-      const usable = rows.filter(row => Date.parse(row.observation_time) >= startMs &&
-        !isQuarantined(row, qualityState.active) && Number.isFinite(Number(row.value)));
       const definitions = [
         ["precipitation","highest","in","precipitation"],
         ["snowfall","highest","in","snowfall"],
@@ -272,7 +270,9 @@ export default {
       ];
       const output = {};
       for (const [element,mode,unit,key] of definitions) {
-        const candidates = usable.filter(row => row.element === element &&
+        const candidates = indexedRows({ element }).filter(row =>
+          Date.parse(row.observation_time) >= startMs &&
+          !isQuarantined(row, qualityState.active) && Number.isFinite(Number(row.value)) &&
           (element !== "precipitation" || row.accumulation_hours === hours) &&
           (element !== "snowfall" || row.accumulation_hours === hours || (hours === 24 && row.statistic === "daily_report")));
         candidates.sort((a,b)=>mode==="highest"?Number(b.value)-Number(a.value):Number(a.value)-Number(b.value));
