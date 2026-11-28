@@ -213,6 +213,8 @@ function showView(view){
  const tabs={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab",sitequality:"siteQualityTab"};
  Object.entries(panels).forEach(([k,id])=>$(id).style.display=k===view?"":"none");
  Object.entries(tabs).forEach(([k,id])=>$(id).classList.toggle("active",k===view));
+ document.querySelector(".workspace").classList.toggle("criteria-hidden",!["table","map"].includes(view));
+ document.body.dataset.observationView=view;
  if(view==="map"){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false;}},100);}
  if(view==="timeseries"&&!$("tsStation").value&&$("station").value)$("tsStation").value=$("station").value;
  if(view==="summary"&&!summaryText)generateSummary();
