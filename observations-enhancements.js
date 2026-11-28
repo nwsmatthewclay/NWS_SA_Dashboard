@@ -81,6 +81,7 @@ async function fetchRows(element,range,stationId,extra){
 }
 function clearCharts(){charts.forEach(c=>c.destroy());charts=[];}
 function renderCharts(series,station){
+ tsLastSeries=series;tsLastStation=station;
  clearCharts();const root=$("tsCharts"),cards=[],tz=$("tsTimezone")?.value||"UTC";
  const dateLabel=ms=>new Date(ms).toLocaleString("en-US",{timeZone:tz==="UTC"?"UTC":undefined,month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false})+(tz==="UTC"?"Z":"");
  Object.entries(series).forEach(([el,rows])=>{
@@ -116,7 +117,7 @@ async function loadTimeSeries(){
   if($("tsPeriod").value!=="custom"&&["1","3","6","12","24","48","72","120"].includes(String(hours))){extra.period=hours;}
   const result=await Promise.all(vars.map(async el=>{
    const opts={};
-   if(el==="precipitation"&&extra.period){opts.statistic="1h_accumulation";opts.accumulation_hours=1;}
+   if(el==="precipitation"){opts.statistic="1h_accumulation";opts.accumulation_hours=1;}
    return [el,await fetchRows(el,range,history.stationId,opts)];
   }));
   const station=selected||{name:id};renderCharts(Object.fromEntries(result),station);if(history.stationId!==id)$("tsStatus").textContent="Using "+history.source+" archive for "+(station.name||station.provider_station_id)+" · "+Object.values(Object.fromEntries(result)).reduce((n,r)=>n+r.length,0)+" reports";
@@ -283,7 +284,7 @@ async function generateSummary(){
 let initialized=false;
 
 // Station-level QC drilldown: inspect a station's history for the active element.
-let qcStation=null,qcElement=null,qcChart=null;
+let qcStation=null,qcElement=null,qcChart=null,tsLastSeries=null,tsLastStation=null;
 function qcElementLabel(el){return labels[el]||String(el||"").replaceAll("_"," ");}
 async function loadStationQC(){
  if(!qcStation||!qcElement)return;
@@ -329,6 +330,7 @@ function init(){
  $("qualityToggleBtn").addEventListener("click",toggleSelectedSiteQuality);
  $("tsPeriod").addEventListener("change",()=>$("tsCustom").style.display=$("tsPeriod").value==="custom"?"flex":"none");
  $("tsLoadBtn").addEventListener("click",loadTimeSeries);
+ $("tsTimezone").addEventListener("change",()=>{if(tsLastSeries&&tsLastStation)renderCharts(tsLastSeries,tsLastStation);});
  $("generateSummaryBtn").addEventListener("click",generateSummary);
  $("summaryPrintBtn").addEventListener("click",()=>window.print());
  $("summaryTextBtn").addEventListener("click",()=>{
