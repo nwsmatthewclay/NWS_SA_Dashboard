@@ -313,16 +313,17 @@ async function generateSummary(){
 }
 let initialized=false;
 function init(){
+ // Station lists are populated once the API inventory arrives. DOM-ready may
+ // invoke init before that async request, so refresh these lists on every call.
+ try{populateStations();}catch(e){console.error("Observation enhancement station initialization failed:",e);}
  if(initialized)return;
  initialized=true;
- // Bind core display controls before optional data-population routines, so a
- // station/quality initialization error cannot leave the wallboard button inert.
+ // Bind core display controls before optional data-population routines.
  const themeButton=$("themeToggle"),textButton=$("textSizeToggle");
  const wallboardButton=$("wallboardToggle");
  if(wallboardButton)wallboardButton.addEventListener("click",()=>setWallboard(!wallboardActive));
  if(themeButton)themeButton.addEventListener("click",()=>{const dark=document.body.classList.toggle("dark-theme");themeButton.textContent=dark?"Light theme":"Dark theme";themeButton.setAttribute("aria-pressed",dark?"true":"false");});
  if(textButton)textButton.addEventListener("click",()=>{const large=document.body.classList.toggle("large-text");textButton.textContent=large?"Standard text":"Larger text";textButton.setAttribute("aria-pressed",large?"true":"false");});
- try{populateStations();}catch(e){console.error("Observation enhancement station initialization failed:",e);}
 
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
  $("summaryTab").addEventListener("click",()=>showView("summary"));
