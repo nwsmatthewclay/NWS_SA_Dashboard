@@ -109,6 +109,36 @@ const MAP_BOUNDS_URL="https://mapservices.weather.noaa.gov/static/rest/services/
 const fmtTime=v=>{if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})+"Z"};
 const esc=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pretty=v=>String(v??"").replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
+function canonicalUiSource(station){
+ const source=String(station.source||"").toLowerCase(),type=String(station.report_type||"").toLowerCase(),network=String(station.network||"").toLowerCase();
+ if(source==="nws"||source==="iem_asos"||type.includes("asos")||network.includes("asos")||network.includes("awos"))return "ASOS/AWOS";
+ if(source==="cocorahs"||type==="cocorahs")return "CoCoRaHS";
+ if(source==="iem_coop"||source==="iem_rr3_coop"||type==="coop"||network.includes("coop"))return "COOP";
+ if(source==="iem_rwis"||type==="rwis"||network.includes("rwis"))return "RWIS";
+ if(source.includes("nysm")||source.includes("mesonet")||type==="nysm"||network.includes("nysm")||network.includes("mesonet"))return "NYSM";
+ return "Public Sites";
+}
+function populateMainStationSelect(){
+ const select=$("station"),prior=select.value;
+ select.innerHTML='<option value="">All stations</option>';
+ ["ASOS/AWOS","CoCoRaHS","COOP","RWIS","NYSM","Public Sites"].forEach(group=>{
+  const members=stations.filter(s=>canonicalUiSource(s)===group).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  if(!members.length)return;
+  const optgroup=document.createElement("optgroup");optgroup.label=group;
+  members.forEach(s=>optgroup.appendChild(new Option((s.name||s.provider_station_id)+" · "+group,s.station_id)));
+  select.appendChild(optgroup);
+ });
+ if(Array.from(select.options).some(o=>o.value===prior))select.value=prior;
+}
+function populateSourceSelect(){
+ const select=$("source"),prior=select.value;
+ select.innerHTML='<option value="">All sources</option>';
+ ["ASOS/AWOS","CoCoRaHS","COOP","RWIS","NYSM","Public Sites"].forEach(group=>{
+  if(stations.some(s=>canonicalUiSource(s)===group))select.add(new Option(group,group));
+ });
+ if(Array.from(select.options).some(o=>o.value===prior))select.value=prior;
+}
+
 function setHealth(ok,msg){$("healthDot").className="dot "+(ok?"ok":"bad");$("healthText").textContent=msg}
 async function getJson(path){const r=await fetch(API+path,{cache:"no-store"});if(!r.ok)throw new Error("API returned "+r.status+" for "+path);return r.json()}
 async function refreshLatestData(){
@@ -125,10 +155,7 @@ async function refreshLatestData(){
   $("metricLatest").textContent=fmtTime(m.latest_observation_at);
   $("updatedText").textContent="Snapshot generated "+fmtTime(m.generated_at);
   const sourceSelect=$("source"),stationSelect=$("station");
-  sourceSelect.innerHTML='<option value="">All sources</option>';
-  [...new Set(stations.map(x=>x.source).filter(Boolean))].sort().forEach(v=>sourceSelect.add(new Option(v,v)));
-  stationSelect.innerHTML='<option value="">All stations</option>';
-  stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>stationSelect.add(new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id)));
+  populateSourceSelect();populateMainStationSelect();
   sourceSelect.value=[...sourceSelect.options].some(o=>o.value===selectedSource)?selectedSource:"";
   stationSelect.value=[...stationSelect.options].some(o=>o.value===selectedStation)?selectedStation:"";
   setHealth(true,"API connected · latest snapshot loaded");
@@ -148,9 +175,7 @@ async function initialize(){
   $("metricObs").textContent=Number(m.observation_count||0).toLocaleString();$("metricStations").textContent=Number(m.station_record_count||stations.length).toLocaleString();
   $("metricSources").textContent=Object.keys(m.latest_by_source||{}).length.toString();$("metricLatest").textContent=fmtTime(m.latest_observation_at);
   $("updatedText").textContent="Snapshot generated "+fmtTime(m.generated_at);
-  const sources=[...new Set(stations.map(x=>x.source).filter(Boolean))].sort();
-  sources.forEach(v=>{const o=new Option(v,v);$("source").add(o)});
-  stations.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(s=>{const o=new Option((s.name||s.provider_station_id)+" · "+s.source,s.station_id);$("station").add(o)});
+  populateSourceSelect();populateMainStationSelect();
   setHealth(true,"API connected · snapshot available");
   if(window.initObservationEnhancements)window.initObservationEnhancements();
   await retrieve();
@@ -242,7 +267,7 @@ function render(rows){
    : "";
   const detail=reportedSum?'<details><summary>'+components.length+' hourly reports'+coverageLabel+'</summary><div style="padding:7px 0;white-space:normal;min-width:270px">'+components.map(c=>'<div>'+esc(fmtTime(c.observation_time))+' · <strong>'+esc(c.value)+' '+esc(c.unit)+'</strong>'+(typeof c.radial_value==="number"?' · radial <strong>'+esc(c.radial_value)+' '+esc(c.radial_unit||c.unit)+'</strong>':"")+'</div>').join('')+'<div class="muted" style="margin-top:6px">'+esc(r.metadata?.missing_hour_count||0)+' missing hourly reports; missing hours are not counted as zero.</div></div></details>':inputDetails?'<details><summary>Calculation inputs</summary><div style="padding:7px 0;white-space:normal;min-width:220px">'+inputDetails+'</div></details>':"—";
   const periodLabel=reportedSum?"Reported sum · "+r.accumulation_hours+"h window":r.qc_status==="derived_calculated"?"Calculated":derived&&Number.isFinite(Number(r.accumulation_hours))?"Calculated "+r.accumulation_hours+"-hour":pretty(r.statistic);
-  return '<tr><td>'+esc(fmtTime(r.observation_time))+'</td><td><strong>'+esc(r.station_name||station?.name||r.provider_station_id)+'</strong><br><span class="muted">'+esc(r.provider_station_id)+'</span></td><td>'+esc(pretty(r.element||r.variable))+'<br><span class="muted">'+esc(r.variable)+'</span></td><td class="value">'+value+' '+esc(unit)+'</td><td class="value" style="'+(iceMode?"":"display:none")+'">'+(isIceRow?radialValue+' '+esc(r.radial_unit||unit):"")+'</td><td><span class="tag '+(derived||r.statistic==="daily_report"?"daily":"")+'">'+esc(periodLabel)+'</span></td><td>'+esc(period)+'</td><td>'+esc(r.source)+'<br><span class="muted">'+esc(r.network||"")+'</span></td><td>'+esc(r.qc_status||"unknown")+'</td><td>'+esc(fmtTime(r.ingested_at))+'</td><td>'+detail+'</td><td><button class="btn" type="button" data-flag-observation data-station-id="'+esc(r.station_id)+'" data-provider-station-id="'+esc(r.provider_station_id)+'" data-station-name="'+esc(r.station_name||station?.name||r.provider_station_id)+'" data-element="'+esc(r.element||r.variable)+'">Flag site</button></td></tr>';
+  return '<tr><td>'+esc(fmtTime(r.observation_time))+'</td><td><strong>'+esc(r.station_name||station?.name||r.provider_station_id)+'</strong><br><span class="muted">'+esc(r.provider_station_id)+'</span></td><td>'+esc(pretty(r.element||r.variable))+'<br><span class="muted">'+esc(r.variable)+'</span></td><td class="value">'+value+' '+esc(unit)+'</td><td class="value" style="'+(iceMode?"":"display:none")+'">'+(isIceRow?radialValue+' '+esc(r.radial_unit||unit):"")+'</td><td><span class="tag '+(derived||r.statistic==="daily_report"?"daily":"")+'">'+esc(periodLabel)+'</span></td><td>'+esc(period)+'</td><td>'+esc(station?canonicalUiSource(station):r.source)+'<br><span class="muted">'+esc(r.network||"")+'</span></td><td>'+esc(r.qc_status||"unknown")+'</td><td>'+esc(fmtTime(r.ingested_at))+'</td><td>'+detail+'</td><td><button class="btn" type="button" data-flag-observation data-station-id="'+esc(r.station_id)+'" data-provider-station-id="'+esc(r.provider_station_id)+'" data-station-name="'+esc(r.station_name||station?.name||r.provider_station_id)+'" data-element="'+esc(r.element||r.variable)+'">Flag site</button></td></tr>';
  }).join("");
 }
 function ensureObservationMap(){
