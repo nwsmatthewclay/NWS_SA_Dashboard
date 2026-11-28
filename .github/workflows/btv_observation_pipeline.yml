@@ -70,6 +70,9 @@ jobs:
           assert all(row.get("latest_observation_at") for row in rows)
           print(f"Validated {len(rows)} observations and {len(stations)} provider station records")
           PY
+          archive_files = list(Path("observation_data/archive").glob("*/*/*.ndjson.gz"))
+          assert archive_files, "Daily partition files were not generated"
+          print(f"Validated {len(archive_files)} daily archive partitions")
 
       - name: Publish latest snapshot to Cloudflare R2 API
         if: ${{ env.OBSERVATION_WORKER_URL != '' && env.OBSERVATION_INGEST_TOKEN != '' }}
@@ -83,6 +86,16 @@ jobs:
               -H "Content-Type: application/octet-stream" \
               --data-binary "@observation_data/latest/$KEY" \
               "$BASE_URL/ingest/latest/$KEY"
+          done
+          for FILE in observation_data/archive/*/*/*.ndjson.gz; do
+            [ -f "$FILE" ] || continue
+            KEY="${FILE#observation_data/}"
+            curl --fail-with-body --silent --show-error \
+              -X PUT \
+              -H "Authorization: Bearer $OBSERVATION_INGEST_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@$FILE" \
+              "$BASE_URL/ingest/$KEY"
           done
 
       - name: Upload normalized observation archive
