@@ -259,9 +259,15 @@ async function updateObservationMap(){
  }catch(e){$("mapStatus").textContent="Map retrieval failed: "+e.message}
 }
 function showObservationView(which){
- const isMap=which==="map";$("tablePanel").style.display=isMap?"none":"";$("mapPanel").style.display=isMap?"":"none";
- $("tableTab").classList.toggle("active",!isMap);$("mapTab").classList.toggle("active",isMap);
- if(isMap){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false}},100)}
+ const panels={table:"tablePanel",map:"mapPanel",timeSeries:"timeSeriesPanel",summary:"summaryPanel"};
+ Object.entries(panels).forEach(([key,id])=>{$(id).style.display=key===which?"":"none"});
+ $("tableTab").classList.toggle("active",which==="table");
+ $("mapTab").classList.toggle("active",which==="map");
+ $("timeSeriesTab").classList.toggle("active",which==="timeSeries");
+ $("summaryTab").classList.toggle("active",which==="summary");
+ if(which==="map"){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false}},100)}
+ if(which==="timeSeries")loadTimeSeries();
+ if(which==="summary")loadSummary();
 }
 
 async function getAllMatchingRows(){let out=[],offset=0,totalCount=null;while(totalCount===null||offset<totalCount){const p=queryParams(1000,offset),d=await getJson("/observations?"+p.toString());totalCount=d.total||0;out.push(...(d.results||[]).filter(r=>!excludedReport(r)));offset+=1000;if(!d.results?.length)break;}return out;}
