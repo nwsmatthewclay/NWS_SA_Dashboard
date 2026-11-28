@@ -187,6 +187,19 @@ async function initialize(){
   await retrieve();
  }catch(e){setHealth(false,"API connection failed: "+e.message);$("rows").innerHTML='<tr><td colspan="12" class="empty">Unable to load observations. Check the API connection and try again.</td></tr>'}
 }
+function archiveQuery(params){
+ const p=new URLSearchParams(params);
+ const start=p.get("start"),end=p.get("end");
+ if(!start||!end)throw new Error("Historical archive query requires a start and end time.");
+ const startMs=Date.parse(start),endMs=Date.parse(end);
+ if(!Number.isFinite(startMs)||!Number.isFinite(endMs)||endMs<startMs)throw new Error("Invalid archive time range.");
+ const startDay=new Date(startMs).toISOString().slice(0,10),endDay=new Date(endMs).toISOString().slice(0,10);
+ p.delete("start");p.delete("end");p.set("start",startDay);p.set("end",endDay);
+ p.set("start_time",new Date(startMs).toISOString());p.set("end_time",new Date(endMs).toISOString());
+ p.delete("report_type");
+ if(["value_desc","value_asc"].includes(p.get("sort")))p.set("sort","time_desc");
+ return "/archive?"+p.toString();
+}
 function queryParams(limit=50,offset=0){
  const p=new URLSearchParams();p.set("limit",limit);p.set("offset",offset);p.set("sort",$("sort").value);
  const selectedElement=$("element").value;
@@ -335,7 +348,7 @@ async function retrieve(){
  $("searchBtn").disabled=true;$("resultCount").textContent="Retrieving reports…";
  try{
   const limit=Number($("pageSize").value);currentPage=1;lastQuery=queryParams(limit,0);
-  const p=new URLSearchParams(lastQuery);const data=await getJson("/observations?"+p.toString());
+  const p=new URLSearchParams(lastQuery);const data=await getJson(archiveQuery(p));
   total=data.total||0;render(data.results||[]);mapDirty=true;if($("mapPanel").style.display!=="none"){updateObservationMap();mapDirty=false;}
   $("resultCount").textContent=total.toLocaleString()+" matching reports";
   $("pageText").textContent="Page 1";$("pageInfo").textContent="Showing "+(total?1:0)+"–"+Math.min(limit,total)+" of "+total.toLocaleString();
@@ -346,7 +359,7 @@ async function retrieve(){
 async function changePage(delta){
  const limit=Number($("pageSize").value),pages=Math.max(1,Math.ceil(total/limit));currentPage=Math.min(pages,Math.max(1,currentPage+delta));
  $("prevBtn").disabled=$("nextBtn").disabled=true;
- try{const p=queryParams(limit,(currentPage-1)*limit);const data=await getJson("/observations?"+p.toString());render(data.results||[]);
+ try{const p=queryParams(limit,(currentPage-1)*limit);const data=await getJson(archiveQuery(p));render(data.results||[]);
  $("pageText").textContent="Page "+currentPage;$("pageInfo").textContent="Showing "+(((currentPage-1)*limit)+1)+"–"+Math.min(currentPage*limit,total)+" of "+total.toLocaleString();
  $("prevBtn").disabled=currentPage===1;$("nextBtn").disabled=currentPage>=pages;
  }catch(e){$("resultCount").textContent="Page load failed: "+e.message}
