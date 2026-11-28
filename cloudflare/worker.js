@@ -300,18 +300,33 @@ export default {
       if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return json({ error: "start_time/end_time must be ISO timestamps" }, 400);
       const element = url.searchParams.get("element"), variable = url.searchParams.get("variable");
       const source = url.searchParams.get("source"), stationId = url.searchParams.get("station_id");
+      const statistic = url.searchParams.get("statistic");
+      const accumulationHours = url.searchParams.has("accumulation_hours") ? Number(url.searchParams.get("accumulation_hours")) : null;
+      const minValue = url.searchParams.has("min") ? Number(url.searchParams.get("min")) : null;
+      const maxValue = url.searchParams.has("max") ? Number(url.searchParams.get("max")) : null;
+      const qcStatus = url.searchParams.get("qc_status");
+      if ((accumulationHours !== null && !Number.isFinite(accumulationHours)) ||
+          (minValue !== null && !Number.isFinite(minValue)) || (maxValue !== null && !Number.isFinite(maxValue)))
+        return json({ error: "accumulation_hours/min/max must be numeric" }, 400);
       const filtered = rows.filter(row => {
-        const time = Date.parse(row.observation_time);
+        const time = Date.parse(row.observation_time), value = Number(row.value);
         return (!element || row.element === element) && (!variable || row.variable === variable) &&
           (!source || row.source === source) && (!stationId || row.station_id === stationId) &&
-          time >= startMs && time <= endMs && Number.isFinite(Number(row.value));
+          (!statistic || row.statistic === statistic) &&
+          (accumulationHours === null || row.accumulation_hours === accumulationHours) &&
+          (!qcStatus || row.qc_status === qcStatus) && time >= startMs && time <= endMs &&
+          Number.isFinite(value) && (minValue === null || value >= minValue) && (maxValue === null || value <= maxValue);
       });
       const sort = url.searchParams.get("sort") || "time_desc";
+      if (!["time_desc", "time_asc"].includes(sort)) return json({ error: "sort must be time_desc or time_asc" }, 400);
       filtered.sort(sort === "time_asc" ? (a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time)
         : (a,b)=>Date.parse(b.observation_time)-Date.parse(a.observation_time));
-      const limit = Math.min(1000, Math.max(1, Number(url.searchParams.get("limit") || 250)));
-      const offset = Math.max(0, Number(url.searchParams.get("offset") || 0));
-      if (!Number.isInteger(limit) || !Number.isInteger(offset)) return json({ error: "limit/offset must be integers" }, 400);
+      const requestedLimit = Number(url.searchParams.get("limit") || 250);
+      const requestedOffset = Number(url.searchParams.get("offset") || 0);
+      if (!Number.isInteger(requestedLimit) || requestedLimit < 1 || !Number.isInteger(requestedOffset) || requestedOffset < 0)
+        return json({ error: "limit/offset must be positive integers" }, 400);
+      const limit = Math.min(1000, requestedLimit);
+      const offset = requestedOffset;
       return json({ start: startText, end: endText, day_count: dayCount, missing_days, total: filtered.length, limit, offset,
         results: filtered.slice(offset, offset + limit) });
     }
