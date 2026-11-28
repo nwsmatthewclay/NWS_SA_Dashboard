@@ -271,7 +271,7 @@ async function generateSummary(){
   const warning=failures.length?'<div class="summary-empty" role="status">Some categories could not be retrieved and were omitted: '+safe(failures.join("; "))+'</div>':"";
   $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+warning+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
   $("summaryStatus").textContent=html.length+" significant categories found"+(failures.length?" · "+failures.length+" categories unavailable":"");
-  summaryText="BTV OPERATIONAL OBSERVATION SUMMARY\n"+intro+"\n\n"+rows.filter(x=>x[1]).map(x=>{const r=x[1],s=stations.find(y=>y.station_id===r.station_id);return x[0]+": "+fmt(r.value)+" "+x[2]+" at "+(r.station_name||(s&&s.name)||r.provider_station_id)+" · "+time(r.observation_time)+" UTC · "+(r.source||"")+" · "+(r.accumulation_hours||"")+"h"}).join("\n");
+  summaryText="BTV OPERATIONAL OBSERVATION SUMMARY\n"+intro+"\n\n"+rows.filter(x=>x[1]).map(x=>{const r=x[1],s=stations.find(y=>y.station_id===r.station_id);return x[0]+": "+fmt(r.value)+" "+x[2]+" at "+(r.station_name||(s&&s.name)||r.provider_station_id)+" · "+time(r.observation_time)+" UTC · "+(r.source||"")+(r.accumulation_hours?" · "+r.accumulation_hours+"h accumulation":"")}).join("\n");
  }catch(e){$("summaryStatus").textContent="Summary failed: "+e.message;$("summaryResults").innerHTML='<div class="summary-empty">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Generate summary";}
 }
