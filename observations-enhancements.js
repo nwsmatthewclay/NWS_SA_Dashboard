@@ -196,7 +196,7 @@ async function flagObservation(button){
  finally{button.disabled=false;}
 }
 async function restoreQuality(button){
- const actor=$("qualityReviewerName").value.trim(),token=$("qualityReviewerToken").value;
+ const actor=$("qualityActor").value.trim(),token=$("qualityReviewerToken").value;
  if(!actor){alert("Enter the reviewing person's name first.");return;}
  if(!token){alert("Enter the quality review authorization token first.");return;}
  button.disabled=true;
@@ -309,12 +309,12 @@ function openStationQC(row){
 
 function init(){
  populateStations();
+ if(initialized)return;
+ initialized=true;
  $("stationQcClose").addEventListener("click",()=>{$("stationQcPanel").style.display="none";});
  $("stationQcReload").addEventListener("click",loadStationQC);
  $("stationQcPeriod").addEventListener("change",loadStationQC);
  document.addEventListener("click",e=>{const row=e.target.closest("#rows tr");if(!row||e.target.closest("button"))return;const idx=Array.from($("rows").children).indexOf(row);if(idx>=0&&lastRows[idx])openStationQC(lastRows[idx]);});
- if(initialized)return;
- initialized=true;
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
  $("summaryTab").addEventListener("click",()=>showView("summary"));
  $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
