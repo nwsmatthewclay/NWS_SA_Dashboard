@@ -34,9 +34,9 @@ The workflow uploads these daily partitions on each successful run. This first s
 New endpoint:
 
 - `GET /archive?date=2026-11-27`: fetch a single UTC day.
-- `GET /archive?start=2026-11-25&end=2026-11-27&element=temperature`: fetch a date range, optionally filtered by element, variable, source, and station ID.
+- `GET /archive?start=2026-11-25&end=2026-11-27&element=temperature`: fetch a date range, optionally filtered by element, variable, source, station ID, statistic, accumulation period, QC status, and numeric minimum/maximum.
 - Optional `start_time` and `end_time` ISO timestamps narrow the query within the selected date range.
-- Supports `sort=time_desc` (default) or `sort=time_asc`, plus `limit` (max 1,000) and `offset`.
+- Supports `sort=time_desc` (default) or `sort=time_asc`, plus `limit` (max 1,000) and `offset`. Numeric `min`/`max` filters and `accumulation_hours` are validated.
 - Responses include `missing_days` so callers can distinguish unavailable partitions from empty observation results.
 - Maximum request span is 120 days.
 
