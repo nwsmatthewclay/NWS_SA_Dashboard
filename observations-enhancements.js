@@ -249,43 +249,28 @@ function extreme(rows,mode){
  return valid.reduce((best,r)=>!best||(mode==="min"?r.value<best.value:r.value>best.value)?r:best,null);
 }
 async function generateSummary(){
- const btn=$("generateSummaryBtn"),hours=Number($("summaryPeriod").value),end=Date.now(),range={start:new Date(end-hours*3600000).toISOString(),end:new Date(end).toISOString()},stat=hours+"h_accumulation";
+ const btn=$("generateSummaryBtn"),hours=Number($("summaryPeriod").value),endMs=Date.now(),range={start:new Date(endMs-hours*3600000).toISOString(),end:new Date(endMs).toISOString()};
  btn.disabled=true;btn.textContent="Analyzing…";$("summaryStatus").textContent="Reviewing observations across the BTV CWA…";
- $("summaryResults").innerHTML='<div class="summary-empty">Retrieving precipitation, snow, ice, apparent temperature and wind observations…</div>';
+ $("summaryResults").innerHTML='<div class="summary-empty">Retrieving aggregated summary from the observation Worker…</div>';
  try{
-  const specs=[["precipitation",{statistic:stat,accumulation_hours:hours}],["snowfall",{}],["ice_accretion",{statistic:stat,accumulation_hours:hours}],["heat_index",{}],["wind_chill",{}],["wind_gust",{}],["snow_depth",{}],["temperature",{}]];
-  // A single unavailable category should not discard all the other valid
-  // summary results. Keep failures visible so missing data is never mistaken
-  // for a zero or a successful empty result.
-  const settled=await Promise.all(specs.map(async ([el,extra])=>({
-   element:el,
-   result:await fetchRows(el,range,null,extra).then(rows=>({ok:true,rows}),error=>({ok:false,error}))
-  })));
-  const pairs=[],failures=[];
-  settled.forEach(item=>{
-   if(item.result.ok)pairs.push([item.element,item.result.rows]);
-   else failures.push(item.element+": "+item.result.error.message);
-  });
-  if(!pairs.length)throw new Error("All observation queries failed. Check the Cloudflare API connection and try again. "+failures.join(" | "));
-  const d=Object.fromEntries(pairs);
-  const snow=(d.snowfall||[]).filter(r=>Number(r.accumulation_hours)===hours||(hours===24&&r.statistic==="daily_report"));
+  const data=await get("/summary?hours="+encodeURIComponent(hours)+"&top=5");
+  const d=data.results||{};
   const rows=[
-   ["Highest precipitation · "+hours+"h",extreme(d.precipitation||[],"max"),"in",false],
-   ["Greatest snowfall · "+hours+"h",extreme(snow,"max"),"in",false],
-   ["Greatest ice accretion · "+hours+"h",extreme(d.ice_accretion||[],"max"),"in",true],
-   ["Maximum heat index",extreme(d.heat_index||[],"max"),"°F",false],
-   ["Lowest wind chill",extreme(d.wind_chill||[],"min"),"°F",false],
-   ["Strongest wind gust",extreme(d.wind_gust||[],"max"),"mph",false],
-   ["Greatest snow depth",extreme(d.snow_depth||[],"max"),"in",false],
-   ["Highest temperature",extreme(d.temperature||[],"max"),"°F",false],
-   ["Lowest temperature",extreme(d.temperature||[],"min"),"°F",false]
+   ["Highest precipitation · "+hours+"h",d.precipitation_max?.[0],"in",false],
+   ["Greatest snowfall · "+hours+"h",d.snowfall?.[0],"in",false],
+   ["Greatest ice accretion · "+hours+"h",d.ice_accretion_max?.[0],"in",true],
+   ["Maximum heat index",d.heat_index_max?.[0],"°F",false],
+   ["Lowest wind chill",d.wind_chill_min?.[0],"°F",false],
+   ["Strongest wind gust",d.wind_gust_max?.[0],"mph",false],
+   ["Greatest snow depth",d.snow_depth_max?.[0],"in",false],
+   ["Highest temperature",d.temperature_max?.[0],"°F",false],
+   ["Lowest temperature",d.temperature_min?.[0],"°F",false]
   ];
   const html=rows.map(x=>card(x[0],x[1],x[2],x[3])).filter(Boolean);
-  const generated=new Date().toLocaleString("en-US",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})+" UTC";
+  const generated=new Date(data.generated_at||Date.now()).toLocaleString("en-US",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})+" UTC";
   const intro="Analysis window: "+time(range.start)+" – "+time(range.end)+" UTC · Generated "+generated+". Precipitation and ice use the selected accumulation period; snowfall is included only when its report duration matches. Heat index and wind chill appear only when valid derived observations exist.";
-  const warning=failures.length?'<div class="summary-empty" role="status">Some categories could not be retrieved and were omitted: '+safe(failures.join("; "))+'</div>':"";
-  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+warning+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
-  $("summaryStatus").textContent=html.length+" significant categories found"+(failures.length?" · "+failures.length+" categories unavailable":"");
+  $("summaryResults").innerHTML='<div class="summary-intro">'+safe(intro)+'</div>'+(html.length?'<div class="summary-grid">'+html.join("")+'</div>':'<div class="summary-empty">No qualifying observations were found. Missing categories are omitted rather than reported as zero.</div>');
+  $("summaryStatus").textContent=html.length+" significant categories found";
   summaryText="BTV OPERATIONAL OBSERVATION SUMMARY\n"+intro+"\n\n"+rows.filter(x=>x[1]).map(x=>{const r=x[1],s=stations.find(y=>y.station_id===r.station_id);return x[0]+": "+fmt(r.value)+" "+x[2]+" at "+(r.station_name||(s&&s.name)||r.provider_station_id)+" · "+time(r.observation_time)+" UTC · "+(r.source||"")+(r.accumulation_hours?" · "+r.accumulation_hours+"h accumulation":"")}).join("\n");
  }catch(e){$("summaryStatus").textContent="Summary failed: "+e.message;$("summaryResults").innerHTML='<div class="summary-empty">'+safe(e.message)+'</div>';}
  finally{btn.disabled=false;btn.textContent="Generate summary";}
