@@ -447,32 +447,6 @@ initialize();
 </script>
 <script src="./observations-enhancements.js"></script>
 <script src="./observations-phase5.js"></script>
-<script>
-/* Unified observation dashboard view controller — final override */
-(function(){
-  const panelIds=["tablePanel","mapPanel","timeSeriesPanel","summaryPanel","siteQualityPanel","eventAnalysisPanel"];
-  const tabIds=["tableTab","mapTab","timeSeriesTab","summaryTab","siteQualityTab","eventAnalysisTab"];
-  const panelMap={table:"tablePanel",map:"mapPanel",timeseries:"timeSeriesPanel",summary:"summaryPanel",sitequality:"siteQualityPanel",events:"eventAnalysisPanel"};
-  const tabMap={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab",sitequality:"siteQualityTab",events:"eventAnalysisTab"};
-  function activate(view){
-    panelIds.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none";});
-    Object.keys(tabMap).forEach(k=>{const t=document.getElementById(tabMap[k]);if(t)t.classList.toggle("active",k===view);});
-    const panel=document.getElementById(panelMap[view]);if(panel)panel.style.display="";
-    const qc=document.getElementById("stationQcPanel");if(qc&&view!=="timeseries")qc.style.display="none";
-    if(view==="map"){
-      if(typeof ensureObservationMap==="function")ensureObservationMap();
-      setTimeout(()=>{if(typeof observationMap!=="undefined"&&observationMap)observationMap.invalidateSize();if(typeof updateObservationMap==="function")updateObservationMap();},150);
-    }
-    if(view==="timeseries"){const s=document.getElementById("tsStation"),main=document.getElementById("station");if(s&&!s.value&&main)s.value=main.value;if(typeof loadTimeSeries==="function")loadTimeSeries();}
-    if(view==="summary"&&typeof generateSummary==="function")generateSummary();
-    if(view==="sitequality"&&typeof refreshQuality==="function")refreshQuality().catch(e=>{const x=document.getElementById("qualityStatus");if(x)x.textContent="Quality service unavailable: "+e.message;});
-  }
-  function clickHandler(e){
-    const view=Object.keys(tabMap).find(k=>tabMap[k]===e.currentTarget.id);if(!view)return;
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();activate(view);
-  }
-  tabIds.forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener("click",clickHandler,true);});
-})();
-</script>
+
 </body>
 </html>
