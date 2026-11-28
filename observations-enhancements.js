@@ -217,18 +217,26 @@ async function restoreQuality(button){
  }catch(error){alert("Could not restore this site: "+error.message);}
  finally{button.disabled=false;}
 }
-let wallboardTimer=null,wallboardRefreshTimer=null,wallboardIndex=0,wallboardViews=["table","map","summary"],wallboardActive=false;
-function setWallboard(active){
- const button=$("wallboardToggle");wallboardActive=!!active;
- document.body.classList.toggle("wallboard-mode",wallboardActive);
- button.textContent=wallboardActive?"Exit wallboard":"Wallboard";button.setAttribute("aria-pressed",wallboardActive?"true":"false");
- if(wallboardTimer){clearInterval(wallboardTimer);wallboardTimer=null;}
- if(wallboardRefreshTimer){clearInterval(wallboardRefreshTimer);wallboardRefreshTimer=null;}
- if(wallboardActive){wallboardIndex=0;showView(wallboardViews[wallboardIndex]);wallboardTimer=setInterval(()=>{wallboardIndex=(wallboardIndex+1)%wallboardViews.length;showView(wallboardViews[wallboardIndex]);},45000);
-  wallboardRefreshTimer=setInterval(()=>{if(typeof retrieve==="function")retrieve();},300000);
-  if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(()=>{});}
- }else if(document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen().catch(()=>{});showView("table");}
+let wallboardTimer=null,wallboardRefreshTimer=null,wallboardIndex=0,wallboardViews=["table","map","summary"],wallboardActive=false,wallboardPaused=false;
+function stopWallboardTimers(){if(wallboardTimer){clearInterval(wallboardTimer);wallboardTimer=null;}if(wallboardRefreshTimer){clearInterval(wallboardRefreshTimer);wallboardRefreshTimer=null;}}
+function wallboardStatus(message){const status=$("wallboardStatus");if(status)status.textContent=message||"";}
+function startWallboardTimers(){
+ stopWallboardTimers();if(!wallboardActive||wallboardPaused)return;
+ wallboardTimer=setInterval(()=>{wallboardIndex=(wallboardIndex+1)%wallboardViews.length;showView(wallboardViews[wallboardIndex]);},45000);
+ wallboardRefreshTimer=setInterval(()=>{if(typeof retrieve==="function")retrieve();},300000);
 }
+function setWallboard(active){
+ const button=$("wallboardToggle");wallboardActive=!!active;wallboardPaused=document.hidden;
+ document.body.classList.toggle("wallboard-mode",wallboardActive);
+ if(button){button.textContent=wallboardActive?"Exit wallboard":"Wallboard";button.setAttribute("aria-pressed",wallboardActive?"true":"false");}
+ stopWallboardTimers();
+ if(wallboardActive){wallboardIndex=0;showView(wallboardViews[wallboardIndex]);wallboardStatus(document.hidden?"Wallboard paused · screen hidden":"Wallboard active · Table · rotates every 45s · refreshes every 5m");
+ startWallboardTimers();
+  if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(()=>wallboardStatus("Wallboard active · fullscreen unavailable"));}
+ }else{wallboardStatus("");if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});showView("table");}
+}
+document.addEventListener("visibilitychange",()=>{if(!wallboardActive)return;wallboardPaused=document.hidden;startWallboardTimers();wallboardStatus(document.hidden?"Wallboard paused · screen hidden":"Wallboard active · "+wallboardViews[wallboardIndex]+" · rotates every 45s · refreshes every 5m");});
+document.addEventListener("fullscreenchange",()=>{if(wallboardActive&&!document.fullscreenElement)wallboardStatus("Wallboard active · fullscreen exited · use Exit wallboard to stop rotation");});
 function showView(view){
  const panels={table:"tablePanel",map:"mapPanel",timeseries:"timeSeriesPanel",summary:"summaryPanel",sitequality:"siteQualityPanel"};
  const tabs={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab",sitequality:"siteQualityTab"};
@@ -236,6 +244,7 @@ function showView(view){
  Object.entries(tabs).forEach(([k,id])=>{const tab=$(id);tab.classList.toggle("active",k===view);tab.setAttribute("aria-selected",k===view?"true":"false");});
  document.querySelector(".workspace").classList.toggle("criteria-hidden",!["table","map"].includes(view));
  document.body.dataset.observationView=view;
+ if(wallboardActive&&!document.hidden)wallboardStatus("Wallboard active · "+view+" · rotates every 45s · refreshes every 5m");
  if(view==="map"){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false;}},100);}
  if(view==="timeseries"&&!$("tsStation").value&&$("station").value)$("tsStation").value=$("station").value;
  if(view==="summary"&&!summaryText)generateSummary();
