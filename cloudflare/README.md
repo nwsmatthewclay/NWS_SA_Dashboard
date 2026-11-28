@@ -23,6 +23,25 @@ After creating the bucket and adding the three deployment/ingest secrets, run **
 
 After deployment, set `OBSERVATION_WORKER_URL` to the deployed `workers.dev` URL. The ingestion workflow will then publish the latest snapshot every ten minutes. If the two ingestion secrets are absent, the pipeline still runs and retains its GitHub Actions artifact as before.
 
+## Daily historical archive
+
+The ingestion pipeline now writes date-partitioned gzip NDJSON files alongside the existing rolling snapshot. Daily objects are stored in R2 under:
+
+`archive/YYYY/MM/YYYY-MM-DD.ndjson.gz`
+
+The workflow uploads these daily partitions on each successful run. This first stage is a rolling archive covering the pipeline's configured lookback window; it does not yet guarantee long-term retention or backfill beyond that window.
+
+New endpoint:
+
+- `GET /archive?date=2026-11-27`: fetch a single UTC day.
+- `GET /archive?start=2026-11-25&end=2026-11-27&element=temperature`: fetch a date range, optionally filtered by element, variable, source, and station ID.
+- Optional `start_time` and `end_time` ISO timestamps narrow the query within the selected date range.
+- Supports `sort=time_desc` (default) or `sort=time_asc`, plus `limit` (max 1,000) and `offset`.
+- Responses include `missing_days` so callers can distinguish unavailable partitions from empty observation results.
+- Maximum request span is 120 days.
+
+The existing `/observations`, `/latest`, and `/summary` endpoints remain unchanged during this migration.
+
 ## Endpoints
 
 - `GET /health`: service health.
