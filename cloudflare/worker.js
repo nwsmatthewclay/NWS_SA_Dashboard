@@ -305,22 +305,41 @@ export default {
       const minValue = url.searchParams.has("min") ? Number(url.searchParams.get("min")) : null;
       const maxValue = url.searchParams.has("max") ? Number(url.searchParams.get("max")) : null;
       const qcStatus = url.searchParams.get("qc_status");
+      const reportType = url.searchParams.get("report_type");
+      const extreme = url.searchParams.get("extreme");
       if ((accumulationHours !== null && !Number.isFinite(accumulationHours)) ||
           (minValue !== null && !Number.isFinite(minValue)) || (maxValue !== null && !Number.isFinite(maxValue)))
         return json({ error: "accumulation_hours/min/max must be numeric" }, 400);
-      const filtered = rows.filter(row => {
+      let filtered = rows.filter(row => {
         const time = Date.parse(row.observation_time), value = Number(row.value);
+        const inferredType = row.report_type || (row.source === "IEM_ASOS" ? "ASOS" : row.source === "IEM_COOP" ? "COOP" : row.source === "CoCoRaHS" ? "CoCoRaHS" : "Public");
         return (!element || row.element === element) && (!variable || row.variable === variable) &&
           (!source || row.source === source) && (!stationId || row.station_id === stationId) &&
           (!statistic || row.statistic === statistic) &&
           (accumulationHours === null || row.accumulation_hours === accumulationHours) &&
-          (!qcStatus || row.qc_status === qcStatus) && time >= startMs && time <= endMs &&
-          Number.isFinite(value) && (minValue === null || value >= minValue) && (maxValue === null || value <= maxValue);
+          (!qcStatus || row.qc_status === qcStatus) && (!reportType || inferredType === reportType) &&
+          time >= startMs && time <= endMs && Number.isFinite(value) &&
+          (minValue === null || value >= minValue) && (maxValue === null || value <= maxValue);
       });
+      if (extreme === "highest" || extreme === "lowest") {
+        const best = new Map();
+        for (const row of filtered) {
+          const providerId = String(row.provider_station_id || row.station_id || "").toUpperCase().replace(/^K(?=[A-Z0-9]{3}$)/, "");
+          const key = providerId || row.station_id;
+          const prior = best.get(key);
+          if (!prior || (extreme === "highest" ? Number(row.value) > Number(prior.value) : Number(row.value) < Number(prior.value))) best.set(key,row);
+        }
+        filtered = [...best.values()];
+      }
       const sort = url.searchParams.get("sort") || "time_desc";
-      if (!["time_desc", "time_asc"].includes(sort)) return json({ error: "sort must be time_desc or time_asc" }, 400);
-      filtered.sort(sort === "time_asc" ? (a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time)
-        : (a,b)=>Date.parse(b.observation_time)-Date.parse(a.observation_time));
+      const sorters = {
+        time_desc:(a,b)=>Date.parse(b.observation_time)-Date.parse(a.observation_time),
+        time_asc:(a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time),
+        value_desc:(a,b)=>Number(b.value)-Number(a.value),
+        value_asc:(a,b)=>Number(a.value)-Number(b.value)
+      };
+      if (!sorters[sort]) return json({ error: "Unsupported archive sort option" }, 400);
+      filtered.sort(sorters[sort]);
       const requestedLimit = Number(url.searchParams.get("limit") || 250);
       const requestedOffset = Number(url.searchParams.get("offset") || 0);
       if (!Number.isInteger(requestedLimit) || requestedLimit < 1 || !Number.isInteger(requestedOffset) || requestedOffset < 0)
