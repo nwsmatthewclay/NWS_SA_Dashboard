@@ -42,6 +42,22 @@ New endpoint:
 
 The existing `/observations`, `/latest`, and `/summary` endpoints remain unchanged during this migration.
 
+## Historical event search and GIS exports
+
+The Observation Reports dashboard includes quick event-search presets for:
+- Damaging wind gust reports (>= 50 mph)
+- Heavy snowfall reports (>= 6 inches)
+- Hourly ice accretion reports (>= 0.10 inches)
+
+The presets set the element, numeric threshold, sort mode, and a recent 24-hour search window. Users can then change the date range and other filters before running or exporting.
+
+GIS export buttons operate on **all matching archive rows**, not just the currently visible page:
+- **CSV** — includes latitude/longitude joined from the station inventory where missing on the observation row.
+- **GeoJSON** — point features in WGS84 longitude/latitude order, with report fields included as feature properties. Suitable for ArcGIS Pro and other GIS software.
+- **KML** — point placemarks with observation timestamps and report details in the description, suitable for Google Earth and GIS import.
+
+Rows without valid coordinates are omitted from spatial formats; CSV retains rows and blank coordinates when station coordinates are unavailable. Export requests respect the API's 120-day archive limit.
+
 ## Dashboard historical archive integration
 
 The **Observation Reports** dashboard now uses the date-partitioned `/archive` endpoint for historical report retrieval, table pagination, map queries, CSV exports, and station time-series data. The latest snapshot remains the source for the live status/metrics and station inventory. The archive query supports custom date/time bounds and preserves the selected source, station, element, statistic, accumulation period, QC, and numeric filters. The API response's `missing_days` list is surfaced in report-result status so a sparse archive is not mistaken for a complete period.
