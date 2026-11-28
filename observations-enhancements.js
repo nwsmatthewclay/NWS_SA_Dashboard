@@ -221,7 +221,7 @@ function showView(view){
  const panels={table:"tablePanel",map:"mapPanel",timeseries:"timeSeriesPanel",summary:"summaryPanel",sitequality:"siteQualityPanel"};
  const tabs={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab",sitequality:"siteQualityTab"};
  Object.entries(panels).forEach(([k,id])=>$(id).style.display=k===view?"":"none");
- Object.entries(tabs).forEach(([k,id])=>$(id).classList.toggle("active",k===view));
+ Object.entries(tabs).forEach(([k,id])=>{const tab=$(id);tab.classList.toggle("active",k===view);tab.setAttribute("aria-selected",k===view?"true":"false");});
  document.querySelector(".workspace").classList.toggle("criteria-hidden",!["table","map"].includes(view));
  document.body.dataset.observationView=view;
  if(view==="map"){ensureObservationMap();setTimeout(()=>{observationMap.invalidateSize();if(mapDirty){updateObservationMap();mapDirty=false;}},100);}
@@ -295,6 +295,9 @@ function init(){
  populateStations();
  if(initialized)return;
  initialized=true;
+ const themeButton=$("themeToggle"),textButton=$("textSizeToggle");
+ themeButton.addEventListener("click",()=>{const dark=document.body.classList.toggle("dark-theme");themeButton.textContent=dark?"Light theme":"Dark theme";themeButton.setAttribute("aria-pressed",dark?"true":"false");});
+ textButton.addEventListener("click",()=>{const large=document.body.classList.toggle("large-text");textButton.textContent=large?"Standard text":"Larger text";textButton.setAttribute("aria-pressed",large?"true":"false");});
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
  $("summaryTab").addEventListener("click",()=>showView("summary"));
  $("siteQualityTab").addEventListener("click",()=>showView("sitequality"));
