@@ -841,20 +841,20 @@ def ingest_nysm_latest(geometries):
     # NYSM values are native metric units in this public feed.
     mappings = [
         ("temp_2m [degC]", "temperature", "degF", lambda v: c_to_f(v), "degC"),
-        ("temp_9m [degC]", "temperature_9m", "degF", lambda v: c_to_f(v), "degC"),
+        ("temp_9m [degC]", "temperature", "degF", lambda v: c_to_f(v), "degC"),
         ("relative_humidity [percent]", "relative_humidity", "%", lambda v: float(v), "%"),
-        ("precip_incremental [mm]", "precipitation_incremental", "inch", lambda v: float(v) / 25.4, "mm"),
+        ("precip_incremental [mm]", "precipitation", "inch", lambda v: float(v) / 25.4, "mm"),
         ("precip_local [mm]", "precipitation_since_midnight", "inch", lambda v: float(v) / 25.4, "mm"),
         ("precip_max_intensity [mm/min]", "precipitation_max_intensity", "inch/min", lambda v: float(v) / 25.4, "mm/min"),
-        ("avg_wind_speed_prop [m/s]", "wind_speed_prop", "mph", lambda v: ms_to_mph(v), "m/s"),
-        ("max_wind_speed_prop [m/s]", "wind_gust_prop", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("avg_wind_speed_prop [m/s]", "wind_speed", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("max_wind_speed_prop [m/s]", "wind_gust", "mph", lambda v: ms_to_mph(v), "m/s"),
         ("wind_speed_stddev_prop [m/s]", "wind_speed_stddev_prop", "mph", lambda v: ms_to_mph(v), "m/s"),
-        ("wind_direction_prop [degrees]", "wind_direction_prop", "degree", lambda v: float(v), "degree"),
+        ("wind_direction_prop [degrees]", "wind_direction", "degree", lambda v: float(v), "degree"),
         ("wind_direction_stddev_prop [degrees]", "wind_direction_stddev_prop", "degree", lambda v: float(v), "degree"),
-        ("avg_wind_speed_sonic [m/s]", "wind_speed_sonic", "mph", lambda v: ms_to_mph(v), "m/s"),
-        ("max_wind_speed_sonic [m/s]", "wind_gust_sonic", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("avg_wind_speed_sonic [m/s]", "wind_speed", "mph", lambda v: ms_to_mph(v), "m/s"),
+        ("max_wind_speed_sonic [m/s]", "wind_gust", "mph", lambda v: ms_to_mph(v), "m/s"),
         ("wind_speed_stddev_sonic [m/s]", "wind_speed_stddev_sonic", "mph", lambda v: ms_to_mph(v), "m/s"),
-        ("wind_direction_sonic [degrees]", "wind_direction_sonic", "degree", lambda v: float(v), "degree"),
+        ("wind_direction_sonic [degrees]", "wind_direction", "degree", lambda v: float(v), "degree"),
         ("wind_direction_stddev_sonic [degrees]", "wind_direction_stddev_sonic", "degree", lambda v: float(v), "degree"),
         ("solar_insolation [W/m^2]", "solar_insolation", "W/m^2", lambda v: float(v), "W/m^2"),
         ("station_pressure [mbar]", "station_pressure", "hPa", lambda v: float(v), "mbar"),
@@ -883,7 +883,7 @@ def ingest_nysm_latest(geometries):
                 value = convert(float(raw))
                 add_observation(st, variable, value, unit, ts, raw, raw_unit,
                     qc="provider_qc", metadata={"network": "NYSM Standard", "sampling_interval_minutes": 5,
-                    "source_feed": "nysm_latest.csv"})
+                    "source_feed": "nysm_latest.csv", "sensor": ("9m_temperature" if field.startswith("temp_9m") else "2m_temperature" if field.startswith("temp_2m") else "propeller" if "prop" in field else "sonic" if "sonic" in field else "standard"), "sensor_height_m": (9 if field.startswith("temp_9m") else 2 if field.startswith("temp_2m") else None)})
                 count += 1
                 variables.add(variable)
             except (TypeError, ValueError, OverflowError):
@@ -950,7 +950,9 @@ def deduplicate_observations():
     duplicates = 0
     for row in OBSERVATIONS:
         key = (row["station_id"], row["variable"], row["observation_time"],
-               row.get("period_start"), row.get("period_end"))
+               row.get("period_start"), row.get("period_end"),
+               (row.get("metadata") or {}).get("sensor"),
+               (row.get("metadata") or {}).get("sensor_height_m"))
         previous = chosen.get(key)
         if previous is None:
             chosen[key] = row
