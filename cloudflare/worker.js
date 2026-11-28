@@ -317,7 +317,9 @@ export default {
       if ((accumulationHours !== null && !Number.isFinite(accumulationHours)) ||
           (minValue !== null && !Number.isFinite(minValue)) || (maxValue !== null && !Number.isFinite(maxValue)))
         return json({ error: "accumulation_hours/min/max must be numeric" }, 400);
+      const qualityState = await readQualityState(env.OBSERVATIONS);
       let filtered = rows.filter(row => {
+        if (isQuarantined(row, qualityState.active)) return false;
         const time = Date.parse(row.observation_time), value = Number(row.value);
         const inferredType = row.report_type || (row.source === "IEM_ASOS" ? "ASOS" : row.source === "IEM_COOP" ? "COOP" : row.source === "CoCoRaHS" ? "CoCoRaHS" : "Public");
         return (!element || row.element === element) && (!variable || row.variable === variable) &&
