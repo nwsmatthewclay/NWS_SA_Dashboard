@@ -1015,7 +1015,7 @@ def write_outputs():
         day_path.parent.mkdir(parents=True, exist_ok=True)
         with gzip.open(day_path, "wt", encoding="utf-8") as handle:
             for item in sorted(day_rows, key=lambda x: x["observation_time"]):
-                handle.write(json.dumps(item, separators=(",", ":")) + "\\n")
+                handle.write(json.dumps(item, separators=(",", ":")) + "\n")
 
     latest_dir = BASE / "latest"
     latest_dir.mkdir(parents=True, exist_ok=True)
