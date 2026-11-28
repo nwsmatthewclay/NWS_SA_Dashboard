@@ -3,6 +3,9 @@ const ALLOWED_OBJECTS = new Set([
   "latest/stations.json",
   "latest/manifest.json",
 ]);
+function allowedObjectKey(key) {
+  return ALLOWED_OBJECTS.has(key) || /^archive\\/\\d{4}\\/\\d{2}\\/\\d{4}-\\d{2}-\\d{2}\\.ndjson\\.gz$/.test(key);
+}
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -154,7 +157,7 @@ export default {
     if (request.method === "PUT" && path.startsWith("/ingest/")) {
       if (!authorized(request, env)) return json({ error: "Unauthorized" }, 401);
       const key = path.slice("/ingest/".length);
-      if (!ALLOWED_OBJECTS.has(key)) return json({ error: "Object key not allowed" }, 400);
+      if (!allowedObjectKey(key)) return json({ error: "Object key not allowed" }, 400);
       const body = await request.arrayBuffer();
       if (body.byteLength === 0) return json({ error: "Empty upload" }, 400);
       if (body.byteLength > 20 * 1024 * 1024) return json({ error: "Upload exceeds 20 MB" }, 413);
@@ -265,6 +268,52 @@ export default {
           ...CORS_HEADERS,
         },
       });
+    }
+
+    if (path === "/archive") {
+      const startText = url.searchParams.get("start") || url.searchParams.get("date");
+      const endText = url.searchParams.get("end") || startText;
+      const validDate = value => /^\\d{4}-\\d{2}-\\d{2}$/.test(value || "") &&
+        Number.isFinite(Date.parse(value + "T00:00:00Z")) &&
+        new Date(value + "T00:00:00Z").toISOString().slice(0,10) === value;
+      if (!validDate(startText) || !validDate(endText))
+        return json({ error: "start/end must be valid YYYY-MM-DD dates; date may be used for a single day" }, 400);
+      const startDay = new Date(startText + "T00:00:00Z");
+      const endDay = new Date(endText + "T00:00:00Z");
+      if (endDay < startDay) return json({ error: "end must be on or after start" }, 400);
+      const dayCount = Math.floor((endDay - startDay) / 86400000) + 1;
+      if (dayCount > 120) return json({ error: "Archive requests are limited to 120 days" }, 400);
+      const rows = [];
+      const missing_days = [];
+      for (let day = 0; day < dayCount; day++) {
+        const date = new Date(startDay.getTime() + day * 86400000);
+        const dayKey = date.toISOString().slice(0,10);
+        const objectKey = `archive/${dayKey.slice(0,4)}/${dayKey.slice(5,7)}/${dayKey}.ndjson.gz`;
+        const object = await env.OBSERVATIONS.get(objectKey);
+        if (!object) { missing_days.push(dayKey); continue; }
+        const decompressed = object.body.pipeThrough(new DecompressionStream("gzip"));
+        const body = await new Response(decompressed).text();
+        for (const line of body.split("\\n")) if (line.trim()) rows.push(JSON.parse(line));
+      }
+      const startMs = url.searchParams.has("start_time") ? Date.parse(url.searchParams.get("start_time")) : startDay.getTime();
+      const endMs = url.searchParams.has("end_time") ? Date.parse(url.searchParams.get("end_time")) : endDay.getTime() + 86400000 - 1;
+      if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return json({ error: "start_time/end_time must be ISO timestamps" }, 400);
+      const element = url.searchParams.get("element"), variable = url.searchParams.get("variable");
+      const source = url.searchParams.get("source"), stationId = url.searchParams.get("station_id");
+      const filtered = rows.filter(row => {
+        const time = Date.parse(row.observation_time);
+        return (!element || row.element === element) && (!variable || row.variable === variable) &&
+          (!source || row.source === source) && (!stationId || row.station_id === stationId) &&
+          time >= startMs && time <= endMs && Number.isFinite(Number(row.value));
+      });
+      const sort = url.searchParams.get("sort") || "time_desc";
+      filtered.sort(sort === "time_asc" ? (a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time)
+        : (a,b)=>Date.parse(b.observation_time)-Date.parse(a.observation_time));
+      const limit = Math.min(1000, Math.max(1, Number(url.searchParams.get("limit") || 250)));
+      const offset = Math.max(0, Number(url.searchParams.get("offset") || 0));
+      if (!Number.isInteger(limit) || !Number.isInteger(offset)) return json({ error: "limit/offset must be integers" }, 400);
+      return json({ start: startText, end: endText, day_count: dayCount, missing_days, total: filtered.length, limit, offset,
+        results: filtered.slice(offset, offset + limit) });
     }
 
     // Lightweight aggregate endpoints avoid transferring large archives to the browser.
