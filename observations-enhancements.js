@@ -276,8 +276,43 @@ async function generateSummary(){
  finally{btn.disabled=false;btn.textContent="Generate summary";}
 }
 let initialized=false;
+
+// Station-level QC drilldown: inspect a station's history for the active element.
+let qcStation=null,qcElement=null,qcChart=null;
+function qcElementLabel(el){return labels[el]||String(el||"").replaceAll("_"," ");}
+async function loadStationQC(){
+ if(!qcStation||!qcElement)return;
+ const hours=Number($("stationQcPeriod").value||24),end=Date.now(),range={start:new Date(end-hours*3600000).toISOString(),end:new Date(end).toISOString()};
+ $("stationQcStatus").textContent="Loading hourly/history observations…";
+ try{
+  const rows=await fetchRows(qcElement,range,qcStation.station_id,{});
+  rows.sort((a,b)=>Date.parse(a.observation_time)-Date.parse(b.observation_time));
+  const stationName=qcStation.name||qcStation.provider_station_id;
+  $("stationQcSubtitle").textContent=stationName+" · "+qcElementLabel(qcElement)+" · Past "+hours+" hours";
+  $("stationQcStatus").textContent=rows.length+" reports retrieved";
+  const chartLabels=rows.map(r=>new Date(r.observation_time).toLocaleString("en-US",{timeZone:"UTC",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false})+"Z");
+  const values=rows.map(r=>Number.isFinite(Number(r.value))?Number(r.value):null);
+  if(qcChart)qcChart.destroy();
+  qcChart=new Chart($("stationQcChart"),{type:qcElement==="precipitation"?"bar":"line",data:{labels:chartLabels,datasets:[{label:qcElementLabel(qcElement)+" ("+(rows[0]?.unit||"")+")",data:values,borderWidth:2,pointRadius:qcElement==="precipitation"?0:2,tension:0,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:false},plugins:{legend:{display:true},tooltip:{callbacks:{label:c=>{const r=rows[c.dataIndex];return c.dataset.label+": "+c.parsed.y+" "+(r?.unit||"")+(r?.accumulation_hours?" · "+r.accumulation_hours+"h accumulation":"")}}}},scales:{x:{ticks:{maxTicksLimit:12,maxRotation:0}},y:{title:{display:true,text:rows[0]?.unit||""}}}}});
+  $("stationQcRows").innerHTML=rows.slice().reverse().map(r=>'<tr><td>'+safe(time(r.observation_time))+'</td><td>'+safe(fmt(r.value))+'</td><td>'+safe(r.unit||"")+'</td><td>'+safe(r.statistic||"")+'</td><td>'+safe(r.accumulation_hours?r.accumulation_hours+" h":"—")+'</td><td>'+safe(r.qc_status||"unknown")+'</td><td>'+safe(JSON.stringify(r.metadata||{}))+'</td></tr>').join("")||'<tr><td colspan="7">No observations for this station and element in this window.</td></tr>';
+ }catch(e){$("stationQcStatus").textContent="QC history failed: "+e.message;$("stationQcRows").innerHTML='<tr><td colspan="7">'+safe(e.message)+'</td></tr>'}
+}
+function openStationQC(row){
+ const station=stations.find(s=>String(s.station_id)===String(row.station_id));
+ qcStation=station||{station_id:row.station_id,name:row.station_name||row.provider_station_id,provider_station_id:row.provider_station_id};
+ qcElement=$("element").value||row.element;
+ $("stationQcPanel").style.display="";
+ $("stationQcPeriod").value="24";
+ loadStationQC();
+ $("stationQcPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function init(){
  populateStations();
+ $("stationQcClose").addEventListener("click",()=>{$("stationQcPanel").style.display="none";});
+ $("stationQcReload").addEventListener("click",loadStationQC);
+ $("stationQcPeriod").addEventListener("change",loadStationQC);
+ document.addEventListener("click",e=>{const row=e.target.closest("#rows tr");if(!row||e.target.closest("button"))return;const idx=Array.from($("rows").children).indexOf(row);if(idx>=0&&lastRows[idx])openStationQC(lastRows[idx]);});
  if(initialized)return;
  initialized=true;
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
