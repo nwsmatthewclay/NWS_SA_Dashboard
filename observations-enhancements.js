@@ -14,18 +14,20 @@ function api(){return "https://btv-observation-api.jusmessinwityah1.workers.dev"
 async function get(path){const r=await fetch(api()+path,{cache:"no-store"});if(!r.ok)throw new Error("API "+r.status+" for "+path);return r.json();}
 function stationGroup(station){
  const type=String(station.report_type||"").toLowerCase(),source=String(station.source||"").toLowerCase(),network=String(station.network||"").toLowerCase();
- if(type==="asos"||source==="iem_asos"||network.includes("asos")||network.includes("awos"))return "ASOS/AWOS";
- if(type==="coop"||source==="iem_coop")return "COOP";
+ if(["asos/awos","asos","awos"].includes(type)||source==="iem_asos"||source==="nws"||network.includes("asos")||network.includes("awos"))return "ASOS/AWOS";
  if(type==="cocorahs"||source==="cocorahs")return "CoCoRaHS";
- return "Public";
+ if(type==="coop"||source==="iem_coop"||source==="iem_rr3_coop"||network.includes("coop"))return "COOP";
+ if(type==="rwis"||source==="iem_rwis"||network.includes("rwis"))return "RWIS";
+ if(type==="nysm"||source.includes("nysm")||source.includes("mesonet")||network.includes("nysm")||network.includes("mesonet"))return "NYSM";
+ return "Public Sites";
 }
 function stationLabel(station){
  const name=station.name||station.station_name||station.provider_station_id||station.station_id;
- return name+" · "+station.provider_station_id+" ("+(station.source||"")+")";
+ return name+" · "+station.provider_station_id;
 }
 function populateStations(){
  const s=$("tsStation");if(!s)return;const prior=s.value;s.innerHTML='<option value="">Select a station…</option>';
- ["ASOS/AWOS","COOP","CoCoRaHS","Public"].forEach(group=>{
+ ["ASOS/AWOS","CoCoRaHS","COOP","RWIS","NYSM","Public Sites"].forEach(group=>{
   const members=stations.filter(x=>stationGroup(x)===group).sort((a,b)=>stationLabel(a).localeCompare(stationLabel(b)));
   if(!members.length)return;
   const optgroup=document.createElement("optgroup");optgroup.label=group;
