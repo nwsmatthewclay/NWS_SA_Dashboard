@@ -217,6 +217,16 @@ async function restoreQuality(button){
  }catch(error){alert("Could not restore this site: "+error.message);}
  finally{button.disabled=false;}
 }
+let wallboardTimer=null,wallboardIndex=0,wallboardViews=["table","map","summary"],wallboardActive=false;
+function setWallboard(active){
+ const button=$("wallboardToggle");wallboardActive=!!active;
+ document.body.classList.toggle("wallboard-mode",wallboardActive);
+ button.textContent=wallboardActive?"Exit wallboard":"Wallboard";button.setAttribute("aria-pressed",wallboardActive?"true":"false");
+ if(wallboardTimer){clearInterval(wallboardTimer);wallboardTimer=null;}
+ if(wallboardActive){wallboardIndex=0;showView(wallboardViews[wallboardIndex]);wallboardTimer=setInterval(()=>{wallboardIndex=(wallboardIndex+1)%wallboardViews.length;showView(wallboardViews[wallboardIndex]);},45000);
+  if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(()=>{});}
+ }else if(document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen().catch(()=>{});showView("table");}
+}
 function showView(view){
  const panels={table:"tablePanel",map:"mapPanel",timeseries:"timeSeriesPanel",summary:"summaryPanel",sitequality:"siteQualityPanel"};
  const tabs={table:"tableTab",map:"mapTab",timeseries:"timeSeriesTab",summary:"summaryTab",sitequality:"siteQualityTab"};
@@ -296,6 +306,7 @@ function init(){
  if(initialized)return;
  initialized=true;
  const themeButton=$("themeToggle"),textButton=$("textSizeToggle");
+ const wallboardButton=$("wallboardToggle");wallboardButton.addEventListener("click",()=>setWallboard(!wallboardActive));
  themeButton.addEventListener("click",()=>{const dark=document.body.classList.toggle("dark-theme");themeButton.textContent=dark?"Light theme":"Dark theme";themeButton.setAttribute("aria-pressed",dark?"true":"false");});
  textButton.addEventListener("click",()=>{const large=document.body.classList.toggle("large-text");textButton.textContent=large?"Standard text":"Larger text";textButton.setAttribute("aria-pressed",large?"true":"false");});
  $("timeSeriesTab").addEventListener("click",()=>showView("timeseries"));
