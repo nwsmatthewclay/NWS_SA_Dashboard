@@ -349,7 +349,7 @@ async function retrieve(){
   const limit=Number($("pageSize").value);currentPage=1;lastQuery=queryParams(limit,0);
   const p=new URLSearchParams(lastQuery);const data=await getJson(archiveQuery(p));
   total=data.total||0;render(data.results||[]);mapDirty=true;if($("mapPanel").style.display!=="none"){updateObservationMap();mapDirty=false;}
-  $("resultCount").textContent=total.toLocaleString()+" matching reports";
+  $("resultCount").textContent=total.toLocaleString()+" matching reports"+(data.missing_days?.length?" · archive missing "+data.missing_days.length+" day(s)":" · archive coverage complete");
   $("pageText").textContent="Page 1";$("pageInfo").textContent="Showing "+(total?1:0)+"–"+Math.min(limit,total)+" of "+total.toLocaleString();
   $("prevBtn").disabled=true;$("nextBtn").disabled=total<=limit;
  }catch(e){$("resultCount").textContent="Retrieval failed";$("rows").innerHTML='<tr><td colspan="10" class="empty">'+esc(e.message)+'</td></tr>'}
