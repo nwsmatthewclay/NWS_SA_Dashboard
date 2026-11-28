@@ -4,7 +4,7 @@ const ALLOWED_OBJECTS = new Set([
   "latest/manifest.json",
 ]);
 function allowedObjectKey(key) {
-  return ALLOWED_OBJECTS.has(key) || /^archive\\/\\d{4}\\/\\d{2}\\/\\d{4}-\\d{2}-\\d{2}\\.ndjson\\.gz$/.test(key);
+  return ALLOWED_OBJECTS.has(key) || /^archive\/\d{4}\/\d{2}\/\d{4}-\d{2}-\d{2}\.ndjson\.gz$/.test(key);
 }
 
 const CORS_HEADERS = {
@@ -273,7 +273,7 @@ export default {
     if (path === "/archive") {
       const startText = url.searchParams.get("start") || url.searchParams.get("date");
       const endText = url.searchParams.get("end") || startText;
-      const validDate = value => /^\\d{4}-\\d{2}-\\d{2}$/.test(value || "") &&
+      const validDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value || "") &&
         Number.isFinite(Date.parse(value + "T00:00:00Z")) &&
         new Date(value + "T00:00:00Z").toISOString().slice(0,10) === value;
       if (!validDate(startText) || !validDate(endText))
@@ -293,7 +293,7 @@ export default {
         if (!object) { missing_days.push(dayKey); continue; }
         const decompressed = object.body.pipeThrough(new DecompressionStream("gzip"));
         const body = await new Response(decompressed).text();
-        for (const line of body.split("\\n")) if (line.trim()) rows.push(JSON.parse(line));
+        for (const line of body.split("\n")) if (line.trim()) rows.push(JSON.parse(line));
       }
       const startMs = url.searchParams.has("start_time") ? Date.parse(url.searchParams.get("start_time")) : startDay.getTime();
       const endMs = url.searchParams.has("end_time") ? Date.parse(url.searchParams.get("end_time")) : endDay.getTime() + 86400000 - 1;
